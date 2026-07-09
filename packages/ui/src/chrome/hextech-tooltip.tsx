@@ -50,13 +50,13 @@ export function HextechTooltip({
           // Caret points down (toward trigger below)
           <span
             aria-hidden="true"
-            className="absolute left-1/2 top-full -translate-x-1/2 border-x-4 border-t-4 border-x-transparent border-t-gold-4"
+            className="absolute left-1/2 top-full -translate-x-1/2 border-x-6 border-t-6 border-x-transparent border-t-gold-4"
           />
         ) : (
           // Caret points up (toward trigger above)
           <span
             aria-hidden="true"
-            className="absolute bottom-full left-1/2 -translate-x-1/2 border-x-4 border-b-4 border-x-transparent border-b-gold-4"
+            className="absolute bottom-full left-1/2 -translate-x-1/2 border-x-6 border-b-6 border-x-transparent border-b-gold-4"
           />
         )}
       </div>
