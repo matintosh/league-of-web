@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "@low/tokens/theme.css";
+
+body {
+  @apply bg-hextech-black text-grey-1 font-body antialiased;
+}
