@@ -35,7 +35,7 @@ export function HextechToggle({
       aria-checked={checked}
       aria-label={label}
       disabled={disabled}
-      onClick={() => !disabled && onChange(!checked)}
+      onClick={() => onChange(!checked)}
       className={[
         // Track base
         "relative inline-flex h-[18px] w-[36px] shrink-0 cursor-pointer items-center",
@@ -46,7 +46,7 @@ export function HextechToggle({
         // Track color
         checked
           ? "border-gold-4 bg-blue-4"
-          : "border-grey-3 bg-grey-4",
+          : "border-gold-4 bg-grey-4",
         // Glow when on
         checked && !disabled
           ? "shadow-[0_0_6px_var(--color-blue-2)]"
