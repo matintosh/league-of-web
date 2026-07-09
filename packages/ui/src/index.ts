@@ -5,6 +5,8 @@ export { HextechButton } from "./chrome/hextech-button";
 export type { HextechButtonProps, HextechButtonVariant, HextechButtonSize } from "./chrome/hextech-button";
 export { HextechTooltip } from "./chrome/hextech-tooltip";
 export type { HextechTooltipProps, HextechTooltipPosition } from "./chrome/hextech-tooltip";
+export { ModalFrame } from "./chrome/modal-frame";
+export type { ModalFrameProps } from "./chrome/modal-frame";
 export { PlayerHovercard } from "./chrome/player-hovercard";
 export type { PlayerHovercardProps } from "./chrome/player-hovercard";
 export { TabBar } from "./chrome/tab-bar";
