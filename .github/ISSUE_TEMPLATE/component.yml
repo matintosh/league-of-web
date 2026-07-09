@@ -1,0 +1,36 @@
+name: Component
+description: A UI component to build
+title: "[Component] <name>"
+labels: ["type:component", "status:ready"]
+body:
+  - type: input
+    id: area
+    attributes:
+      label: Area
+      description: chrome | champ-select | collection | login | store
+      placeholder: chrome
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What this component is in the real LoL client and where it appears.
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: Reference
+      description: Paste screenshot(s) of the real client component here.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ] Matches reference visually
+        - [ ] Showcase entry with all meaningful variants
+        - [ ] Presentational only (props in, callbacks out)
+        - [ ] Tokens only, typecheck + build pass
+    validations:
+      required: true
