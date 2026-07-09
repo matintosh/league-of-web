@@ -7,7 +7,7 @@ export default function ShowcaseIndex() {
         Component Showcase
       </h1>
       <p className="mt-4 max-w-xl text-grey-1">
-        Every component of league-of-web, browsable with its variants.
+        Every component of league-of-web, browsable with its variants.{" "}
         {registry.length} component{registry.length === 1 ? "" : "s"} registered.
       </p>
     </div>

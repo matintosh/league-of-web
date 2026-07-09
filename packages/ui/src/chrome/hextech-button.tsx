@@ -11,7 +11,7 @@ export interface HextechButtonProps extends ButtonHTMLAttributes<HTMLButtonEleme
 }
 
 const base =
-  "inline-flex cursor-pointer items-center justify-center border font-display uppercase tracking-widest transition-all duration-150 disabled:cursor-not-allowed disabled:border-grey-3 disabled:bg-none disabled:text-grey-2";
+  "inline-flex cursor-pointer items-center justify-center border font-display uppercase tracking-widest transition-all duration-150 disabled:cursor-not-allowed disabled:border-grey-3 disabled:bg-none disabled:text-grey-2 disabled:shadow-none";
 
 const variants: Record<HextechButtonVariant, string> = {
   primary:

@@ -1,3 +1,4 @@
+/* Keep in sync with packages/tokens/src/index.ts — same 19 hex values. */
 @theme {
   /* Gold — borders, accents, text highlights */
   --color-gold-1: #f0e6d2;

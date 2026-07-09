@@ -1,3 +1,4 @@
+// Keep in sync with packages/tokens/src/theme.css — same 19 hex values.
 /** Hextech palette as TS constants — for the rare case CSS classes can't be used (e.g. canvas). */
 export const palette = {
   gold1: "#f0e6d2",
