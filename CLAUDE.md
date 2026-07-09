@@ -30,6 +30,7 @@ browsable in the custom showcase at `/showcase`.
 4. **Showcase required.** A component is not done without:
    - `<component>.showcase.tsx` next to it exporting a `ShowcaseEntry`
    - a line registering it in `packages/ui/src/registry.ts`
+   - Showcase files are server-safe: never `'use client'` — put stateful demos in a separate `*.demo.tsx` client component.
 5. **Faithfulness.** Match the real LoL client as closely as possible.
    Reference screenshots live in the GitHub issue for each component.
 

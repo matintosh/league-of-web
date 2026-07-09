@@ -10,8 +10,10 @@ const AREA_LABELS: Record<Area, string> = {
   store: "Store",
 };
 
+const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store"];
+
 export default function ShowcaseLayout({ children }: { children: React.ReactNode }) {
-  const areas = [...new Set(registry.map((e) => e.area))];
+  const areas = AREA_ORDER.filter((a) => registry.some((e) => e.area === a));
 
   return (
     <div className="flex min-h-screen">

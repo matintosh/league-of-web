@@ -35,6 +35,10 @@ Follow the `new-component` skill. Commit frequently (conventional commits).
     gh issue edit <N> --add-label "status:review" --remove-label "status:in-progress"
 
 PR merge closes the issue automatically (via `Closes #N`).
+After the merge, remove the stale kanban label:
+
+    gh issue edit <N> --remove-label "status:review"
+
 Vercel builds a preview deploy per PR — link it in the PR if reviewing visuals.
 
 ## Rules

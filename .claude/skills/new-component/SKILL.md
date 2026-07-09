@@ -35,6 +35,10 @@ description: Use when building any new UI component for league-of-web — scaffo
    };
    ```
 
+   **Rules for showcase files:**
+   - Showcase files must NEVER be marked `'use client'` — the registry is imported by server components, and client-reference exports break property access (`entry.slug`, `variant.render()`) at the server layer.
+   - For interactive/stateful demos (controlled tabs, modals), create a separate `<component-name>.demo.tsx` WITH `'use client'` that owns the state, and render that from the showcase entry's `render`.
+
    Cover every meaningful state: hover-relevant variants, disabled, loading,
    empty, long-text overflow. Showcase files MAY import fixture values.
 5. **Register.** Add to `packages/ui/src/registry.ts` (sorted by area, then name):

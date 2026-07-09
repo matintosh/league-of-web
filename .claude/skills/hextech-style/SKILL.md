@@ -27,7 +27,7 @@ The LoL client aesthetic: dark, ornate, gold-on-near-black with magic blue accen
 - **Panels:** 1px `border-gold-5` frame on `bg-blue-7`; corner ornaments are a stretch goal, skip unless the issue asks
 - **Dividers:** 1px `border-gold-5` fading at edges (use gradient masks)
 - **Focus/selected:** gold border brighten + inner glow, never browser default outline color
-- **Transitions:** fast and subtle — `transition-colors duration-150`. The client is snappy, not bouncy. No scale/spring animations.
+- **Transitions:** fast and subtle — `transition-colors duration-150`. The client is snappy, not bouncy. No scale/spring animations. Use `transition-all` only when animating shadows/glows (e.g. buttons); otherwise `transition-colors`.
 
 ## Don'ts
 
