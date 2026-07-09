@@ -1,0 +1,52 @@
+---
+name: new-component
+description: Use when building any new UI component for league-of-web — scaffolds folder, component, showcase entry, and registry line following the component contract.
+---
+
+# New Component Recipe
+
+## Checklist (do in order)
+
+1. **Read the issue.** Get reference screenshot, acceptance criteria, area.
+2. **Scaffold.** In `packages/ui/src/<area>/` create:
+   - `<component-name>.tsx` — the component
+   - `<component-name>.showcase.tsx` — the showcase entry
+3. **Build the component.**
+   - Presentational only: props in, callbacks out. No fetching.
+   - Import types (not values) from `@low/fixtures`.
+   - Token classes only (`text-gold-1`, `bg-blue-7`...) — never hex.
+   - `'use client'` only if it holds state or handlers.
+   - JSDoc every prop.
+4. **Write the showcase entry:**
+
+   ```tsx
+   import type { ShowcaseEntry } from "../showcase";
+   import { MyComponent } from "./my-component";
+
+   export const myComponentShowcase: ShowcaseEntry = {
+     slug: "my-component",
+     name: "My Component",
+     area: "chrome",
+     description: "One sentence on what this is in the real client.",
+     variants: [
+       { name: "Default", render: () => <MyComponent /> },
+       { name: "Disabled", notes: "disabled prop", render: () => <MyComponent disabled /> },
+     ],
+   };
+   ```
+
+   Cover every meaningful state: hover-relevant variants, disabled, loading,
+   empty, long-text overflow. Showcase files MAY import fixture values.
+5. **Register.** Add to `packages/ui/src/registry.ts` (sorted by area, then name):
+
+   ```ts
+   import { myComponentShowcase } from "./chrome/my-component.showcase";
+   export const registry: ShowcaseEntry[] = [myComponentShowcase];
+   ```
+
+6. **Verify.** `pnpm typecheck && pnpm build` pass. Then `pnpm dev` and check
+   `/showcase/<slug>` renders all variants correctly.
+
+## File naming
+
+kebab-case files, PascalCase exports. `hextech-button.tsx` exports `HextechButton`.
