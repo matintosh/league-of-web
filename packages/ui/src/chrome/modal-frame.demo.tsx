@@ -41,7 +41,7 @@ export function ModalFrameDemo() {
 /** Static demo showing a modal always-open with a footer containing action buttons. */
 export function ModalFrameWithFooterDemo() {
   return (
-    <div className="relative h-64 w-full">
+    <div className="relative h-80 w-full overflow-hidden [transform:translateZ(0)]">
       <ModalFrame
         open={true}
         onClose={() => {}}
@@ -66,7 +66,7 @@ export function ModalFrameWithFooterDemo() {
 /** Static demo showing a modal always-open with no footer. */
 export function ModalFrameWithoutFooterDemo() {
   return (
-    <div className="relative h-56 w-full">
+    <div className="relative h-64 w-full overflow-hidden [transform:translateZ(0)]">
       <ModalFrame
         open={true}
         onClose={() => {}}
@@ -81,7 +81,7 @@ export function ModalFrameWithoutFooterDemo() {
 /** Static demo with enough content to trigger the overflow-y-auto scroll. */
 export function ModalFrameLongContentDemo() {
   return (
-    <div className="relative h-96 w-full">
+    <div className="relative h-96 w-full overflow-hidden [transform:translateZ(0)]">
       <ModalFrame
         open={true}
         onClose={() => {}}

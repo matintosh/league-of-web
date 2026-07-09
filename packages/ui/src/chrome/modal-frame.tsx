@@ -1,3 +1,4 @@
+import { useId } from "react";
 import type { ReactNode } from "react";
 
 export interface ModalFrameProps {
@@ -11,7 +12,7 @@ export interface ModalFrameProps {
   children: ReactNode;
   /**
    * Optional footer content, e.g. action buttons.
-   * When omitted, the footer bar is not rendered.
+   * When falsy (undefined, null, false), the footer bar is not rendered.
    */
   footer?: ReactNode;
 }
@@ -36,26 +37,28 @@ export function ModalFrame({
   children,
   footer,
 }: ModalFrameProps) {
+  const titleId = useId();
+
   if (!open) return null;
 
   return (
-    /* Backdrop */
+    /* Backdrop + panel wrapper — z-50 ensures modal paints above app-level fixed elements */
     <div
-      className="fixed inset-0 bg-hextech-black/70"
+      className="fixed inset-0 z-50 bg-hextech-black/70"
       onClick={onClose}
     >
       {/* Panel — stopPropagation prevents backdrop click from firing when clicking inside */}
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby="modal-frame-title"
+        aria-labelledby={titleId}
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-7 border border-gold-4 ring-1 ring-gold-5 min-w-[480px] max-w-[720px]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title bar */}
         <div className="bg-blue-6 border-b border-gold-5 px-6 py-3 flex items-center justify-between">
           <span
-            id="modal-frame-title"
+            id={titleId}
             className="font-display uppercase text-sm tracking-widest text-gold-1"
           >
             {title}
@@ -76,7 +79,7 @@ export function ModalFrame({
         </div>
 
         {/* Footer (conditional) */}
-        {footer !== undefined && (
+        {footer && (
           <div className="border-t border-gold-5 px-6 py-4 flex justify-end gap-3">
             {footer}
           </div>
