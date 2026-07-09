@@ -3,6 +3,8 @@ export { CurrencyDisplay } from "./chrome/currency-display";
 export type { CurrencyDisplayProps } from "./chrome/currency-display";
 export { HextechButton } from "./chrome/hextech-button";
 export type { HextechButtonProps, HextechButtonVariant, HextechButtonSize } from "./chrome/hextech-button";
+export { HextechTooltip } from "./chrome/hextech-tooltip";
+export type { HextechTooltipProps, HextechTooltipPosition } from "./chrome/hextech-tooltip";
 export { PlayerHovercard } from "./chrome/player-hovercard";
 export type { PlayerHovercardProps } from "./chrome/player-hovercard";
 export { TopNavbar } from "./chrome/top-navbar";
