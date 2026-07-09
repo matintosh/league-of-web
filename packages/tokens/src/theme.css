@@ -1,4 +1,4 @@
-/* Keep in sync with packages/tokens/src/index.ts — same 19 hex values. */
+/* Keep in sync with packages/tokens/src/index.ts — same 20 hex values. */
 @theme {
   /* Gold — borders, accents, text highlights */
   --color-gold-1: #f0e6d2;
@@ -24,6 +24,9 @@
   --color-grey-4: #1e2328;
   --color-grey-cool: #1e282d;
   --color-hextech-black: #010a13;
+
+  /* Status — availability indicators */
+  --color-status-online: #00c853;
 
   /* Typography — font files loaded by the app via next/font, exposed as vars */
   --font-display: var(--font-marcellus), "Marcellus", serif;
