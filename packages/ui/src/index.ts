@@ -1,4 +1,6 @@
 export type { Area, ShowcaseEntry, ShowcaseVariant } from "./showcase";
+export { CurrencyDisplay } from "./chrome/currency-display";
+export type { CurrencyDisplayProps } from "./chrome/currency-display";
 export { HextechButton } from "./chrome/hextech-button";
 export type { HextechButtonProps, HextechButtonVariant, HextechButtonSize } from "./chrome/hextech-button";
 export { TopNavbar } from "./chrome/top-navbar";
