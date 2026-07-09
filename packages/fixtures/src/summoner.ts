@@ -1,0 +1,32 @@
+import type { Friend, Summoner, Wallet } from "./types";
+
+export const demoSummoner: Summoner = {
+  gameName: "Matintosh",
+  tagLine: "LAS",
+  level: 247,
+  profileIconId: 5212,
+  availability: "online",
+};
+
+export const demoWallet: Wallet = { rp: 1350, blueEssence: 48210 };
+
+export const demoFriends: Friend[] = [
+  {
+    summoner: { gameName: "Faker", tagLine: "KR1", level: 812, profileIconId: 6402, availability: "in-game" },
+    statusText: "League of Legends",
+    groupName: "General",
+  },
+  {
+    summoner: { gameName: "Tyler1", tagLine: "NA1", level: 623, profileIconId: 4368, availability: "in-queue" },
+    statusText: "Ranked Solo/Duo",
+    groupName: "General",
+  },
+  {
+    summoner: { gameName: "Baus", tagLine: "EUW", level: 590, profileIconId: 5205, availability: "away" },
+    groupName: "General",
+  },
+  {
+    summoner: { gameName: "Phreak", tagLine: "NA1", level: 431, profileIconId: 743, availability: "offline" },
+    groupName: "Work",
+  },
+];
