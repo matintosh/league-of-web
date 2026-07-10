@@ -4,17 +4,26 @@
 // Props
 // ---------------------------------------------------------------------------
 
+/** Layout variant for QueueStatus. Defaults to "strip". */
+export type QueueStatusLayout = "strip" | "panel";
+
 export interface QueueStatusProps {
   /** Elapsed seconds in queue — the PARENT owns the ticking interval. */
   elapsedSeconds: number;
   /**
-   * Expected wait in seconds. When provided, shows "ESTIMATED: m:ss" on the
-   * right. When elapsedSeconds exceeds this, the elapsed display turns
+   * Expected wait in seconds. When provided, shows "ESTIMATED: m:ss".
+   * When elapsedSeconds exceeds this, the elapsed display turns
    * text-gold-3 to indicate the estimate has been passed.
    */
   estimatedSeconds?: number;
   /** Called when the user clicks the ✕ cancel button. */
   onCancel: () => void;
+  /**
+   * Layout variant.
+   * - "strip" (default): horizontal ~380×64 bar, used in the bottom control strip.
+   * - "panel": vertical ~200×96 compact box, used in the top-right sidebar.
+   */
+  layout?: QueueStatusLayout;
 }
 
 // ---------------------------------------------------------------------------
@@ -36,12 +45,14 @@ export function formatQueueTime(seconds: number): string {
 // ---------------------------------------------------------------------------
 
 /**
- * QueueStatus — in-queue status strip shown while matchmaking.
+ * QueueStatus — in-queue status indicator shown while matchmaking.
  *
- * Horizontal strip (~380×64) with:
- * - Left: pulsing blue indicator dot (searching animation)
- * - Center: "IN QUEUE" label + elapsed mm:ss timer
- * - Right: optional estimated wait + ✕ cancel button
+ * Two layout variants:
+ * - **strip** (default): horizontal ~380×64 bar with pulse dot, label, elapsed
+ *   timer in center, optional estimated wait + cancel ✕ on the right.
+ * - **panel**: vertical ~200×96 compact box with header row (label + pulse +
+ *   cancel ✕), large elapsed timer, optional estimated line below.
+ *   Styled with blue-4 border and a subtle teal glow.
  *
  * Presentational only — the parent drives `elapsedSeconds` via its own
  * interval. No setInterval inside this component.
@@ -50,6 +61,7 @@ export function QueueStatus({
   elapsedSeconds,
   estimatedSeconds,
   onCancel,
+  layout = "strip",
 }: QueueStatusProps) {
   const overEstimate =
     estimatedSeconds !== undefined && elapsedSeconds > estimatedSeconds;
@@ -58,6 +70,58 @@ export function QueueStatus({
     ? "text-gold-3 tabular-nums"
     : "text-gold-1 tabular-nums";
 
+  if (layout === "panel") {
+    return (
+      <div
+        className={[
+          // Size + layout
+          "flex w-[200px] flex-col p-3 gap-2",
+          // Surface + border + glow
+          "bg-blue-7/90 border border-blue-4 shadow-[0_0_8px_var(--color-blue-5)]",
+        ].join(" ")}
+      >
+        {/* ---- Header row: label + pulse + cancel ---- */}
+        <div className="flex items-center gap-2">
+          <span
+            aria-hidden="true"
+            className="block h-2 w-2 shrink-0 rounded-full bg-blue-2 animate-pulse"
+          />
+          <span className="font-display text-xs uppercase tracking-widest text-gold-2 leading-none flex-1">
+            In Queue
+          </span>
+          <button
+            type="button"
+            aria-label="Cancel queue"
+            onClick={onCancel}
+            className={[
+              "font-body text-sm leading-none text-grey-1 shrink-0",
+              "transition-colors duration-150",
+              "hover:text-gold-1",
+              "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+            ].join(" ")}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* ---- Elapsed timer (large) ---- */}
+        <span
+          className={`font-body text-2xl leading-none ${elapsedClass}`}
+        >
+          {formatQueueTime(elapsedSeconds)}
+        </span>
+
+        {/* ---- Estimated line (optional) ---- */}
+        {estimatedSeconds !== undefined && (
+          <span className="font-body text-xs uppercase text-grey-1 leading-none whitespace-nowrap">
+            Estimated: {formatQueueTime(estimatedSeconds)}
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  // ---- Strip layout (default) ----
   return (
     <div
       className={[
