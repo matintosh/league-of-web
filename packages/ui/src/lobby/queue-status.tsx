@@ -88,7 +88,7 @@ export function QueueStatus({
       {/* ---- Right: estimate + cancel ---- */}
       <div className="shrink-0 flex flex-col items-end gap-1">
         {estimatedSeconds !== undefined && (
-          <span className="font-body text-xs text-grey-1 leading-none whitespace-nowrap">
+          <span className="font-body text-xs uppercase text-grey-1 leading-none whitespace-nowrap">
             Estimated: {formatQueueTime(estimatedSeconds)}
           </span>
         )}
