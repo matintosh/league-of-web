@@ -13,7 +13,7 @@ const TOTAL = 10;
 /** Static variant: full countdown (10 s) — countdown in text-blue-2. */
 export function MatchFoundModalFullCountdownDemo() {
   return (
-    <div className="relative overflow-hidden [transform:translateZ(0)] h-64">
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-80">
       <MatchFoundModal
         open={true}
         secondsRemaining={10}
@@ -28,7 +28,7 @@ export function MatchFoundModalFullCountdownDemo() {
 /** Static variant: nearly expired (2 s) — countdown turns text-gold-3. */
 export function MatchFoundModalNearlyExpiredDemo() {
   return (
-    <div className="relative overflow-hidden [transform:translateZ(0)] h-64">
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-80">
       <MatchFoundModal
         open={true}
         secondsRemaining={2}

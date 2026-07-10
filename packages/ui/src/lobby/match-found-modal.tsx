@@ -74,7 +74,7 @@ export function MatchFoundModal({
             id={titleId}
             className="font-display text-2xl uppercase tracking-widest text-gold-1 text-center"
           >
-            Match Found
+            MATCH FOUND
           </h2>
 
           {/* Middle: countdown */}
