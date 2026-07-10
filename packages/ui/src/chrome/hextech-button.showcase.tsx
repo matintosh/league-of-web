@@ -71,6 +71,70 @@ function DemoMedallion() {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Reference-replica icon helpers
+// ---------------------------------------------------------------------------
+
+function GoldCrestIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="28"
+      height="28"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Hexagonal crest badge shape */}
+      <path
+        d="M12 2L20 7V17L12 22L4 17V7L12 2Z"
+        fill="var(--color-gold-3)"
+        stroke="var(--color-gold-2)"
+        strokeWidth="1"
+      />
+      <path
+        d="M12 6L16.5 8.75V14.25L12 17L7.5 14.25V8.75L12 6Z"
+        fill="var(--color-gold-5)"
+        stroke="var(--color-gold-4)"
+        strokeWidth="0.5"
+      />
+      <circle cx="12" cy="11.5" r="2" fill="var(--color-gold-2)" />
+    </svg>
+  );
+}
+
+function BlueGemIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="28"
+      height="28"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Faceted diamond/gem shape */}
+      <path
+        d="M12 3L20 9L16 21H8L4 9L12 3Z"
+        fill="var(--color-blue-2)"
+        stroke="var(--color-blue-1)"
+        strokeWidth="0.5"
+      />
+      <path
+        d="M12 3L16 9H8L12 3Z"
+        fill="var(--color-blue-1)"
+        opacity="0.7"
+      />
+      <path
+        d="M8 9L12 3M16 9L12 3M8 9L10 21M16 9L14 21M8 9H16"
+        stroke="var(--color-blue-1)"
+        strokeWidth="0.5"
+        opacity="0.5"
+      />
+    </svg>
+  );
+}
+
 export const hextechButtonShowcase: ShowcaseEntry = {
   slug: "hextech-button",
   name: "Hextech Button",
@@ -78,6 +142,39 @@ export const hextechButtonShowcase: ShowcaseEntry = {
   description:
     "Three-family Hextech button: gold rectangle (secondary), teal chevron (primary), and parallelogram (slanted). Supports leading icon (secondary) and medallion badge (primary/slanted).",
   variants: [
+    // ---- Reference replicas (top) ----
+    {
+      name: "Reference replica — 9900 (gold crest)",
+      notes: "Matches reference: gold crest SVG icon + '9900'",
+      render: () => (
+        <div data-shot="gold-9900" style={{ display: "inline-block", padding: "8px 12px 12px 8px" }}>
+          <HextechButton variant="secondary" size="large" icon={<GoldCrestIcon />}>
+            9900
+          </HextechButton>
+        </div>
+      ),
+    },
+    {
+      name: "Reference replica — 4500 (blue gem)",
+      notes: "Matches reference: blue gem SVG icon + '4500'",
+      render: () => (
+        <div data-shot="gold-4500" style={{ display: "inline-block" }}>
+          <HextechButton variant="secondary" size="large" icon={<BlueGemIcon />}>
+            4500
+          </HextechButton>
+        </div>
+      ),
+    },
+    {
+      name: "Reference replica — GoTo",
+      notes: "Matches reference: GoTo text + right arrow",
+      render: () => (
+        <div data-shot="gold-goto" style={{ display: "inline-block" }}>
+          <HextechButton variant="secondary" size="large">GoTo →</HextechButton>
+        </div>
+      ),
+    },
+
     // ---- Gold family (secondary) ----
     {
       name: "Secondary — OK",
