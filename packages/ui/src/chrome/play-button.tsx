@@ -45,7 +45,7 @@ const SIZE_MAP: Record<PlayButtonSize, SizeConfig> = {
 // tip depth = barHeight / 2 (matches the spec proportions).
 // ---------------------------------------------------------------------------
 
-function barPolygon(w: number, h: number): string {
+function barPolygon(h: number): string {
   const tip = h / 2; // tip depth into the shape from the right edge
   return `polygon(0% 0%, calc(100% - ${tip}px) 0%, 100% 50%, calc(100% - ${tip}px) 100%, 0% 100%)`;
 }
@@ -58,11 +58,11 @@ function barPolygon(w: number, h: number): string {
 
 interface LeagueGlyphProps {
   size: number;
-  fillId: string;
+  fill: string;
   className?: string;
 }
 
-function LeagueGlyph({ size, fillId, className }: LeagueGlyphProps) {
+function LeagueGlyph({ size, fill, className }: LeagueGlyphProps) {
   // The viewBox is 24×24 but the SVG element is "size" wide/tall.
   // We deliberately render this larger than the medallion so it overlaps the ring.
   const glyphPath = "M5 2h4v13h7.5V18H5V2z M12.5 15h4v3h-4z";
@@ -83,7 +83,7 @@ function LeagueGlyph({ size, fillId, className }: LeagueGlyphProps) {
         strokeLinejoin="round"
       />
       {/* Filled path — gold gradient */}
-      <path d={glyphPath} fill={`url(#${fillId})`} />
+      <path d={glyphPath} fill={fill} />
     </svg>
   );
 }
@@ -161,10 +161,10 @@ function Medallion({ size, disabled, ringGradId, discGradId, glyphGradId }: Meda
       </svg>
 
       {/* Glyph — rendered on top, overflows the circle boundary */}
-      <div className="absolute inset-0 flex items-center justify-center" style={{ overflow: "visible" }}>
+      <div className="absolute inset-0 flex items-center justify-center">
         <LeagueGlyph
           size={glyphSize}
-          fillId={disabled ? "none" : glyphGradId}
+          fill={disabled ? "none" : `url(#${glyphGradId})`}
           className={disabled ? "opacity-40" : ""}
         />
       </div>
@@ -184,28 +184,33 @@ interface BarFrameProps {
   children: ReactNode;
 }
 
+// Total vertical inset of the enabled BarFrame layer stack (each layer × 2 for top+bottom):
+//   Layer 1 gold-4 hairline:  1px × 2 =  2px
+//   Layer 2 dark gap:         2px × 2 =  4px
+//   Layer 3 blue-3 outer teal:2px × 2 =  4px
+//   Layer 4 small gap:        1px × 2 =  2px
+//   Layer 5 blue-2 inner teal:1px × 2 =  2px
+//   Total:                              = 14px
+const FRAME_INSET = 14;
+
 function BarFrame({ cfg, disabled, children }: BarFrameProps) {
   const { bar } = cfg;
-  const clip = barPolygon(0, bar); // width doesn't matter for the CSS polygon
-
-  // Layer thicknesses (px):
-  //  gold-4 border: 1px
-  //  dark gap: 2px  → total inset after gold layer = 3px
-  //  blue-3 outer teal: 2px → total inset = 5px
-  //  small gap: 1px → total inset = 6px
-  //  blue-2 inner teal: 1px → total inset = 7px
-  //  surface: rest
+  const clip = barPolygon(bar); // width doesn't matter for the CSS polygon
 
   const clipStyle = { clipPath: clip };
 
   if (disabled) {
+    // Disabled layer stack must produce the same FRAME_INSET (14px) vertical total:
+    //   p-px   (1px × 2 =  2px)
+    //   p-[6px](6px × 2 = 12px)
+    //   Total:             14px
     return (
       <div
         className="p-px bg-grey-3 transition-colors duration-150"
         style={clipStyle}
       >
-        <div className="p-[3px] bg-grey-4" style={clipStyle}>
-          <div style={{ ...clipStyle, height: bar - 8 }}>
+        <div className="p-[6px] bg-grey-4" style={clipStyle}>
+          <div style={{ ...clipStyle, height: bar - FRAME_INSET }}>
             {children}
           </div>
         </div>
@@ -214,12 +219,12 @@ function BarFrame({ cfg, disabled, children }: BarFrameProps) {
   }
 
   return (
-    // Layer 1: gold-4 hairline
+    // Layer 1: gold-4 hairline (1px)
     <div
       className="transition-colors duration-150 bg-gold-4 group-hover/pb:bg-gold-2"
       style={{ ...clipStyle, padding: "1px" }}
     >
-      {/* Layer 2: dark gap */}
+      {/* Layer 2: dark gap (2px) */}
       <div
         className="bg-blue-6"
         style={{ ...clipStyle, padding: "2px" }}
@@ -307,6 +312,9 @@ export function PlayButton({
       className={[
         "inline-flex items-center group/pb",
         "transition-all duration-150",
+        // CSS-based disabled fallback — catches consumers who spread `disabled` as a DOM attribute
+        "has-[:disabled]:[filter:none]",
+        "has-[:disabled]:hover:[filter:none]",
         disabled
           ? "[filter:none]"
           : [
@@ -346,7 +354,7 @@ export function PlayButton({
             textClass,
           ].join(" ")}
           style={{
-            height: bar - 8, // subtract frame layers (8px total vertical)
+            height: bar - FRAME_INSET, // subtract total frame inset (14px: see FRAME_INSET)
             minWidth: barMinWidth,
             paddingLeft: barPx + overlap, // add overlap so text doesn't hide under medallion
             paddingRight: barPx + bar / 2, // add tip depth so text doesn't crowd the point
