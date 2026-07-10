@@ -8,9 +8,10 @@ const AREA_LABELS: Record<Area, string> = {
   collection: "Collection",
   login: "Login",
   store: "Store",
+  lobby: "Lobby",
 };
 
-const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store"];
+const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store", "lobby"];
 
 export default function ShowcaseLayout({ children }: { children: React.ReactNode }) {
   const areas = AREA_ORDER.filter((a) => registry.some((e) => e.area === a));

@@ -10,9 +10,25 @@ import { settingsRowShowcase } from "./chrome/settings-row.showcase";
 import { tabBarShowcase } from "./chrome/tab-bar.showcase";
 import { topNavbarShowcase } from "./chrome/top-navbar.showcase";
 import { windowFrameShowcase } from "./chrome/window-frame.showcase";
+import { roleSelectorShowcase } from "./lobby/role-selector.showcase";
 
 /**
  * Every component registers its showcase entry here.
  * Keep sorted by area, then name.
  */
-export const registry: ShowcaseEntry[] = [currencyDisplayShowcase, hextechButtonShowcase, hextechToggleShowcase, hextechTooltipShowcase, modalFrameShowcase, playerHovercardShowcase, settingsModalShowcase, settingsRowShowcase, tabBarShowcase, topNavbarShowcase, windowFrameShowcase];
+export const registry: ShowcaseEntry[] = [
+  // chrome
+  currencyDisplayShowcase,
+  hextechButtonShowcase,
+  hextechToggleShowcase,
+  hextechTooltipShowcase,
+  modalFrameShowcase,
+  playerHovercardShowcase,
+  settingsModalShowcase,
+  settingsRowShowcase,
+  tabBarShowcase,
+  topNavbarShowcase,
+  windowFrameShowcase,
+  // lobby
+  roleSelectorShowcase,
+];
