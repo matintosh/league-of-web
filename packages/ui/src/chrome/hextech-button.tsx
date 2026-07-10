@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 export type HextechButtonVariant = "primary" | "secondary";
 export type HextechButtonSize = "default" | "large";
@@ -8,16 +8,71 @@ export interface HextechButtonProps extends ButtonHTMLAttributes<HTMLButtonEleme
   variant?: HextechButtonVariant;
   /** large is used for the PLAY button. */
   size?: HextechButtonSize;
+  /** Optional leading icon — rendered before children, aria-hidden. */
+  icon?: ReactNode;
 }
 
-const base =
-  "inline-flex cursor-pointer items-center justify-center border font-display uppercase tracking-widest transition-all duration-150 disabled:cursor-not-allowed disabled:border-grey-3 disabled:bg-none disabled:text-grey-2 disabled:shadow-none";
+// ---------------------------------------------------------------------------
+// Notched clip-path: 6px 45° cuts on top-left and bottom-right corners.
+// Applied identically to both the outer (border) wrapper and inner (surface).
+// ---------------------------------------------------------------------------
+const CLIP =
+  "polygon(6px 0%, 100% 0%, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0% 100%, 0% 6px)";
 
-const variants: Record<HextechButtonVariant, string> = {
-  primary:
-    "border-gold-4 bg-linear-to-b from-blue-6 to-blue-7 text-gold-2 hover:border-gold-2 hover:text-gold-1 hover:shadow-[0_0_12px_var(--color-blue-2)]",
-  secondary:
-    "border-grey-3 bg-transparent text-grey-1 hover:border-gold-4 hover:text-gold-1",
+// ---------------------------------------------------------------------------
+// Outer wrapper carries the "border" as its background fill.
+// 1px padding all sides → inner surface is inset by exactly 1px.
+// Uses Tailwind group so the button's focus/hover/active/disabled state
+// can drive the wrapper colour via group-* variants.
+// pointer-events flow naturally: div receives none of its own mouse events
+// (it has no interactive role), the inner button gets them all.
+// ---------------------------------------------------------------------------
+const wrapperBase = "group/hb inline-block p-px transition-all duration-150";
+
+// Variant maps: keyed Record so adding a new variant is caught by typecheck.
+const wrapperVariants: Record<HextechButtonVariant, string> = {
+  primary: [
+    "bg-gold-4",                                              // default border
+    "group-hover/hb:bg-gold-2",                              // hover → brighter gold
+    "group-hover/hb:shadow-[0_0_12px_var(--color-blue-2)]", // hover → teal glow
+    "group-active/hb:bg-gold-3",                             // pressed → mid gold
+    "group-active/hb:shadow-none",
+    "has-[:disabled]:bg-grey-3",                             // disabled → muted border
+    "has-[:disabled]:shadow-none",
+  ].join(" "),
+  secondary: [
+    "bg-grey-3",
+    "group-hover/hb:bg-gold-4",
+    "group-active/hb:bg-gold-3",
+    "has-[:disabled]:bg-grey-3",
+    "has-[:disabled]:shadow-none",
+  ].join(" "),
+};
+
+// ---------------------------------------------------------------------------
+// Inner surface — inherits clip-path independently so both layers are clipped.
+// Button carries all interactive state classes.
+// ---------------------------------------------------------------------------
+const buttonBase = [
+  "flex w-full cursor-pointer items-center justify-center gap-2",
+  "font-display uppercase tracking-widest",
+  "transition-all duration-150",
+  "disabled:cursor-not-allowed",
+].join(" ");
+
+const buttonVariants: Record<HextechButtonVariant, string> = {
+  primary: [
+    "bg-linear-to-b from-blue-6 to-blue-7 text-gold-2",
+    "hover:text-gold-1",
+    "active:bg-blue-7 active:from-blue-7 active:to-blue-7 active:text-blue-4",
+    "disabled:bg-grey-4 disabled:bg-none disabled:from-transparent disabled:to-transparent disabled:text-grey-2",
+  ].join(" "),
+  secondary: [
+    "bg-transparent text-grey-1",
+    "hover:text-gold-1",
+    "active:text-gold-3",
+    "disabled:text-grey-2",
+  ].join(" "),
 };
 
 const sizes: Record<HextechButtonSize, string> = {
@@ -28,13 +83,30 @@ const sizes: Record<HextechButtonSize, string> = {
 export function HextechButton({
   variant = "primary",
   size = "default",
+  icon,
   className,
+  disabled,
+  children,
   ...props
 }: HextechButtonProps) {
   return (
-    <button
-      className={`${base} ${variants[variant]} ${sizes[size]}${className ? ` ${className}` : ""}`}
-      {...props}
-    />
+    <div
+      className={`${wrapperBase} ${wrapperVariants[variant]}${className ? ` ${className}` : ""}`}
+      style={{ clipPath: CLIP }}
+    >
+      <button
+        disabled={disabled}
+        className={`${buttonBase} ${buttonVariants[variant]} ${sizes[size]}`}
+        style={{ clipPath: CLIP }}
+        {...props}
+      >
+        {icon !== undefined && (
+          <span aria-hidden="true" className="flex shrink-0 items-center">
+            {icon}
+          </span>
+        )}
+        {children}
+      </button>
+    </div>
   );
 }
