@@ -113,7 +113,7 @@ interface InnerProps {
 function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps }: InnerProps) {
   const bandGradient = disabled
     ? "linear-gradient(to bottom, var(--color-grey-3), var(--color-grey-4))"
-    : "linear-gradient(to bottom, var(--color-gold-2) 0%, var(--color-gold-3) 40%, var(--color-gold-4) 75%, var(--color-gold-5) 100%)";
+    : "linear-gradient(to bottom, var(--color-gold-2) 0%, var(--color-gold-3) 35%, var(--color-gold-4) 65%, var(--color-gold-5) 100%)";
 
   const shadow = disabled ? "none" : "4px 4px 0 var(--color-hextech-black)";
 
@@ -134,7 +134,7 @@ function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps
       <div style={{ padding: "1px", background: "var(--color-hextech-black)" }}>
         {/* Gold band: metallic vertical gradient, ~6px thick; brightens on hover */}
         <div
-          className={!disabled ? "group-hover/hb:[background:linear-gradient(to_bottom,var(--color-gold-1)_0%,var(--color-gold-2)_40%,var(--color-gold-3)_75%,var(--color-gold-4)_100%)] transition-all duration-150" : ""}
+          className={!disabled ? "group-hover/hb:[background:linear-gradient(to_bottom,var(--color-gold-1)_0%,var(--color-gold-2)_35%,var(--color-gold-3)_65%,var(--color-gold-4)_100%)] transition-all duration-150" : ""}
           style={{
             padding: "6px",
             background: bandGradient,

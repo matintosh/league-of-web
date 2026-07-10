@@ -158,7 +158,7 @@ export const hextechButtonShowcase: ShowcaseEntry = {
       name: "Reference replica — 4500 (blue gem)",
       notes: "Matches reference: blue gem SVG icon + '4500'",
       render: () => (
-        <div data-shot="gold-4500" style={{ display: "inline-block" }}>
+        <div data-shot="gold-4500" style={{ display: "inline-block", padding: "8px 12px 12px 8px" }}>
           <HextechButton variant="secondary" size="large" icon={<BlueGemIcon />}>
             4500
           </HextechButton>
@@ -169,7 +169,7 @@ export const hextechButtonShowcase: ShowcaseEntry = {
       name: "Reference replica — GoTo",
       notes: "Matches reference: GoTo text + right arrow",
       render: () => (
-        <div data-shot="gold-goto" style={{ display: "inline-block" }}>
+        <div data-shot="gold-goto" style={{ display: "inline-block", padding: "8px 12px 12px 8px" }}>
           <HextechButton variant="secondary" size="large">GoTo →</HextechButton>
         </div>
       ),
@@ -178,7 +178,7 @@ export const hextechButtonShowcase: ShowcaseEntry = {
     // ---- Gold family (secondary) ----
     {
       name: "Secondary — OK",
-      notes: "Plain gold rectangle. No clip-path. 1px gold-4 border, blue-7 fill, gold-2 text.",
+      notes: "Plain gold rectangle. No clip-path. Near-black outer/inner edges, gold gradient band (gold-2→gold-5), grey-4 charcoal fill, 4px hard drop shadow.",
       render: () => <HextechButton variant="secondary">OK</HextechButton>,
     },
     {
