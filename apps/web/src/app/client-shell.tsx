@@ -21,6 +21,9 @@ import {
   profileIconUrl,
   championSplashUrl,
 } from "@low/fixtures";
+import { MatchmakingScreen } from "./matchmaking-screen";
+
+type View = "home" | "matchmaking";
 
 const NAV_ITEMS: NavItem[] = [
   { id: "home", label: "Home" },
@@ -34,6 +37,7 @@ const NAV_ITEMS: NavItem[] = [
 const KEYART_CHAMPION = "Jinx";
 
 export function ClientShell() {
+  const [view, setView] = useState<View>("home");
   const [activeNavId, setActiveNavId] = useState("home");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState("general");
@@ -159,7 +163,7 @@ export function ClientShell() {
         <div className="flex h-full flex-col">
           <TopNavbar
             playSlot={
-              <HextechButton size="large" onClick={() => console.log("play")}>
+              <HextechButton size="large" onClick={() => setView("matchmaking")}>
                 Play
               </HextechButton>
             }
@@ -206,27 +210,33 @@ export function ClientShell() {
             }
           />
 
-          {/* Content area: full-bleed keyart */}
+          {/* Content area — switches between home keyart and matchmaking */}
           <div className="relative flex-1 overflow-hidden">
-            <Image
-              src={championSplashUrl(KEYART_CHAMPION)}
-              alt={`${KEYART_CHAMPION} splash art`}
-              fill
-              priority
-              className="object-cover"
-            />
-            {/* Dark gradient overlay from bottom so chrome stays readable */}
-            <div className="absolute inset-0 bg-linear-to-t from-hextech-black via-hextech-black/30 to-transparent" />
+            {view === "matchmaking" ? (
+              <MatchmakingScreen onBack={() => setView("home")} />
+            ) : (
+              <>
+                <Image
+                  src={championSplashUrl(KEYART_CHAMPION)}
+                  alt={`${KEYART_CHAMPION} splash art`}
+                  fill
+                  priority
+                  className="object-cover"
+                />
+                {/* Dark gradient overlay from bottom so chrome stays readable */}
+                <div className="absolute inset-0 bg-linear-to-t from-hextech-black via-hextech-black/30 to-transparent" />
 
-            {/* Welcome text */}
-            <div className="absolute bottom-12 left-12 flex flex-col gap-2">
-              <h1 className="font-display text-4xl uppercase tracking-widest text-gold-1">
-                Welcome back,
-              </h1>
-              <p className="font-display text-2xl uppercase tracking-widest text-gold-2">
-                {demoSummoner.gameName}
-              </p>
-            </div>
+                {/* Welcome text */}
+                <div className="absolute bottom-12 left-12 flex flex-col gap-2">
+                  <h1 className="font-display text-4xl uppercase tracking-widest text-gold-1">
+                    Welcome back,
+                  </h1>
+                  <p className="font-display text-2xl uppercase tracking-widest text-gold-2">
+                    {demoSummoner.gameName}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </WindowFrame>
