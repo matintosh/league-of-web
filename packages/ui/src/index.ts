@@ -26,6 +26,6 @@ export type { LobbyPlayerCardProps } from "./lobby/lobby-player-card";
 export { MatchFoundModal } from "./lobby/match-found-modal";
 export type { MatchFoundModalProps } from "./lobby/match-found-modal";
 export { QueueStatus, formatQueueTime } from "./lobby/queue-status";
-export type { QueueStatusProps } from "./lobby/queue-status";
+export type { QueueStatusProps, QueueStatusLayout } from "./lobby/queue-status";
 export { RoleSelector } from "./lobby/role-selector";
 export type { RoleSelectorProps, Role } from "./lobby/role-selector";
