@@ -55,6 +55,8 @@ description: Use when building any new UI component for league-of-web — scaffo
 
 - Never write `onClick={() => !disabled && fn()}` alongside `disabled={disabled}` — native `disabled` already blocks clicks; the guard is dead code (flagged in two reviews already).
 - Any map keyed by a union type must be `Record<Union, ...>` so adding a union member fails typecheck instead of silently omitting a case.
+- Every SVG `id` (gradients, filters, masks) must derive from `useId()` — hardcoded ids collide when the showcase renders multiple instances (bit us twice: MatchFoundModal v2, ModalFrame v2).
+- Glows/rings on clip-path'd elements: `box-shadow` gets clipped — use `[filter:drop-shadow(...)]` (filters apply after clipping and follow the clipped silhouette).
 
 ## File naming
 
