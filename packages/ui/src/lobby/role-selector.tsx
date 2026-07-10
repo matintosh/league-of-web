@@ -138,13 +138,23 @@ export interface RoleSelectorProps {
 // Role metadata
 // ---------------------------------------------------------------------------
 
-const ROLES: { role: Role; label: string; Glyph: () => ReactNode }[] = [
-  { role: "top", label: "Top", Glyph: TopGlyph },
-  { role: "jungle", label: "Jungle", Glyph: JungleGlyph },
-  { role: "mid", label: "Mid", Glyph: MidGlyph },
-  { role: "bottom", label: "Bottom", Glyph: BottomGlyph },
-  { role: "support", label: "Support", Glyph: SupportGlyph },
-];
+const ROLE_GLYPHS: Record<Role, () => ReactNode> = {
+  top: TopGlyph,
+  jungle: JungleGlyph,
+  mid: MidGlyph,
+  bottom: BottomGlyph,
+  support: SupportGlyph,
+};
+
+const ROLE_LABELS: Record<Role, string> = {
+  top: "Top",
+  jungle: "Jungle",
+  mid: "Mid",
+  bottom: "Bottom",
+  support: "Support",
+};
+
+const ROLE_ORDER: Role[] = ["top", "jungle", "mid", "bottom", "support"];
 
 // ---------------------------------------------------------------------------
 // RoleSelector
@@ -168,9 +178,11 @@ export function RoleSelector({
 }: RoleSelectorProps) {
   return (
     <div role="radiogroup" aria-label={label} className="flex items-center gap-1.5">
-      {ROLES.map(({ role, label: roleLabel, Glyph }) => {
+      {ROLE_ORDER.map((role) => {
         const isSelected = selected === role;
         const isDisabled = disabledRoles.includes(role);
+        const Glyph = ROLE_GLYPHS[role];
+        const roleLabel = ROLE_LABELS[role];
 
         return (
           <button
@@ -180,7 +192,7 @@ export function RoleSelector({
             aria-checked={isSelected}
             aria-label={roleLabel}
             disabled={isDisabled}
-            onClick={() => !isDisabled && onSelect(role)}
+            onClick={() => onSelect(role)}
             className={[
               // Base — 32×32 square, centred content
               "flex h-8 w-8 shrink-0 items-center justify-center",
