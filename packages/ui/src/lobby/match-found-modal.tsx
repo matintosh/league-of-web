@@ -28,18 +28,18 @@ export interface MatchFoundModalProps {
 // HexCrest — local, not exported
 // ---------------------------------------------------------------------------
 
-function HexCrest() {
+function HexCrest({ gradientId }: { gradientId: string }) {
   return (
     <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
       <defs>
-        <linearGradient id="crest-grad" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="var(--color-gold-4)" />
           <stop offset="100%" stopColor="var(--color-gold-3)" />
         </linearGradient>
       </defs>
       <polygon
         points="24,2 44,13 44,35 24,46 4,35 4,13"
-        fill="url(#crest-grad)"
+        fill={`url(#${gradientId})`}
         stroke="var(--color-gold-2)"
         strokeWidth="1"
       />
@@ -69,7 +69,10 @@ export function MatchFoundModal({
   subtitle,
   keyartSrc,
 }: MatchFoundModalProps) {
-  const titleId = useId();
+  const uid = useId();
+  const titleId = `${uid}-title`;
+  const glowId = `${uid}-arc-glow`;
+  const crestGradId = `${uid}-crest-grad`;
 
   if (!open) return null;
 
@@ -83,7 +86,7 @@ export function MatchFoundModal({
         role="alertdialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[480px] h-[480px] relative"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[480px] h-[480px]"
       >
         {/* 3. Keyart disc */}
         <div className="absolute inset-0 rounded-full overflow-hidden">
@@ -112,7 +115,7 @@ export function MatchFoundModal({
           aria-hidden="true"
         >
           <defs>
-            <filter id="arc-glow-v2">
+            <filter id={glowId}>
               <feGaussianBlur stdDeviation="4" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
@@ -131,14 +134,14 @@ export function MatchFoundModal({
             strokeDasharray="100"
             strokeDashoffset={100 - (secondsRemaining / totalSeconds) * 100}
             strokeLinecap="round"
-            filter="url(#arc-glow-v2)"
+            filter={`url(#${glowId})`}
             style={{ transition: "stroke-dashoffset 1s linear" }}
           />
         </svg>
 
         {/* 6. Content stack */}
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-8">
-          <HexCrest />
+          <HexCrest gradientId={crestGradId} />
           <h2 id={titleId} className="font-display text-2xl uppercase tracking-widest text-gold-1 text-center">
             MATCH FOUND
           </h2>
