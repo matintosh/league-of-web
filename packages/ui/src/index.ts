@@ -10,7 +10,7 @@ export type { HextechTooltipProps, HextechTooltipPosition } from "./chrome/hexte
 export { ModalFrame } from "./chrome/modal-frame";
 export type { ModalFrameProps, ModalFrameSize } from "./chrome/modal-frame";
 export { PlayButton } from "./chrome/play-button";
-export type { PlayButtonProps } from "./chrome/play-button";
+export type { PlayButtonProps, PlayButtonSize } from "./chrome/play-button";
 export { PlayerHovercard } from "./chrome/player-hovercard";
 export type { PlayerHovercardProps } from "./chrome/player-hovercard";
 export { SettingsModal } from "./chrome/settings-modal";
