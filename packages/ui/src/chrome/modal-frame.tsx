@@ -68,6 +68,7 @@ export function ModalFrame({
   size,
 }: ModalFrameProps) {
   const titleId = useId();
+  const crestGradId = useId();
   const sizeKey = size ?? "default";
 
   if (!open) return null;
@@ -98,15 +99,15 @@ export function ModalFrame({
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            <linearGradient id="crest-grad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-gold-3)" />
-              <stop offset="100%" stopColor="var(--color-gold-4)" />
+            <linearGradient id={crestGradId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--color-gold-4)" />
+              <stop offset="100%" stopColor="var(--color-gold-3)" />
             </linearGradient>
           </defs>
           {/* Hex shape: flat-top hexagon pointing up */}
           <polygon
             points="12,0 24,6 24,8 12,14 0,8 0,6"
-            fill="url(#crest-grad)"
+            fill={`url(#${crestGradId})`}
           />
           {/* Inner highlight line */}
           <polygon
