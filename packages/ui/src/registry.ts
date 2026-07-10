@@ -11,6 +11,7 @@ import { tabBarShowcase } from "./chrome/tab-bar.showcase";
 import { topNavbarShowcase } from "./chrome/top-navbar.showcase";
 import { windowFrameShowcase } from "./chrome/window-frame.showcase";
 import { lobbyPlayerCardShowcase } from "./lobby/lobby-player-card.showcase";
+import { queueStatusShowcase } from "./lobby/queue-status.showcase";
 import { roleSelectorShowcase } from "./lobby/role-selector.showcase";
 
 /**
@@ -32,5 +33,6 @@ export const registry: ShowcaseEntry[] = [
   windowFrameShowcase,
   // lobby
   lobbyPlayerCardShowcase,
+  queueStatusShowcase,
   roleSelectorShowcase,
 ];
