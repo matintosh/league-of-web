@@ -1,8 +1,32 @@
 import type { ShowcaseEntry } from "../showcase";
 import { HextechButton } from "./hextech-button";
 
-// Inline SVG sword icon for the icon-slot demo
-function SwordIcon() {
+// ---------------------------------------------------------------------------
+// Inline icon helpers for demo purposes
+// ---------------------------------------------------------------------------
+
+function CoinIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function ArrowIcon() {
   return (
     <svg
       aria-hidden="true"
@@ -13,19 +37,37 @@ function SwordIcon() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M4 4l16 16M4 4h6M4 4v6"
+        d="M5 12h14M13 6l6 6-6 6"
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path
-        d="M15 4l5 5-9 9-3-1-1-3 9-9Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
     </svg>
+  );
+}
+
+/** Simple gold-ring medallion for demo — mirrors the spec sheet leading badge. */
+function DemoMedallion() {
+  return (
+    <div
+      style={{
+        width: 32,
+        height: 32,
+        borderRadius: "50%",
+        border: "2px solid var(--color-gold-3)",
+        background: "var(--color-blue-6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 14,
+        color: "var(--color-gold-2)",
+        fontWeight: "bold",
+        flexShrink: 0,
+      }}
+    >
+      ✕
+    </div>
   );
 }
 
@@ -34,56 +76,127 @@ export const hextechButtonShowcase: ShowcaseEntry = {
   name: "Hextech Button",
   area: "chrome",
   description:
-    "The client's main call-to-action button — PLAY, confirm dialogs, store purchases. Notched hextech shape (6px 45° cuts) with border-wrapper clip-path technique.",
+    "Three-family Hextech button: gold rectangle (secondary), teal chevron (primary), and parallelogram (slanted). Supports leading icon (secondary) and medallion badge (primary/slanted).",
   variants: [
+    // ---- Gold family (secondary) ----
     {
-      name: "Primary",
-      render: () => <HextechButton>Play</HextechButton>,
+      name: "Secondary — OK",
+      notes: "Plain gold rectangle. No clip-path. 1px gold-4 border, blue-7 fill, gold-2 text.",
+      render: () => <HextechButton variant="secondary">OK</HextechButton>,
     },
     {
-      name: "Secondary",
-      notes: 'variant="secondary" — cancel/back actions.',
+      name: "Secondary — Cancel",
+      notes: "Secondary variant with cancel label.",
       render: () => <HextechButton variant="secondary">Cancel</HextechButton>,
     },
     {
-      name: "Large",
-      notes: 'size="large" — the PLAY button in TopNavbar.',
-      render: () => <HextechButton size="large">Play</HextechButton>,
+      name: "Secondary — Save Settings",
+      notes: "Secondary variant — settings confirm action.",
+      render: () => <HextechButton variant="secondary">Save Settings</HextechButton>,
     },
     {
-      name: "Disabled",
-      notes:
-        "disabled prop — muted grey-3 border, flat grey-4 surface, grey-2 text. No pointer, no hover.",
-      render: () => <HextechButton disabled>Play</HextechButton>,
+      name: "Secondary — with leading coin icon (9900)",
+      notes: "icon prop — leading ReactNode, aria-hidden. Mirrors store purchase buttons.",
+      render: () => (
+        <HextechButton variant="secondary" icon={<CoinIcon />}>
+          9900
+        </HextechButton>
+      ),
     },
     {
-      name: "Disabled Secondary",
-      notes: "Secondary variant disabled state.",
+      name: "Secondary — with trailing arrow (GoTo)",
+      notes: "Trailing content placed as children after the label.",
+      render: () => (
+        <HextechButton variant="secondary">
+          GoTo&nbsp;
+          <ArrowIcon />
+        </HextechButton>
+      ),
+    },
+    {
+      name: "Secondary — disabled",
+      notes: "Disabled state: grey-3 border, grey-4 fill, grey-2 text.",
       render: () => (
         <HextechButton variant="secondary" disabled>
           Cancel
         </HextechButton>
       ),
     },
+
+    // ---- Chevron family (primary) ----
     {
-      name: "Pressed (active state)",
-      notes:
-        "CSS :active state — surface darkens (bg-blue-7 flat, no gradient), text drops to blue-4. Hold-click to observe. Cannot be captured as a static render.",
-      render: () => <HextechButton>Hold to see pressed</HextechButton>,
+      name: "Primary — Find Match",
+      notes: "Chevron-pointed right edge, teal layered border, dark fill.",
+      render: () => <HextechButton variant="primary">Find Match</HextechButton>,
     },
     {
-      name: "With icon",
-      notes:
-        'icon prop — ReactNode rendered before children in a gap-2 flex, wrapped in aria-hidden span. Shown here with a 14px sword SVG.',
+      name: "Primary — Lock In",
+      notes: "Chevron primary variant.",
+      render: () => <HextechButton variant="primary">Lock In</HextechButton>,
+    },
+    {
+      name: "Primary — large",
+      notes: 'size="large" — PLAY-scale chevron bar.',
+      render: () => <HextechButton variant="primary" size="large">League of Legends</HextechButton>,
+    },
+    {
+      name: "Primary — with medallion",
+      notes: "medallion prop — gold-ring circular badge overlapping the left edge ~4 px.",
       render: () => (
-        <HextechButton icon={<SwordIcon />}>Find Match</HextechButton>
+        <HextechButton variant="primary" medallion={<DemoMedallion />}>
+          Lock In
+        </HextechButton>
       ),
     },
     {
-      name: "With icon — large",
-      notes: "Icon slot on size large.",
+      name: "Primary — large with medallion",
+      notes: "Large chevron with medallion badge.",
       render: () => (
-        <HextechButton size="large" icon={<SwordIcon />}>
+        <HextechButton variant="primary" size="large" medallion={<DemoMedallion />}>
+          Find Match
+        </HextechButton>
+      ),
+    },
+    {
+      name: "Primary — disabled",
+      notes: "Disabled state: grey-3 simplified teal frame, grey-2 text, no glow.",
+      render: () => (
+        <HextechButton variant="primary" disabled>
+          Find Match
+        </HextechButton>
+      ),
+    },
+
+    // ---- Slanted family ----
+    {
+      name: "Slanted — Find Match",
+      notes: "Parallelogram: both edges slanted ~12 px, teal layered border, dark fill.",
+      render: () => <HextechButton variant="slanted">Find Match</HextechButton>,
+    },
+    {
+      name: "Slanted — Lock In",
+      notes: "Slanted variant.",
+      render: () => <HextechButton variant="slanted">Lock In</HextechButton>,
+    },
+    {
+      name: "Slanted — large",
+      notes: 'size="large" slanted bar.',
+      render: () => <HextechButton variant="slanted" size="large">League of Legends</HextechButton>,
+    },
+    {
+      name: "Slanted — with medallion",
+      notes: "Slanted variant with leading medallion badge.",
+      render: () => (
+        <HextechButton variant="slanted" medallion={<DemoMedallion />}>
+          Lock In
+        </HextechButton>
+      ),
+    },
+    {
+      name: "Slanted — disabled",
+      notes: "Disabled slanted: muted frame, grey-2 text.",
+      render: () => (
+        <HextechButton variant="slanted" disabled>
           Find Match
         </HextechButton>
       ),
