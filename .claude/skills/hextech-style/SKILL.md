@@ -31,6 +31,6 @@ The LoL client aesthetic: dark, ornate, gold-on-near-black with magic blue accen
 
 ## Don'ts
 
-- No rounded corners beyond `rounded-sm` (client is squared/sharp)
+- No rounded corners beyond `rounded-sm` (client is squared/sharp). Exception: inherently circular elements — status/pulse dots, availability indicators, ring compositions — may use `rounded-full`; the rule targets panels, buttons, and cards.
 - No pure white (`#fff`) text — `text-gold-1` is the "white"
 - No hardcoded hex anywhere — add a token to `@low/tokens` if genuinely missing

@@ -75,7 +75,7 @@ export function QueueStatus({
       <div
         className={[
           // Size + layout
-          "flex w-[200px] flex-col p-3 gap-2",
+          "flex w-[200px] min-h-[96px] flex-col p-3 gap-2",
           // Surface + border + glow
           "bg-blue-7/90 border border-blue-4 shadow-[0_0_8px_var(--color-blue-5)]",
         ].join(" ")}
