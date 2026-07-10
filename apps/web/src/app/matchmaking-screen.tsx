@@ -134,20 +134,12 @@ export function MatchmakingScreen({ onBack }: MatchmakingScreenProps) {
       setSecondsRemaining(MATCH_ACCEPT_SECONDS);
       setLobbyState("found");
 
-      // Start the accept countdown
+      // Start the accept countdown (pure tick — timeout handled by effect below)
       countdownIntervalRef.current = setInterval(() => {
-        setSecondsRemaining((r) => {
-          if (r <= 1) {
-            // Timeout → back to lobby
-            clearCountdownTimer();
-            setLobbyState("lobby");
-            return MATCH_ACCEPT_SECONDS;
-          }
-          return r - 1;
-        });
+        setSecondsRemaining((r) => Math.max(0, r - 1));
       }, 1000);
     }, randomMatchDelay());
-  }, [clearAllTimers, clearQueueTimers, clearCountdownTimer]);
+  }, [clearAllTimers, clearQueueTimers]);
 
   const cancelQueue = useCallback(() => {
     clearAllTimers();
@@ -175,6 +167,16 @@ export function MatchmakingScreen({ onBack }: MatchmakingScreenProps) {
     setSecondsRemaining(MATCH_ACCEPT_SECONDS);
     setLobbyState("lobby");
   }, [clearAllTimers]);
+
+  // Countdown timeout → back to lobby.
+  // Fires when the pure tick reaches 0 while a match is still pending.
+  // Transitioning lobbyState away from "found" immediately unsatisfies this
+  // condition, so it cannot double-fire.
+  useEffect(() => {
+    if (secondsRemaining === 0 && lobbyState === "found") {
+      declineMatch();
+    }
+  }, [secondsRemaining, lobbyState, declineMatch]);
 
   // ---------------------------------------------------------------------------
   // Role constraints: secondary cannot equal primary
@@ -253,7 +255,7 @@ export function MatchmakingScreen({ onBack }: MatchmakingScreenProps) {
               <div className="flex flex-col gap-2 w-full">
                 {/* Primary role */}
                 <div className="flex flex-col gap-0.5 items-center">
-                  <span className="font-body text-[10px] uppercase tracking-widest text-grey-2 leading-none">
+                  <span className="font-body text-xs uppercase tracking-widest text-grey-2 leading-none">
                     Primary
                   </span>
                   <RoleSelector
@@ -264,7 +266,7 @@ export function MatchmakingScreen({ onBack }: MatchmakingScreenProps) {
                 </div>
                 {/* Secondary role */}
                 <div className="flex flex-col gap-0.5 items-center">
-                  <span className="font-body text-[10px] uppercase tracking-widest text-grey-2 leading-none">
+                  <span className="font-body text-xs uppercase tracking-widest text-grey-2 leading-none">
                     Secondary
                   </span>
                   <RoleSelector
