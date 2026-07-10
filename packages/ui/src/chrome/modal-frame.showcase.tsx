@@ -4,6 +4,9 @@ import {
   ModalFrameWithFooterDemo,
   ModalFrameWithoutFooterDemo,
   ModalFrameLongContentDemo,
+  ModalFrameSmDemo,
+  ModalFrameMdDemo,
+  ModalFrameLgDemo,
 } from "./modal-frame.demo";
 
 export const modalFrameShowcase: ShowcaseEntry = {
@@ -11,7 +14,7 @@ export const modalFrameShowcase: ShowcaseEntry = {
   name: "Modal Frame",
   area: "chrome",
   description:
-    "Hextech-styled modal dialog overlay — dark backdrop, gold double-border panel, title bar with close button, scrollable content area, and optional footer.",
+    "Hextech-styled modal dialog overlay — dark backdrop, gold double-border panel with bottom corner cuts, top-center gold crest ornament, title bar with close button, scrollable content area, and optional footer.",
   variants: [
     {
       name: "Open (interactive)",
@@ -32,6 +35,21 @@ export const modalFrameShowcase: ShowcaseEntry = {
       name: "Long content (scroll)",
       notes: "Content overflows max-h-[60vh] — triggers overflow-y-auto scroll.",
       render: () => <ModalFrameLongContentDemo />,
+    },
+    {
+      name: "Size: sm",
+      notes: "size=\"sm\" — fixed width ~350px; suited to confirm dialogs.",
+      render: () => <ModalFrameSmDemo />,
+    },
+    {
+      name: "Size: md",
+      notes: "size=\"md\" — fixed width ~560px; wider content panels and form dialogs.",
+      render: () => <ModalFrameMdDemo />,
+    },
+    {
+      name: "Size: lg",
+      notes: "size=\"lg\" — fixed width ~760px; large content dialogs, patch notes, store panels.",
+      render: () => <ModalFrameLgDemo />,
     },
   ],
 };
