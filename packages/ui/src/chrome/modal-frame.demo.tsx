@@ -97,3 +97,69 @@ export function ModalFrameLongContentDemo() {
     </div>
   );
 }
+
+/** Static demo — sm size preset (~350px confirm dialog). */
+export function ModalFrameSmDemo() {
+  return (
+    <div className="relative h-64 w-full overflow-hidden [transform:translateZ(0)]">
+      <ModalFrame
+        open={true}
+        onClose={() => {}}
+        title="Delete Item"
+        size="sm"
+        footer={
+          <>
+            <HextechButton variant="secondary" onClick={() => {}}>
+              Cancel
+            </HextechButton>
+            <HextechButton onClick={() => {}}>
+              Delete
+            </HextechButton>
+          </>
+        }
+      >
+        <p>Are you sure you want to delete this item?</p>
+      </ModalFrame>
+    </div>
+  );
+}
+
+/** Static demo — md size preset (~560px wider panel). */
+export function ModalFrameMdDemo() {
+  return (
+    <div className="relative h-80 w-full overflow-hidden [transform:translateZ(0)]">
+      <ModalFrame
+        open={true}
+        onClose={() => {}}
+        title="Champion Details"
+        size="md"
+        footer={
+          <HextechButton onClick={() => {}}>Close</HextechButton>
+        }
+      >
+        <p>A medium dialog for moderate content — champion profiles, item details, or multi-field forms.</p>
+        <p className="mt-3 text-grey-1">This size suits panels that need more horizontal breathing room than a confirm dialog but do not require full-width layout.</p>
+      </ModalFrame>
+    </div>
+  );
+}
+
+/** Static demo — lg size preset (~760px large content dialog). */
+export function ModalFrameLgDemo() {
+  return (
+    <div className="relative h-96 w-full overflow-hidden [transform:translateZ(0)]">
+      <ModalFrame
+        open={true}
+        onClose={() => {}}
+        title="Patch Notes"
+        size="lg"
+        footer={
+          <HextechButton onClick={() => {}}>Got it</HextechButton>
+        }
+      >
+        <p>Large dialogs hold rich content — patch notes, store panels, or multi-column layouts.</p>
+        <p className="mt-3 text-grey-1">Use lg when the content genuinely needs the extra real estate. Prefer sm or md for simple confirmations and form dialogs.</p>
+      </ModalFrame>
+    </div>
+  );
+}
