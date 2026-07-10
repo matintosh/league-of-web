@@ -26,7 +26,6 @@ function LeagueGlyph({ className }: { className?: string }) {
     >
       {/* Bold angular 'L' with a serif foot — stylised hextech monogram */}
       <path d="M5 2h3v12.5h6.5V17H5V2z" />
-      <path d="M5 2h3v2H5V2z" />
       <path d="M11.5 14.5h3v2.5h-3v-2.5z" />
     </svg>
   );
@@ -38,8 +37,11 @@ function LeagueGlyph({ className }: { className?: string }) {
  * Composition: an outer `<div>` is the `group/pb` anchor and carries the
  * drop-shadow glow filter (must be unclipped for drop-shadow to render).
  * The `<button>` element sits inside the clipped bar section.
+ *
+ * `className` is applied to the **outer wrapper**, not the inner `<button>` —
+ * use it for layout placement (width, flex/grid position).
  */
-export function PlayButton({ children, disabled, className: _className, ...props }: PlayButtonProps) {
+export function PlayButton({ children, disabled, className, ...props }: PlayButtonProps) {
   return (
     <div
       className={[
@@ -47,8 +49,10 @@ export function PlayButton({ children, disabled, className: _className, ...props
         "transition-all duration-150",
         "group-hover/pb:[filter:drop-shadow(0_0_12px_var(--color-blue-2))]",
         "group-active/pb:[filter:none]",
+        "has-[:focus-visible]:[filter:drop-shadow(0_0_6px_var(--color-gold-2))]",
         "has-[:disabled]:[filter:none]",
-      ].join(" ")}
+        className,
+      ].filter(Boolean).join(" ")}
     >
       {/* Medallion: purely visual, no interactivity of its own */}
       <div
