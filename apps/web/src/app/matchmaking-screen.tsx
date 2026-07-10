@@ -9,7 +9,7 @@ import {
   HextechButton,
 } from "@low/ui";
 import type { Role } from "@low/ui";
-import { demoSummoner, profileIconUrl } from "@low/fixtures";
+import { demoSummoner, profileIconUrl, championSplashUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -28,6 +28,44 @@ function randomMatchDelay() {
 
 const MATCH_ACCEPT_SECONDS = 10;
 
+/**
+ * Fixture: keyart shown in the MatchFoundModal and vignette background.
+ * Using Jinx splash as a demo champion pick.
+ */
+const DEMO_CHAMPION_ID = "Jinx";
+const DEMO_KEYART_SRC = championSplashUrl(DEMO_CHAMPION_ID);
+
+// ---------------------------------------------------------------------------
+// Hex mode icon — inline SVG, gold tokens
+// ---------------------------------------------------------------------------
+
+function HexModeIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="shrink-0"
+    >
+      <polygon
+        points="12,2 21,7 21,17 12,22 3,17 3,7"
+        fill="none"
+        stroke="var(--color-gold-3)"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <polygon
+        points="12,6 17.5,9 17.5,15 12,18 6.5,15 6.5,9"
+        fill="var(--color-gold-4)"
+        opacity="0.6"
+      />
+    </svg>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // MatchmakingScreen
 // ---------------------------------------------------------------------------
@@ -42,7 +80,7 @@ export interface MatchmakingScreenProps {
  *
  * State machine:
  * - lobby: player cards + role selectors; FIND MATCH gated on primary role
- * - queue: QueueStatus ticking; cancel → lobby; auto match-found after 5–10 s
+ * - queue: QueueStatus layout="panel" top-right; cancel → lobby; auto match-found after 5–10 s
  * - found: MatchFoundModal counting down; accept/decline/timeout → lobby
  *
  * All timers are owned here (no intervals inside child components).
@@ -205,20 +243,51 @@ export function MatchmakingScreen({ onBack }: MatchmakingScreenProps) {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="relative flex h-full w-full flex-col bg-blue-7">
-      {/* Background gradient — subtle dark gradient instead of full keyart */}
-      <div className="absolute inset-0 bg-linear-to-b from-hextech-black via-blue-7 to-hextech-black" />
+    <div className="relative flex h-full w-full flex-col overflow-hidden">
+      {/* ------------------------------------------------------------------ */}
+      {/* Layer 1: Keyart background                                          */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="absolute inset-0">
+        <img
+          src={DEMO_KEYART_SRC}
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-cover object-center opacity-40"
+        />
+      </div>
 
-      {/* Content */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Layer 2: Dark vignette overlay — radial dark edges                  */}
+      {/* Using layered linear gradients (Tailwind v4 compatible, token-only) */}
+      {/* ------------------------------------------------------------------ */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: [
+            /* top dark band */
+            "linear-gradient(to bottom, var(--color-hextech-black) 0%, transparent 30%)",
+            /* bottom dark band */
+            "linear-gradient(to top, var(--color-hextech-black) 0%, transparent 35%)",
+            /* left dark band */
+            "linear-gradient(to right, var(--color-hextech-black) 0%, transparent 25%)",
+            /* right dark band */
+            "linear-gradient(to left, var(--color-hextech-black) 0%, transparent 25%)",
+          ].join(", "),
+        }}
+      />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Layer 3: UI content                                                 */}
+      {/* ------------------------------------------------------------------ */}
       <div className="relative flex h-full flex-col">
-        {/* ---- Header ---- */}
-        <div className="flex h-12 items-center gap-4 border-b border-gold-5 px-6">
+        {/* ---- Header bar ---- */}
+        <header className="flex h-12 shrink-0 items-center gap-3 border-b border-gold-5 bg-blue-7 px-4">
           {/* Back arrow */}
           <button
             type="button"
             aria-label="Back"
             onClick={onBack}
-            className="flex h-8 w-8 items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3"
+            className="flex h-8 w-8 shrink-0 items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3"
           >
             <svg
               aria-hidden="true"
@@ -238,89 +307,108 @@ export function MatchmakingScreen({ onBack }: MatchmakingScreenProps) {
             </svg>
           </button>
 
+          {/* Divider */}
+          <span aria-hidden="true" className="h-5 w-px shrink-0 bg-gold-5" />
+
+          {/* Mode icon */}
+          <HexModeIcon />
+
           {/* Mode title */}
           <h1 className="font-display text-sm uppercase tracking-widest text-gold-1">
             Ranked Solo/Duo — Summoner&apos;s Rift
           </h1>
-        </div>
+        </header>
 
-        {/* ---- Player cards row ---- */}
-        <div className="flex flex-1 items-center justify-center gap-4 px-6">
-          {/* Slot 1 — local player, emphasized */}
-          <LobbyPlayerCard
-            summoner={demoSummoner}
-            profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
-            emphasized
-            roleSlot={
-              <div className="flex flex-col gap-2 w-full">
-                {/* Primary role */}
-                <div className="flex flex-col gap-0.5 items-center">
-                  <span className="font-body text-xs uppercase tracking-widest text-grey-2 leading-none">
-                    Primary
-                  </span>
-                  <RoleSelector
-                    label="Primary role"
-                    selected={primaryRole}
-                    onSelect={handlePrimarySelect}
-                  />
-                </div>
-                {/* Secondary role */}
-                <div className="flex flex-col gap-0.5 items-center">
-                  <span className="font-body text-xs uppercase tracking-widest text-grey-2 leading-none">
-                    Secondary
-                  </span>
-                  <RoleSelector
-                    label="Secondary role"
-                    selected={secondaryRole}
-                    onSelect={handleSecondarySelect}
-                    disabledRoles={secondaryDisabled}
-                  />
-                </div>
-              </div>
-            }
-          />
+        {/* ---- Main content area (flex-1, relative for absolute panel) ---- */}
+        <div className="relative flex flex-1 flex-col">
+          {/* Queue panel — top-right in queue state */}
+          {lobbyState === "queue" && (
+            <div className="absolute top-4 right-6 z-10">
+              <QueueStatus
+                elapsedSeconds={elapsedSeconds}
+                estimatedSeconds={180}
+                onCancel={cancelQueue}
+                layout="panel"
+              />
+            </div>
+          )}
 
-          {/* Slots 2–5 — empty invite slots */}
-          {([2, 3, 4, 5] as const).map((n) => (
+          {/* ---- Player cards row ---- */}
+          <div className="flex flex-1 items-center justify-center gap-4 px-6">
+            {/* Slot 1 — local player, emphasized */}
             <LobbyPlayerCard
-              key={n}
-              onInvite={() => console.log(`Invite slot ${n}`)}
+              summoner={demoSummoner}
+              profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+              emphasized
+              roleSlot={
+                <div className="flex w-full flex-col gap-2">
+                  {/* Primary role */}
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="font-body text-xs uppercase leading-none tracking-widest text-grey-2">
+                      Primary
+                    </span>
+                    <RoleSelector
+                      label="Primary role"
+                      selected={primaryRole}
+                      onSelect={handlePrimarySelect}
+                    />
+                  </div>
+                  {/* Secondary role */}
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="font-body text-xs uppercase leading-none tracking-widest text-grey-2">
+                      Secondary
+                    </span>
+                    <RoleSelector
+                      label="Secondary role"
+                      selected={secondaryRole}
+                      onSelect={handleSecondarySelect}
+                      disabledRoles={secondaryDisabled}
+                    />
+                  </div>
+                </div>
+              }
             />
-          ))}
-        </div>
 
-        {/* ---- Bottom control strip ---- */}
-        <div className="flex h-20 items-center justify-center border-t border-gold-5">
-          {enteringGame ? (
-            <p className="font-display text-base uppercase tracking-widest text-gold-1">
-              Entering game…
-            </p>
-          ) : lobbyState === "lobby" ? (
-            <HextechButton
-              variant="primary"
-              size="large"
-              disabled={primaryRole === null}
-              onClick={startQueue}
-            >
-              Find Match
-            </HextechButton>
-          ) : lobbyState === "queue" ? (
-            <QueueStatus
-              elapsedSeconds={elapsedSeconds}
-              estimatedSeconds={180}
-              onCancel={cancelQueue}
-            />
-          ) : null /* "found" — modal handles the UI */}
+            {/* Slots 2–5 — empty invite slots */}
+            {([2, 3, 4, 5] as const).map((n) => (
+              <LobbyPlayerCard
+                key={n}
+                onInvite={() => console.log(`Invite slot ${n}`)}
+              />
+            ))}
+          </div>
+
+          {/* ---- Bottom control strip ---- */}
+          <div className="flex h-20 shrink-0 items-center justify-center border-t border-gold-5">
+            {enteringGame ? (
+              <p className="font-display text-base uppercase tracking-widest text-gold-1">
+                Entering game…
+              </p>
+            ) : lobbyState === "lobby" ? (
+              <HextechButton
+                variant="primary"
+                size="large"
+                disabled={primaryRole === null}
+                onClick={startQueue}
+              >
+                Find Match
+              </HextechButton>
+            ) : null /* queue → panel top-right; found → modal */}
+          </div>
         </div>
       </div>
 
-      {/* ---- Match Found modal (portal-like, fixed positioning) ---- */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Match Found modal (portal-like, fixed positioning)                  */}
+      {/* ------------------------------------------------------------------ */}
       <MatchFoundModal
         open={lobbyState === "found"}
         secondsRemaining={secondsRemaining}
         totalSeconds={MATCH_ACCEPT_SECONDS}
         onAccept={acceptMatch}
         onDecline={declineMatch}
+        subtitle="Summoner's Rift • Ranked • 5v5"
+        keyartSrc={DEMO_KEYART_SRC}
       />
     </div>
   );
