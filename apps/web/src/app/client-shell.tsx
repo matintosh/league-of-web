@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { CLIENT_WIDTH, CLIENT_HEIGHT } from "../lib/client-window";
 import {
   WindowFrame,
   TopNavbar,
@@ -146,7 +147,10 @@ export function ClientShell() {
   ];
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-hextech-black">
+    <div
+      className="w-[1280px] h-[720px] overflow-hidden"
+      style={{ width: CLIENT_WIDTH, height: CLIENT_HEIGHT }}
+    >
       <WindowFrame
         title="League of Web"
         onMinimize={() => console.log("minimize")}
