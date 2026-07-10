@@ -179,7 +179,7 @@ export function ModalFrame({
 
             {/* Footer (conditional) */}
             {footer && (
-              <div className="border-t border-gold-5 px-6 py-4 flex justify-end gap-3">
+              <div className="shrink-0 border-t border-gold-5 px-6 py-4 flex justify-end gap-3">
                 {footer}
               </div>
             )}
