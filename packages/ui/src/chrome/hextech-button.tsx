@@ -59,7 +59,7 @@ const sizes: Record<HextechButtonSize, SizeConfig> = {
  * HextechButton v3 — three shape families aligned to the spec sheet.
  *
  * - `primary` (default) — chevron-pointed right edge; teal layered border; hover teal glow.
- * - `secondary` — plain gold rectangle; hover border brightens to gold-2.
+ * - `secondary` — gold beveled rectangle: hard offset shadow, near-black edge lines, metallic gold gradient band, charcoal fill; hover brightens the band.
  * - `slanted` — parallelogram (both edges slanted ~12 px); teal border; hover teal glow.
  *
  * `medallion` renders a leading circular badge overlapping the left edge ~4 px.
@@ -106,7 +106,7 @@ interface InnerProps {
 //   2. 1px near-black outer edge (hextech-black background, 1px padding)
 //   3. ~6px gold band: metallic vertical gradient gold-2→gold-3→gold-4
 //   4. 1px near-black inner edge (hextech-black background, 1px padding)
-//   5. Grey-4 charcoal fill (#1e2328)
+//   5. Charcoal fill (var(--color-grey-4))
 // Disabled: muted grey band, no shadow.
 // ---------------------------------------------------------------------------
 
