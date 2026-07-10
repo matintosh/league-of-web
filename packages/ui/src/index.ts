@@ -21,5 +21,7 @@ export { TopNavbar } from "./chrome/top-navbar";
 export type { TopNavbarProps, NavItem } from "./chrome/top-navbar";
 export { WindowFrame } from "./chrome/window-frame";
 export type { WindowFrameProps } from "./chrome/window-frame";
+export { LobbyPlayerCard } from "./lobby/lobby-player-card";
+export type { LobbyPlayerCardProps } from "./lobby/lobby-player-card";
 export { RoleSelector } from "./lobby/role-selector";
 export type { RoleSelectorProps, Role } from "./lobby/role-selector";
