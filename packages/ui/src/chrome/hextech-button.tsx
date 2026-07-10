@@ -1,7 +1,6 @@
 "use client";
 
-import { useId } from "react";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
 
 // ---------------------------------------------------------------------------
 // Variant union — exhaustive Record maps will catch any missing member at build time.
@@ -59,8 +58,8 @@ const sizes: Record<HextechButtonSize, SizeConfig> = {
 /**
  * HextechButton v3 — three shape families aligned to the spec sheet.
  *
- * - `secondary` (default) — plain gold rectangle; hover border brightens to gold-2.
- * - `primary` — chevron-pointed right edge; teal layered border; hover teal glow.
+ * - `primary` (default) — chevron-pointed right edge; teal layered border; hover teal glow.
+ * - `secondary` — plain gold rectangle; hover border brightens to gold-2.
  * - `slanted` — parallelogram (both edges slanted ~12 px); teal border; hover teal glow.
  *
  * `medallion` renders a leading circular badge overlapping the left edge ~4 px.
@@ -70,7 +69,7 @@ const sizes: Record<HextechButtonSize, SizeConfig> = {
  * `type="button"` is always set before any spread.
  */
 export interface HextechButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Shape family. Defaults to `"primary"`. */
+  /** Shape family. `"primary"` (default) — chevron; `"secondary"` — rectangle; `"slanted"` — parallelogram. */
   variant?: HextechButtonVariant;
   /** Size scale. Defaults to `"default"`. */
   size?: HextechButtonSize;
@@ -84,21 +83,29 @@ export interface HextechButtonProps extends ButtonHTMLAttributes<HTMLButtonEleme
 }
 
 // ---------------------------------------------------------------------------
-// Secondary (gold rectangle) — no clip-path needed.
-// Outer div carries the 1px border via Tailwind; inner button is the fill.
-// No need for the wrapper-technique clip — a plain border works on an unclipped rect.
+// Shared inner-component prop shape — used by the exhaustive variant Record.
+// All three sub-components accept the full set; unused fields are ignored.
 // ---------------------------------------------------------------------------
 
-interface SecondaryButtonProps {
+interface InnerProps {
   cfg: SizeConfig;
+  /** Optional leading icon — SecondaryButton only; ignored by others. */
   icon?: ReactNode;
+  /** Optional medallion badge — primary/slanted only; ignored by SecondaryButton. */
+  medallion?: ReactNode;
   disabled?: boolean;
   children?: ReactNode;
   className?: string;
   buttonProps: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "className">;
 }
 
-function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps }: SecondaryButtonProps) {
+// ---------------------------------------------------------------------------
+// Secondary (gold rectangle) — no clip-path needed.
+// Outer div carries the 1px border via Tailwind; inner button is the fill.
+// No need for the wrapper-technique clip — a plain border works on an unclipped rect.
+// ---------------------------------------------------------------------------
+
+function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps }: InnerProps) {
   return (
     <div
       className={[
@@ -106,7 +113,7 @@ function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps
         "border transition-colors duration-150",
         disabled
           ? "border-grey-3"
-          : "border-gold-4 hover:border-gold-2 has-[:focus-visible]:border-gold-2",
+          : "border-gold-4 hover:border-gold-2 has-[:focus-visible]:border-gold-2 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-gold-2",
         className,
       ]
         .filter(Boolean)
@@ -211,16 +218,7 @@ function TealFrame({ clipPath, height, disabled, children }: TealFrameProps) {
 // Primary (chevron) button
 // ---------------------------------------------------------------------------
 
-interface ChevronButtonProps {
-  cfg: SizeConfig;
-  medallion?: ReactNode;
-  disabled?: boolean;
-  children?: ReactNode;
-  className?: string;
-  buttonProps: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "className">;
-}
-
-function ChevronButton({ cfg, medallion, disabled, children, className, buttonProps }: ChevronButtonProps) {
+function ChevronButton({ cfg, medallion, disabled, children, className, buttonProps }: InnerProps) {
   const clip = chevronPolygon(cfg.height);
   // Medallion overlaps the bar by 4px on the left
   const medalOverlap = medallion ? 4 : 0;
@@ -283,16 +281,7 @@ function ChevronButton({ cfg, medallion, disabled, children, className, buttonPr
 // Slanted (parallelogram) button
 // ---------------------------------------------------------------------------
 
-interface SlantedButtonProps {
-  cfg: SizeConfig;
-  medallion?: ReactNode;
-  disabled?: boolean;
-  children?: ReactNode;
-  className?: string;
-  buttonProps: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "className">;
-}
-
-function SlantedButton({ cfg, medallion, disabled, children, className, buttonProps }: SlantedButtonProps) {
+function SlantedButton({ cfg, medallion, disabled, children, className, buttonProps }: InnerProps) {
   const clip = slantedPolygon(SLANT);
   const medalOverlap = medallion ? 4 : 0;
 
@@ -351,6 +340,16 @@ function SlantedButton({ cfg, medallion, disabled, children, className, buttonPr
 }
 
 // ---------------------------------------------------------------------------
+// Exhaustive variant map — a future fourth variant will fail typecheck here.
+// ---------------------------------------------------------------------------
+
+const VARIANT_COMPONENTS: Record<HextechButtonVariant, (props: InnerProps) => ReactElement> = {
+  primary: ChevronButton,
+  secondary: SecondaryButton,
+  slanted: SlantedButton,
+};
+
+// ---------------------------------------------------------------------------
 // Public HextechButton — routes to the appropriate shape sub-component.
 // ---------------------------------------------------------------------------
 
@@ -365,45 +364,18 @@ export function HextechButton({
   ...props
 }: HextechButtonProps) {
   const cfg = sizes[size];
+  const Variant = VARIANT_COMPONENTS[variant];
 
-  if (variant === "secondary") {
-    return (
-      <SecondaryButton
-        cfg={cfg}
-        icon={icon}
-        disabled={disabled}
-        className={className}
-        buttonProps={props}
-      >
-        {children}
-      </SecondaryButton>
-    );
-  }
-
-  if (variant === "slanted") {
-    return (
-      <SlantedButton
-        cfg={cfg}
-        medallion={medallion}
-        disabled={disabled}
-        className={className}
-        buttonProps={props}
-      >
-        {children}
-      </SlantedButton>
-    );
-  }
-
-  // primary (default)
   return (
-    <ChevronButton
+    <Variant
       cfg={cfg}
+      icon={icon}
       medallion={medallion}
       disabled={disabled}
       className={className}
       buttonProps={props}
     >
       {children}
-    </ChevronButton>
+    </Variant>
   );
 }
