@@ -59,7 +59,7 @@ const sizes: Record<HextechButtonSize, SizeConfig> = {
  * HextechButton v3 — three shape families aligned to the spec sheet.
  *
  * - `primary` (default) — chevron-pointed right edge; teal layered border; hover teal glow.
- * - `secondary` — plain gold rectangle; hover border brightens to gold-2.
+ * - `secondary` — gold beveled rectangle: hard offset shadow, near-black edge lines, metallic gold gradient band, charcoal fill; hover brightens the band.
  * - `slanted` — parallelogram (both edges slanted ~12 px); teal border; hover teal glow.
  *
  * `medallion` renders a leading circular badge overlapping the left edge ~4 px.
@@ -100,51 +100,79 @@ interface InnerProps {
 }
 
 // ---------------------------------------------------------------------------
-// Secondary (gold rectangle) — no clip-path needed.
-// Outer div carries the 1px border via Tailwind; inner button is the fill.
-// No need for the wrapper-technique clip — a plain border works on an unclipped rect.
+// Secondary (gold beveled rectangle) — layered frame structure.
+// Outside→in:
+//   1. Outer wrapper: hard drop shadow (4px right + 4px down, solid hextech-black, 0 blur)
+//   2. 1px near-black outer edge (hextech-black background, 1px padding)
+//   3. ~6px gold band: metallic vertical gradient gold-2→gold-3→gold-4
+//   4. 1px near-black inner edge (hextech-black background, 1px padding)
+//   5. Charcoal fill (var(--color-grey-4))
+// Disabled: muted grey band, no shadow.
 // ---------------------------------------------------------------------------
 
 function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps }: InnerProps) {
+  const bandGradient = disabled
+    ? "linear-gradient(to bottom, var(--color-grey-3), var(--color-grey-4))"
+    : "linear-gradient(to bottom, var(--color-gold-2) 0%, var(--color-gold-3) 35%, var(--color-gold-4) 65%, var(--color-gold-5) 100%)";
+
+  const shadow = disabled ? "none" : "4px 4px 0 var(--color-hextech-black)";
+
   return (
+    // Outermost wrapper: hard drop shadow + layout anchor + focus ring host
     <div
       className={[
         "group/hb inline-block",
-        "border transition-colors duration-150",
-        disabled
-          ? "border-grey-3"
-          : "border-gold-4 hover:border-gold-2 has-[:focus-visible]:border-gold-2 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-gold-2",
+        "transition-shadow duration-150",
+        !disabled && "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-gold-2 has-[:focus-visible]:ring-offset-1",
         className,
       ]
         .filter(Boolean)
         .join(" ")}
+      style={{ boxShadow: shadow }}
     >
-      <button
-        type="button"
-        disabled={disabled}
-        {...buttonProps}
-        className={[
-          "flex w-full cursor-pointer items-center justify-center gap-2",
-          "font-display uppercase tracking-widest",
-          "transition-colors duration-150",
-          "focus-visible:outline-none",
-          "disabled:cursor-not-allowed",
-          cfg.paddingClass,
-          cfg.textClass,
-          disabled
-            ? "bg-grey-4 text-grey-2"
-            : "bg-blue-7 text-gold-2 hover:text-gold-1 active:bg-blue-6 active:text-gold-3",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-      >
-        {icon !== undefined && (
-          <span aria-hidden="true" className="flex shrink-0 items-center">
-            {icon}
-          </span>
-        )}
-        {children}
-      </button>
+      {/* 1px outer near-black edge */}
+      <div style={{ padding: "1px", background: "var(--color-hextech-black)" }}>
+        {/* Gold band: metallic vertical gradient, ~6px thick; brightens on hover */}
+        <div
+          className={!disabled ? "group-hover/hb:[background:linear-gradient(to_bottom,var(--color-gold-1)_0%,var(--color-gold-2)_35%,var(--color-gold-3)_65%,var(--color-gold-4)_100%)] transition-all duration-150" : ""}
+          style={{
+            padding: "6px",
+            background: bandGradient,
+          }}
+        >
+          {/* 1px inner near-black edge */}
+          <div style={{ padding: "1px", background: "var(--color-hextech-black)" }}>
+            {/* Charcoal fill */}
+            <button
+              type="button"
+              disabled={disabled}
+              {...buttonProps}
+              className={[
+                "flex cursor-pointer items-center justify-center gap-3",
+                "font-display uppercase tracking-widest",
+                "bg-grey-4",
+                "transition-colors duration-150",
+                "focus-visible:outline-none",
+                "disabled:cursor-not-allowed",
+                cfg.paddingClass,
+                cfg.textClass,
+                disabled
+                  ? "text-grey-2"
+                  : "text-gold-1 hover:text-gold-2 active:bg-grey-cool active:text-gold-3",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
+              {icon !== undefined && (
+                <span aria-hidden="true" className="flex shrink-0 items-center">
+                  {icon}
+                </span>
+              )}
+              {children}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
