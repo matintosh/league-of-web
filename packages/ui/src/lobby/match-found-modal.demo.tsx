@@ -3,36 +3,51 @@
 import { useState, useEffect } from "react";
 import { MatchFoundModal } from "./match-found-modal";
 import { HextechButton } from "../chrome/hextech-button";
+import { championSplashUrl } from "@low/fixtures";
 
 const TOTAL = 10;
 
 // ---------------------------------------------------------------------------
-// Static showcase wrappers — handlers live in 'use client' scope
+// Static showcase wrappers
 // ---------------------------------------------------------------------------
 
-/** Static variant: full countdown (10 s) — countdown in text-blue-2. */
+/** Static: full countdown, no keyart */
 export function MatchFoundModalFullCountdownDemo() {
   return (
-    <div className="relative overflow-hidden [transform:translateZ(0)] h-80">
-      <MatchFoundModal
-        open={true}
-        secondsRemaining={10}
-        totalSeconds={10}
-        onAccept={() => {}}
-        onDecline={() => {}}
-      />
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
+      <MatchFoundModal open={true} secondsRemaining={10} totalSeconds={10} onAccept={() => {}} onDecline={() => {}} />
     </div>
   );
 }
 
-/** Static variant: nearly expired (2 s) — countdown turns text-gold-3. */
+/** Static: halfway (arc at 50%), no keyart */
+export function MatchFoundModalHalfwayDemo() {
+  return (
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
+      <MatchFoundModal open={true} secondsRemaining={5} totalSeconds={10} onAccept={() => {}} onDecline={() => {}} />
+    </div>
+  );
+}
+
+/** Static: nearly expired (<=2s, countdown text gold-3), no keyart */
 export function MatchFoundModalNearlyExpiredDemo() {
   return (
-    <div className="relative overflow-hidden [transform:translateZ(0)] h-80">
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
+      <MatchFoundModal open={true} secondsRemaining={2} totalSeconds={10} onAccept={() => {}} onDecline={() => {}} />
+    </div>
+  );
+}
+
+/** Static: with champion keyart (Ahri splash) */
+export function MatchFoundModalWithKeyartDemo() {
+  return (
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
       <MatchFoundModal
         open={true}
-        secondsRemaining={2}
+        secondsRemaining={8}
         totalSeconds={10}
+        keyartSrc={championSplashUrl("Ahri")}
+        subtitle="Summoner's Rift • Ranked • 5v5"
         onAccept={() => {}}
         onDecline={() => {}}
       />
@@ -44,7 +59,7 @@ export function MatchFoundModalNearlyExpiredDemo() {
 // Interactive ticking demo
 // ---------------------------------------------------------------------------
 
-/** Interactive demo: click "Find Match" to open the modal with a live countdown. */
+/** Interactive: ticking demo with trigger button */
 export function MatchFoundModalDemo() {
   const [open, setOpen] = useState(false);
   const [seconds, setSeconds] = useState(TOTAL);
@@ -56,7 +71,7 @@ export function MatchFoundModalDemo() {
         if (s <= 1) {
           clearInterval(id);
           setOpen(false);
-          return TOTAL; // reset for next open
+          return TOTAL;
         }
         return s - 1;
       });
@@ -75,12 +90,14 @@ export function MatchFoundModalDemo() {
         Find Match
       </HextechButton>
       <p className="font-body text-xs text-grey-2">
-        Click to open. Countdown ticks; auto-declines at 0.
+        Click to open. Countdown ticks; arc drains; auto-declines at 0.
       </p>
       <MatchFoundModal
         open={open}
         secondsRemaining={seconds}
         totalSeconds={TOTAL}
+        keyartSrc={championSplashUrl("Ahri")}
+        subtitle="Summoner's Rift • Ranked • 5v5"
         onAccept={() => { setOpen(false); setSeconds(TOTAL); }}
         onDecline={() => { setOpen(false); setSeconds(TOTAL); }}
       />
