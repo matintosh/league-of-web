@@ -8,6 +8,7 @@ import {
   WindowFrame,
   TopNavbar,
   HextechButton,
+  PlayButton,
   CurrencyDisplay,
   PlayerHovercard,
   SettingsModal,
@@ -35,6 +36,15 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 const KEYART_CHAMPION = "Jinx";
+
+// ---------------------------------------------------------------------------
+// Diagonal split constants (1280×720 viewport)
+// Left panel: ~38% = 486px. Diagonal: top of art starts ~80px right of panel
+// edge, bottom flush with panel edge — clip polygon on art container.
+// Panel width px: Math.round(1280 * 0.38) = 486
+// ---------------------------------------------------------------------------
+const PANEL_WIDTH = 486; // px — ~38% of 1280
+const DIAGONAL_OFFSET = 80; // px — how much the top edge is inset further right
 
 export function ClientShell() {
   const [view, setView] = useState<View>("home");
@@ -152,7 +162,7 @@ export function ClientShell() {
 
   return (
     <div
-      className="w-[1280px] h-[720px] overflow-hidden"
+      className="overflow-hidden"
       style={{ width: CLIENT_WIDTH, height: CLIENT_HEIGHT }}
     >
       <WindowFrame
@@ -210,32 +220,12 @@ export function ClientShell() {
             }
           />
 
-          {/* Content area — switches between home keyart and matchmaking */}
+          {/* Content area — switches between home diagonal-split and matchmaking */}
           <div className="relative flex-1 overflow-hidden">
             {view === "matchmaking" ? (
               <MatchmakingScreen onBack={() => setView("home")} />
             ) : (
-              <>
-                <Image
-                  src={championSplashUrl(KEYART_CHAMPION)}
-                  alt={`${KEYART_CHAMPION} splash art`}
-                  fill
-                  priority
-                  className="object-cover"
-                />
-                {/* Dark gradient overlay from bottom so chrome stays readable */}
-                <div className="absolute inset-0 bg-linear-to-t from-hextech-black via-hextech-black/30 to-transparent" />
-
-                {/* Welcome text */}
-                <div className="absolute bottom-12 left-12 flex flex-col gap-2">
-                  <h1 className="font-display text-4xl uppercase tracking-widest text-gold-1">
-                    Welcome back,
-                  </h1>
-                  <p className="font-display text-2xl uppercase tracking-widest text-gold-2">
-                    {demoSummoner.gameName}
-                  </p>
-                </div>
-              </>
+              <HomeLanding onPlay={() => setView("matchmaking")} />
             )}
           </div>
         </div>
@@ -248,6 +238,110 @@ export function ClientShell() {
         activeSectionId={activeSectionId}
         onSelectSection={setActiveSectionId}
       />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// HomeLanding — diagonal-split layout per issue #37 / Figma node 50-583
+//
+// CTA decision: PlayButton is placed in the home CONTENT left panel as the
+// primary landing CTA. The TopNavbar playSlot retains its HextechButton so the
+// play action remains reachable from every view (matchmaking, collection, etc.)
+// Both CTAs call setView("matchmaking") with the same effect.
+// ---------------------------------------------------------------------------
+
+interface HomeLandingProps {
+  onPlay: () => void;
+}
+
+function HomeLanding({ onPlay }: HomeLandingProps) {
+  // Art container clip: top-left starts at PANEL_WIDTH + DIAGONAL_OFFSET px,
+  // bottom-left starts at PANEL_WIDTH px. Right side is full width.
+  // polygon: top-left, top-right, bottom-right, bottom-left
+  const artClip = `polygon(${PANEL_WIDTH + DIAGONAL_OFFSET}px 0%, 100% 0%, 100% 100%, ${PANEL_WIDTH}px 100%)`;
+
+  // Gold seam: 2px wide sliver along the diagonal — same clip as art but
+  // shifted 2px left so it peeks out behind the art as a gold stripe.
+  const seamClip = `polygon(${PANEL_WIDTH + DIAGONAL_OFFSET - 2}px 0%, ${PANEL_WIDTH + DIAGONAL_OFFSET + 2}px 0%, ${PANEL_WIDTH + 2}px 100%, ${PANEL_WIDTH - 2}px 100%)`;
+
+  return (
+    <div className="relative h-full w-full bg-hextech-black">
+      {/* ------------------------------------------------------------------ */}
+      {/* RIGHT — keyart with diagonal clip                                    */}
+      {/* ------------------------------------------------------------------ */}
+      <div
+        className="absolute inset-0"
+        style={{ clipPath: artClip }}
+      >
+        <Image
+          src={championSplashUrl(KEYART_CHAMPION)}
+          alt={`${KEYART_CHAMPION} splash art`}
+          fill
+          priority
+          className="object-cover object-center"
+        />
+        {/* Subtle vignette on the left edge of the art so it blends with the panel */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(to right, color-mix(in srgb, var(--color-hextech-black) 60%, transparent) 0%, transparent 35%)`,
+          }}
+        />
+      </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* GOLD SEAM — 2px diagonal strip between panel and art                */}
+      {/* drop-shadow lives on an unclipped parent; seam itself is clipped.   */}
+      {/* ------------------------------------------------------------------ */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          filter: "drop-shadow(0 0 4px var(--color-gold-3))",
+        }}
+      >
+        <div
+          className="absolute inset-0 bg-gold-3"
+          style={{ clipPath: seamClip }}
+        />
+      </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* LEFT PANEL — hextech-black, ~38% width                              */}
+      {/* ------------------------------------------------------------------ */}
+      <div
+        className="absolute inset-y-0 left-0 flex flex-col bg-hextech-black"
+        style={{ width: PANEL_WIDTH }}
+      >
+        {/* Wordmark — vertically centered in the panel */}
+        <div className="flex flex-1 flex-col items-start justify-center px-12">
+          {/* Stacked wordmark lockup */}
+          <div className="mb-8 flex flex-col gap-0">
+            <span className="font-display text-5xl uppercase leading-none tracking-widest text-gold-1">
+              League
+            </span>
+            <span className="font-display text-5xl uppercase leading-none tracking-widest text-gold-1">
+              of Web
+            </span>
+          </div>
+
+          {/* Thin gold divider under wordmark */}
+          <div className="mb-8 h-px w-32 bg-gold-4" />
+
+          {/* Play CTA — PlayButton from issue #35 */}
+          <PlayButton onClick={onPlay} />
+        </div>
+
+        {/* Footer caption — bottom-left */}
+        <div className="px-12 pb-6">
+          <p className="font-body text-xs text-grey-2">
+            A 1:1 web recreation of the League of Legends client.
+          </p>
+          <p className="font-body text-xs text-grey-2">
+            {demoSummoner.gameName} — Ready to play
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
