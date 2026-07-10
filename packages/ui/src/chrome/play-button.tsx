@@ -62,7 +62,7 @@ export function PlayButton({ children, disabled, className, ...props }: PlayButt
           "rounded-full border-2 border-gold-3 bg-blue-6",
           "group-hover/pb:border-gold-2",
           "group-active/pb:border-gold-3",
-          "has-[:disabled]:border-grey-3",
+          "group-has-[:disabled]/pb:border-grey-3",
           "transition-colors duration-150",
         ].join(" ")}
       >
@@ -83,6 +83,7 @@ export function PlayButton({ children, disabled, className, ...props }: PlayButt
       >
         {/* Bar inner: the actual <button> element */}
         <button
+          type="button"
           disabled={disabled}
           {...props}
           className={[

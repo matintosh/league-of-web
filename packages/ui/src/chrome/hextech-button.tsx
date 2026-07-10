@@ -107,6 +107,7 @@ export function HextechButton({
       style={{ clipPath: CLIP }}
     >
       <button
+        type="button"
         disabled={disabled}
         className={`${buttonBase} ${buttonVariants[variant]} ${sizes[size]}`}
         style={{ clipPath: CLIP }}
