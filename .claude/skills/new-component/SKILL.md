@@ -51,6 +51,11 @@ description: Use when building any new UI component for league-of-web — scaffo
 6. **Verify.** `pnpm typecheck && pnpm build` pass. Then `pnpm dev` and check
    `/showcase/<slug>` renders all variants correctly.
 
+## Recurring review findings — avoid these
+
+- Never write `onClick={() => !disabled && fn()}` alongside `disabled={disabled}` — native `disabled` already blocks clicks; the guard is dead code (flagged in two reviews already).
+- Any map keyed by a union type must be `Record<Union, ...>` so adding a union member fails typecheck instead of silently omitting a case.
+
 ## File naming
 
 kebab-case files, PascalCase exports. `hextech-button.tsx` exports `HextechButton`.
