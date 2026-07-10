@@ -1,5 +1,5 @@
-import { useId } from "react";
-import type { ReactNode } from "react";
+import { useId, useRef } from "react";
+import type { ReactNode, MouseEvent } from "react";
 
 /** Size presets for ModalFrame. Default keeps the original min/max-width behavior. */
 export type ModalFrameSize = "sm" | "md" | "lg";
@@ -70,6 +70,13 @@ export function ModalFrame({
   const titleId = useId();
   const crestGradId = useId();
   const sizeKey = size ?? "default";
+  /**
+   * Track where the mousedown started. We only close when both mousedown AND
+   * the subsequent click land on the backdrop — this prevents a text-selection
+   * drag that starts inside the panel and is released over the backdrop from
+   * accidentally dismissing the modal.
+   */
+  const mousedownTargetRef = useRef<EventTarget | null>(null);
 
   if (!open) return null;
 
@@ -77,7 +84,15 @@ export function ModalFrame({
     /* Backdrop + panel wrapper — z-50 ensures modal paints above app-level fixed elements */
     <div
       className="fixed inset-0 z-50 bg-hextech-black/70"
-      onClick={onClose}
+      onMouseDown={(e: MouseEvent<HTMLDivElement>) => {
+        mousedownTargetRef.current = e.target;
+      }}
+      onClick={(e: MouseEvent<HTMLDivElement>) => {
+        if (mousedownTargetRef.current === e.currentTarget && e.target === e.currentTarget) {
+          onClose();
+        }
+        mousedownTargetRef.current = null;
+      }}
     >
       {/*
        * Positioning wrapper — centered, not clipped.
@@ -85,7 +100,7 @@ export function ModalFrame({
        * without being clipped by the clip-path applied below.
        */}
       <div
-        className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${SIZE_CLASSES[sizeKey]}`}
+        className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[90vh] flex flex-col ${SIZE_CLASSES[sizeKey]}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Gold crest ornament — small hex shape breaking the top border */}
@@ -125,7 +140,7 @@ export function ModalFrame({
          * ring-1 / border is NOT used here because clip-path would clip it.
          */}
         <div
-          className="bg-gold-4 p-px"
+          className="bg-gold-4 p-px min-h-0 flex flex-col"
           style={{ clipPath: CORNER_CLIP }}
         >
           {/*
@@ -133,7 +148,7 @@ export function ModalFrame({
            * bg-grey-4/95 + backdrop-blur-sm per the issue spec (Border Blur Mask).
            */}
           <div
-            className="bg-grey-4/95 backdrop-blur-sm"
+            className="bg-grey-4/95 backdrop-blur-sm flex flex-col min-h-0"
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
@@ -157,8 +172,8 @@ export function ModalFrame({
               </button>
             </div>
 
-            {/* Content area */}
-            <div className="px-6 py-5 overflow-y-auto max-h-[60vh] text-gold-1 font-body text-sm">
+            {/* Content area — flex-1 min-h-0 lets it shrink within the 90vh panel cap */}
+            <div className="px-6 py-5 overflow-y-auto flex-1 min-h-0 text-gold-1 font-body text-sm">
               {children}
             </div>
 

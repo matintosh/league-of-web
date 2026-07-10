@@ -61,7 +61,7 @@ export function PlayerHovercard({
           className="h-8 w-8 border border-gold-5 object-cover"
         />
         {/* Level badge — centered on bottom edge of icon */}
-        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 border border-gold-5 bg-hextech-black px-1 font-body text-xs leading-[14px] text-gold-1 rounded-sm">
+        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 border border-gold-5 bg-hextech-black px-1 font-body text-xs leading-none text-gold-1 rounded-sm">
           {level}
         </span>
       </div>
