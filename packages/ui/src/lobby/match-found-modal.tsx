@@ -12,12 +12,39 @@ export interface MatchFoundModalProps {
   open: boolean;
   /** Remaining seconds — PARENT owns the countdown. Zero timers inside this component. */
   secondsRemaining: number;
-  /** Total seconds for context (default 10). */
+  /** Total seconds for the arc (default 10). Now LOAD-BEARING — drives arc fraction. */
   totalSeconds?: number;
   /** Called when user clicks ACCEPT. */
   onAccept: () => void;
   /** Called when user clicks DECLINE. */
   onDecline: () => void;
+  /** e.g. "Summoner's Rift • Ranked • 5v5" — shown below the title */
+  subtitle?: string;
+  /** Circular keyart image URL; falls back to bg-linear-to-b from-blue-6 to-blue-7 disc when absent */
+  keyartSrc?: string;
+}
+
+// ---------------------------------------------------------------------------
+// HexCrest — local, not exported
+// ---------------------------------------------------------------------------
+
+function HexCrest() {
+  return (
+    <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
+      <defs>
+        <linearGradient id="crest-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--color-gold-4)" />
+          <stop offset="100%" stopColor="var(--color-gold-3)" />
+        </linearGradient>
+      </defs>
+      <polygon
+        points="24,2 44,13 44,35 24,46 4,35 4,13"
+        fill="url(#crest-grad)"
+        stroke="var(--color-gold-2)"
+        strokeWidth="1"
+      />
+    </svg>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -25,10 +52,10 @@ export interface MatchFoundModalProps {
 // ---------------------------------------------------------------------------
 
 /**
- * MatchFoundModal — overlay displayed when a match has been found.
+ * MatchFoundModal — circular hi-fi overlay displayed when a match has been found.
  *
- * Shows a countdown (parent-driven), ACCEPT and DECLINE buttons.
- * Not dismissible via backdrop click — no onClick on backdrop, no ✕ button.
+ * 480 px circle on a dimmed full-screen backdrop. Contains a countdown arc
+ * (parent-driven), ACCEPT and DECLINE buttons. Not dismissible via backdrop click.
  *
  * Presentational only — the parent drives `secondsRemaining` via its own
  * interval. No setInterval inside this component.
@@ -39,57 +66,95 @@ export function MatchFoundModal({
   totalSeconds = 10,
   onAccept,
   onDecline,
+  subtitle,
+  keyartSrc,
 }: MatchFoundModalProps) {
   const titleId = useId();
 
   if (!open) return null;
 
-  const countdownClass =
-    secondsRemaining <= 2
-      ? "font-display text-5xl text-gold-3"
-      : "font-display text-5xl text-blue-2";
-
   return (
     <>
-      {/* Backdrop — not dismissible, no onClick */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 z-50 bg-hextech-black/70"
-      />
+      {/* 1. Full-screen backdrop — not dismissible, no onClick */}
+      <div aria-hidden="true" className="fixed inset-0 z-50 bg-hextech-black/70" />
 
-      {/* Panel */}
+      {/* 2. Circle container (the modal) */}
       <div
         role="alertdialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={[
-          "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-          "z-50 w-[420px]",
-          "bg-blue-7 border border-gold-4 ring-1 ring-gold-5",
-        ].join(" ")}
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[480px] h-[480px] relative"
       >
-        <div className="flex flex-col items-center px-8 py-10 gap-6">
-          {/* Top: heading */}
-          <h2
-            id={titleId}
-            className="font-display text-2xl uppercase tracking-widest text-gold-1 text-center"
-          >
+        {/* 3. Keyart disc */}
+        <div className="absolute inset-0 rounded-full overflow-hidden">
+          {keyartSrc ? (
+            <img src={keyartSrc} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-linear-to-b from-blue-6 to-blue-7" />
+          )}
+        </div>
+        {/* Dark vignette to make content readable */}
+        <div
+          className="absolute inset-0 rounded-full"
+          style={{ background: "radial-gradient(circle at center, transparent 40%, rgba(1,10,19,0.75) 100%)" }}
+        />
+
+        {/* 4. Double gold ring */}
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 480 480" aria-hidden="true">
+          <circle cx="240" cy="240" r="235" fill="none" stroke="var(--color-gold-4)" strokeWidth="1" strokeDasharray="6 3" />
+          <circle cx="240" cy="240" r="228" fill="none" stroke="var(--color-gold-3)" strokeWidth="1" />
+        </svg>
+
+        {/* 5. Countdown arc SVG — rotated -90° so arc starts at top */}
+        <svg
+          className="absolute inset-0 w-full h-full -rotate-90"
+          viewBox="0 0 480 480"
+          aria-hidden="true"
+        >
+          <defs>
+            <filter id="arc-glow-v2">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <circle
+            cx="240"
+            cy="240"
+            r="232"
+            fill="none"
+            stroke="var(--color-blue-2)"
+            strokeWidth="6"
+            pathLength={100}
+            strokeDasharray="100"
+            strokeDashoffset={100 - (secondsRemaining / totalSeconds) * 100}
+            strokeLinecap="round"
+            filter="url(#arc-glow-v2)"
+            style={{ transition: "stroke-dashoffset 1s linear" }}
+          />
+        </svg>
+
+        {/* 6. Content stack */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-8">
+          <HexCrest />
+          <h2 id={titleId} className="font-display text-2xl uppercase tracking-widest text-gold-1 text-center">
             MATCH FOUND
           </h2>
-
-          {/* Middle: countdown */}
-          <div
+          {subtitle && (
+            <p className="font-body text-xs text-gold-2 text-center">{subtitle}</p>
+          )}
+          <p
             aria-live="polite"
             aria-atomic="true"
-            className={`${countdownClass} text-center tabular-nums`}
+            className={`font-body text-sm tabular-nums ${secondsRemaining <= 2 ? "text-gold-3" : "text-grey-1"}`}
           >
-            {secondsRemaining}
-          </div>
-
-          {/* Bottom: action buttons */}
-          <div className="flex items-center gap-4">
+            {secondsRemaining}s
+          </p>
+          <div className="flex flex-col items-center gap-3 mt-2">
             <HextechButton variant="primary" size="large" onClick={onAccept}>
-              Accept
+              Accept!
             </HextechButton>
             <HextechButton variant="secondary" onClick={onDecline}>
               Decline
