@@ -38,12 +38,12 @@ export function TopNavbar({
   playerSlot,
 }: TopNavbarProps) {
   return (
-    <nav className="flex h-12 w-full shrink-0 items-center border-b border-gold-5 bg-blue-7 px-4">
+    <nav aria-label="Main navigation" className="flex h-12 w-full shrink-0 items-center border-b border-gold-5 bg-blue-7 px-4">
       {/* Left region — play slot */}
       <div className="flex shrink-0 items-center">{playSlot}</div>
 
-      {/* Center region — nav items */}
-      <div className="flex flex-1 items-center justify-center gap-6">
+      {/* Center region — nav items; overflow-x-auto handles extreme item counts */}
+      <div className="flex flex-1 items-center justify-center gap-6 overflow-x-auto">
         {navItems.map((item) => {
           const isActive = item.id === activeId;
           return (

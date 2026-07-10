@@ -18,6 +18,12 @@ export interface TabBarProps {
    * for this component; the parent is responsible for rendering the correct panel.
    */
   onSelect: (id: string) => void;
+  /**
+   * Accessible name for the tablist landmark. Defaults to "Tab navigation".
+   * Supply a unique value when multiple TabBars appear on the same page to
+   * avoid duplicate landmark names for assistive technology.
+   */
+  label?: string;
 }
 
 /**
@@ -28,11 +34,11 @@ export interface TabBarProps {
  * Purely presentational — no internal state. Parent owns activeId.
  * Tabs do not wrap on overflow; excess items clip (matching real client behaviour).
  */
-export function TabBar({ tabs, activeId, onSelect }: TabBarProps) {
+export function TabBar({ tabs, activeId, onSelect, label = "Tab navigation" }: TabBarProps) {
   return (
     <div
       role="tablist"
-      aria-label="Tab navigation"
+      aria-label={label}
       className="flex h-10 w-full shrink-0 items-end overflow-hidden border-b border-gold-5 bg-blue-6 px-4 gap-8"
     >
       {tabs.map((tab) => {
