@@ -76,6 +76,8 @@ export function MatchFoundModal({
 
   if (!open) return null;
 
+  const arcFraction = totalSeconds > 0 ? Math.min(1, Math.max(0, secondsRemaining / totalSeconds)) : 1;
+
   return (
     <>
       {/* 1. Full-screen backdrop — not dismissible, no onClick */}
@@ -99,7 +101,7 @@ export function MatchFoundModal({
         {/* Dark vignette to make content readable */}
         <div
           className="absolute inset-0 rounded-full"
-          style={{ background: "radial-gradient(circle at center, transparent 40%, rgba(1,10,19,0.75) 100%)" }}
+          style={{ background: "radial-gradient(circle at center, transparent 40%, color-mix(in srgb, var(--color-hextech-black) 75%, transparent) 100%)" }}
         />
 
         {/* 4. Double gold ring */}
@@ -132,7 +134,7 @@ export function MatchFoundModal({
             strokeWidth="6"
             pathLength={100}
             strokeDasharray="100"
-            strokeDashoffset={100 - (secondsRemaining / totalSeconds) * 100}
+            strokeDashoffset={100 - arcFraction * 100}
             strokeLinecap="round"
             filter={`url(#${glowId})`}
             style={{ transition: "stroke-dashoffset 1s linear" }}
