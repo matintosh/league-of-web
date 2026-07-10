@@ -1,3 +1,4 @@
+import { profileIconUrl } from "@low/fixtures";
 import type { ShowcaseEntry } from "../showcase";
 import { LobbyPlayerCard } from "./lobby-player-card";
 import {
@@ -38,7 +39,7 @@ export const lobbyPlayerCardShowcase: ShowcaseEntry = {
               profileIconId: 5212,
               availability: "online",
             }}
-            profileIconSrc="https://ddragon.leagueoflegends.com/cdn/15.10.1/img/profileicon/5212.png"
+            profileIconSrc={profileIconUrl(5212)}
           />
         </div>
       ),
