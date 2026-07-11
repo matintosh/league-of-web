@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import type { ReactNode } from "react";
 import { GameModeCard } from "./game-mode-card";
 
 // ---------------------------------------------------------------------------
@@ -11,8 +12,6 @@ import { GameModeCard } from "./game-mode-card";
 
 /** Diamond-square crest — Summoner's Rift (square rotated ~15°, inner slash). */
 export function SummonersRiftCrest() {
-  const id = useId();
-  const filterId = `${id}-glow`;
   return (
     <svg
       aria-hidden="true"
@@ -22,63 +21,52 @@ export function SummonersRiftCrest() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <defs>
-        <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      {/* Outer rotated square frame */}
+      {/* Outer rotated square frame — thick gold band, dark navy interior */}
       <rect
-        x="22"
-        y="22"
-        width="86"
-        height="86"
-        rx="2"
+        x="24"
+        y="24"
+        width="82"
+        height="82"
+        rx="3"
         stroke="currentColor"
-        strokeWidth="3"
-        fill="none"
+        strokeWidth="7"
+        fill="var(--color-blue-7)"
         transform="rotate(15 65 65)"
-        filter={`url(#${filterId})`}
       />
-      {/* Inner rotated square */}
+      {/* Inner thin frame line */}
       <rect
-        x="32"
-        y="32"
-        width="66"
-        height="66"
+        x="34"
+        y="34"
+        width="62"
+        height="62"
         rx="1"
         stroke="currentColor"
         strokeWidth="1.5"
         fill="none"
         transform="rotate(15 65 65)"
-        opacity="0.5"
-      />
-      {/* Diagonal slash — top-left to bottom-right */}
-      <line
-        x1="38"
-        y1="38"
-        x2="92"
-        y2="92"
-        stroke="currentColor"
-        strokeWidth="2"
         opacity="0.7"
       />
-      {/* Corner accent marks */}
-      <line x1="20" y1="65" x2="30" y2="65" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
-      <line x1="100" y1="65" x2="110" y2="65" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+      {/* Thick diagonal slash — top-left to bottom-right */}
+      <line
+        x1="43"
+        y1="34"
+        x2="94"
+        y2="89"
+        stroke="currentColor"
+        strokeWidth="4"
+        transform="rotate(15 65 65)"
+      />
+      {/* Edge tab notches (left/right of the frame, like the client crest) */}
+      <rect x="16" y="60" width="10" height="10" fill="currentColor" transform="rotate(15 65 65)" />
+      <rect x="104" y="60" width="10" height="10" fill="currentColor" transform="rotate(15 65 65)" />
     </svg>
   );
 }
 
-/** Hourglass crest — Twisted Treeline (hourglass shape with blue accent). */
+/** Hourglass crest — Twisted Treeline (hourglass shape with blue glowing core). */
 export function TwistedTreelineCrest() {
   const id = useId();
-  const gradId = `${id}-grad`;
-  const filterId = `${id}-glow`;
+  const glowId = `${id}-blue-glow`;
   return (
     <svg
       aria-hidden="true"
@@ -89,49 +77,56 @@ export function TwistedTreelineCrest() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        <linearGradient id={gradId} x1="65" y1="20" x2="65" y2="110" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="currentColor" stopOpacity="0.15" />
-          <stop offset="50%" stopColor="currentColor" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="currentColor" stopOpacity="0.15" />
-        </linearGradient>
-        <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="4" result="blur" />
+        <filter id={glowId} x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="6" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
       </defs>
-      {/* Outer hourglass outline */}
+      {/* Upper hourglass bulb — thick gold band, dark navy interior */}
       <path
-        d="M28 18 L102 18 L102 26 Q102 38 65 55 Q28 38 28 26 Z"
+        d="M26 16 L104 16 L104 26 Q104 40 65 58 Q26 40 26 26 Z"
+        stroke="currentColor"
+        strokeWidth="6"
+        fill="var(--color-blue-7)"
+        strokeLinejoin="round"
+      />
+      {/* Lower hourglass bulb */}
+      <path
+        d="M26 114 L104 114 L104 104 Q104 90 65 72 Q26 90 26 104 Z"
+        stroke="currentColor"
+        strokeWidth="6"
+        fill="var(--color-blue-7)"
+        strokeLinejoin="round"
+      />
+      {/* Blue glowing core at the waist */}
+      <ellipse
+        cx="65"
+        cy="65"
+        rx="18"
+        ry="11"
+        fill="var(--color-blue-3)"
+        filter={`url(#${glowId})`}
+      />
+      <ellipse
+        cx="65"
+        cy="65"
+        rx="18"
+        ry="11"
         stroke="currentColor"
         strokeWidth="2.5"
-        fill={`url(#${gradId})`}
-        filter={`url(#${filterId})`}
+        fill="none"
       />
-      <path
-        d="M28 112 L102 112 L102 104 Q102 92 65 75 Q28 92 28 104 Z"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        fill={`url(#${gradId})`}
-        filter={`url(#${filterId})`}
-      />
-      {/* Narrow waist connector */}
-      <line x1="65" y1="55" x2="65" y2="75" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
-      {/* Inner blue-tinted oval at waist */}
-      <ellipse cx="65" cy="65" rx="14" ry="8" stroke="currentColor" strokeWidth="1.5" opacity="0.8" />
-      {/* Side brackets */}
-      <line x1="28" y1="18" x2="28" y2="112" stroke="currentColor" strokeWidth="1.5" opacity="0.4" />
-      <line x1="102" y1="18" x2="102" y2="112" stroke="currentColor" strokeWidth="1.5" opacity="0.4" />
+      {/* Blue inner highlight */}
+      <ellipse cx="60" cy="62" rx="7" ry="4" fill="var(--color-blue-2)" opacity="0.8" />
     </svg>
   );
 }
 
 /** Parallelogram crest — ARAM (skewed rhombus, inner slash). */
 export function AramCrest() {
-  const id = useId();
-  const filterId = `${id}-glow`;
   return (
     <svg
       aria-hidden="true"
@@ -141,51 +136,39 @@ export function AramCrest() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <defs>
-        <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      {/* Outer parallelogram/skewed rectangle */}
+      {/* Outer parallelogram — thick gold band, dark navy interior */}
       <path
-        d="M42 18 L102 18 L88 112 L28 112 Z"
+        d="M44 18 L102 18 L86 112 L28 112 Z"
         stroke="currentColor"
-        strokeWidth="3"
-        fill="none"
-        filter={`url(#${filterId})`}
+        strokeWidth="7"
+        fill="var(--color-blue-7)"
+        strokeLinejoin="round"
       />
-      {/* Inner parallelogram */}
+      {/* Inner thin frame line */}
       <path
-        d="M48 28 L94 28 L80 102 L34 102 Z"
+        d="M51 28 L94 28 L79 102 L36 102 Z"
         stroke="currentColor"
         strokeWidth="1.5"
         fill="none"
-        opacity="0.4"
-      />
-      {/* Diagonal slash */}
-      <line
-        x1="40"
-        y1="35"
-        x2="88"
-        y2="95"
-        stroke="currentColor"
-        strokeWidth="2"
         opacity="0.7"
       />
-      {/* Top accent bar */}
-      <line x1="42" y1="18" x2="102" y2="18" stroke="currentColor" strokeWidth="4" opacity="0.5" />
+      {/* Thick diagonal slash */}
+      <line
+        x1="46"
+        y1="34"
+        x2="86"
+        y2="94"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      {/* Corner notch accent — top-left */}
+      <path d="M44 18 L56 18 L52 28 L51 28 Z" fill="currentColor" />
     </svg>
   );
 }
 
 /** Shield crest — Teamfight Tactics (shield with stylized "A" emblem). */
 export function TftCrest() {
-  const id = useId();
-  const filterId = `${id}-glow`;
   return (
     <svg
       aria-hidden="true"
@@ -195,47 +178,26 @@ export function TftCrest() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <defs>
-        <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      {/* Outer shield — flat top, angled sides, pointed bottom */}
+      {/* Outer shield — flat top with clipped corners, thick gold band, dark navy interior */}
       <path
-        d="M20 18 L110 18 L110 70 Q110 105 65 118 Q20 105 20 70 Z"
+        d="M32 16 L98 16 L108 26 L108 68 Q108 102 65 116 Q22 102 22 68 L22 26 Z"
         stroke="currentColor"
-        strokeWidth="3"
-        fill="none"
-        filter={`url(#${filterId})`}
+        strokeWidth="7"
+        fill="var(--color-blue-7)"
+        strokeLinejoin="round"
       />
-      {/* Inner shield inset */}
+      {/* Inner thin frame line */}
       <path
-        d="M28 26 L102 26 L102 70 Q102 98 65 110 Q28 98 28 70 Z"
+        d="M36 26 L94 26 L100 32 L100 66 Q100 94 65 106 Q30 94 30 66 L30 32 Z"
         stroke="currentColor"
         strokeWidth="1.5"
         fill="none"
-        opacity="0.4"
+        opacity="0.7"
       />
-      {/* Stylized "A" emblem */}
-      {/* Left leg */}
-      <line x1="48" y1="92" x2="65" y2="42" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      {/* Right leg */}
-      <line x1="82" y1="92" x2="65" y2="42" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      {/* Crossbar */}
-      <line x1="53" y1="74" x2="77" y2="74" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-      {/* Top cap */}
-      <path
-        d="M60 38 L65 28 L70 38"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-        fill="none"
-        opacity="0.8"
-      />
+      {/* Stylized "A" emblem — thick strokes */}
+      <line x1="49" y1="92" x2="65" y2="40" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
+      <line x1="81" y1="92" x2="65" y2="40" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
+      <line x1="54" y1="76" x2="76" y2="76" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -250,7 +212,7 @@ const MODES: Array<{
   key: ModeKey;
   countLabel: string;
   name: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
 }> = [
   { key: "sr", countLabel: "5v5", name: "Summoner's Rift", icon: <SummonersRiftCrest /> },
   { key: "tt", countLabel: "3v3", name: "Twisted Treeline", icon: <TwistedTreelineCrest /> },
