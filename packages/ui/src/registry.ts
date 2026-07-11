@@ -39,6 +39,9 @@ import { matchFoundModalShowcase } from "./lobby/match-found-modal.showcase";
 import { queueStatusShowcase } from "./lobby/queue-status.showcase";
 import { queueTypeListShowcase } from "./lobby/queue-type-list.showcase";
 import { roleSelectorShowcase } from "./lobby/role-selector.showcase";
+import { circleSubmitButtonShowcase } from "./login/circle-submit-button.showcase";
+import { loginCheckboxShowcase } from "./login/login-checkbox.showcase";
+import { loginTextInputShowcase } from "./login/login-text-input.showcase";
 
 /**
  * Every component registers its showcase entry here.
@@ -78,6 +81,10 @@ export const registry: ShowcaseEntry[] = [
   tabBarShowcase,
   topNavbarShowcase,
   windowFrameShowcase,
+  // login
+  circleSubmitButtonShowcase,
+  loginCheckboxShowcase,
+  loginTextInputShowcase,
   // collection
   championCardShowcase,
   skinCardShowcase,
