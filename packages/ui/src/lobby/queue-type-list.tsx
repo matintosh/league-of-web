@@ -8,20 +8,27 @@ function FilledDiamond() {
   return (
     <svg
       aria-hidden="true"
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Rotated square — all four points touch the edges */}
-      <rect
-        x="1.5"
-        y="1.5"
-        width="7"
-        height="7"
-        fill="currentColor"
-        transform="rotate(45 5 5)"
+      {/*
+       * Reference bullet (client-pvp-mode-select.jpg) is two-tone: a thick
+       * gold ring diamond with a bright cream core. Ring uses currentColor
+       * (parent span sets text-gold-3); core is gold-1 via token var —
+       * safe in prod thanks to the tokens package's unconditional :root block.
+       */}
+      <path
+        d="M7 1.4 L12.6 7 L7 12.6 L1.4 7 Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        fill="none"
+      />
+      <path
+        d="M7 4.6 L9.4 7 L7 9.4 L4.6 7 Z"
+        fill="var(--color-gold-1)"
       />
     </svg>
   );
@@ -31,22 +38,18 @@ function OutlineDiamond() {
   return (
     <svg
       aria-hidden="true"
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       {/* Rotated square — stroked only */}
-      <rect
-        x="1.5"
-        y="1.5"
-        width="7"
-        height="7"
+      <path
+        d="M7 1.4 L12.6 7 L7 12.6 L1.4 7 Z"
         stroke="currentColor"
         strokeWidth="1.2"
         fill="none"
-        transform="rotate(45 5 5)"
       />
     </svg>
   );
@@ -60,16 +63,18 @@ function WarningTriangle() {
   return (
     <svg
       aria-hidden="true"
-      width="12"
-      height="12"
+      width="14"
+      height="14"
       viewBox="0 0 12 12"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Equilateral triangle pointing up */}
+      {/* Triangle pointing up — stroke matches fill to round the corners like the reference */}
       <path
         d="M6 1.5 L11 10.5 L1 10.5 Z"
         fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="1.5"
         strokeLinejoin="round"
       />
       {/* Exclamation mark — body (grey-4 dark cutout against the red triangle) */}
@@ -145,14 +150,14 @@ export function QueueTypeList({
             disabled={isDisabled}
             onClick={() => onSelect(option.id)}
             className={[
-              "flex items-center gap-2 px-0 py-0.5 text-left",
+              "flex items-center gap-2.5 px-0 py-1 text-left",
               "transition-colors duration-150",
-              // Disabled
+              // Disabled — sampled reference text is exactly grey-2, no extra dimming
               isDisabled
-                ? "cursor-not-allowed text-grey-2 opacity-60"
+                ? "cursor-not-allowed text-grey-2"
                 : [
                     "cursor-pointer",
-                    isSelected ? "text-gold-2" : "text-grey-1 hover:text-gold-1",
+                    isSelected ? "text-gold-1" : "text-grey-1 hover:text-gold-1",
                   ]
                     .filter(Boolean)
                     .join(" "),
@@ -162,8 +167,8 @@ export function QueueTypeList({
               .filter(Boolean)
               .join(" ")}
           >
-            {/* Diamond bullet */}
-            <span className="shrink-0">
+            {/* Diamond bullet — selected ring is gold-3 regardless of label color */}
+            <span className={isSelected ? "shrink-0 text-gold-3" : "shrink-0"}>
               {isSelected ? <FilledDiamond /> : <OutlineDiamond />}
             </span>
 
@@ -177,7 +182,7 @@ export function QueueTypeList({
             {/* Label */}
             <span
               className={[
-                "font-body text-sm",
+                "font-display text-sm uppercase tracking-widest",
                 isSelected && "font-bold",
               ]
                 .filter(Boolean)

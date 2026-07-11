@@ -74,7 +74,7 @@ export function QueueTypeListDisabledWarningDemo() {
 /** Static snapshot — all states: selected, unselected, disabled+warning. */
 export function QueueTypeListAllStatesDemo() {
   return (
-    <div className="p-6">
+    <div className="p-6" data-shot="queue-type-list">
       <QueueTypeList
         options={ALL_STATES_OPTIONS}
         selectedId="blind-pick"

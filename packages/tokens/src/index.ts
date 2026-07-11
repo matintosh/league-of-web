@@ -38,8 +38,8 @@ export const palette = {
   tealGradPressA: "#0d3f4b",
   tealGradPressB: "#025577",
   statusOnline: "#00c853",
-  /** Warning/alert accent — queue-type-list warning triangle (issue #80) */
-  warning: "#C24A45",
+  /** Warning/alert accent — queue-type-list warning triangle, pixel-sampled from client-pvp-mode-select.jpg (issue #80) */
+  warning: "#ed2c49",
 } as const;
 
 export type Palette = typeof palette;

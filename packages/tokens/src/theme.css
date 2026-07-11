@@ -64,7 +64,7 @@
   --color-status-online: #00c853;
 
   /* Warning — destructive/alert accent (queue-type-list warning triangle) */
-  --color-warning: #C24A45;
+  --color-warning: #ed2c49;
 
   /* Typography — font files loaded by the app via next/font, exposed as vars */
   --font-display: var(--font-marcellus), "Marcellus", serif;
@@ -127,6 +127,6 @@
     --color-status-online: #00c853;
 
     /* Warning */
-    --color-warning: #C24A45;
+    --color-warning: #ed2c49;
   }
 }
