@@ -77,7 +77,7 @@ export function ChampionCard({
 
   const nameBar = (
     <div
-      className="bg-blue-7 flex items-center justify-center px-2"
+      className="bg-blue-7 flex items-center px-2"
       style={{ height: barHeight }}
     >
       <span className={`font-display uppercase tracking-widest text-gold-1 truncate ${text}`}>
