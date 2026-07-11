@@ -15,6 +15,8 @@ export { CurrencyDisplay } from "./chrome/currency-display";
 export type { CurrencyDisplayProps } from "./chrome/currency-display";
 export { FilterTabs } from "./chrome/filter-tabs";
 export type { FilterTabsProps } from "./chrome/filter-tabs";
+export { FriendRow } from "./chrome/friend-row";
+export type { FriendRowProps } from "./chrome/friend-row";
 export { HextechButton } from "./chrome/hextech-button";
 export type { HextechButtonProps, HextechButtonVariant, HextechButtonSize } from "./chrome/hextech-button";
 export { HextechCheckbox } from "./chrome/hextech-checkbox";
