@@ -23,8 +23,9 @@ import {
   championSplashUrl,
 } from "@low/fixtures";
 import { MatchmakingScreen } from "./matchmaking-screen";
+import { CollectionScreen } from "./collection-screen";
 
-type View = "home" | "matchmaking";
+type View = "home" | "matchmaking" | "collection";
 
 const NAV_ITEMS: NavItem[] = [
   { id: "home", label: "Home" },
@@ -179,7 +180,11 @@ export function ClientShell() {
             }
             navItems={NAV_ITEMS}
             activeId={activeNavId}
-            onNavigate={setActiveNavId}
+            onNavigate={(id) => {
+                setActiveNavId(id);
+                if (id === "collection") setView("collection");
+                else if (id === "home") setView("home");
+              }}
             currencySlot={
               <CurrencyDisplay
                 wallet={demoWallet}
@@ -222,8 +227,10 @@ export function ClientShell() {
 
           {/* Content area — switches between home diagonal-split and matchmaking */}
           <div className="relative flex-1 overflow-hidden">
-            {view === "matchmaking" ? (
-              <MatchmakingScreen onBack={() => setView("home")} />
+            {view === "collection" ? (
+              <CollectionScreen />
+            ) : view === "matchmaking" ? (
+              <MatchmakingScreen onBack={() => { setView("home"); setActiveNavId("home"); }} />
             ) : (
               <HomeLanding onPlay={() => setView("matchmaking")} />
             )}
