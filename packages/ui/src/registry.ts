@@ -6,6 +6,7 @@ import { hextechTooltipShowcase } from "./chrome/hextech-tooltip.showcase";
 import { modalFrameShowcase } from "./chrome/modal-frame.showcase";
 import { playButtonShowcase } from "./chrome/play-button.showcase";
 import { playerHovercardShowcase } from "./chrome/player-hovercard.showcase";
+import { sectionHeaderShowcase } from "./chrome/section-header.showcase";
 import { settingsModalShowcase } from "./chrome/settings-modal.showcase";
 import { settingsRowShowcase } from "./chrome/settings-row.showcase";
 import { tabBarShowcase } from "./chrome/tab-bar.showcase";
@@ -30,6 +31,7 @@ export const registry: ShowcaseEntry[] = [
   modalFrameShowcase,
   playButtonShowcase,
   playerHovercardShowcase,
+  sectionHeaderShowcase,
   settingsModalShowcase,
   settingsRowShowcase,
   tabBarShowcase,
