@@ -47,6 +47,9 @@ const SIZE: Record<"default" | "large", { width: number; artHeight: number; barH
  * Loading-art portrait with a name bar. Art zooms on hover (clipped by
  * overflow-hidden — the card itself does NOT scale).
  *
+ * NOTE: The reference (leagueoflegends.com) renders the name in pure #FFF —
+ * HOUSE RULE overrides to `text-gold-1` (no-pure-white; client-authentic).
+ *
  * Presentational only — props in, callbacks out. No data fetching.
  */
 export function ChampionCard({
