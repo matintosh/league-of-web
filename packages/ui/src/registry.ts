@@ -1,4 +1,5 @@
 import type { ShowcaseEntry } from "./showcase";
+import { teamPlayerRowShowcase } from "./champ-select/team-player-row.showcase";
 import { crestDividerShowcase } from "./chrome/crest-divider.showcase";
 import { currencyDisplayShowcase } from "./chrome/currency-display.showcase";
 import { filterTabsShowcase } from "./chrome/filter-tabs.showcase";
@@ -34,6 +35,8 @@ import { roleSelectorShowcase } from "./lobby/role-selector.showcase";
  * Keep sorted by area, then name.
  */
 export const registry: ShowcaseEntry[] = [
+  // champ-select
+  teamPlayerRowShowcase,
   // chrome
   crestDividerShowcase,
   currencyDisplayShowcase,

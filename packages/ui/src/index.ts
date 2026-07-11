@@ -1,4 +1,8 @@
 export type { Area, ShowcaseEntry, ShowcaseVariant } from "./showcase";
+// champ-select
+export { TeamPlayerRow } from "./champ-select/team-player-row";
+export type { TeamPlayerRowProps, PickState } from "./champ-select/team-player-row";
+// chrome
 export { CrestDivider } from "./chrome/crest-divider";
 export type { CrestDividerProps } from "./chrome/crest-divider";
 export { CurrencyDisplay } from "./chrome/currency-display";
