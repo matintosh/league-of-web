@@ -73,6 +73,13 @@ function HexModeIcon() {
 export interface MatchmakingScreenProps {
   /** Called when the back arrow is clicked to return to home. */
   onBack: () => void;
+  /**
+   * Called when the player accepts a match, immediately after clearing timers.
+   * When provided, the parent handles the transition (e.g. to the loadout
+   * screen). When absent, the screen shows its own "entering game" beat and
+   * resets to the lobby — preserving the original behaviour for standalone use.
+   */
+  onAccept?: () => void;
 }
 
 /**
@@ -90,7 +97,7 @@ export interface MatchmakingScreenProps {
  * Sized for exactly 1280×720 inside the WindowFrame content area (no
  * responsive units).
  */
-export function MatchmakingScreen({ onBack }: MatchmakingScreenProps) {
+export function MatchmakingScreen({ onBack, onAccept }: MatchmakingScreenProps) {
   const [lobbyState, setLobbyState] = useState<LobbyState>("lobby");
   const [primaryRole, setPrimaryRole] = useState<Role | null>(null);
   const [secondaryRole, setSecondaryRole] = useState<Role | null>(null);
@@ -188,9 +195,20 @@ export function MatchmakingScreen({ onBack }: MatchmakingScreenProps) {
   const acceptMatch = useCallback(() => {
     clearAllTimers();
     setLobbyState("lobby"); // hide the modal immediately
-    setEnteringGame(true);
 
-    // Show "entering game" text briefly then reset fully
+    if (onAccept) {
+      // Parent owns the post-accept transition (e.g. loadout screen).
+      // Reset internal state so the screen is clean if returned to.
+      setPrimaryRole(null);
+      setSecondaryRole(null);
+      setElapsedSeconds(0);
+      setSecondsRemaining(MATCH_ACCEPT_SECONDS);
+      onAccept();
+      return;
+    }
+
+    // Standalone fallback: show "entering game" beat then reset.
+    setEnteringGame(true);
     enteringGameTimeoutRef.current = setTimeout(() => {
       setEnteringGame(false);
       setPrimaryRole(null);
@@ -198,7 +216,7 @@ export function MatchmakingScreen({ onBack }: MatchmakingScreenProps) {
       setElapsedSeconds(0);
       setSecondsRemaining(MATCH_ACCEPT_SECONDS);
     }, 2000);
-  }, [clearAllTimers]);
+  }, [clearAllTimers, onAccept]);
 
   const declineMatch = useCallback(() => {
     clearAllTimers();

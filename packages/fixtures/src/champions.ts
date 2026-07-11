@@ -81,6 +81,41 @@ export const demoSkins: Record<string, { championName: string; skins: SkinEntry[
 };
 
 /**
+ * Warwick skins for the loadout screen demo.
+ * Skin indices verified against DDragon loading-art CDN (HTTP 200).
+ * Using indices 0, 3, 5, 6, 7 for 5 skins; index 5 (Feral Warwick) is the
+ * default selected as it matches the reference screenshot.
+ */
+export const warwickLoadoutSkins: SkinEntry[] = [
+  { name: "Warwick", skinIndex: 0, owned: true },
+  { name: "Big Bad Warwick", skinIndex: 3, owned: true },
+  { name: "Feral Warwick", skinIndex: 5, owned: true },
+  { name: "Firefang Warwick", skinIndex: 6, owned: false },
+  { name: "Hyena Warwick", skinIndex: 7, owned: false },
+];
+
+/**
+ * Fixture team for the loadout screen.
+ * Self = Warwick locked (index 2), slots 0–1 are picking, slots 3–4 are locked others.
+ */
+export interface LoadoutTeamMember {
+  summonerName: string;
+  state: "picking" | "locked";
+  championName?: string;
+  /** DDragon champion id for square icon (portraitSrc). */
+  championId?: string;
+  isSelf?: boolean;
+}
+
+export const loadoutTeam: LoadoutTeamMember[] = [
+  { summonerName: "qlxHarlan", state: "picking" },
+  { summonerName: "Oppeohtelar", state: "locked", championName: "Ashe", championId: "Ashe" },
+  { summonerName: "cherwood", state: "locked", championName: "Warwick", championId: "Warwick", isSelf: true },
+  { summonerName: "HowarqLqUq", state: "picking" },
+  { summonerName: "CallMeCallMeStar", state: "locked", championName: "Kindred", championId: "Kindred" },
+];
+
+/**
  * 20 champions for showcase/demo use. Alphabetical by name.
  */
 export const demoChampions: ChampionSummary[] = [
