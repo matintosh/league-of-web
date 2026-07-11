@@ -68,7 +68,7 @@ export function CountdownHeader({
       >
         {/* Teal fill — shrinks from right as seconds drain */}
         <div
-          className="absolute inset-y-0 left-0 bg-blue-2 transition-[width] duration-1000 linear"
+          className="absolute inset-y-0 left-0 bg-blue-2 transition-[width] duration-1000 ease-linear"
           style={{ width: barWidthPct }}
         />
 
