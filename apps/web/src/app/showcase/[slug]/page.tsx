@@ -28,7 +28,7 @@ export default async function ComponentPage({
             <h2 className="mb-3 text-sm uppercase tracking-widest text-gold-2">
               {variant.name}
             </h2>
-            <div className="rounded-sm border border-grey-4 bg-blue-7 p-10">
+            <div className="overflow-x-auto rounded-sm border border-grey-4 bg-blue-7 p-10">
               {variant.render()}
             </div>
             {variant.notes && <p className="mt-2 text-sm text-grey-2">{variant.notes}</p>}
