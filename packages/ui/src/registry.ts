@@ -1,4 +1,5 @@
 import type { ShowcaseEntry } from "./showcase";
+import { countdownHeaderShowcase } from "./champ-select/countdown-header.showcase";
 import { teamPlayerRowShowcase } from "./champ-select/team-player-row.showcase";
 import { crestDividerShowcase } from "./chrome/crest-divider.showcase";
 import { currencyDisplayShowcase } from "./chrome/currency-display.showcase";
@@ -36,6 +37,7 @@ import { roleSelectorShowcase } from "./lobby/role-selector.showcase";
  */
 export const registry: ShowcaseEntry[] = [
   // champ-select
+  countdownHeaderShowcase,
   teamPlayerRowShowcase,
   // chrome
   crestDividerShowcase,
