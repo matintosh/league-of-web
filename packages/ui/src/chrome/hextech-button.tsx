@@ -48,9 +48,9 @@ interface SizeConfig {
 
 const sizes: Record<HextechButtonSize, SizeConfig> = {
   // Figma-measured: 34px content box, 8px/16px padding, 12px/15px text (issue #56).
-  default: { height: 34, paddingClass: "px-4 py-2", textClass: "text-xs" },
+  default: { height: 34, paddingClass: "px-4 py-2", textClass: "text-xs leading-[15px]" },
   // Large scales proportionally; height and padding preserved from pre-#56 for existing consumers.
-  large: { height: 56, paddingClass: "px-14 py-4", textClass: "text-sm" },
+  large: { height: 56, paddingClass: "px-14 py-4", textClass: "text-base" },
 };
 
 // ---------------------------------------------------------------------------
@@ -165,6 +165,7 @@ function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps
               ]
                 .filter(Boolean)
                 .join(" ")}
+              style={{ height: cfg.height }}
             >
               {icon !== undefined && (
                 <span aria-hidden="true" className="flex shrink-0 items-center">
