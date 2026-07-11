@@ -1,0 +1,49 @@
+import type { ShowcaseEntry } from "../showcase";
+import {
+  SocialPanelEmptyGroupDemo,
+  SocialPanelFullReplicaDemo,
+  SocialPanelInteractiveDemo,
+  SocialPanelNoRequestsDemo,
+} from "./social-panel.demo";
+
+// ---------------------------------------------------------------------------
+// Showcase — server-safe (no 'use client').
+//
+// All SocialPanel usages are wrapped in client demo components because
+// SocialPanel accepts profileIconSrcFor: (s: Summoner) => string, which
+// cannot cross the Next.js server→client serialization boundary as a raw prop.
+// ---------------------------------------------------------------------------
+
+export const socialPanelShowcase: ShowcaseEntry = {
+  slug: "social-panel",
+  name: "SocialPanel",
+  area: "chrome",
+  description:
+    "Friends-list sidebar composition: SocialHeader → FriendRequestsRow (when requestCount > 0) → scrollable group sections (FriendGroupHeader + FriendRow list). Controlled collapse state. ~250px wide, bg-blue-7, full height.",
+  variants: [
+    {
+      name: "Full replica (2 groups, one collapsed, badge, mixed availability)",
+      notes:
+        'Closest to the real LoL client: "General" group expanded with 4 friends across in-game/in-queue/away/offline; "Work" group collapsed, showing derived (1/2) count. FriendRequestsRow shows a badge of 2. data-shot="social-panel" on the wrapper.',
+      render: () => <SocialPanelFullReplicaDemo />,
+    },
+    {
+      name: "Empty group",
+      notes:
+        "A group with zero friends. FriendGroupHeader shows (0/0) and no rows appear below it. Requests row hidden (no requestCount prop).",
+      render: () => <SocialPanelEmptyGroupDemo />,
+    },
+    {
+      name: "No requests (requestCount=0)",
+      notes:
+        "When requestCount is 0 or omitted, the FriendRequestsRow is hidden entirely — matching the real client behavior. One online friend shown.",
+      render: () => <SocialPanelNoRequestsDemo />,
+    },
+    {
+      name: "Interactive (collapse toggles + friend click log)",
+      notes:
+        "Click any group header to collapse/expand — rows appear/disappear and aria-expanded flips. Click a friend row to see their gameName logged below the panel.",
+      render: () => <SocialPanelInteractiveDemo />,
+    },
+  ],
+};
