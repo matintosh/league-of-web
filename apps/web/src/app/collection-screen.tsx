@@ -58,10 +58,15 @@ function SkinsTab({
   // Build champion filter options from demoSkins entries
   const championOptions: SelectOption[] = useMemo(
     () =>
-      Object.entries(demoSkins).map(([id, { championName }]) => ({
-        value: id,
-        label: championName,
-      })),
+      [
+        // Enabled "all" entry — the disabled placeholder can't be re-selected,
+        // so this is the only way back to the unfiltered view.
+        { value: "all", label: "All Champions" },
+        ...Object.entries(demoSkins).map(([id, { championName }]) => ({
+          value: id,
+          label: championName,
+        })),
+      ],
     []
   );
 
@@ -82,7 +87,7 @@ function SkinsTab({
     let entries = Object.entries(demoSkins);
 
     // Champion filter dropdown
-    if (championFilter) {
+    if (championFilter && championFilter !== "all") {
       entries = entries.filter(([id]) => id === championFilter);
     }
 

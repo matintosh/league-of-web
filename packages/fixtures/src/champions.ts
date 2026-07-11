@@ -73,7 +73,7 @@ export const demoSkins: Record<string, { championName: string; skins: SkinEntry[
       { name: "Imperial Lux", skinIndex: 3, owned: true },
       { name: "Steel Legion Lux", skinIndex: 4, owned: false },
       { name: "Star Guardian Lux", skinIndex: 5, owned: false },
-      { name: "elementalist Lux", skinIndex: 6, owned: false },
+      { name: "Elementalist Lux", skinIndex: 6, owned: false },
       { name: "Lunar Empress Lux", skinIndex: 7, owned: false },
       { name: "Battle Academia Lux", skinIndex: 8, owned: false },
     ],
