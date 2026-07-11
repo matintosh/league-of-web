@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "@low/tokens/theme.css";
 
+/* Scan monorepo packages so all utility classes in @low/ui are included.
+   Without this, Tailwind v4 only scans apps/web and misses classes like
+   bg-blue-2, bg-blue-6, text-teal-ring etc. used in packages/ui/src. */
+@source "../../packages";
+
 body {
   @apply bg-hextech-black text-grey-1 font-body antialiased;
 }

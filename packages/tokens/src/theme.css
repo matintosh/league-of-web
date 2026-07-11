@@ -1,4 +1,17 @@
-/* Keep in sync with packages/tokens/src/index.ts — same 32 hex values. */
+/*
+ * Hextech design tokens — two-block pattern for Tailwind v4.
+ *
+ * Block 1 (@theme): Registers tokens with Tailwind so it generates utility
+ *   classes (bg-gold-1, text-grey-4, etc.) AND emits the CSS variables to
+ *   :root for tokens that are referenced by those utilities in scanned files.
+ *
+ * Block 2 (:root in @layer base): Unconditionally emits ALL variables so
+ *   tokens used only in inline `style={{}}` props or SVG attributes are
+ *   always present — regardless of Tailwind's class-usage scan.
+ *
+ * Keep in sync with packages/tokens/src/index.ts (same 32 hex values).
+ */
+
 @theme {
   /* Gold — borders, accents, text highlights */
   --color-gold-1: #f0e6d2;
@@ -48,4 +61,56 @@
   /* Typography — font files loaded by the app via next/font, exposed as vars */
   --font-display: var(--font-marcellus), "Marcellus", serif;
   --font-body: var(--font-inter), "Inter", sans-serif;
+}
+
+/*
+ * Unconditional :root block — guarantees ALL tokens are emitted as CSS
+ * custom properties even when Tailwind's class-usage scan would otherwise
+ * tree-shake them (e.g. tokens only referenced in inline style={} or SVG
+ * attributes, not via Tailwind utility classes).
+ */
+@layer base {
+  :root {
+    /* Gold */
+    --color-gold-1: #f0e6d2;
+    --color-gold-2: #c8aa6e;
+    --color-gold-3: #c89b3c;
+    --color-gold-4: #785a28;
+    --color-gold-5: #463714;
+    --color-gold-6: #32281e;
+    --color-gold-cream: #cdbe91;
+    --color-gold-coin: #deb53c;
+
+    /* Blue */
+    --color-blue-1: #cdfafa;
+    --color-blue-2: #0ac8b9;
+    --color-blue-3: #0397ab;
+    --color-blue-4: #005a82;
+    --color-blue-5: #0a323c;
+    --color-blue-6: #091428;
+    --color-blue-7: #0a1428;
+
+    /* Grey */
+    --color-grey-1: #a09b8c;
+    --color-grey-2: #5b5a56;
+    --color-grey-3: #3c3c41;
+    --color-grey-4: #1e2328;
+    --color-grey-cool: #1e282d;
+    --color-hextech-black: #010a13;
+
+    /* Teal — play-button frame, ring, gradient stops */
+    --color-teal-frame: #0b4052;
+    --color-teal-ring: #167786;
+    --color-navy-swirl: #082640;
+    --color-teal-grad-a: #0593a7;
+    --color-teal-grad-b: #026f8f;
+    --color-teal-grad-hover-a: #91e1dc;
+    --color-teal-grad-hover-b: #0c9ca1;
+    --color-teal-grad-hover-c: #1f9ebd;
+    --color-teal-grad-press-a: #0d3f4b;
+    --color-teal-grad-press-b: #025577;
+
+    /* Status */
+    --color-status-online: #00c853;
+  }
 }
