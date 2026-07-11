@@ -3,6 +3,8 @@ import { crestDividerShowcase } from "./chrome/crest-divider.showcase";
 import { currencyDisplayShowcase } from "./chrome/currency-display.showcase";
 import { filterTabsShowcase } from "./chrome/filter-tabs.showcase";
 import { hextechButtonShowcase } from "./chrome/hextech-button.showcase";
+import { hextechCheckboxShowcase } from "./chrome/hextech-checkbox.showcase";
+import { hextechSelectShowcase } from "./chrome/hextech-select.showcase";
 import { hextechToggleShowcase } from "./chrome/hextech-toggle.showcase";
 import { hextechTooltipShowcase } from "./chrome/hextech-tooltip.showcase";
 import { modalFrameShowcase } from "./chrome/modal-frame.showcase";
@@ -10,6 +12,7 @@ import { newsCardShowcase } from "./chrome/news-card.showcase";
 import { playButtonShowcase } from "./chrome/play-button.showcase";
 import { playerHovercardShowcase } from "./chrome/player-hovercard.showcase";
 import { sectionHeaderShowcase } from "./chrome/section-header.showcase";
+import { searchInputShowcase } from "./chrome/search-input.showcase";
 import { settingsModalShowcase } from "./chrome/settings-modal.showcase";
 import { settingsRowShowcase } from "./chrome/settings-row.showcase";
 import { storyCardShowcase } from "./chrome/story-card.showcase";
@@ -34,6 +37,8 @@ export const registry: ShowcaseEntry[] = [
   currencyDisplayShowcase,
   filterTabsShowcase,
   hextechButtonShowcase,
+  hextechCheckboxShowcase,
+  hextechSelectShowcase,
   hextechToggleShowcase,
   hextechTooltipShowcase,
   modalFrameShowcase,
@@ -41,6 +46,7 @@ export const registry: ShowcaseEntry[] = [
   playButtonShowcase,
   playerHovercardShowcase,
   sectionHeaderShowcase,
+  searchInputShowcase,
   settingsModalShowcase,
   settingsRowShowcase,
   storyCardShowcase,
