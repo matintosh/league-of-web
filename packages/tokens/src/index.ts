@@ -1,4 +1,4 @@
-// Keep in sync with packages/tokens/src/theme.css — same 36 hex values.
+// Keep in sync with packages/tokens/src/theme.css — same 43 hex values.
 /** Hextech palette as TS constants — for the rare case CSS classes can't be used (e.g. canvas). */
 export const palette = {
   gold1: "#f0e6d2",
@@ -40,6 +40,21 @@ export const palette = {
   statusOnline: "#00c853",
   /** Warning/alert accent — queue-type-list warning triangle, pixel-sampled from client-pvp-mode-select.jpg (issue #80) */
   warning: "#ed2c49",
+  // Login — light-theme palette (issue #100, pixel-sampled from docs/reference/riot-login-page.png)
+  /** Riot brand red — focus border, checked fill, enabled button bg */
+  riotRed: "#eb022b",
+  /** Login page background (pure white) */
+  loginBg: "#ffffff",
+  /** Login input/checkbox surface fill */
+  loginSurface: "#ececec",
+  /** Floating label and disabled-button arrow color */
+  loginPlaceholder: "#a7a7b7",
+  /** Login body text color */
+  loginInk: "#343434",
+  /** Facebook brand button (normalized canonical value) */
+  brandFacebook: "#1877f2",
+  /** Login page text/icon black */
+  loginBlack: "#000000",
 } as const;
 
 export type Palette = typeof palette;
