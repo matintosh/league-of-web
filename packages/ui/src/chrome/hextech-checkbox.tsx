@@ -48,7 +48,7 @@ export function HextechCheckbox({
         aria-hidden="true"
         className={[
           "flex h-[14px] w-[14px] shrink-0 items-center justify-center",
-          "rounded-sm border border-gold-4 bg-transparent",
+          "border border-gold-4 bg-transparent",
           "transition-colors duration-150",
           // Gold outline on keyboard focus
           "peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-1 peer-focus-visible:outline-gold-3",

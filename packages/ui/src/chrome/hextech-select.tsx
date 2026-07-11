@@ -41,7 +41,7 @@ export function HextechSelect({
     <div
       className={[
         "relative w-full",
-        "bg-hextech-black border border-grey-3 rounded-sm",
+        "bg-hextech-black border border-grey-3",
         "transition-colors duration-150",
         "focus-within:border-gold-4 focus-within:shadow-[0_0_0_1px_var(--color-gold-4)]",
         disabled && "opacity-50 cursor-not-allowed",
