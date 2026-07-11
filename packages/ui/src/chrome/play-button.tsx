@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import React, { useId } from "react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 // ---------------------------------------------------------------------------
@@ -235,16 +235,21 @@ function Medallion({ size, disabled, discGradId, glyphGradId }: MedallionProps) 
 }
 
 // ---------------------------------------------------------------------------
-// BarFrame v3 — three-layer clip-path stack implementing the Figma spec:
+// BarFrame v3 — four-layer clip-path stack implementing the Figma spec:
 //
-//   Layer 1 (outermost): 6px black/50 ring
-//   Layer 2:              3px teal gradient border  ← gradient varies by state
-//   Layer 3 (surface):    rgba(30,35,40,0.95)
+//   Layer 1 (outermost): 4px black/50 ring  (1× node w=4)
+//   Layer 2:              1px dark-teal backing (#0B4052 / --color-teal-frame)
+//                         This makes the teal frame read against dark backgrounds.
+//                         Spec requests 2px, but 2px yields 18px surface vs 19px
+//                         line-height (overflows by 1px) — reduced to 1px so the
+//                         surface is 20px (fits 19px line-height with 1px clearance).
+//   Layer 3:              2px teal gradient border  ← gradient varies by state
+//   Layer 4 (surface):    rgba(30,35,40,0.95)
 //
 // The teal gradient border is the most challenging — CSS border-image doesn't
 // survive clip-path. Solution: the border layer IS a div that fills the gap
-// between layer-1 and layer-3; its `background` is the teal gradient, and
-// the nested clip-path creates a 3px "frame" of that gradient color around the
+// between layer-2 and layer-4; its `background` is the teal gradient, and
+// the nested clip-path creates a 2px "frame" of that gradient color around the
 // surface. The gradient is swapped via inline style on the wrapper using
 // group-hover/pb and group-active/pb via sibling div opacity trick.
 //
@@ -255,17 +260,20 @@ function Medallion({ size, disabled, discGradId, glyphGradId }: MedallionProps) 
 // Corner pieces (TR/BR): CSS positioned divs with two borders forming an 'L'.
 // Socket pocket: semi-transparent left-edge semicircle.
 //
-// Pressed geometry: active: CSS scales/shifts the button text and adjusts socket.
-// The bar "extends left" is achieved by reducing left padding on press.
+// Pressed geometry: socket shrinks (44→40px default, 75→68px hero) and bar
+// extends left by pressExtend px via reduced left padding, both on group-active/pb.
+// Socket size uses CSS var --socket-size, overridden by group-active/pb class.
 // ---------------------------------------------------------------------------
 
-// Insets: blackRing (3) + tealBorder (2) = 5px each side (top+bottom = 10px total).
-// The raw CSS export is @2× so 12px ring → 6px @1×, 6px teal → 3px @1×, but that
-// eats too much of the 34px bar (leaves only 16px surface). We use 3+2 which gives
-// a 24px-tall surface fitting the 19px line-height at 1×.
-const BLACK_RING = 3;
+// Layer widths per side (px):
+//   BLACK_RING:    4  (per governing node w=4 at 1×)
+//   TEAL_BACKING:  1  (spec says 2, but 2 → surface=18px < 19px line-height; reduced to 1)
+//   TEAL_BORDER:   2  (gradient frame)
+//   Per-side:      7  → TOTAL_INSET = 14 → surface = 34−14 = 20px (fits 19px lh)
+const BLACK_RING = 4;
+const TEAL_BACKING = 1; // dark-teal (#0B4052) layer; would be 2 but that clips 19px text
 const TEAL_BORDER = 2;
-const TOTAL_INSET = (BLACK_RING + TEAL_BORDER) * 2; // 10px total vertical
+const TOTAL_INSET = (BLACK_RING + TEAL_BACKING + TEAL_BORDER) * 2; // 14px total vertical
 
 interface BarFrameProps {
   cfg: SizeConfig;
@@ -283,19 +291,25 @@ function BarFrame({ cfg, disabled, children }: BarFrameProps) {
         className="bg-grey-3"
         style={{ clipPath: clip, padding: BLACK_RING }}
       >
+        {/* Teal-frame backing (greyed out for disabled) */}
         <div
           className="bg-grey-4"
-          style={{ clipPath: clip, padding: TEAL_BORDER }}
+          style={{ clipPath: clip, padding: TEAL_BACKING }}
         >
           <div
-            className="relative flex items-center"
-            style={{
-              clipPath: clip,
-              height: bar - TOTAL_INSET,
-              background: "rgba(30,35,40,0.95)",
-            }}
+            className="bg-grey-3"
+            style={{ clipPath: clip, padding: TEAL_BORDER }}
           >
-            {children}
+            <div
+              className="relative flex items-center"
+              style={{
+                clipPath: clip,
+                height: bar - TOTAL_INSET,
+                background: "rgba(30,35,40,0.95)",
+              }}
+            >
+              {children}
+            </div>
           </div>
         </div>
       </div>
@@ -306,87 +320,99 @@ function BarFrame({ cfg, disabled, children }: BarFrameProps) {
 
   return (
     <div
-      // Layer 1: black/50 ring (6px pad)
+      // Layer 1: 4px black/50 ring (per governing node w=4)
       style={{
         clipPath: clip,
         padding: BLACK_RING,
         background: "rgba(0,0,0,0.5)",
       }}
     >
-      {/*
-        Teal border layers — stacked with opacity transitions.
-        Three divs (default / hover / pressed) fade in/out.
-        Each is clipped by the same arrow shape, producing the 3px gradient "border."
-      */}
-      <div className="relative" style={{ clipPath: clip }}>
-        {/* Default border gradient (fades on hover/active) */}
-        <div
-          className="absolute inset-0 transition-opacity duration-150 group-hover/pb:opacity-0 group-active/pb:opacity-0 pointer-events-none"
-          style={{ background: TEAL_GRAD.default }}
-        />
-        {/* Hover border gradient */}
-        <div
-          className="absolute inset-0 opacity-0 transition-opacity duration-150 group-hover/pb:opacity-100 group-active/pb:opacity-0 pointer-events-none"
-          style={{ background: TEAL_GRAD.hover }}
-        />
-        {/* Pressed border gradient */}
-        <div
-          className="absolute inset-0 opacity-0 transition-opacity duration-150 group-active/pb:opacity-100 pointer-events-none"
-          style={{ background: TEAL_GRAD.pressed }}
-        />
-
-        {/* Inner layer: surface (grey-4/95) with TEAL_BORDER padding */}
-        <div style={{ padding: TEAL_BORDER }}>
+      {/* Layer 2: dark-teal backing (#0B4052) — makes teal frame read against dark BGs */}
+      <div
+        style={{
+          clipPath: clip,
+          padding: TEAL_BACKING,
+          background: "var(--color-teal-frame)",
+        }}
+      >
+        {/*
+          Layer 3: Teal gradient border layers — stacked with opacity transitions.
+          Three divs (default / hover / pressed) fade in/out.
+          Each is clipped by the same arrow shape, producing the 2px gradient "border."
+        */}
+        <div className="relative" style={{ clipPath: clip }}>
+          {/* Default border gradient (fades on hover/active) */}
           <div
-            className="relative flex items-center"
-            style={{
-              clipPath: arrowClip(surfaceH),
-              height: surfaceH,
-              background: "rgba(30,35,40,0.95)",
-            }}
-          >
-            {/* Socket pocket: semi-transparent darkening semicircle on left */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2"
-              style={{
-                width: cfg.socket / 2,
-                height: cfg.socket,
-                background: "rgba(0,0,0,0.2)",
-                borderRadius: `0 ${cfg.socket / 2}px ${cfg.socket / 2}px 0`,
-              }}
-            />
+            className="absolute inset-0 transition-opacity duration-150 group-hover/pb:opacity-0 group-active/pb:opacity-0 pointer-events-none"
+            style={{ background: TEAL_GRAD.default }}
+          />
+          {/* Hover border gradient */}
+          <div
+            className="absolute inset-0 opacity-0 transition-opacity duration-150 group-hover/pb:opacity-100 group-active/pb:opacity-0 pointer-events-none"
+            style={{ background: TEAL_GRAD.hover }}
+          />
+          {/* Pressed border gradient */}
+          <div
+            className="absolute inset-0 opacity-0 transition-opacity duration-150 group-active/pb:opacity-100 pointer-events-none"
+            style={{ background: TEAL_GRAD.pressed }}
+          />
 
-            {/* Corner piece TR — L-bracket positioned in flat area before the arrow tip */}
-            {/* right = surfaceH/2 pushes it left of where diagonals start */}
+          {/* Layer 4: surface (grey-4/95) with TEAL_BORDER padding */}
+          <div style={{ padding: TEAL_BORDER }}>
             <div
-              aria-hidden="true"
-              className="pointer-events-none absolute"
+              className="relative flex items-center"
               style={{
-                top: cfg.cornerInset,
-                right: surfaceH / 2 + cfg.cornerInset,
-                width: cfg.cornerLeg,
-                height: cfg.cornerLeg,
-                borderTop: `1.5px solid var(--color-teal-grad-a)`,
-                borderRight: `1.5px solid var(--color-teal-grad-b)`,
+                clipPath: arrowClip(surfaceH),
+                height: surfaceH,
+                background: "rgba(30,35,40,0.95)",
               }}
-            />
+            >
+              {/* Socket pocket: shrinks on press via CSS var --socket-size.
+                  --socket-size is set on the outer group/pb wrapper (default: cfg.socket)
+                  and overridden to cfg.socketPressed by group-active/pb on that wrapper.
+                  This div reads the inherited value — no local override so the cascade works. */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 transition-all duration-150"
+                style={{
+                  width: `calc(var(--socket-size) / 2)`,
+                  height: `var(--socket-size)`,
+                  background: "rgba(0,0,0,0.2)",
+                  borderRadius: `0 calc(var(--socket-size) / 2) calc(var(--socket-size) / 2) 0`,
+                }}
+              />
 
-            {/* Corner piece BR — mirror of TR (matrix(1,0,0,-1,0,0) in Figma) */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute"
-              style={{
-                bottom: cfg.cornerInset,
-                right: surfaceH / 2 + cfg.cornerInset,
-                width: cfg.cornerLeg,
-                height: cfg.cornerLeg,
-                borderBottom: `1.5px solid var(--color-teal-grad-a)`,
-                borderRight: `1.5px solid var(--color-teal-grad-b)`,
-              }}
-            />
+              {/* Corner piece TR — L-bracket positioned in flat area before the arrow tip */}
+              {/* right = surfaceH/2 pushes it left of where diagonals start */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute"
+                style={{
+                  top: cfg.cornerInset,
+                  right: surfaceH / 2 + cfg.cornerInset,
+                  width: cfg.cornerLeg,
+                  height: cfg.cornerLeg,
+                  borderTop: `1.5px solid var(--color-teal-grad-a)`,
+                  borderRight: `1.5px solid var(--color-teal-grad-b)`,
+                }}
+              />
 
-            {children}
+              {/* Corner piece BR — mirror of TR (matrix(1,0,0,-1,0,0) in Figma) */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute"
+                style={{
+                  bottom: cfg.cornerInset,
+                  right: surfaceH / 2 + cfg.cornerInset,
+                  width: cfg.cornerLeg,
+                  height: cfg.cornerLeg,
+                  borderBottom: `1.5px solid var(--color-teal-grad-a)`,
+                  borderRight: `1.5px solid var(--color-teal-grad-b)`,
+                }}
+              />
+
+              {children}
+            </div>
           </div>
         </div>
       </div>
@@ -413,7 +439,8 @@ export interface PlayButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
  * PlayButton v3 — Figma-measured layer stack.
  *
  * ## Frame (outer → inner)
- * 6px black/50 ring → 3px teal gradient border → rgba(30,35,40,0.95) surface.
+ * 4px black/50 ring → 1px #0B4052 teal-frame backing → 2px teal gradient border → rgba(30,35,40,0.95) surface.
+ * Per-side inset: 4+1+2 = 7px; total vertical inset: 14px; surface height: bar−14.
  *
  * ## Teal gradient (per state, API-extracted, supersedes CSS export)
  * - Default: `#0593A7 → #026F8F`
@@ -451,6 +478,7 @@ export function PlayButton({
     bar,
     barMinWidth,
     barPx,
+    gap,
     fontSize,
     lineHeight,
     pressExtend,
@@ -464,6 +492,11 @@ export function PlayButton({
       className={[
         "inline-flex items-center group/pb",
         "transition-all duration-150",
+        // Pressed geometry: CSS vars set here; group-active overrides them.
+        // --socket-size  shrinks the socket pocket (44→40 default, 75→68 hero).
+        // --press-extend shifts bar left (reduces left padding) by pressExtend px.
+        !disabled &&
+          `group-active/pb:[--socket-size:${socketPressed}px] group-active/pb:[--press-extend:${pressExtend}px]`,
         // Drop-shadow lives on the unclipped wrapper so the clipped bar
         // silhouette receives the glow correctly.
         "has-[:disabled]:[filter:none]",
@@ -481,6 +514,14 @@ export function PlayButton({
       ]
         .filter(Boolean)
         .join(" ")}
+      style={
+        !disabled
+          ? ({
+              "--socket-size": `${socket}px`,
+              "--press-extend": "0px",
+            } as React.CSSProperties)
+          : undefined
+      }
     >
       {/* Medallion — z-10 so it overlaps the bar frame */}
       <div className="relative z-10" style={{ marginRight: -overlap }}>
@@ -511,8 +552,10 @@ export function PlayButton({
             lineHeight: `${lineHeight}px`,
             height: bar - TOTAL_INSET,
             minWidth: barMinWidth,
-            // left pad: content pad + half-socket overlap (so text clears the medallion)
-            paddingLeft: barPx + overlap,
+            gap,
+            // left pad: content pad + half-socket overlap − pressExtend on active
+            // --press-extend is 0px at rest; overridden to pressExtend px by group-active/pb
+            paddingLeft: `calc(${barPx + overlap}px - var(--press-extend, 0px))`,
             // right pad: content pad + tip depth (so text clears the arrow tip)
             paddingRight: barPx + bar / 2,
           }}

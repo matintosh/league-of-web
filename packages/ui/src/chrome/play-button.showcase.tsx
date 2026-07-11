@@ -14,7 +14,7 @@ export const playButtonShowcase: ShowcaseEntry = {
     },
     {
       name: "Hero",
-      notes: "size='hero' — landing-CTA scale (medallion 72px, bar 56px, text-2xl)",
+      notes: "size='hero' — landing-CTA scale (medallion 75px, bar 58px, text 26px/32px lh)",
       render: () => <PlayButton size="hero" />,
     },
     {
