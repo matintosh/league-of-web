@@ -7,6 +7,7 @@ import { crestDividerShowcase } from "./chrome/crest-divider.showcase";
 import { currencyDisplayShowcase } from "./chrome/currency-display.showcase";
 import { filterTabsShowcase } from "./chrome/filter-tabs.showcase";
 import { friendGroupHeaderShowcase } from "./chrome/friend-group-header.showcase";
+import { friendRequestsRowShowcase } from "./chrome/friend-requests-row.showcase";
 import { friendRowShowcase } from "./chrome/friend-row.showcase";
 import { hextechButtonShowcase } from "./chrome/hextech-button.showcase";
 import { hextechCheckboxShowcase } from "./chrome/hextech-checkbox.showcase";
@@ -21,6 +22,7 @@ import { searchInputShowcase } from "./chrome/search-input.showcase";
 import { sectionHeaderShowcase } from "./chrome/section-header.showcase";
 import { settingsModalShowcase } from "./chrome/settings-modal.showcase";
 import { settingsRowShowcase } from "./chrome/settings-row.showcase";
+import { socialHeaderShowcase } from "./chrome/social-header.showcase";
 import { storyCardShowcase } from "./chrome/story-card.showcase";
 import { tabBarShowcase } from "./chrome/tab-bar.showcase";
 import { topNavbarShowcase } from "./chrome/top-navbar.showcase";
@@ -50,6 +52,7 @@ export const registry: ShowcaseEntry[] = [
   currencyDisplayShowcase,
   filterTabsShowcase,
   friendGroupHeaderShowcase,
+  friendRequestsRowShowcase,
   friendRowShowcase,
   hextechButtonShowcase,
   hextechCheckboxShowcase,
@@ -64,6 +67,7 @@ export const registry: ShowcaseEntry[] = [
   sectionHeaderShowcase,
   settingsModalShowcase,
   settingsRowShowcase,
+  socialHeaderShowcase,
   storyCardShowcase,
   tabBarShowcase,
   topNavbarShowcase,
