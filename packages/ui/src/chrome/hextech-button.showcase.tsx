@@ -147,12 +147,58 @@ export const hextechButtonShowcase: ShowcaseEntry = {
     // ---- Reference replicas (top) — exact Figma metrics: 34px, 8/16 pad, 4px gap, 12px icon ----
     {
       name: "Reference replica — 9900 (gold crest)",
-      notes: "Exact Figma metrics: 34px content height, 8/16px padding, 4px gap, 12px icon slot (issue #56)",
+      notes: "Riot production recipe: 2px gradient border (gold-border-dark→gold-border-light), grey-4 fill, gold-2 text, soft 13px glow. Metrics: 34px height, px-4 py-2, gap-1, 12px icon (issues #56 + #61)",
       render: () => (
         <div data-shot="gold-9900" style={{ display: "inline-block", padding: "8px 12px 12px 8px" }}>
           <HextechButton variant="secondary" icon={<GoldCrestIcon />}>
             9900
           </HextechButton>
+        </div>
+      ),
+    },
+    {
+      name: "Reference replica — 9900 Hover (forced)",
+      notes: "Hover (forced static classes) — border brightens gold-2→gold-1, fill→grey-hover, text→gold-1, glow doubles. Compare vs docs/reference/riot-prod-gold-button-hover.png",
+      render: () => (
+        // Force hover classes statically so we can screenshot without Playwright hover
+        <div data-shot="gold-hover-demo" style={{ display: "inline-block", padding: "8px 12px 12px 8px" }}>
+          <div
+            style={{
+              display: "inline-block",
+              boxShadow: "0 0 28px var(--color-hextech-black), 0 0 28px rgba(1,10,19,0.6)",
+            }}
+          >
+            <div
+              style={{
+                padding: "2px",
+                background: "linear-gradient(to top, var(--color-gold-2), var(--color-gold-1))",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "4px",
+                  height: 34,
+                  padding: "8px 16px",
+                  background: "var(--color-grey-hover)",
+                  fontFamily: "var(--font-display)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  fontSize: "0.75rem",
+                  lineHeight: "15px",
+                  color: "var(--color-gold-1)",
+                  cursor: "pointer",
+                }}
+              >
+                <span aria-hidden="true" style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+                  <GoldCrestIcon />
+                </span>
+                9900
+              </div>
+            </div>
+          </div>
         </div>
       ),
     },
@@ -177,10 +223,10 @@ export const hextechButtonShowcase: ShowcaseEntry = {
       ),
     },
 
-    // ---- Gold family (secondary) ----
+    // ---- Gold family (secondary) — Riot production recipe (issue #61) ----
     {
       name: "Secondary — OK",
-      notes: "Plain gold rectangle. No clip-path. Near-black outer/inner edges, gold gradient band (gold-2→gold-5), grey-4 charcoal fill, 4px hard drop shadow.",
+      notes: "Riot production: 2px gradient border (gold-border-dark→gold-border-light), grey-4 fill, gold-2 text, soft glow. Hover: border→gold-1/gold-2, fill→grey-hover, text→gold-1, glow doubles.",
       render: () => <HextechButton variant="secondary">OK</HextechButton>,
     },
     {

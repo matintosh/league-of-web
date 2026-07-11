@@ -4,8 +4,8 @@
 /* Scan monorepo packages so all utility classes in @low/ui are included.
    Without this, Tailwind v4 only scans apps/web and misses classes like
    bg-blue-2, bg-blue-6, text-teal-ring etc. used in packages/ui/src. */
-@source "../../packages";
-/* ^ path resolves relative to apps/web/ (the postcss project root), NOT this file. */
+@source "../../../../packages";
+/* ^ @source resolves relative to THIS stylesheet (apps/web/src/app/) per tailwind v4 — four levels up to the monorepo packages/. The previous "../../packages" pointed at a nonexistent dir and silently scanned nothing. */
 
 body {
   @apply bg-hextech-black text-grey-1 font-body antialiased;
