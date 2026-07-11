@@ -75,6 +75,8 @@ export { LoginCheckbox } from "./login/login-checkbox";
 export type { LoginCheckboxProps } from "./login/login-checkbox";
 export { LoginTextInput } from "./login/login-text-input";
 export type { LoginTextInputProps } from "./login/login-text-input";
+export { SocialLoginButtons } from "./login/social-login-buttons";
+export type { SocialLoginButtonsProps } from "./login/social-login-buttons";
 // lobby
 export { GameModeCard } from "./lobby/game-mode-card";
 export type { GameModeCardProps } from "./lobby/game-mode-card";
