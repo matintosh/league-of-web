@@ -7,7 +7,7 @@
     ".": "./src/index.ts",
     "./registry": "./src/registry.ts"
   },
-  "scripts": { "typecheck": "tsc --noEmit" },
+  "scripts": { "typecheck": "tsc --noEmit && node ../../tools/check-exports.mjs" },
   "peerDependencies": {
     "react": "^19"
   },
