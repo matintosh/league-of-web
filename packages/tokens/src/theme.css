@@ -9,7 +9,7 @@
  *   tokens used only in inline `style={{}}` props or SVG attributes are
  *   always present — regardless of Tailwind's class-usage scan.
  *
- * Keep ALL THREE in sync (same 43 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
+ * Keep ALL THREE in sync (same 51 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
  */
 
 @theme {
@@ -59,6 +59,22 @@
   --color-teal-grad-hover-c: #1f9ebd;
   --color-teal-grad-press-a: #0d3f4b;
   --color-teal-grad-press-b: #025577;
+
+  /* Cyan bright set — XAML v4 default bar stroke (3 stops @ 80% alpha) and hover stroke (full alpha).
+     #006D7D maps to teal-grad-b visually close; #0493A7 maps to teal-grad-a visually close.
+     New tokens are the bright highlight stops only present in the XAML spec:
+     cyan-1 (#3FE7FF) default top stop, cyan-2 (#AFF5FF) hover top, cyan-3 (#46E6FF) hover mid, cyan-4 (#00ADD4) hover bottom. */
+  --color-cyan-1: #3fe7ff;
+  --color-cyan-2: #aff5ff;
+  --color-cyan-3: #46e6ff;
+  --color-cyan-4: #00add4;
+
+  /* PlayButton v4 structure borders — XAML GoldLine/GreenLine frame colors */
+  --color-pb-outer-bg: #00070e;
+  --color-pb-outer-border: #34291e;
+  /* PlayButton v4 inner-frame colors — XAML hover fill top stop + GreenLine inner border */
+  --color-pb-hover-fill: #1d3b4a;
+  --color-pb-inner-border: #09343d;
 
   /* Status — availability indicators */
   --color-status-online: #00c853;
@@ -131,6 +147,19 @@
     --color-teal-grad-hover-c: #1f9ebd;
     --color-teal-grad-press-a: #0d3f4b;
     --color-teal-grad-press-b: #025577;
+
+    /* Cyan bright — PlayButton v4 XAML spec bar stroke highlights */
+    --color-cyan-1: #3fe7ff;
+    --color-cyan-2: #aff5ff;
+    --color-cyan-3: #46e6ff;
+    --color-cyan-4: #00add4;
+
+    /* PlayButton v4 structure border colors (GoldLine/GreenLine from XAML) */
+    --color-pb-outer-bg: #00070e;
+    --color-pb-outer-border: #34291e;
+    /* PlayButton v4 inner-frame colors — XAML hover fill top stop + GreenLine inner border */
+    --color-pb-hover-fill: #1d3b4a;
+    --color-pb-inner-border: #09343d;
 
     /* Status */
     --color-status-online: #00c853;
