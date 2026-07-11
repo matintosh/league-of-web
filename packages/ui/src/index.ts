@@ -15,6 +15,8 @@ export { PlayerHovercard } from "./chrome/player-hovercard";
 export type { PlayerHovercardProps } from "./chrome/player-hovercard";
 export { SectionHeader } from "./chrome/section-header";
 export type { SectionHeaderProps, SectionHeaderSize, SectionHeaderAlign } from "./chrome/section-header";
+export { NewsCard } from "./chrome/news-card";
+export type { NewsCardProps } from "./chrome/news-card";
 export { SettingsModal } from "./chrome/settings-modal";
 export type { SettingsModalProps, SettingsSection } from "./chrome/settings-modal";
 export { SettingsRow } from "./chrome/settings-row";
