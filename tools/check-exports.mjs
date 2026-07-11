@@ -17,8 +17,9 @@ for (const area of areas) {
     const stem = f.replace(/\.tsx$/, "");
     const pascal = stem.replace(/(^|-)(\w)/g, (_, __, c) => c.toUpperCase());
     const path = `./${area.name}/${stem}`;
-    if (!index.includes(`export { ${pascal} }`) || !index.includes(path)) {
-      missing.push(`${area.name}/${f} → expected: export { ${pascal} } from "${path}";`);
+    const nameRe = new RegExp(`export \\{[^}]*\\b${pascal}\\b[^}]*\\} from "${path.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}"`);
+    if (!nameRe.test(index)) {
+      missing.push(`${area.name}/${f} → expected an export of ${pascal} from "${path}"`);
     }
   }
 }
