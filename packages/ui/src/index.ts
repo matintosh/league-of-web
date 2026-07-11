@@ -1,5 +1,7 @@
 export type { Area, ShowcaseEntry, ShowcaseVariant } from "./showcase";
 // champ-select
+export { CountdownHeader } from "./champ-select/countdown-header";
+export type { CountdownHeaderProps } from "./champ-select/countdown-header";
 export { TeamPlayerRow } from "./champ-select/team-player-row";
 export type { TeamPlayerRowProps, PickState } from "./champ-select/team-player-row";
 // chrome
