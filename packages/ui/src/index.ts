@@ -47,6 +47,8 @@ export { SettingsModal } from "./chrome/settings-modal";
 export type { SettingsModalProps, SettingsSection } from "./chrome/settings-modal";
 export { SettingsRow } from "./chrome/settings-row";
 export type { SettingsRowProps } from "./chrome/settings-row";
+export { SocialDock } from "./chrome/social-dock";
+export type { SocialDockProps, DockButton } from "./chrome/social-dock";
 export { SocialHeader } from "./chrome/social-header";
 export type { SocialHeaderProps, SocialAction } from "./chrome/social-header";
 export { StoryCard } from "./chrome/story-card";
