@@ -25,6 +25,8 @@ export { SettingsModal } from "./chrome/settings-modal";
 export type { SettingsModalProps, SettingsSection } from "./chrome/settings-modal";
 export { SettingsRow } from "./chrome/settings-row";
 export type { SettingsRowProps } from "./chrome/settings-row";
+export { StoryCard } from "./chrome/story-card";
+export type { StoryCardProps } from "./chrome/story-card";
 export { TabBar } from "./chrome/tab-bar";
 export type { TabBarProps, Tab } from "./chrome/tab-bar";
 export { TopNavbar } from "./chrome/top-navbar";

@@ -12,6 +12,7 @@ import { playerHovercardShowcase } from "./chrome/player-hovercard.showcase";
 import { sectionHeaderShowcase } from "./chrome/section-header.showcase";
 import { settingsModalShowcase } from "./chrome/settings-modal.showcase";
 import { settingsRowShowcase } from "./chrome/settings-row.showcase";
+import { storyCardShowcase } from "./chrome/story-card.showcase";
 import { tabBarShowcase } from "./chrome/tab-bar.showcase";
 import { topNavbarShowcase } from "./chrome/top-navbar.showcase";
 import { windowFrameShowcase } from "./chrome/window-frame.showcase";
@@ -40,6 +41,7 @@ export const registry: ShowcaseEntry[] = [
   sectionHeaderShowcase,
   settingsModalShowcase,
   settingsRowShowcase,
+  storyCardShowcase,
   tabBarShowcase,
   topNavbarShowcase,
   windowFrameShowcase,
