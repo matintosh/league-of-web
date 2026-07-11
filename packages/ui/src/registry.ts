@@ -11,8 +11,8 @@ import { modalFrameShowcase } from "./chrome/modal-frame.showcase";
 import { newsCardShowcase } from "./chrome/news-card.showcase";
 import { playButtonShowcase } from "./chrome/play-button.showcase";
 import { playerHovercardShowcase } from "./chrome/player-hovercard.showcase";
-import { sectionHeaderShowcase } from "./chrome/section-header.showcase";
 import { searchInputShowcase } from "./chrome/search-input.showcase";
+import { sectionHeaderShowcase } from "./chrome/section-header.showcase";
 import { settingsModalShowcase } from "./chrome/settings-modal.showcase";
 import { settingsRowShowcase } from "./chrome/settings-row.showcase";
 import { storyCardShowcase } from "./chrome/story-card.showcase";
@@ -45,8 +45,8 @@ export const registry: ShowcaseEntry[] = [
   newsCardShowcase,
   playButtonShowcase,
   playerHovercardShowcase,
-  sectionHeaderShowcase,
   searchInputShowcase,
+  sectionHeaderShowcase,
   settingsModalShowcase,
   settingsRowShowcase,
   storyCardShowcase,
