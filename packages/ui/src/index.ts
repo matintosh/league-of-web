@@ -2,8 +2,8 @@ export type { Area, ShowcaseEntry, ShowcaseVariant } from "./showcase";
 // champ-select
 export { CountdownHeader } from "./champ-select/countdown-header";
 export type { CountdownHeaderProps } from "./champ-select/countdown-header";
-export { SkinCarousel } from "./champ-select/skin-carousel";
-export type { SkinCarouselProps, SkinOption } from "./champ-select/skin-carousel";
+export { SkinCarousel, SkinThumbStrip } from "./champ-select/skin-carousel";
+export type { SkinCarouselProps, SkinThumbStripProps, SkinOption } from "./champ-select/skin-carousel";
 export { TeamPlayerRow } from "./champ-select/team-player-row";
 export type { TeamPlayerRowProps, PickState } from "./champ-select/team-player-row";
 // chrome

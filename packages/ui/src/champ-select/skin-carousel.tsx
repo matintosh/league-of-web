@@ -29,6 +29,30 @@ export interface SkinCarouselProps {
    * skin exists in that direction the selection stays (clamped — no wrap).
    */
   onSelect: (i: number) => void;
+  /**
+   * When false the thumb strip (chevrons + thumbnail row) is hidden.
+   * Use this when the parent places the thumb strip elsewhere in the layout
+   * (e.g. the loadout screen's bottom bar) and renders `SkinThumbStrip`
+   * directly. Defaults to true.
+   */
+  showThumbStrip?: boolean;
+  /**
+   * Ring radius in pixels (inner circular clip radius).
+   * Drives the SVG frame size: total SVG = 2 × ringRadius + 48.
+   * Defaults to 130. Override to fit tighter containers.
+   */
+  ringRadius?: number;
+}
+
+/**
+ * SkinThumbStripProps — same controlled props as SkinCarouselProps but just
+ * for the chevron + thumbnail row. Used when the loadout screen renders the
+ * thumb strip separately in the bottom bar.
+ */
+export interface SkinThumbStripProps {
+  skins: SkinOption[];
+  selectedIndex: number;
+  onSelect: (i: number) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -107,8 +131,21 @@ function ChevronRight() {
  *
  * Controlled: parent owns `selectedIndex`; `onSelect` is called with the new
  * index. Clicking a locked thumb calls nothing.
+ *
+ * `showThumbStrip` (default true): when false, the chevron + thumbnail row is
+ * omitted. Use this when the loadout screen places the thumb strip in the
+ * bottom bar for layout reasons.
+ *
+ * `ringRadius` (default 130): inner clip radius in px. The SVG frame outer
+ * size is 2×ringRadius + 48px (24px ornament margin each side).
  */
-export function SkinCarousel({ skins, selectedIndex, onSelect }: SkinCarouselProps) {
+export function SkinCarousel({
+  skins,
+  selectedIndex,
+  onSelect,
+  showThumbStrip = true,
+  ringRadius = 130,
+}: SkinCarouselProps) {
   const uid = useId();
   const clipId = `${uid}-clip`;
   const outerRingId = `${uid}-outer-ring`;
@@ -136,9 +173,9 @@ export function SkinCarousel({ skins, selectedIndex, onSelect }: SkinCarouselPro
     if (nextIndex !== undefined) onSelect(nextIndex);
   }
 
-  // Circular frame dimensions
-  const FRAME_R = 160; // radius of inner circular clip
-  const FRAME_SIZE = FRAME_R * 2; // 320px
+  // Circular frame dimensions — driven by ringRadius prop (default 130).
+  const FRAME_R = ringRadius;
+  const FRAME_SIZE = FRAME_R * 2;
 
   return (
     <div className="flex flex-col items-center gap-3 select-none">
@@ -257,77 +294,174 @@ export function SkinCarousel({ skins, selectedIndex, onSelect }: SkinCarouselPro
         ))}
       </div>
 
-      {/* ── Thumb strip with chevrons ── */}
-      <div className="flex items-center gap-3">
-        {/* Left chevron */}
-        <button
-          type="button"
-          onClick={handlePrev}
-          aria-label="Previous skin"
-          aria-disabled={prevIndex === undefined}
-          className={[
-            "transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
-            prevIndex === undefined
-              ? "text-grey-2 cursor-default"
-              : "text-gold-2 hover:text-gold-1 cursor-pointer",
-          ].join(" ")}
-        >
-          <ChevronLeft />
-        </button>
+      {/* ── Thumb strip with chevrons — hidden when showThumbStrip=false ── */}
+      {showThumbStrip && (
+        <div className="flex items-center gap-3">
+          {/* Left chevron */}
+          <button
+            type="button"
+            onClick={handlePrev}
+            aria-label="Previous skin"
+            aria-disabled={prevIndex === undefined}
+            className={[
+              "transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+              prevIndex === undefined
+                ? "text-grey-2 cursor-default"
+                : "text-gold-2 hover:text-gold-1 cursor-pointer",
+            ].join(" ")}
+          >
+            <ChevronLeft />
+          </button>
 
-        {/* Thumbnails */}
-        <div className="flex items-center gap-2">
-          {skins.map((skin, i) => {
-            const isSelected = i === selectedIndex;
-            const isLocked = !!skin.locked;
+          {/* Thumbnails */}
+          <div className="flex items-center gap-2">
+            {skins.map((skin, i) => {
+              const isSelected = i === selectedIndex;
+              const isLocked = !!skin.locked;
 
-            return (
-              <button
-                key={i}
-                type="button"
-                onClick={() => {
-                  if (!isLocked) onSelect(i);
-                }}
-                aria-label={skin.name}
-                aria-pressed={isSelected}
-                aria-disabled={isLocked}
-                className={[
-                  "relative overflow-hidden transition-[border-color,filter] duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
-                  isSelected ? THUMB_BORDER.selected : THUMB_BORDER.default,
-                  isLocked ? "brightness-50 cursor-default" : "cursor-pointer hover:brightness-110",
-                ].join(" ")}
-                style={{ width: 90, height: 50 }}
-              >
-                <img
-                  src={skin.thumbSrc}
-                  alt={skin.name}
-                  width={90}
-                  height={50}
-                  className="object-cover w-full h-full"
-                  draggable={false}
-                />
-                {isLocked && <LockBadge />}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => {
+                    if (!isLocked) onSelect(i);
+                  }}
+                  aria-label={skin.name}
+                  aria-pressed={isSelected}
+                  aria-disabled={isLocked}
+                  className={[
+                    "relative overflow-hidden transition-[border-color,filter] duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+                    isSelected ? THUMB_BORDER.selected : THUMB_BORDER.default,
+                    isLocked ? "brightness-50 cursor-default" : "cursor-pointer hover:brightness-110",
+                  ].join(" ")}
+                  style={{ width: 90, height: 50 }}
+                >
+                  <img
+                    src={skin.thumbSrc}
+                    alt={skin.name}
+                    width={90}
+                    height={50}
+                    className="object-cover w-full h-full"
+                    draggable={false}
+                  />
+                  {isLocked && <LockBadge />}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right chevron */}
+          <button
+            type="button"
+            onClick={handleNext}
+            aria-label="Next skin"
+            aria-disabled={nextIndex === undefined}
+            className={[
+              "transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+              nextIndex === undefined
+                ? "text-grey-2 cursor-default"
+                : "text-gold-2 hover:text-gold-1 cursor-pointer",
+            ].join(" ")}
+          >
+            <ChevronRight />
+          </button>
         </div>
+      )}
+    </div>
+  );
+}
 
-        {/* Right chevron */}
-        <button
-          type="button"
-          onClick={handleNext}
-          aria-label="Next skin"
-          aria-disabled={nextIndex === undefined}
-          className={[
-            "transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
-            nextIndex === undefined
-              ? "text-grey-2 cursor-default"
-              : "text-gold-2 hover:text-gold-1 cursor-pointer",
-          ].join(" ")}
-        >
-          <ChevronRight />
-        </button>
+// ---------------------------------------------------------------------------
+// SkinThumbStrip — standalone chevron + thumbnail row
+// ---------------------------------------------------------------------------
+
+/**
+ * SkinThumbStrip — the chevron-flanked thumbnail row from SkinCarousel,
+ * extracted as a standalone component for layouts (like the loadout screen
+ * bottom bar) that need to place it separately from the circular frame.
+ *
+ * Shares all interaction semantics with SkinCarousel: locked thumbs are
+ * dimmed + badge; chevrons skip locked skins; navigation is clamped.
+ *
+ * Controlled: parent owns `selectedIndex`; `onSelect` is called with new index.
+ */
+export function SkinThumbStrip({ skins, selectedIndex, onSelect }: SkinThumbStripProps) {
+  function nextUnlocked(direction: -1 | 1): number | undefined {
+    let i = selectedIndex + direction;
+    while (i >= 0 && i < skins.length) {
+      if (skins[i] && !skins[i]!.locked) return i;
+      i += direction;
+    }
+    return undefined;
+  }
+
+  const prevIndex = nextUnlocked(-1);
+  const nextIndex = nextUnlocked(1);
+
+  return (
+    <div className="flex items-center gap-3">
+      <button
+        type="button"
+        onClick={() => { if (prevIndex !== undefined) onSelect(prevIndex); }}
+        aria-label="Previous skin"
+        aria-disabled={prevIndex === undefined}
+        className={[
+          "transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+          prevIndex === undefined
+            ? "text-grey-2 cursor-default"
+            : "text-gold-2 hover:text-gold-1 cursor-pointer",
+        ].join(" ")}
+      >
+        <ChevronLeft />
+      </button>
+
+      <div className="flex items-center gap-2">
+        {skins.map((skin, i) => {
+          const isSelected = i === selectedIndex;
+          const isLocked = !!skin.locked;
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => { if (!isLocked) onSelect(i); }}
+              aria-label={skin.name}
+              aria-pressed={isSelected}
+              aria-disabled={isLocked}
+              className={[
+                "relative overflow-hidden transition-[border-color,filter] duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+                isSelected ? THUMB_BORDER.selected : THUMB_BORDER.default,
+                isLocked ? "brightness-50 cursor-default" : "cursor-pointer hover:brightness-110",
+              ].join(" ")}
+              style={{ width: 90, height: 50 }}
+            >
+              <img
+                src={skin.thumbSrc}
+                alt={skin.name}
+                width={90}
+                height={50}
+                className="object-cover w-full h-full"
+                draggable={false}
+              />
+              {isLocked && <LockBadge />}
+            </button>
+          );
+        })}
       </div>
+
+      <button
+        type="button"
+        onClick={() => { if (nextIndex !== undefined) onSelect(nextIndex); }}
+        aria-label="Next skin"
+        aria-disabled={nextIndex === undefined}
+        className={[
+          "transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+          nextIndex === undefined
+            ? "text-grey-2 cursor-default"
+            : "text-gold-2 hover:text-gold-1 cursor-pointer",
+        ].join(" ")}
+      >
+        <ChevronRight />
+      </button>
     </div>
   );
 }

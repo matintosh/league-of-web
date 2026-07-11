@@ -1,6 +1,7 @@
 import type { ShowcaseEntry } from "./showcase";
 import { countdownHeaderShowcase } from "./champ-select/countdown-header.showcase";
 import { skinCarouselShowcase } from "./champ-select/skin-carousel.showcase";
+import { skinThumbStripShowcase } from "./champ-select/skin-thumb-strip.showcase";
 import { teamPlayerRowShowcase } from "./champ-select/team-player-row.showcase";
 import { chatPanelShowcase } from "./chrome/chat-panel.showcase";
 import { crestDividerShowcase } from "./chrome/crest-divider.showcase";
@@ -47,6 +48,7 @@ export const registry: ShowcaseEntry[] = [
   // champ-select
   countdownHeaderShowcase,
   skinCarouselShowcase,
+  skinThumbStripShowcase,
   teamPlayerRowShowcase,
   // chrome
   chatPanelShowcase,
