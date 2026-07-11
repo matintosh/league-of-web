@@ -45,5 +45,7 @@ export { MatchFoundModal } from "./lobby/match-found-modal";
 export type { MatchFoundModalProps } from "./lobby/match-found-modal";
 export { QueueStatus, formatQueueTime } from "./lobby/queue-status";
 export type { QueueStatusProps, QueueStatusLayout } from "./lobby/queue-status";
+export { QueueTypeList } from "./lobby/queue-type-list";
+export type { QueueTypeListProps, QueueOption } from "./lobby/queue-type-list";
 export { RoleSelector } from "./lobby/role-selector";
 export type { RoleSelectorProps, Role } from "./lobby/role-selector";
