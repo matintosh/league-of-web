@@ -72,10 +72,10 @@ function WarningTriangle() {
         fill="currentColor"
         strokeLinejoin="round"
       />
-      {/* Exclamation mark — body */}
-      <rect x="5.4" y="4.5" width="1.2" height="3.5" fill="#1e2328" />
+      {/* Exclamation mark — body (grey-4 dark cutout against the red triangle) */}
+      <rect x="5.4" y="4.5" width="1.2" height="3.5" fill="var(--color-grey-4)" />
       {/* Exclamation mark — dot */}
-      <rect x="5.4" y="8.8" width="1.2" height="1.2" fill="#1e2328" />
+      <rect x="5.4" y="8.8" width="1.2" height="1.2" fill="var(--color-grey-4)" />
     </svg>
   );
 }
