@@ -51,6 +51,8 @@ export { SocialDock } from "./chrome/social-dock";
 export type { SocialDockProps, DockButton } from "./chrome/social-dock";
 export { SocialHeader } from "./chrome/social-header";
 export type { SocialHeaderProps, SocialAction } from "./chrome/social-header";
+export { SocialPanel } from "./chrome/social-panel";
+export type { SocialPanelProps, FriendEntry, FriendGroup } from "./chrome/social-panel";
 export { StoryCard } from "./chrome/story-card";
 export type { StoryCardProps } from "./chrome/story-card";
 export { TabBar } from "./chrome/tab-bar";
