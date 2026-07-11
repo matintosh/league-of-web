@@ -254,7 +254,7 @@ export function ClientShell() {
             }
           />
 
-          {/* Content area — switches between home diagonal-split and matchmaking */}
+          {/* Content area — switches between home, mode-select, matchmaking, and collection */}
           <div className="relative flex-1 overflow-hidden">
             {view === "collection" ? (
               <CollectionScreen />
