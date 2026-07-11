@@ -7,13 +7,15 @@ import { HextechButton } from "./hextech-button";
 
 function CoinIcon() {
   return (
+    // 12×12 slot — Figma-measured icon size (issue #56). Color = gold-coin (#DEB53C).
     <svg
       aria-hidden="true"
-      width="14"
-      height="14"
+      width="12"
+      height="12"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      style={{ color: "var(--color-gold-coin)" }}
     >
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
       <path
@@ -79,8 +81,8 @@ function GoldCrestIcon() {
   return (
     <svg
       aria-hidden="true"
-      width="28"
-      height="28"
+      width="12"
+      height="12"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -107,8 +109,8 @@ function BlueGemIcon() {
   return (
     <svg
       aria-hidden="true"
-      width="28"
-      height="28"
+      width="12"
+      height="12"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -142,13 +144,13 @@ export const hextechButtonShowcase: ShowcaseEntry = {
   description:
     "Three-family Hextech button: gold rectangle (secondary), teal chevron (primary), and parallelogram (slanted). Supports leading icon (secondary) and medallion badge (primary/slanted).",
   variants: [
-    // ---- Reference replicas (top) ----
+    // ---- Reference replicas (top) — exact Figma metrics: 34px, 8/16 pad, 4px gap, 12px icon ----
     {
       name: "Reference replica — 9900 (gold crest)",
-      notes: "Matches reference: gold crest SVG icon + '9900'",
+      notes: "Exact Figma metrics: 34px content height, 8/16px padding, 4px gap, 12px icon slot (issue #56)",
       render: () => (
         <div data-shot="gold-9900" style={{ display: "inline-block", padding: "8px 12px 12px 8px" }}>
-          <HextechButton variant="secondary" size="large" icon={<GoldCrestIcon />}>
+          <HextechButton variant="secondary" icon={<GoldCrestIcon />}>
             9900
           </HextechButton>
         </div>
@@ -156,10 +158,10 @@ export const hextechButtonShowcase: ShowcaseEntry = {
     },
     {
       name: "Reference replica — 4500 (blue gem)",
-      notes: "Matches reference: blue gem SVG icon + '4500'",
+      notes: "Exact Figma metrics: 34px content height, 8/16px padding, 4px gap, 12px icon slot (issue #56)",
       render: () => (
         <div data-shot="gold-4500" style={{ display: "inline-block", padding: "8px 12px 12px 8px" }}>
-          <HextechButton variant="secondary" size="large" icon={<BlueGemIcon />}>
+          <HextechButton variant="secondary" icon={<BlueGemIcon />}>
             4500
           </HextechButton>
         </div>
@@ -167,10 +169,10 @@ export const hextechButtonShowcase: ShowcaseEntry = {
     },
     {
       name: "Reference replica — GoTo",
-      notes: "Matches reference: GoTo text + right arrow",
+      notes: "Exact Figma metrics: 34px content height, 8/16px padding (issue #56)",
       render: () => (
         <div data-shot="gold-goto" style={{ display: "inline-block", padding: "8px 12px 12px 8px" }}>
-          <HextechButton variant="secondary" size="large">GoTo →</HextechButton>
+          <HextechButton variant="secondary">GoTo →</HextechButton>
         </div>
       ),
     },

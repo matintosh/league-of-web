@@ -47,8 +47,10 @@ interface SizeConfig {
 }
 
 const sizes: Record<HextechButtonSize, SizeConfig> = {
-  default: { height: 36, paddingClass: "px-8 py-2.5", textClass: "text-sm" },
-  large: { height: 56, paddingClass: "px-14 py-4", textClass: "text-base" },
+  // Figma-measured: 34px content box, 8px/16px padding, 12px/15px text (issue #56).
+  default: { height: 34, paddingClass: "px-4 py-2", textClass: "text-xs" },
+  // Large scales proportionally; height and padding preserved from pre-#56 for existing consumers.
+  large: { height: 56, paddingClass: "px-14 py-4", textClass: "text-sm" },
 };
 
 // ---------------------------------------------------------------------------
@@ -148,7 +150,8 @@ function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps
               disabled={disabled}
               {...buttonProps}
               className={[
-                "flex cursor-pointer items-center justify-center gap-3",
+                // gap-1 = 4px — Figma-measured icon↔text gap (issue #56)
+                "flex cursor-pointer items-center justify-center gap-1",
                 "font-display uppercase tracking-widest",
                 "bg-grey-4",
                 "transition-colors duration-150",
@@ -158,7 +161,7 @@ function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps
                 cfg.textClass,
                 disabled
                   ? "text-grey-2"
-                  : "text-gold-1 hover:text-gold-2 active:bg-grey-cool active:text-gold-3",
+                  : "text-gold-cream hover:text-gold-1 active:bg-grey-cool active:text-gold-2",
               ]
                 .filter(Boolean)
                 .join(" ")}
