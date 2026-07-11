@@ -116,9 +116,12 @@ export function SkinCard({ name, imageSrc, owned = true, onSelect }: SkinCardPro
     </>
   );
 
+  // NOTE: no overflow-hidden on the root — the owned finials straddle the
+  // border (translated 50% outside) and must not be clipped. Nothing else
+  // overflows: hover brightens only, never zooms.
   const sharedClass = owned
-    ? "group relative overflow-hidden border border-gold-3 group-hover:border-gold-2 transition-colors duration-150"
-    : "group relative overflow-hidden";
+    ? "group relative border border-gold-3 group-hover:border-gold-2 transition-colors duration-150"
+    : "group relative";
 
   if (onSelect) {
     return (
