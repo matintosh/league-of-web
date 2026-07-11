@@ -103,3 +103,27 @@ EOF
 Read the issue as a stranger: could you build the component from this text
 alone, without asking a single question? If any answer would be "I'd have to
 guess" — fix the issue, not the guess.
+
+## Visual-fidelity issues (pixel-match / "make it look exactly like X")
+
+When the goal is matching a reference, adjectives are not a spec. Required extras:
+
+1. **Extract from source, don't eyeball.** If a Figma file is available:
+   `FIGMA_TOKEN=... node tools/figma-spec.mjs <fileKey> <nodeId>` dumps the exact
+   spec tree — boxes, auto-layout padding/gap, solid AND gradient fills with stops,
+   stroke weights/alignment, shadows, blend modes, text styles, per-state variants.
+   Ask the user for a token if none is in-session. The API beats CSS copy-paste:
+   it preserves gradients and state variants the export flattens. Put the distilled
+   table in the issue; raw dump in a <details> block.
+2. **Declare the scale.** State whether the source/export is 1× or 2× and give the
+   target rendered CSS-px dimensions as numbers.
+3. **Map every literal to a token** — nearest existing token with the delta noted,
+   or an explicit "add token X" instruction. No unmapped hex reaches the builder.
+4. **Spec the unshown states** (hover/pressed/disabled/focus) — one sentence each,
+   or extract them from the Figma variant set (they're usually there).
+5. **Name expected divergences up front** (font substitution, original stand-in
+   glyphs) so builders don't chase unfixable deltas.
+6. **Mandate the loop**: reference image committed to docs/reference/, showcase
+   replica variants with data-shot attributes, `node tools/screenshot.mjs <url>
+   <selector> <out.png> 2` rounds until no nameable delta, per-round delta log in
+   the PR. The review of record re-screenshots independently.
