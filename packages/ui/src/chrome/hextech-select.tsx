@@ -9,6 +9,8 @@ export interface SelectOption {
 }
 
 export interface HextechSelectProps {
+  /** Accessible name for the control (announced by screen readers). */
+  ariaLabel?: string;
   /** Controlled selected value. Pass an empty string when nothing is selected. */
   value: string;
   /** Called with the new value when the user changes the selection. */
@@ -32,6 +34,7 @@ export interface HextechSelectProps {
  */
 export function HextechSelect({
   value,
+  ariaLabel,
   onChange,
   options,
   placeholder,
@@ -50,6 +53,7 @@ export function HextechSelect({
         .join(" ")}
     >
       <select
+        aria-label={ariaLabel}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}

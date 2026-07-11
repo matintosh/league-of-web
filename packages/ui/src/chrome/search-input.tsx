@@ -1,6 +1,8 @@
 "use client";
 
 export interface SearchInputProps {
+  /** Accessible name for the control (announced by screen readers). */
+  ariaLabel?: string;
   /** Controlled value of the search field. */
   value: string;
   /** Called with the new value whenever the user types. */
@@ -20,6 +22,7 @@ export interface SearchInputProps {
  */
 export function SearchInput({
   value,
+  ariaLabel,
   onChange,
   placeholder = "Search",
   disabled = false,
@@ -52,6 +55,7 @@ export function SearchInput({
       </svg>
 
       <input
+        aria-label={ariaLabel}
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
