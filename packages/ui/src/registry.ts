@@ -21,6 +21,7 @@ import { gameModeCardShowcase } from "./lobby/game-mode-card.showcase";
 import { lobbyPlayerCardShowcase } from "./lobby/lobby-player-card.showcase";
 import { matchFoundModalShowcase } from "./lobby/match-found-modal.showcase";
 import { queueStatusShowcase } from "./lobby/queue-status.showcase";
+import { queueTypeListShowcase } from "./lobby/queue-type-list.showcase";
 import { roleSelectorShowcase } from "./lobby/role-selector.showcase";
 
 /**
@@ -53,5 +54,6 @@ export const registry: ShowcaseEntry[] = [
   lobbyPlayerCardShowcase,
   matchFoundModalShowcase,
   queueStatusShowcase,
+  queueTypeListShowcase,
   roleSelectorShowcase,
 ];

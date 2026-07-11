@@ -1,4 +1,4 @@
-// Keep in sync with packages/tokens/src/theme.css — same 35 hex values.
+// Keep in sync with packages/tokens/src/theme.css — same 36 hex values.
 /** Hextech palette as TS constants — for the rare case CSS classes can't be used (e.g. canvas). */
 export const palette = {
   gold1: "#f0e6d2",
@@ -38,6 +38,8 @@ export const palette = {
   tealGradPressA: "#0d3f4b",
   tealGradPressB: "#025577",
   statusOnline: "#00c853",
+  /** Warning/alert accent — queue-type-list warning triangle (issue #80) */
+  warning: "#C24A45",
 } as const;
 
 export type Palette = typeof palette;
