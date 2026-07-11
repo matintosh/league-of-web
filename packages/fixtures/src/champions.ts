@@ -8,17 +8,6 @@ export interface ChampionSummary {
 }
 
 /**
- * Returns the DDragon loading-art URL for a champion.
- * Pattern: https://ddragon.leagueoflegends.com/cdn/img/champion/loading/{id}_{skin}.jpg
- *
- * IMPORTANT: IDs must match DDragon exactly (case-sensitive).
- * e.g. "Kaisa" (not "KaiSa" — 403 Forbidden), "LeeSin", "MissFortune".
- */
-export function loadingArtUrl(id: string, skin = 0): string {
-  return `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${id}_${skin}.jpg`;
-}
-
-/**
  * 20 champions for showcase/demo use. Alphabetical by name.
  */
 export const demoChampions: ChampionSummary[] = [

@@ -102,7 +102,7 @@ export function ChampionCard({
 
   return (
     <div
-      className="overflow-hidden"
+      className="group overflow-hidden"
       style={{ width }}
     >
       {artWindow}
