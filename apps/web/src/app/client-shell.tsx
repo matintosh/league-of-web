@@ -61,7 +61,7 @@ const NEWS_ITEMS: NewsCardProps[] = [
     category: "EVENT",
     date: "7/5/2026",
     title: "Void Awakening Event — Missions & Rewards Now Live",
-    imageSrc: championSplashUrl("KhaZix"),
+    imageSrc: championSplashUrl("Khazix"),
     onOpen: () => console.log("open: Void Awakening Event"),
   },
 ];
@@ -344,7 +344,7 @@ function HomeLanding({ onPlay, newsItems }: HomeLandingProps) {
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0"
           style={{
-            height: 220,
+            height: 248,
             background: `linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 90%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 50%, transparent) 55%, transparent 100%)`,
           }}
         />
@@ -352,7 +352,7 @@ function HomeLanding({ onPlay, newsItems }: HomeLandingProps) {
         {/* 3-card row */}
         <div className="relative flex gap-4" style={{ zIndex: 1 }}>
           {newsItems.map((item, i) => (
-            <div key={i} style={{ width: 210, flexShrink: 0 }}>
+            <div key={item.title} style={{ width: 210, flexShrink: 0 }}>
               <NewsCard {...item} />
             </div>
           ))}
