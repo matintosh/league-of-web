@@ -1,4 +1,6 @@
 export type { Area, ShowcaseEntry, ShowcaseVariant } from "./showcase";
+export { CrestDivider } from "./chrome/crest-divider";
+export type { CrestDividerProps } from "./chrome/crest-divider";
 export { CurrencyDisplay } from "./chrome/currency-display";
 export type { CurrencyDisplayProps } from "./chrome/currency-display";
 export { FilterTabs } from "./chrome/filter-tabs";
