@@ -14,8 +14,9 @@ import {
   SettingsModal,
   SettingsRow,
   HextechToggle,
+  NewsCard,
 } from "@low/ui";
-import type { NavItem, SettingsSection } from "@low/ui";
+import type { NavItem, SettingsSection, NewsCardProps } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -37,6 +38,33 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 const KEYART_CHAMPION = "Jinx";
+
+// ---------------------------------------------------------------------------
+// Fixture news items — 3 entries (page-level, no data fetching)
+// ---------------------------------------------------------------------------
+const NEWS_ITEMS: NewsCardProps[] = [
+  {
+    category: "GAME UPDATES",
+    date: "7/10/2026",
+    title: "Patch 26.14 Notes — Midseason Balance Pass",
+    imageSrc: championSplashUrl("Ahri"),
+    onOpen: () => console.log("open: Patch 26.14 Notes"),
+  },
+  {
+    category: "ESPORTS",
+    date: "7/8/2026",
+    title: "MSI 2026: Group Stage Results and Highlights",
+    imageSrc: championSplashUrl("Jinx"),
+    onOpen: () => console.log("open: MSI 2026 Group Stage"),
+  },
+  {
+    category: "EVENT",
+    date: "7/5/2026",
+    title: "Void Awakening Event — Missions & Rewards Now Live",
+    imageSrc: championSplashUrl("KhaZix"),
+    onOpen: () => console.log("open: Void Awakening Event"),
+  },
+];
 
 // ---------------------------------------------------------------------------
 // Diagonal split constants (1280×720 viewport)
@@ -232,7 +260,7 @@ export function ClientShell() {
             ) : view === "matchmaking" ? (
               <MatchmakingScreen onBack={() => { setView("home"); setActiveNavId("home"); }} />
             ) : (
-              <HomeLanding onPlay={() => setView("matchmaking")} />
+              <HomeLanding onPlay={() => setView("matchmaking")} newsItems={NEWS_ITEMS} />
             )}
           </div>
         </div>
@@ -260,9 +288,10 @@ export function ClientShell() {
 
 interface HomeLandingProps {
   onPlay: () => void;
+  newsItems: NewsCardProps[];
 }
 
-function HomeLanding({ onPlay }: HomeLandingProps) {
+function HomeLanding({ onPlay, newsItems }: HomeLandingProps) {
   // Art container clip: top-left starts at PANEL_WIDTH + DIAGONAL_OFFSET px,
   // bottom-left starts at PANEL_WIDTH px. Right side is full width.
   // polygon: top-left, top-right, bottom-right, bottom-left
@@ -295,6 +324,39 @@ function HomeLanding({ onPlay }: HomeLandingProps) {
             background: `linear-gradient(to right, color-mix(in srgb, var(--color-hextech-black) 60%, transparent) 0%, transparent 35%)`,
           }}
         />
+      </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* NEWS FEED — gradient scrim + 3-card row, lower-right of art area     */}
+      {/* z above art, pointer events active on cards                          */}
+      {/* ------------------------------------------------------------------ */}
+      <div
+        className="absolute bottom-0 right-0 flex flex-col justify-end"
+        style={{
+          // occupies right portion of art region; left edge respects panel seam
+          left: PANEL_WIDTH + DIAGONAL_OFFSET,
+          paddingBottom: 20,
+          paddingLeft: 20,
+          paddingRight: 20,
+        }}
+      >
+        {/* Gradient scrim — upward from hextech-black */}
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0"
+          style={{
+            height: 220,
+            background: `linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 90%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 50%, transparent) 55%, transparent 100%)`,
+          }}
+        />
+
+        {/* 3-card row */}
+        <div className="relative flex gap-4" style={{ zIndex: 1 }}>
+          {newsItems.map((item, i) => (
+            <div key={i} style={{ width: 210, flexShrink: 0 }}>
+              <NewsCard {...item} />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ------------------------------------------------------------------ */}
