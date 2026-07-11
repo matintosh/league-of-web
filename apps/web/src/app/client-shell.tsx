@@ -181,10 +181,10 @@ export function ClientShell() {
             navItems={NAV_ITEMS}
             activeId={activeNavId}
             onNavigate={(id) => {
-                setActiveNavId(id);
-                if (id === "collection") setView("collection");
-                else if (id === "home") setView("home");
-              }}
+              setActiveNavId(id);
+              if (id === "collection") setView("collection");
+              else if (id === "home") setView("home");
+            }}
             currencySlot={
               <CurrencyDisplay
                 wallet={demoWallet}
