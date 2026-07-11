@@ -289,7 +289,7 @@ export function ClientShell() {
 // CTA decision: PlayButton is placed in the home CONTENT left panel as the
 // primary landing CTA. The TopNavbar playSlot retains its HextechButton so the
 // play action remains reachable from every view (matchmaking, collection, etc.)
-// Both CTAs call setView("matchmaking") with the same effect.
+// Both CTAs call setView("mode-select") with the same effect.
 // ---------------------------------------------------------------------------
 
 interface HomeLandingProps {
