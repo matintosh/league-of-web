@@ -6,6 +6,7 @@ import { chatPanelShowcase } from "./chrome/chat-panel.showcase";
 import { crestDividerShowcase } from "./chrome/crest-divider.showcase";
 import { currencyDisplayShowcase } from "./chrome/currency-display.showcase";
 import { filterTabsShowcase } from "./chrome/filter-tabs.showcase";
+import { friendRowShowcase } from "./chrome/friend-row.showcase";
 import { hextechButtonShowcase } from "./chrome/hextech-button.showcase";
 import { hextechCheckboxShowcase } from "./chrome/hextech-checkbox.showcase";
 import { hextechSelectShowcase } from "./chrome/hextech-select.showcase";
@@ -47,6 +48,7 @@ export const registry: ShowcaseEntry[] = [
   crestDividerShowcase,
   currencyDisplayShowcase,
   filterTabsShowcase,
+  friendRowShowcase,
   hextechButtonShowcase,
   hextechCheckboxShowcase,
   hextechSelectShowcase,
