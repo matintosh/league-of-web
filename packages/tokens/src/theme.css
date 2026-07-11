@@ -9,7 +9,7 @@
  *   tokens used only in inline `style={{}}` props or SVG attributes are
  *   always present — regardless of Tailwind's class-usage scan.
  *
- * Keep ALL THREE in sync (same 35 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
+ * Keep ALL THREE in sync (same 36 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
  */
 
 @theme {
@@ -62,6 +62,9 @@
 
   /* Status — availability indicators */
   --color-status-online: #00c853;
+
+  /* Warning — destructive/alert accent (queue-type-list warning triangle) */
+  --color-warning: #ed2c49;
 
   /* Typography — font files loaded by the app via next/font, exposed as vars */
   --font-display: var(--font-marcellus), "Marcellus", serif;
@@ -122,5 +125,8 @@
 
     /* Status */
     --color-status-online: #00c853;
+
+    /* Warning */
+    --color-warning: #ed2c49;
   }
 }
