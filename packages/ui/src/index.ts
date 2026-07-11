@@ -42,6 +42,8 @@ export type { WindowFrameProps } from "./chrome/window-frame";
 // collection
 export { ChampionCard } from "./collection/champion-card";
 export type { ChampionCardProps, ChampionCardSize } from "./collection/champion-card";
+export { SkinCard } from "./collection/skin-card";
+export type { SkinCardProps } from "./collection/skin-card";
 export { StatMedallion } from "./collection/stat-medallion";
 export type { StatMedallionProps } from "./collection/stat-medallion";
 // lobby
