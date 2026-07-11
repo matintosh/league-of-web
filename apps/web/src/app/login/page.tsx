@@ -10,6 +10,7 @@ import {
   SocialLoginButtons,
 } from "@low/ui";
 import { championSplashUrl } from "@low/fixtures";
+import { ViewSwitcher } from "../view-switcher";
 
 /**
  * /login page — full-viewport split layout composing the login primitives.
@@ -52,7 +53,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-login-bg">
+    <div className="flex h-screen w-screen flex-col bg-login-bg">
+      <ViewSwitcher />
+    <div className="flex flex-1 overflow-hidden bg-login-bg">
       {/* ---------------------------------------------------------------- */}
       {/* LEFT PANEL — form + wordmark                                      */}
       {/* ---------------------------------------------------------------- */}
@@ -151,6 +154,7 @@ export default function LoginPage() {
           sizes="(min-width: 400px) calc(100vw - 400px), 100vw"
         />
       </div>
+    </div>
     </div>
   );
 }
