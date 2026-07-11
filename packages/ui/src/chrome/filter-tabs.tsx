@@ -47,7 +47,7 @@ export function FilterTabs({
       <div
         role="tablist"
         aria-labelledby={labelId}
-        className="flex h-full items-center"
+        className="flex h-full items-stretch"
       >
         {tabs.map((tab) => {
           const isActive = tab.id === activeId;
@@ -59,7 +59,7 @@ export function FilterTabs({
               aria-selected={isActive}
               onClick={() => onSelect(tab.id)}
               className={[
-                "shrink-0 cursor-pointer px-[14px] font-display text-[15px] capitalize tracking-wide",
+                "flex shrink-0 cursor-pointer items-center px-[14px] font-display text-[15px] capitalize tracking-wide",
                 "border-b-2 transition-colors duration-150",
                 isActive
                   ? "-mb-px border-gold-4 text-gold-1"

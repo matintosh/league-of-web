@@ -48,8 +48,8 @@ export function FilterTabsWithEndSlotDemo() {
       onSelect={setActiveId}
       endSlot={
         <span className="font-display text-[13px] uppercase tracking-wide text-gold-cream">
-          SORT BY{" "}
-          <span className="text-gold-1 cursor-pointer hover:text-gold-cream transition-colors duration-150">
+          Sort By{" "}
+          <span className="normal-case text-gold-1 cursor-pointer hover:text-gold-cream transition-colors duration-150">
             Newest ▾
           </span>
         </span>
