@@ -7,6 +7,8 @@ export type { SkinCarouselProps, SkinOption } from "./champ-select/skin-carousel
 export { TeamPlayerRow } from "./champ-select/team-player-row";
 export type { TeamPlayerRowProps, PickState } from "./champ-select/team-player-row";
 // chrome
+export { ChatPanel } from "./chrome/chat-panel";
+export type { ChatPanelProps, ChatMessage } from "./chrome/chat-panel";
 export { CrestDivider } from "./chrome/crest-divider";
 export type { CrestDividerProps } from "./chrome/crest-divider";
 export { CurrencyDisplay } from "./chrome/currency-display";

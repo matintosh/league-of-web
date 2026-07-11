@@ -2,6 +2,7 @@ import type { ShowcaseEntry } from "./showcase";
 import { countdownHeaderShowcase } from "./champ-select/countdown-header.showcase";
 import { skinCarouselShowcase } from "./champ-select/skin-carousel.showcase";
 import { teamPlayerRowShowcase } from "./champ-select/team-player-row.showcase";
+import { chatPanelShowcase } from "./chrome/chat-panel.showcase";
 import { crestDividerShowcase } from "./chrome/crest-divider.showcase";
 import { currencyDisplayShowcase } from "./chrome/currency-display.showcase";
 import { filterTabsShowcase } from "./chrome/filter-tabs.showcase";
@@ -42,6 +43,7 @@ export const registry: ShowcaseEntry[] = [
   skinCarouselShowcase,
   teamPlayerRowShowcase,
   // chrome
+  chatPanelShowcase,
   crestDividerShowcase,
   currencyDisplayShowcase,
   filterTabsShowcase,
