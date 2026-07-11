@@ -42,6 +42,7 @@ import { roleSelectorShowcase } from "./lobby/role-selector.showcase";
 import { circleSubmitButtonShowcase } from "./login/circle-submit-button.showcase";
 import { loginCheckboxShowcase } from "./login/login-checkbox.showcase";
 import { loginTextInputShowcase } from "./login/login-text-input.showcase";
+import { socialLoginButtonsShowcase } from "./login/social-login-buttons.showcase";
 
 /**
  * Every component registers its showcase entry here.
@@ -85,6 +86,7 @@ export const registry: ShowcaseEntry[] = [
   circleSubmitButtonShowcase,
   loginCheckboxShowcase,
   loginTextInputShowcase,
+  socialLoginButtonsShowcase,
   // collection
   championCardShowcase,
   skinCardShowcase,
