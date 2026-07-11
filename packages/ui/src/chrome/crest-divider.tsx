@@ -58,6 +58,10 @@ function CrestSVG({ gradId }: { gradId: string }) {
  *
  * Pure presentational, server-safe (no 'use client').
  * useId() ensures SVG gradient ids are unique across multiple instances on the same page.
+ *
+ * Tracking compensation: the label span carries pl-[7px] to offset the trailing
+ * letter-spacing (tracking-[7px] adds 7px after the last glyph), so the text
+ * appears optically centered between the hairlines. Don't remove it as "unused".
  */
 export function CrestDivider({ label, crest = true }: CrestDividerProps) {
   const gradId = useId();
