@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { CLIENT_WIDTH, CLIENT_HEIGHT } from "../lib/client-window";
@@ -168,6 +169,7 @@ const DOCK_BUTTONS: DockButton[] = [
 ];
 
 export function ClientShell() {
+  const router = useRouter();
   const [view, setView] = useState<View>("home");
   const [activeNavId, setActiveNavId] = useState("home");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -285,8 +287,19 @@ export function ClientShell() {
               </Link>
             </div>
           </div>
-          <div className="border-t border-gold-5 pt-4">
+          <div className="border-t border-gold-5 pt-4 flex items-center justify-between">
             <span className="text-xs text-grey-2">league-of-web v1.0.0</span>
+            {/* Sign out — navigates to /login (no real auth; portfolio discovery path) */}
+            <button
+              type="button"
+              onClick={() => {
+                setSettingsOpen(false);
+                router.push("/login");
+              }}
+              className="font-body text-xs text-grey-2 underline transition-colors duration-150 hover:text-gold-1 cursor-pointer"
+            >
+              Sign out
+            </button>
           </div>
         </div>
       ),
