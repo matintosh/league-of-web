@@ -57,6 +57,7 @@ description: Use when building any new UI component for league-of-web — scaffo
 - Any map keyed by a union type must be `Record<Union, ...>` so adding a union member fails typecheck instead of silently omitting a case.
 - Every SVG `id` (gradients, filters, masks) must derive from `useId()` — hardcoded ids collide when the showcase renders multiple instances (bit us twice: MatchFoundModal v2, ModalFrame v2).
 - Glows/rings on clip-path'd elements: `box-shadow` gets clipped — use `[filter:drop-shadow(...)]` (filters apply after clipping and follow the clipped silhouette).
+- `group-hover:`/`group-active:` on the `.group` element ITSELF is dead CSS — Tailwind's selector `:is(:where(.group):hover *)` targets descendants, and an element can't be its own descendant. Use plain `hover:`/`active:` on the root; reserve `group-*` for children. Bit us twice (SkinCard border hover, PlayButton v3 pressed CSS-vars — the latter shipped broken and went unnoticed until the v4 review). If a state must reach BOTH root and children: root gets `hover:X`, children get `group-hover:Y`.
 
 ## File naming
 
