@@ -22,6 +22,7 @@ import { searchInputShowcase } from "./chrome/search-input.showcase";
 import { sectionHeaderShowcase } from "./chrome/section-header.showcase";
 import { settingsModalShowcase } from "./chrome/settings-modal.showcase";
 import { settingsRowShowcase } from "./chrome/settings-row.showcase";
+import { socialDockShowcase } from "./chrome/social-dock.showcase";
 import { socialHeaderShowcase } from "./chrome/social-header.showcase";
 import { storyCardShowcase } from "./chrome/story-card.showcase";
 import { tabBarShowcase } from "./chrome/tab-bar.showcase";
@@ -67,6 +68,7 @@ export const registry: ShowcaseEntry[] = [
   sectionHeaderShowcase,
   settingsModalShowcase,
   settingsRowShowcase,
+  socialDockShowcase,
   socialHeaderShowcase,
   storyCardShowcase,
   tabBarShowcase,
