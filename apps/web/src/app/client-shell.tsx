@@ -25,8 +25,9 @@ import {
 } from "@low/fixtures";
 import { MatchmakingScreen } from "./matchmaking-screen";
 import { CollectionScreen } from "./collection-screen";
+import { ModeSelectScreen } from "./mode-select-screen";
 
-type View = "home" | "matchmaking" | "collection";
+type View = "home" | "mode-select" | "matchmaking" | "collection";
 
 const NAV_ITEMS: NavItem[] = [
   { id: "home", label: "Home" },
@@ -202,7 +203,7 @@ export function ClientShell() {
         <div className="flex h-full flex-col">
           <TopNavbar
             playSlot={
-              <HextechButton size="large" onClick={() => setView("matchmaking")}>
+              <HextechButton size="large" onClick={() => setView("mode-select")}>
                 Play
               </HextechButton>
             }
@@ -259,8 +260,13 @@ export function ClientShell() {
               <CollectionScreen />
             ) : view === "matchmaking" ? (
               <MatchmakingScreen onBack={() => { setView("home"); setActiveNavId("home"); }} />
+            ) : view === "mode-select" ? (
+              <ModeSelectScreen
+                onConfirm={() => setView("matchmaking")}
+                onBack={() => { setView("home"); setActiveNavId("home"); }}
+              />
             ) : (
-              <HomeLanding onPlay={() => setView("matchmaking")} newsItems={NEWS_ITEMS} />
+              <HomeLanding onPlay={() => setView("mode-select")} newsItems={NEWS_ITEMS} />
             )}
           </div>
         </div>
