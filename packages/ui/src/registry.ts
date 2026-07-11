@@ -17,6 +17,7 @@ import { tabBarShowcase } from "./chrome/tab-bar.showcase";
 import { topNavbarShowcase } from "./chrome/top-navbar.showcase";
 import { windowFrameShowcase } from "./chrome/window-frame.showcase";
 import { championCardShowcase } from "./collection/champion-card.showcase";
+import { gameModeCardShowcase } from "./lobby/game-mode-card.showcase";
 import { lobbyPlayerCardShowcase } from "./lobby/lobby-player-card.showcase";
 import { matchFoundModalShowcase } from "./lobby/match-found-modal.showcase";
 import { queueStatusShowcase } from "./lobby/queue-status.showcase";
@@ -48,6 +49,7 @@ export const registry: ShowcaseEntry[] = [
   // collection
   championCardShowcase,
   // lobby
+  gameModeCardShowcase,
   lobbyPlayerCardShowcase,
   matchFoundModalShowcase,
   queueStatusShowcase,
