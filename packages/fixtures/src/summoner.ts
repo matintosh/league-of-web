@@ -11,6 +11,7 @@ export const demoSummoner: Summoner = {
 export const demoWallet: Wallet = { rp: 1350, blueEssence: 48210 };
 
 export const demoFriends: Friend[] = [
+  // General group — mix of all availability states
   {
     summoner: { gameName: "Faker", tagLine: "KR1", level: 812, profileIconId: 6402, availability: "in-game" },
     statusText: "League of Legends",
@@ -26,7 +27,27 @@ export const demoFriends: Friend[] = [
     groupName: "General",
   },
   {
+    summoner: { gameName: "Doublelift", tagLine: "NA1", level: 445, profileIconId: 29, availability: "online" },
+    statusText: "In the lobby",
+    groupName: "General",
+  },
+  {
+    summoner: { gameName: "Sneaky", tagLine: "NA1", level: 301, profileIconId: 1, availability: "offline" },
+    groupName: "General",
+  },
+  // Work group — professional contacts
+  {
     summoner: { gameName: "Phreak", tagLine: "NA1", level: 431, profileIconId: 743, availability: "offline" },
+    groupName: "Work",
+  },
+  {
+    summoner: { gameName: "RiotAugust", tagLine: "NA1", level: 520, profileIconId: 4294, availability: "in-game" },
+    statusText: "League of Legends",
+    groupName: "Work",
+  },
+  {
+    summoner: { gameName: "RiotMeddler", tagLine: "NA1", level: 388, profileIconId: 3, availability: "away" },
+    statusText: "Busy",
     groupName: "Work",
   },
 ];

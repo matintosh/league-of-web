@@ -15,11 +15,14 @@ import {
   SettingsRow,
   HextechToggle,
   NewsCard,
+  SocialPanel,
+  SocialDock,
 } from "@low/ui";
-import type { NavItem, SettingsSection, NewsCardProps } from "@low/ui";
+import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
+  demoFriends,
   profileIconUrl,
   championSplashUrl,
 } from "@low/fixtures";
@@ -77,11 +80,110 @@ const NEWS_ITEMS: NewsCardProps[] = [
 const PANEL_WIDTH = 486; // px — ~38% of 1280
 const DIAGONAL_OFFSET = 80; // px — how much the top edge is inset further right
 
+// ---------------------------------------------------------------------------
+// Social rail constants (page-level, not hardcoded hex)
+// ---------------------------------------------------------------------------
+
+/** Version string shown in the SocialDock bottom strip. */
+const SOCIAL_VERSION = "V26.14";
+
+/** Width of the social overlay panel in px. */
+const SOCIAL_PANEL_WIDTH = 250;
+
+// ---------------------------------------------------------------------------
+// Social rail fixtures — groups built from demoFriends (page-level values)
+// ---------------------------------------------------------------------------
+
+/**
+ * Builds the FriendGroup array from the flat demoFriends list.
+ * Groups are ordered: General first, then Work.
+ * Called once at module level; stable reference, no closures.
+ */
+function buildFriendGroups(): FriendGroup[] {
+  const groupMap = new Map<string, FriendGroup>();
+  for (const f of demoFriends) {
+    if (!groupMap.has(f.groupName)) {
+      groupMap.set(f.groupName, { name: f.groupName, friends: [], collapsed: false });
+    }
+    groupMap.get(f.groupName)!.friends.push({ summoner: f.summoner, statusText: f.statusText });
+  }
+  // Explicit ordering: General, then Work, then any extra groups
+  const ordered: FriendGroup[] = [];
+  for (const name of ["General", "Work"]) {
+    const g = groupMap.get(name);
+    if (g) ordered.push(g);
+    groupMap.delete(name);
+  }
+  for (const g of groupMap.values()) ordered.push(g);
+  return ordered;
+}
+
+const INITIAL_FRIEND_GROUPS: FriendGroup[] = buildFriendGroups();
+
+// ---------------------------------------------------------------------------
+// SocialDock button definitions — SVG icons as ReactNodes (page-supplied)
+// ---------------------------------------------------------------------------
+
+const DOCK_BUTTONS: DockButton[] = [
+  {
+    id: "chat",
+    label: "Chat",
+    badge: 3,
+    icon: (
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 2h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5l-4 3V3a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    id: "group-chat",
+    label: "Group chat",
+    icon: (
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 3h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4l-4 3V4a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+        <path d="M13 5h3a1 1 0 0 1 1 1v6l-2-1.5H8" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    id: "add-friend",
+    label: "Add friend",
+    icon: (
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="7" cy="6" r="3.5" stroke="currentColor" strokeWidth="1.25" />
+        <path d="M1 16c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+        <path d="M14 8v4M12 10h4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    id: "social-settings",
+    label: "Social settings",
+    icon: (
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fillRule="evenodd" clipRule="evenodd" d="M7.5 1h3l.45 1.8a5.6 5.6 0 0 1 1.35.79l1.8-.56 1.5 2.6-1.35 1.23c.03.37.03.74 0 1.11l1.35 1.23-1.5 2.6-1.8-.56c-.43.3-.87.56-1.35.79L10.5 14h-3l-.45-1.8a5.6 5.6 0 0 1-1.35-.79l-1.8.56-1.5-2.6 1.35-1.23a5.7 5.7 0 0 1 0-1.11L2.25 5.63l1.5-2.6 1.8.56c.43-.3.87-.56 1.35-.79L7.5 1ZM9 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="currentColor" />
+      </svg>
+    ),
+  },
+];
+
 export function ClientShell() {
   const [view, setView] = useState<View>("home");
   const [activeNavId, setActiveNavId] = useState("home");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState("general");
+
+  // Social rail state — panel open/closed, group collapse map
+  const [socialOpen, setSocialOpen] = useState(false);
+  const [friendGroups, setFriendGroups] = useState<FriendGroup[]>(INITIAL_FRIEND_GROUPS);
+
+  const toggleSocialPanel = () => setSocialOpen((prev) => !prev);
+
+  const handleToggleFriendGroup = (name: string) => {
+    setFriendGroups((groups) =>
+      groups.map((g) => g.name === name ? { ...g, collapsed: !g.collapsed } : g),
+    );
+  };
 
   // Dummy toggle states for Settings > General
   const [autoJoinVoice, setAutoJoinVoice] = useState(false);
@@ -228,10 +330,39 @@ export function ClientShell() {
                   summoner={demoSummoner}
                   profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
                 />
+                {/* Social toggle button — opens/closes the right overlay panel */}
+                <button
+                  type="button"
+                  aria-label={socialOpen ? "Close social panel" : "Open social panel"}
+                  aria-expanded={socialOpen}
+                  onClick={toggleSocialPanel}
+                  className={[
+                    "flex h-7 w-7 cursor-pointer items-center justify-center transition-colors duration-150",
+                    socialOpen ? "text-gold-2" : "text-grey-1 hover:text-gold-1",
+                  ].join(" ")}
+                >
+                  {/* People/social icon */}
+                  <svg
+                    aria-hidden="true"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle cx="6" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.25" />
+                    <path d="M1 14c0-2.761 2.239-4 5-4s5 1.239 5 4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+                    <circle cx="12" cy="5" r="2" stroke="currentColor" strokeWidth="1.25" />
+                    <path d="M12 11c1.5.3 3 1.1 3 3" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+                  </svg>
+                </button>
                 <button
                   type="button"
                   aria-label="Settings"
-                  onClick={() => setSettingsOpen(true)}
+                  onClick={() => {
+                    setSocialOpen(false);
+                    setSettingsOpen(true);
+                  }}
                   className="flex h-7 w-7 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
                 >
                   {/* Gear icon */}
@@ -279,6 +410,62 @@ export function ClientShell() {
           </div>
         </div>
       </WindowFrame>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Social rail overlay — 250px panel sliding in from the right.        */}
+      {/* Positioned fixed at z-40 (below modals at z-50). Visually contained */}
+      {/* within the 1280×720 window because the browser window is scaled to  */}
+      {/* that exact size. Panel stays open across view transitions; it closes */}
+      {/* when the settings modal opens (handled in the gear button onClick).  */}
+      {/* MatchFoundModal uses z-50 so it layers above this panel naturally.   */}
+      {/* ------------------------------------------------------------------ */}
+      <div
+        aria-label="Social panel"
+        aria-hidden={!socialOpen}
+        className="fixed top-0 right-0 flex flex-col"
+        style={{
+          // WindowFrame titlebar is 32px, TopNavbar is 48px → total 80px
+          top: 80,
+          width: SOCIAL_PANEL_WIDTH,
+          height: CLIENT_HEIGHT - 80,
+          zIndex: 40,
+          transform: socialOpen ? "translateX(0)" : `translateX(${SOCIAL_PANEL_WIDTH}px)`,
+          transition: "transform 200ms ease-in-out",
+        }}
+      >
+        {/* ── Panel top: close button ── */}
+        <div className="flex shrink-0 items-center justify-end border-b border-gold-5 bg-blue-7 px-2 py-1">
+          <button
+            type="button"
+            aria-label="Close social panel"
+            onClick={() => setSocialOpen(false)}
+            className="flex h-6 w-6 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+          >
+            <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
+              <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
+            </svg>
+          </button>
+        </div>
+
+        {/* ── SocialPanel: fills remaining height above dock ── */}
+        <div className="min-h-0 flex-1">
+          <SocialPanel
+            groups={friendGroups}
+            requestCount={2}
+            onToggleGroup={handleToggleFriendGroup}
+            onFriendClick={(s) => console.log("friend click:", s.gameName)}
+            profileIconSrcFor={(s) => profileIconUrl(s.profileIconId)}
+          />
+        </div>
+
+        {/* ── SocialDock: pinned at panel bottom ── */}
+        <SocialDock
+          buttons={DOCK_BUTTONS}
+          version={SOCIAL_VERSION}
+          onAction={(id) => console.log("dock action:", id)}
+        />
+      </div>
 
       <SettingsModal
         open={settingsOpen}
