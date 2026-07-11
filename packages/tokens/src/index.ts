@@ -1,4 +1,4 @@
-// Keep in sync with packages/tokens/src/theme.css — same 32 hex values.
+// Keep in sync with packages/tokens/src/theme.css — same 35 hex values.
 /** Hextech palette as TS constants — for the rare case CSS classes can't be used (e.g. canvas). */
 export const palette = {
   gold1: "#f0e6d2",
@@ -9,6 +9,9 @@ export const palette = {
   gold6: "#32281e",
   goldCream: "#cdbe91",
   goldCoin: "#deb53c",
+  /** Riot production secondary button border gradient stops (issue #61) */
+  goldBorderDark: "#72542a",
+  goldBorderLight: "#bd9e5e",
   blue1: "#cdfafa",
   blue2: "#0ac8b9",
   blue3: "#0397ab",
@@ -21,6 +24,8 @@ export const palette = {
   grey3: "#3c3c41",
   grey4: "#1e2328",
   greyCool: "#1e282d",
+  /** Secondary button fill on hover (issue #61) */
+  greyHover: "#272e33",
   hextechBlack: "#010a13",
   tealFrame: "#0b4052",
   tealRing: "#167786",
