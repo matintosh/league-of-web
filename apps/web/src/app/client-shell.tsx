@@ -26,8 +26,9 @@ import {
 import { MatchmakingScreen } from "./matchmaking-screen";
 import { CollectionScreen } from "./collection-screen";
 import { ModeSelectScreen } from "./mode-select-screen";
+import { LoadoutScreen } from "./loadout-screen";
 
-type View = "home" | "mode-select" | "matchmaking" | "collection";
+type View = "home" | "mode-select" | "matchmaking" | "collection" | "loadout";
 
 const NAV_ITEMS: NavItem[] = [
   { id: "home", label: "Home" },
@@ -254,12 +255,19 @@ export function ClientShell() {
             }
           />
 
-          {/* Content area — switches between home, mode-select, matchmaking, and collection */}
+          {/* Content area — switches between home, mode-select, matchmaking, collection, loadout */}
           <div className="relative flex-1 overflow-hidden">
             {view === "collection" ? (
               <CollectionScreen />
+            ) : view === "loadout" ? (
+              <LoadoutScreen
+                onComplete={() => { setView("home"); setActiveNavId("home"); }}
+              />
             ) : view === "matchmaking" ? (
-              <MatchmakingScreen onBack={() => { setView("home"); setActiveNavId("home"); }} />
+              <MatchmakingScreen
+                onBack={() => { setView("home"); setActiveNavId("home"); }}
+                onAccept={() => setView("loadout")}
+              />
             ) : view === "mode-select" ? (
               <ModeSelectScreen
                 onConfirm={() => setView("matchmaking")}
