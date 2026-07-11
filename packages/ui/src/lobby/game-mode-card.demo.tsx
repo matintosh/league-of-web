@@ -7,7 +7,8 @@ import { GameModeCard } from "./game-mode-card";
 // ---------------------------------------------------------------------------
 // Crest SVGs — content, not part of the component
 // Each uses currentColor so the parent's text-gold-* tint is inherited.
-// useId() is called at the top of each component to ensure unique SVG ids.
+// TwistedTreelineCrest calls useId() to scope its SVG filter id; the other
+// crests have no defs and don't need it.
 // ---------------------------------------------------------------------------
 
 /** Diamond-square crest — Summoner's Rift (square rotated ~15°, inner slash). */
@@ -226,6 +227,8 @@ export function GameModeCardRowDemo() {
 
   return (
     <div
+      role="radiogroup"
+      aria-label="Game mode"
       data-shot="mode-card-row"
       className="flex items-start justify-center gap-12 px-8 py-10 bg-hextech-black"
     >

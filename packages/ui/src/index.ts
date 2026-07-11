@@ -36,6 +36,7 @@ export type { WindowFrameProps } from "./chrome/window-frame";
 // collection
 export { ChampionCard } from "./collection/champion-card";
 export type { ChampionCardProps, ChampionCardSize } from "./collection/champion-card";
+// lobby
 export { GameModeCard } from "./lobby/game-mode-card";
 export type { GameModeCardProps } from "./lobby/game-mode-card";
 export { LobbyPlayerCard } from "./lobby/lobby-player-card";

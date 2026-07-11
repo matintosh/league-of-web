@@ -30,6 +30,9 @@ export interface GameModeCardProps {
  * Controlled via `selected` — pass `onSelect` to handle clicks.
  * Uses `group` for hover cascading; SVGs using `currentColor` inherit
  * the correct gold tint from the icon container.
+ *
+ * Single-select semantics: consumers MUST wrap a row of GameModeCards in an
+ * element with role="radiogroup" and an aria-label.
  */
 export function GameModeCard({
   icon,
@@ -42,7 +45,8 @@ export function GameModeCard({
     <button
       type="button"
       onClick={onSelect}
-      aria-pressed={selected}
+      role="radio"
+      aria-checked={selected}
       className={[
         // Base layout — vertical stack, centred
         "group flex flex-col items-center gap-3",
