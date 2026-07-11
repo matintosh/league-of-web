@@ -9,6 +9,8 @@ export { HextechTooltip } from "./chrome/hextech-tooltip";
 export type { HextechTooltipProps, HextechTooltipPosition } from "./chrome/hextech-tooltip";
 export { ModalFrame } from "./chrome/modal-frame";
 export type { ModalFrameProps, ModalFrameSize } from "./chrome/modal-frame";
+export { NewsCard } from "./chrome/news-card";
+export type { NewsCardProps } from "./chrome/news-card";
 export { PlayButton } from "./chrome/play-button";
 export type { PlayButtonProps, PlayButtonSize } from "./chrome/play-button";
 export { PlayerHovercard } from "./chrome/player-hovercard";
