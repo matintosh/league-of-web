@@ -1,5 +1,6 @@
 import type { ShowcaseEntry } from "./showcase";
 import { currencyDisplayShowcase } from "./chrome/currency-display.showcase";
+import { filterTabsShowcase } from "./chrome/filter-tabs.showcase";
 import { hextechButtonShowcase } from "./chrome/hextech-button.showcase";
 import { hextechToggleShowcase } from "./chrome/hextech-toggle.showcase";
 import { hextechTooltipShowcase } from "./chrome/hextech-tooltip.showcase";
@@ -26,6 +27,7 @@ import { roleSelectorShowcase } from "./lobby/role-selector.showcase";
 export const registry: ShowcaseEntry[] = [
   // chrome
   currencyDisplayShowcase,
+  filterTabsShowcase,
   hextechButtonShowcase,
   hextechToggleShowcase,
   hextechTooltipShowcase,

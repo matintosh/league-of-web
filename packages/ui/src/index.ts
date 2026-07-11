@@ -1,6 +1,8 @@
 export type { Area, ShowcaseEntry, ShowcaseVariant } from "./showcase";
 export { CurrencyDisplay } from "./chrome/currency-display";
 export type { CurrencyDisplayProps } from "./chrome/currency-display";
+export { FilterTabs } from "./chrome/filter-tabs";
+export type { FilterTabsProps } from "./chrome/filter-tabs";
 export { HextechButton } from "./chrome/hextech-button";
 export type { HextechButtonProps, HextechButtonVariant, HextechButtonSize } from "./chrome/hextech-button";
 export { HextechToggle } from "./chrome/hextech-toggle";
