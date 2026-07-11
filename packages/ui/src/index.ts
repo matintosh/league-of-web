@@ -23,6 +23,9 @@ export { TopNavbar } from "./chrome/top-navbar";
 export type { TopNavbarProps, NavItem } from "./chrome/top-navbar";
 export { WindowFrame } from "./chrome/window-frame";
 export type { WindowFrameProps } from "./chrome/window-frame";
+// collection
+export { ChampionCard } from "./collection/champion-card";
+export type { ChampionCardProps, ChampionCardSize } from "./collection/champion-card";
 export { LobbyPlayerCard } from "./lobby/lobby-player-card";
 export type { LobbyPlayerCardProps } from "./lobby/lobby-player-card";
 export { MatchFoundModal } from "./lobby/match-found-modal";
