@@ -9,7 +9,7 @@
  *   tokens used only in inline `style={{}}` props or SVG attributes are
  *   always present — regardless of Tailwind's class-usage scan.
  *
- * Keep in sync with packages/tokens/src/index.ts (same 32 hex values).
+ * Keep ALL THREE in sync (same 32 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
  */
 
 @theme {
