@@ -1,4 +1,3 @@
-import { useId } from "react";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -20,7 +19,7 @@ const CX = 75;
 const CY = 75;
 const OUTER_R = 70;
 const INNER_R = 62;
-const FINIAL = 5; // half-side of the 5×5 rotated square
+const FINIAL = 5; // full side of the 5×5 rotated square
 
 // Cardinal point coordinates for diamond finials on the outer ring
 const FINIALS: Array<{ x: number; y: number }> = [
@@ -41,9 +40,6 @@ const FINIALS: Array<{ x: number; y: number }> = [
  * centred via absolute positioning. Purely presentational — no event handlers.
  */
 export function StatMedallion({ value, caption }: StatMedallionProps) {
-  const id = useId();
-  // useId provides a stable, collision-free id prefix in case future defs are added.
-  void id;
 
   return (
     <div
