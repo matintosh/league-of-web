@@ -611,8 +611,8 @@ function HomeLanding({ onPlay, newsItems }: HomeLandingProps) {
           {/* Thin gold divider under wordmark */}
           <div className="mb-8 h-px w-32 bg-gold-4" />
 
-          {/* Play CTA — PlayButton from issue #35 */}
-          <PlayButton onClick={onPlay} />
+          {/* Play CTA — PlayButton from issue #35; emblem from issue #115 */}
+          <PlayButton onClick={onPlay} emblemSrc="/lol-emblem.png" />
         </div>
 
         {/* Footer caption — bottom-left */}

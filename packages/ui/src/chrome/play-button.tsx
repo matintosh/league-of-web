@@ -166,11 +166,15 @@ function LeagueGlyph({ size, gradId, greyed }: { size: number; gradId: string; g
 }
 
 // ---------------------------------------------------------------------------
-// Medallion — v3-proven disc + ring + glyph
+// Medallion — v3-proven disc + ring + glyph (or real emblem image)
 // ---------------------------------------------------------------------------
 
-function Medallion({ size, greyed, discId, glyphId }: {
+function Medallion({ size, greyed, discId, glyphId, emblemSrc, emblemHeight }: {
   size: number; greyed?: boolean; discId: string; glyphId: string;
+  /** When set, renders the real LoL emblem image instead of the abstract glyph. */
+  emblemSrc?: string;
+  /** Rendered height for the emblem image (px). Width scales proportionally via object-contain. */
+  emblemHeight?: number;
 }) {
   const r = size / 2;
   const sw = size >= 60 ? 2.5 : 1.5;
@@ -199,7 +203,20 @@ function Medallion({ size, greyed, discId, glyphId }: {
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <LeagueGlyph size={Math.round(size * 0.65)} gradId={glyphId} greyed={greyed} />
+        {emblemSrc ? (
+          /* Real LoL emblem: explicit dimensions prevent layout shift.
+             Source is 497×474 — always downscaling; object-contain preserves ratio. */
+          <img
+            src={emblemSrc}
+            alt=""
+            aria-hidden="true"
+            width={emblemHeight ?? size}
+            height={emblemHeight ?? size}
+            style={{ width: emblemHeight ?? size, height: emblemHeight ?? size, objectFit: "contain" }}
+          />
+        ) : (
+          <LeagueGlyph size={Math.round(size * 0.65)} gradId={glyphId} greyed={greyed} />
+        )}
       </div>
     </div>
   );
@@ -223,6 +240,16 @@ export interface PlayButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
    * Optional, defaults to false (PLAY behavior). Back-compat safe.
    */
   queueing?: boolean;
+  /**
+   * Optional URL for the real LoL emblem image (e.g. `"/lol-emblem.png"`).
+   * When provided, renders the emblem inside the medallion socket at XAML Height=38
+   * (scaled for hero). When omitted the abstract LeagueGlyph SVG renders instead —
+   * no visual regression to existing variants.
+   *
+   * Keep `@low/ui` asset-free: the page/showcase supplies this path, never an import.
+   * Source asset is 497×474 RGBA; always downscaling, no upscaling.
+   */
+  emblemSrc?: string;
 }
 
 /**
@@ -261,6 +288,7 @@ export function PlayButton({
   className,
   size = "default",
   queueing = false,
+  emblemSrc,
   ...props
 }: PlayButtonProps) {
   const uid = useId();
@@ -358,7 +386,14 @@ export function PlayButton({
             borderRadius: "50%",
           }}
         >
-          <Medallion size={medallion} greyed={greyed} discId={discId} glyphId={glyphId} />
+          <Medallion
+            size={medallion}
+            greyed={greyed}
+            discId={discId}
+            glyphId={glyphId}
+            emblemSrc={emblemSrc}
+            emblemHeight={totalH}
+          />
         </div>
       </div>
 
