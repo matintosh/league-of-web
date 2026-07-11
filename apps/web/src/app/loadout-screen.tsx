@@ -5,6 +5,7 @@ import {
   CountdownHeader,
   TeamPlayerRow,
   SkinCarousel,
+  SkinThumbStrip,
   ChatPanel,
 } from "@low/ui";
 import type { ChatMessage, SkinOption } from "@low/ui";
@@ -217,7 +218,7 @@ export function LoadoutScreen({ onComplete }: LoadoutScreenProps) {
       <div className="relative flex flex-1 min-h-0 overflow-hidden">
         {/* Left: team rail — ~220px wide, vertically stacked */}
         <aside
-          className="flex flex-col justify-center gap-1 px-3 shrink-0"
+          className="flex flex-col justify-center divide-y divide-gold-5 px-3 shrink-0"
           style={{ width: 220 }}
           aria-label="Team"
         >
@@ -245,25 +246,27 @@ export function LoadoutScreen({ onComplete }: LoadoutScreenProps) {
           ))}
         </aside>
 
-        {/* Center: SkinCarousel — fills remaining space */}
+        {/* Center: SkinCarousel — fills remaining space; thumb strip moves to bottom bar */}
         <main className="flex flex-1 min-w-0 items-center justify-center py-2">
           <SkinCarousel
             skins={WARWICK_SKINS}
             selectedIndex={selectedSkinIndex}
             onSelect={setSelectedSkinIndex}
+            showThumbStrip={false}
+            ringRadius={140}
           />
         </main>
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Bottom strip: ChatPanel left + "5V5 INTRO" label right              */}
+      {/* Bottom strip: ChatPanel left | thumb strip center | 5V5 label right */}
       {/* ------------------------------------------------------------------ */}
       <div
         className="relative flex shrink-0 items-stretch border-t border-gold-5"
         style={{ height: 130 }}
       >
-        {/* ChatPanel — left portion, ~220px */}
-        <div className="flex flex-col" style={{ width: 220 }}>
+        {/* ChatPanel — left portion, 220px, aligned with team rail */}
+        <div className="flex flex-col shrink-0" style={{ width: 220 }}>
           <ChatPanel
             messages={messages}
             onSend={handleSend}
@@ -274,8 +277,14 @@ export function LoadoutScreen({ onComplete }: LoadoutScreenProps) {
         {/* Divider */}
         <div className="w-px bg-gold-5 shrink-0" />
 
-        {/* Center filler — empty space that aligns with carousel column */}
-        <div className="flex-1" />
+        {/* Center: thumb strip — fills remaining space, vertically centered */}
+        <div className="flex flex-1 items-center justify-center min-w-0">
+          <SkinThumbStrip
+            skins={WARWICK_SKINS}
+            selectedIndex={selectedSkinIndex}
+            onSelect={setSelectedSkinIndex}
+          />
+        </div>
 
         {/* 5V5 INTRO label — bottom-right, display font, CSS uppercase */}
         <div className="flex items-end justify-end px-4 pb-3 shrink-0">
