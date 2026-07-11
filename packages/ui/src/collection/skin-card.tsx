@@ -98,7 +98,7 @@ export function SkinCard({ name, imageSrc, owned = true, onSelect }: SkinCardPro
         width={CARD_W}
         height={CARD_H}
         className={[
-          "object-cover w-full h-full transition-all duration-150",
+          "object-cover w-full h-full transition-[filter] duration-150",
           owned
             ? ""
             : "brightness-50 group-hover:brightness-75",
@@ -120,7 +120,7 @@ export function SkinCard({ name, imageSrc, owned = true, onSelect }: SkinCardPro
   // border (translated 50% outside) and must not be clipped. Nothing else
   // overflows: hover brightens only, never zooms.
   const sharedClass = owned
-    ? "group relative border border-gold-3 group-hover:border-gold-2 transition-colors duration-150"
+    ? "group relative border border-gold-3 hover:border-gold-2 transition-colors duration-150"
     : "group relative";
 
   if (onSelect) {
