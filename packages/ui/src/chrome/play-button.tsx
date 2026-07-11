@@ -357,8 +357,10 @@ function BarFrame({ cfg, disabled, children }: BarFrameProps) {
             style={{ background: TEAL_GRAD.pressed }}
           />
 
-          {/* Layer 4: surface (grey-4/95) with TEAL_BORDER padding */}
-          <div style={{ padding: TEAL_BORDER }}>
+          {/* Layer 4: surface (grey-4/95) with TEAL_BORDER padding.
+              position:relative ensures it paints AFTER the absolute gradient divs
+              in the same stacking context (positioned elements paint after in-flow). */}
+          <div className="relative" style={{ padding: TEAL_BORDER }}>
             <div
               className="relative flex items-center"
               style={{
