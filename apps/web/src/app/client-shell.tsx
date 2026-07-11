@@ -25,8 +25,9 @@ import {
 } from "@low/fixtures";
 import { MatchmakingScreen } from "./matchmaking-screen";
 import { CollectionScreen } from "./collection-screen";
+import { ModeSelectScreen } from "./mode-select-screen";
 
-type View = "home" | "matchmaking" | "collection";
+type View = "home" | "mode-select" | "matchmaking" | "collection";
 
 const NAV_ITEMS: NavItem[] = [
   { id: "home", label: "Home" },
@@ -202,7 +203,7 @@ export function ClientShell() {
         <div className="flex h-full flex-col">
           <TopNavbar
             playSlot={
-              <HextechButton size="large" onClick={() => setView("matchmaking")}>
+              <HextechButton size="large" onClick={() => setView("mode-select")}>
                 Play
               </HextechButton>
             }
@@ -253,14 +254,19 @@ export function ClientShell() {
             }
           />
 
-          {/* Content area — switches between home diagonal-split and matchmaking */}
+          {/* Content area — switches between home, mode-select, matchmaking, and collection */}
           <div className="relative flex-1 overflow-hidden">
             {view === "collection" ? (
               <CollectionScreen />
             ) : view === "matchmaking" ? (
               <MatchmakingScreen onBack={() => { setView("home"); setActiveNavId("home"); }} />
+            ) : view === "mode-select" ? (
+              <ModeSelectScreen
+                onConfirm={() => setView("matchmaking")}
+                onBack={() => { setView("home"); setActiveNavId("home"); }}
+              />
             ) : (
-              <HomeLanding onPlay={() => setView("matchmaking")} newsItems={NEWS_ITEMS} />
+              <HomeLanding onPlay={() => setView("mode-select")} newsItems={NEWS_ITEMS} />
             )}
           </div>
         </div>
@@ -283,7 +289,7 @@ export function ClientShell() {
 // CTA decision: PlayButton is placed in the home CONTENT left panel as the
 // primary landing CTA. The TopNavbar playSlot retains its HextechButton so the
 // play action remains reachable from every view (matchmaking, collection, etc.)
-// Both CTAs call setView("matchmaking") with the same effect.
+// Both CTAs call setView("mode-select") with the same effect.
 // ---------------------------------------------------------------------------
 
 interface HomeLandingProps {
