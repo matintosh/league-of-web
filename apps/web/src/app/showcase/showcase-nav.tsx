@@ -17,7 +17,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { registry } from "@low/ui/registry";
 import type { Area } from "@low/ui";
-import { usePathname, useRouter } from "next/navigation";
 
 const AREA_LABELS: Record<Area, string> = {
   chrome: "Chrome",
@@ -30,74 +29,61 @@ const AREA_LABELS: Record<Area, string> = {
 
 const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store", "lobby"];
 
+const AREAS = AREA_ORDER.filter((a) => registry.some((e) => e.area === a));
+
+/**
+ * Shared nav content — used inside both the desktop aside and the mobile
+ * drawer. Module-level so its component identity is stable across renders
+ * (defining it inside ShowcaseNav would remount the subtree on every state
+ * change). Links stay <Link> in both contexts to keep Next.js prefetching;
+ * the mobile drawer passes onNavigate to close itself on tap.
+ */
+function NavContent({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <>
+      <Link
+        href="/showcase"
+        className="font-display text-xl uppercase tracking-widest text-gold-1"
+        onClick={onNavigate}
+      >
+        Showcase
+      </Link>
+      <nav className="mt-8 flex flex-col gap-6">
+        {AREAS.length === 0 && (
+          <p className="text-sm text-grey-2">No components yet.</p>
+        )}
+        {AREAS.map((area) => (
+          <div key={area}>
+            <h2 className="mb-2 text-xs uppercase tracking-widest text-gold-4">
+              {AREA_LABELS[area]}
+            </h2>
+            <ul className="flex flex-col gap-1">
+              {registry
+                .filter((e) => e.area === area)
+                .map((e) => (
+                  <li key={e.slug}>
+                    <Link
+                      href={`/showcase/${e.slug}`}
+                      onClick={onNavigate}
+                      className="block px-2 py-1 text-sm text-grey-1 transition-colors hover:bg-grey-cool hover:text-gold-1"
+                    >
+                      {e.name}
+                    </Link>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+    </>
+  );
+}
+
 export function ShowcaseNav() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
-
-  const areas = AREA_ORDER.filter((a) => registry.some((e) => e.area === a));
 
   function close() {
     setOpen(false);
-  }
-
-  function handleNavLinkClick(href: string) {
-    close();
-    router.push(href);
-  }
-
-  /** Shared nav content — used inside both the desktop aside and the mobile drawer. */
-  function NavContent({ onLinkClick }: { onLinkClick?: (href: string) => void }) {
-    return (
-      <>
-        <Link
-          href="/showcase"
-          className="font-display text-xl uppercase tracking-widest text-gold-1"
-          onClick={onLinkClick ? () => onLinkClick("/showcase") : undefined}
-        >
-          Showcase
-        </Link>
-        <nav className="mt-8 flex flex-col gap-6">
-          {areas.length === 0 && (
-            <p className="text-sm text-grey-2">No components yet.</p>
-          )}
-          {areas.map((area) => (
-            <div key={area}>
-              <h2 className="mb-2 text-xs uppercase tracking-widest text-gold-4">
-                {AREA_LABELS[area]}
-              </h2>
-              <ul className="flex flex-col gap-1">
-                {registry
-                  .filter((e) => e.area === area)
-                  .map((e) => {
-                    const href = `/showcase/${e.slug}`;
-                    return (
-                      <li key={e.slug}>
-                        {onLinkClick ? (
-                          <button
-                            type="button"
-                            onClick={() => onLinkClick(href)}
-                            className="block w-full px-2 py-1 text-left text-sm text-grey-1 transition-colors hover:bg-grey-cool hover:text-gold-1"
-                          >
-                            {e.name}
-                          </button>
-                        ) : (
-                          <Link
-                            href={href}
-                            className="block px-2 py-1 text-sm text-grey-1 transition-colors hover:bg-grey-cool hover:text-gold-1"
-                          >
-                            {e.name}
-                          </Link>
-                        )}
-                      </li>
-                    );
-                  })}
-              </ul>
-            </div>
-          ))}
-        </nav>
-      </>
-    );
   }
 
   return (
@@ -128,10 +114,11 @@ export function ShowcaseNav() {
         </svg>
       </button>
 
-      {/* Mobile: backdrop — closes drawer on tap */}
+      {/* Mobile: backdrop — z-30, one level below the drawer so taps anywhere
+          on the grey overlay outside the drawer reach it */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-hextech-black/70 md:hidden"
+          className="fixed inset-0 z-30 bg-hextech-black/70 md:hidden"
           aria-hidden="true"
           onClick={close}
         />
@@ -146,7 +133,7 @@ export function ShowcaseNav() {
         ].join(" ")}
         aria-hidden={!open}
       >
-        <NavContent onLinkClick={handleNavLinkClick} />
+        <NavContent onNavigate={close} />
       </aside>
     </>
   );
