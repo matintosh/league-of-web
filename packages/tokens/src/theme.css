@@ -1,4 +1,4 @@
-/* Keep in sync with packages/tokens/src/index.ts — same 20 hex values. */
+/* Keep in sync with packages/tokens/src/index.ts — same 22 hex values. */
 @theme {
   /* Gold — borders, accents, text highlights */
   --color-gold-1: #f0e6d2;
@@ -7,6 +7,9 @@
   --color-gold-4: #785a28;
   --color-gold-5: #463714;
   --color-gold-6: #32281e;
+  /* Gold extended — Figma-measured UI-specific tones */
+  --color-gold-cream: #cdbe91;
+  --color-gold-coin: #deb53c;
 
   /* Hextech blue — magic, interactive, focus */
   --color-blue-1: #cdfafa;
