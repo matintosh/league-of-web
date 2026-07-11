@@ -122,7 +122,7 @@ interface InnerProps {
 //   Grey border gradient (grey-3→grey-4), muted text (grey-2), no glow.
 //
 // Pressed (extrapolated):
-//   Slight fill darken via active:bg-grey-4.
+//   Slight fill darken via active:bg-grey-cool.
 // ---------------------------------------------------------------------------
 
 function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps }: InnerProps) {
