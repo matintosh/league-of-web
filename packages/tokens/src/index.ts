@@ -1,4 +1,4 @@
-// Keep in sync with packages/tokens/src/theme.css — same 49 hex values.
+// Keep in sync with packages/tokens/src/theme.css — same 51 hex values.
 /** Hextech palette as TS constants — for the rare case CSS classes can't be used (e.g. canvas). */
 export const palette = {
   gold1: "#f0e6d2",
@@ -49,6 +49,10 @@ export const palette = {
   pbOuterBg: "#00070e",
   /** PlayButton v4 GoldLine frame border (dark bronze) */
   pbOuterBorder: "#34291e",
+  /** PlayButton v4 hover fill top stop — XAML #1D3B4A */
+  pbHoverFill: "#1d3b4a",
+  /** PlayButton v4 GreenLine inner border — XAML #09343D */
+  pbInnerBorder: "#09343d",
   statusOnline: "#00c853",
   /** Warning/alert accent — queue-type-list warning triangle, pixel-sampled from client-pvp-mode-select.jpg (issue #80) */
   warning: "#ed2c49",

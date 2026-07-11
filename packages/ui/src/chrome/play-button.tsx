@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useId } from "react";
+import React, { useId, useState, useCallback } from "react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 // ---------------------------------------------------------------------------
@@ -133,7 +133,7 @@ function GradDefs({ dsId, hsId, hfId }: GradDefsProps) {
       </linearGradient>
       {/* Hover fill: 2-stop vertical — XAML #1D3B4A → #082734 */}
       <linearGradient id={hfId} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%"   stopColor="#1D3B4A" stopOpacity="1" />
+        <stop offset="0%"   stopColor="var(--color-pb-hover-fill)" stopOpacity="1" />
         <stop offset="100%" stopColor="var(--color-navy-swirl)" stopOpacity="1" />
       </linearGradient>
     </defs>
@@ -270,6 +270,12 @@ export function PlayButton({
   const hsId    = `${uid}-hs`;
   const hfId    = `${uid}-hf`;
 
+  // Pressed state — drives socket shrink + bar extend. CSS :active pseudo-class
+  // cannot override inline style (specificity), so JS state handles the override.
+  const [pressed, setPressed] = useState(false);
+  const handleMouseDown = useCallback(() => { if (!disabled && !queueing) setPressed(true); }, [disabled, queueing]);
+  const handleMouseUp   = useCallback(() => setPressed(false), []);
+
   const cfg = SIZE_MAP[size];
   const {
     medallion, socket, socketPressed,
@@ -283,6 +289,10 @@ export function PlayButton({
   const greyed = disabled || queueing;
   const d = barPath(cfg);
 
+  // Resolved CSS vars for pressed/rest state
+  const currentSocketSize = pressed ? socketPressed : socket;
+  const currentPressExtend = pressed ? pressExtend : 0;
+
   // Right padding: clears the tip region
   const textRight = barWidth - tipNarrowX + 8;
 
@@ -293,8 +303,6 @@ export function PlayButton({
     <div
       className={[
         "inline-flex items-center group/pb",
-        !disabled && !queueing &&
-          `group-active/pb:[--socket-size:${socketPressed}px] group-active/pb:[--press-extend:${pressExtend}px]`,
         "has-[:disabled]:[filter:none] has-[:disabled]:hover:[filter:none]",
         disabled || queueing
           ? "[filter:none]"
@@ -309,9 +317,15 @@ export function PlayButton({
         .join(" ")}
       style={
         !disabled
-          ? ({ "--socket-size": `${socket}px`, "--press-extend": "0px" } as React.CSSProperties)
+          ? ({
+              "--socket-size": `${currentSocketSize}px`,
+              "--press-extend": `${currentPressExtend}px`,
+            } as React.CSSProperties)
           : undefined
       }
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
     >
       {/* Gradient defs in a hidden SVG — position:absolute, 0×0, overflow:hidden */}
       <svg width="0" height="0" aria-hidden="true" style={{ position: "absolute", overflow: "hidden" }}>
@@ -321,15 +335,31 @@ export function PlayButton({
       {/* ------------------------------------------------------------------ */}
       {/* MEDALLION — overlaps the outer frame on the left                   */}
       {/* Negative right margin pulls it into the frame.                     */}
+      {/* The inner sizing div tracks --socket-size so the visible disc      */}
+      {/* shrinks on press (44→40 default, 72→65 hero) while the layout      */}
+      {/* container stays fixed (no reflow on press).                        */}
       {/* ------------------------------------------------------------------ */}
       <div
-        className="relative z-10 shrink-0 flex items-center"
+        className="relative z-10 shrink-0 flex items-center justify-center"
         style={{
+          width: medallion,
           height: totalH,
           marginRight: -medallionOverhang,
         }}
       >
-        <Medallion size={medallion} greyed={greyed} discId={discId} glyphId={glyphId} />
+        {/* Socket shell: tracks --socket-size with overflow:hidden + border-radius:50%
+            to clip the fixed-size medallion SVG into a circle that visibly shrinks
+            on press (44→40 default, 72→65 hero) without layout reflow. */}
+        <div
+          className="transition-all duration-150 overflow-hidden flex items-center justify-center"
+          style={{
+            width: "var(--socket-size)",
+            height: "var(--socket-size)",
+            borderRadius: "50%",
+          }}
+        >
+          <Medallion size={medallion} greyed={greyed} discId={discId} glyphId={glyphId} />
+        </div>
       </div>
 
       {/* ------------------------------------------------------------------ */}
@@ -358,7 +388,7 @@ export function PlayButton({
             right: greenMargin,
             bottom: greenMargin,
             background: "var(--color-grey-4)",
-            border: "2px solid #09343D",
+            border: "2px solid var(--color-pb-inner-border)",
             boxSizing: "border-box",
           }}
         />
@@ -367,15 +397,17 @@ export function PlayButton({
         {/* ARROW SVG — positioned over both frames (z=2 > GreenLine)        */}
         {/* XAML Arrow margin 40 5 4 -5: left=40, top=5 from GoldLine edge.  */}
         {/* The drop-shadow on the SVG matches XAML DropShadowEffect.        */}
+        {/* On press --press-extend moves the SVG left, extending the bar.   */}
         {/* ---------------------------------------------------------------- */}
         <div
           style={{
             position: "absolute",
-            left: arrowLeft,
+            left: `calc(${arrowLeft}px - var(--press-extend, 0px))`,
             top: arrowTop,
             zIndex: 2,
             filter: "drop-shadow(0 2px 5px rgba(0,0,0,0.8))",
             lineHeight: 0,
+            transition: "left 150ms",
           }}
         >
           <svg
@@ -426,16 +458,22 @@ export function PlayButton({
               ? "cursor-not-allowed text-grey-2"
               : queueing
               ? "text-grey-3 cursor-default"
-              : "text-gold-1 group-hover/pb:text-gold-cream active:text-gold-3",
+              : "text-gold-1 group-hover/pb:text-gold-1 active:text-gold-3",
             "focus-visible:outline-none",
             "transition-colors duration-150",
           ].join(" ")}
           style={{ fontSize }}
         >
-          {/* Left spacer: clears GreenLine left inset + concave region */}
+          {/* Left spacer: clears GreenLine left inset + concave region.
+              Narrows by --press-extend on active so text tracks with the bar. */}
           <span
             aria-hidden="true"
-            style={{ flexShrink: 0, display: "inline-block", width: greenLeft + textLeft }}
+            style={{
+              flexShrink: 0,
+              display: "inline-block",
+              width: `calc(${greenLeft + textLeft}px - var(--press-extend, 0px))`,
+              transition: "width 150ms",
+            }}
           />
 
           {/* PLAY/STOP sliding window */}
