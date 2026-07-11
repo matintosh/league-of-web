@@ -1,4 +1,4 @@
-/* Keep in sync with packages/tokens/src/index.ts — same 22 hex values. */
+/* Keep in sync with packages/tokens/src/index.ts — same 32 hex values. */
 @theme {
   /* Gold — borders, accents, text highlights */
   --color-gold-1: #f0e6d2;
@@ -27,6 +27,20 @@
   --color-grey-4: #1e2328;
   --color-grey-cool: #1e282d;
   --color-hextech-black: #010a13;
+
+  /* Teal — play-button frame & medallion ring */
+  --color-teal-frame: #0b4052;
+  --color-teal-ring: #167786;
+  --color-navy-swirl: #082640;
+
+  /* Teal gradient stops — play-button border per state */
+  --color-teal-grad-a: #0593a7;
+  --color-teal-grad-b: #026f8f;
+  --color-teal-grad-hover-a: #91e1dc;
+  --color-teal-grad-hover-b: #0c9ca1;
+  --color-teal-grad-hover-c: #1f9ebd;
+  --color-teal-grad-press-a: #0d3f4b;
+  --color-teal-grad-press-b: #025577;
 
   /* Status — availability indicators */
   --color-status-online: #00c853;

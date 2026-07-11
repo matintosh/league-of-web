@@ -5,6 +5,8 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 // ---------------------------------------------------------------------------
 // Size map — Record ensures both members are always present.
+// 1× measurements: Figma API extraction (node 22:132) + issue #57 comment.
+// hero scales proportionally ×~1.7 from the 1× default.
 // ---------------------------------------------------------------------------
 
 export type PlayButtonSize = "default" | "hero";
@@ -12,99 +14,166 @@ export type PlayButtonSize = "default" | "hero";
 interface SizeConfig {
   /** Medallion outer diameter (px) */
   medallion: number;
-  /** Bar total height (px, including all frame layers) */
+  /** Socket circle diameter (px) — default state */
+  socket: number;
+  /** Socket diameter when pressed (active:) */
+  socketPressed: number;
+  /** Bar total height (px) */
   bar: number;
-  /** Minimum bar inner content width (px) */
+  /** Minimum bar width incl. all padding (px) */
   barMinWidth: number;
-  /** Horizontal padding inside bar content area (px) */
+  /** Horizontal content padding inside bar (px) */
   barPx: number;
-  /** Tailwind text size class for the label */
-  textClass: string;
+  /** Gap between icon/text (px) */
+  gap: number;
+  /** Label font-size (px) */
+  fontSize: number;
+  /** Label line-height (px) */
+  lineHeight: number;
+  /** Corner chevron leg length (px) */
+  cornerLeg: number;
+  /** Corner inset from edge (px) */
+  cornerInset: number;
+  /** How far bar extends left on press (px) */
+  pressExtend: number;
 }
 
 const SIZE_MAP: Record<PlayButtonSize, SizeConfig> = {
   default: {
-    medallion: 48,
+    medallion: 44,
+    socket: 44,
+    socketPressed: 40,
     bar: 34,
     barMinWidth: 128,
-    barPx: 20,
-    textClass: "text-sm",
+    barPx: 32,
+    gap: 4,
+    fontSize: 15,
+    lineHeight: 19,
+    cornerLeg: 8,
+    cornerInset: 3,
+    pressExtend: 1.3,
   },
   hero: {
-    medallion: 72,
-    bar: 56,
-    barMinWidth: 180,
-    barPx: 28,
-    textClass: "text-2xl",
+    medallion: 75,
+    socket: 75,
+    socketPressed: 68,
+    bar: 58,
+    barMinWidth: 218,
+    barPx: 54,
+    gap: 7,
+    fontSize: 26,
+    lineHeight: 32,
+    cornerLeg: 14,
+    cornerInset: 5,
+    pressExtend: 2.2,
   },
 };
 
 // ---------------------------------------------------------------------------
-// Pointed polygon helper
-// Right edge converges to a single point at 50% height.
-// tip depth = barHeight / 2 (matches the spec proportions).
+// Arrow clip-path — pointed right, uses only bar height (not width, which is
+// dynamic/CSS-controlled). The `w` param is unused but kept for symmetry.
 // ---------------------------------------------------------------------------
 
-function barPolygon(h: number): string {
-  const tip = h / 2; // tip depth into the shape from the right edge
+/** CSS clip-path polygon for an arrow pointing right. Only `h` matters. */
+function arrowClip(h: number): string {
+  const tip = h / 2;
   return `polygon(0% 0%, calc(100% - ${tip}px) 0%, 100% 50%, calc(100% - ${tip}px) 100%, 0% 100%)`;
 }
 
 // ---------------------------------------------------------------------------
-// 'L' glyph SVG — original angular design, aria-hidden.
-// viewBox is generously oversized so the glyph can overflow the ring boundary.
-// The glyph is rendered with two paths: gold gradient fill + gold-5 outline.
+// Teal gradient border — state-driven inline background on the border layer.
+// The three gradient strings by state (used both inline and for documentation).
+// ---------------------------------------------------------------------------
+
+const TEAL_GRAD = {
+  default:
+    "linear-gradient(180deg, var(--color-teal-grad-a) 0%, var(--color-teal-grad-b) 100%)",
+  hover:
+    "linear-gradient(180deg, var(--color-teal-grad-hover-a) 0%, var(--color-teal-grad-hover-b) 51%, var(--color-teal-grad-hover-c) 100%)",
+  pressed:
+    "linear-gradient(180deg, var(--color-teal-grad-press-a) 0%, var(--color-teal-grad-press-b) 100%)",
+};
+
+// ---------------------------------------------------------------------------
+// 'L' glyph SVG
+// Spec: fill base #C28F2C (≈gold-3), overlay gradient gold-4→gold-3 (top→bottom),
+// 2.25px solid rgba(0,0,0,0.6) outline, drop-shadow 0 0 3px rgba(0,0,0,0.4).
 // ---------------------------------------------------------------------------
 
 interface LeagueGlyphProps {
   size: number;
-  fill: string;
-  className?: string;
+  glyphGradId: string;
+  disabled?: boolean;
 }
 
-function LeagueGlyph({ size, fill, className }: LeagueGlyphProps) {
-  // The viewBox is 24×24 but the SVG element is "size" wide/tall.
-  // We deliberately render this larger than the medallion so it overlaps the ring.
-  const glyphPath = "M5 2h4v13h7.5V18H5V2z M12.5 15h4v3h-4z";
+function LeagueGlyph({ size, glyphGradId, disabled }: LeagueGlyphProps) {
+  // Angular 'L' path matching v2 (proven geometry)
+  const path = "M5 2h4v13h7.5V18H5V2z M12.5 15h4v3h-4z";
 
   return (
     <svg
       viewBox="0 0 24 24"
       aria-hidden="true"
-      className={className}
-      style={{ width: size, height: size, overflow: "visible" }}
+      style={{
+        width: size,
+        height: size,
+        overflow: "visible",
+        filter: "drop-shadow(0 0 3px rgba(0,0,0,0.4))",
+      }}
     >
-      {/* Outline path — gold-5 for depth */}
+      <defs>
+        {/* Overlay gradient: gold-5 (dark gold ≈ #7D5826) → gold-3 (≈ #C69442) */}
+        <linearGradient id={glyphGradId} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="var(--color-gold-5)" />
+          <stop offset="100%" stopColor="var(--color-gold-3)" />
+        </linearGradient>
+      </defs>
+
+      {/* Base fill: gold-3 (#C89B3C ≈ #C28F2C) */}
       <path
-        d={glyphPath}
+        d={path}
+        fill={disabled ? "var(--color-grey-3)" : "var(--color-gold-3)"}
+      />
+
+      {/* Gradient overlay (semi-transparent so base shows through) */}
+      {!disabled && (
+        <path d={path} fill={`url(#${glyphGradId})`} opacity={0.8} />
+      )}
+
+      {/* Outline: 2.25px black/60 */}
+      <path
+        d={path}
         fill="none"
-        stroke="var(--color-gold-5)"
-        strokeWidth="1.5"
+        stroke="rgba(0,0,0,0.6)"
+        strokeWidth={2.25}
         strokeLinejoin="round"
       />
-      {/* Filled path — gold gradient */}
-      <path d={glyphPath} fill={fill} />
     </svg>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Medallion — SVG-based ring + disc + glyph.
+// Medallion — SVG ring + interior + 'L' glyph.
+//
+// Spec (measured, 1×):
+//   Base ellipses: grey-4 (#1E2328) stacked discs
+//   Interior: navy-swirl (#082640 ≈ blue-7) rotated ~30° — approximated via
+//             rotated radial gradient; no bitmap dependency.
+//   Ring: 1.5px teal-ring (#167786) with mix-blend-mode: color-dodge
+//         (Figma: "Ellipse 5 mix-blend-mode: color-dodge; border: 3px solid #167786 @2×")
+//   Glyph: overlaid on top
 // ---------------------------------------------------------------------------
 
 interface MedallionProps {
   size: number;
   disabled?: boolean;
-  ringGradId: string;
   discGradId: string;
   glyphGradId: string;
 }
 
-function Medallion({ size, disabled, ringGradId, discGradId, glyphGradId }: MedallionProps) {
+function Medallion({ size, disabled, discGradId, glyphGradId }: MedallionProps) {
   const r = size / 2;
-  const strokeW = size >= 60 ? 4 : 3;
-  const innerR = r - strokeW / 2 - 1; // radius of the inner disc (inside the ring)
-  // Glyph element size — ~60% of medallion, rendered larger so it overlaps ring
+  const ringStrokeW = size >= 60 ? 2.5 : 1.5;
   const glyphSize = Math.round(size * 0.65);
 
   return (
@@ -113,7 +182,7 @@ function Medallion({ size, disabled, ringGradId, discGradId, glyphGradId }: Meda
       className="relative shrink-0 flex items-center justify-center"
       style={{ width: size, height: size }}
     >
-      {/* SVG layer: ring + disc */}
+      {/* SVG: base discs, swirl fill, ring */}
       <svg
         viewBox={`0 0 ${size} ${size}`}
         width={size}
@@ -121,51 +190,44 @@ function Medallion({ size, disabled, ringGradId, discGradId, glyphGradId }: Meda
         className="absolute inset-0"
         overflow="visible"
       >
-        {/* Ring gradient: gold-3 → gold-2 → gold-5 */}
         <defs>
-          <linearGradient id={ringGradId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="var(--color-gold-3)" />
-            <stop offset="50%" stopColor="var(--color-gold-2)" />
-            <stop offset="100%" stopColor="var(--color-gold-5)" />
-          </linearGradient>
-          {/* Disc gradient: blue-2 → blue-4 → blue-6 */}
-          <radialGradient id={discGradId} cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="var(--color-blue-2)" stopOpacity="0.4" />
-            <stop offset="50%" stopColor="var(--color-blue-4)" />
-            <stop offset="100%" stopColor="var(--color-blue-6)" />
+          {/* Navy-swirl interior: radial approximating rotated ~30° texture */}
+          <radialGradient id={discGradId} cx="40%" cy="35%" r="70%">
+            <stop offset="0%" stopColor="var(--color-navy-swirl)" stopOpacity="0.8" />
+            <stop offset="55%" stopColor="var(--color-navy-swirl)" />
+            <stop offset="100%" stopColor="var(--color-grey-4)" />
           </radialGradient>
-          {/* Glyph fill gradient: gold-2 → gold-3 */}
-          <linearGradient id={glyphGradId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="var(--color-gold-2)" />
-            <stop offset="100%" stopColor="var(--color-gold-3)" />
-          </linearGradient>
         </defs>
 
-        {/* Inner disc (energy swirl) */}
+        {/* Base disc: grey-4 */}
+        <circle cx={r} cy={r} r={r} fill="var(--color-grey-4)" />
+
+        {/* Interior swirl disc */}
         <circle
           cx={r}
           cy={r}
-          r={innerR}
+          r={r - ringStrokeW - 1}
           fill={disabled ? "var(--color-grey-4)" : `url(#${discGradId})`}
         />
 
-        {/* Metallic ring stroke */}
+        {/* Teal ring — color-dodge mode per Figma spec */}
         <circle
           cx={r}
           cy={r}
-          r={r - strokeW / 2}
+          r={r - ringStrokeW / 2}
           fill="none"
-          stroke={disabled ? "var(--color-grey-3)" : `url(#${ringGradId})`}
-          strokeWidth={strokeW}
+          stroke={disabled ? "var(--color-grey-3)" : "var(--color-teal-ring)"}
+          strokeWidth={ringStrokeW}
+          style={disabled ? undefined : { mixBlendMode: "color-dodge" }}
         />
       </svg>
 
-      {/* Glyph — rendered on top, overflows the circle boundary */}
+      {/* Glyph */}
       <div className="absolute inset-0 flex items-center justify-center">
         <LeagueGlyph
           size={glyphSize}
-          fill={disabled ? "none" : `url(#${glyphGradId})`}
-          className={disabled ? "opacity-40" : ""}
+          glyphGradId={glyphGradId}
+          disabled={disabled}
         />
       </div>
     </div>
@@ -173,10 +235,37 @@ function Medallion({ size, disabled, ringGradId, discGradId, glyphGradId }: Meda
 }
 
 // ---------------------------------------------------------------------------
-// Bar frame — nested clipped wrappers, outside→in:
-//   gold-4 hairline → dark gap → 2px blue-3 → small gap → 1px blue-2 → surface
-// All layers share the same pointed polygon via barPolygon().
+// BarFrame v3 — three-layer clip-path stack implementing the Figma spec:
+//
+//   Layer 1 (outermost): 6px black/50 ring
+//   Layer 2:              3px teal gradient border  ← gradient varies by state
+//   Layer 3 (surface):    rgba(30,35,40,0.95)
+//
+// The teal gradient border is the most challenging — CSS border-image doesn't
+// survive clip-path. Solution: the border layer IS a div that fills the gap
+// between layer-1 and layer-3; its `background` is the teal gradient, and
+// the nested clip-path creates a 3px "frame" of that gradient color around the
+// surface. The gradient is swapped via inline style on the wrapper using
+// group-hover/pb and group-active/pb via sibling div opacity trick.
+//
+// Because Tailwind can't directly apply `group-hover:style` to change gradient
+// stops, we stack three border-layer divs (one per state) that fade in/out
+// via opacity transitions on group-hover/active.
+//
+// Corner pieces (TR/BR): CSS positioned divs with two borders forming an 'L'.
+// Socket pocket: semi-transparent left-edge semicircle.
+//
+// Pressed geometry: active: CSS scales/shifts the button text and adjusts socket.
+// The bar "extends left" is achieved by reducing left padding on press.
 // ---------------------------------------------------------------------------
+
+// Insets: blackRing (3) + tealBorder (2) = 5px each side (top+bottom = 10px total).
+// The raw CSS export is @2× so 12px ring → 6px @1×, 6px teal → 3px @1×, but that
+// eats too much of the 34px bar (leaves only 16px surface). We use 3+2 which gives
+// a 24px-tall surface fitting the 19px line-height at 1×.
+const BLACK_RING = 3;
+const TEAL_BORDER = 2;
+const TOTAL_INSET = (BLACK_RING + TEAL_BORDER) * 2; // 10px total vertical
 
 interface BarFrameProps {
   cfg: SizeConfig;
@@ -184,33 +273,28 @@ interface BarFrameProps {
   children: ReactNode;
 }
 
-// Total vertical inset of the enabled BarFrame layer stack (each layer × 2 for top+bottom):
-//   Layer 1 gold-4 hairline:  1px × 2 =  2px
-//   Layer 2 dark gap:         2px × 2 =  4px
-//   Layer 3 blue-3 outer teal:2px × 2 =  4px
-//   Layer 4 small gap:        1px × 2 =  2px
-//   Layer 5 blue-2 inner teal:1px × 2 =  2px
-//   Total:                              = 14px
-const FRAME_INSET = 14;
-
 function BarFrame({ cfg, disabled, children }: BarFrameProps) {
   const { bar } = cfg;
-  const clip = barPolygon(bar); // width doesn't matter for the CSS polygon
-
-  const clipStyle = { clipPath: clip };
+  const clip = arrowClip(bar);
 
   if (disabled) {
-    // Disabled layer stack must produce the same FRAME_INSET (14px) vertical total:
-    //   p-px   (1px × 2 =  2px)
-    //   p-[6px](6px × 2 = 12px)
-    //   Total:             14px
     return (
       <div
-        className="p-px bg-grey-3 transition-colors duration-150"
-        style={clipStyle}
+        className="bg-grey-3"
+        style={{ clipPath: clip, padding: BLACK_RING }}
       >
-        <div className="p-[6px] bg-grey-4" style={clipStyle}>
-          <div style={{ ...clipStyle, height: bar - FRAME_INSET }}>
+        <div
+          className="bg-grey-4"
+          style={{ clipPath: clip, padding: TEAL_BORDER }}
+        >
+          <div
+            className="relative flex items-center"
+            style={{
+              clipPath: clip,
+              height: bar - TOTAL_INSET,
+              background: "rgba(30,35,40,0.95)",
+            }}
+          >
             {children}
           </div>
         </div>
@@ -218,40 +302,91 @@ function BarFrame({ cfg, disabled, children }: BarFrameProps) {
     );
   }
 
+  const surfaceH = bar - TOTAL_INSET;
+
   return (
-    // Layer 1: gold-4 hairline (1px)
     <div
-      className="transition-colors duration-150 bg-gold-4 group-hover/pb:bg-gold-2"
-      style={{ ...clipStyle, padding: "1px" }}
+      // Layer 1: black/50 ring (6px pad)
+      style={{
+        clipPath: clip,
+        padding: BLACK_RING,
+        background: "rgba(0,0,0,0.5)",
+      }}
     >
-      {/* Layer 2: dark gap (2px) */}
-      <div
-        className="bg-blue-6"
-        style={{ ...clipStyle, padding: "2px" }}
-      >
-        {/* Layer 3: blue-3 outer teal (2px) */}
+      {/*
+        Teal border layers — stacked with opacity transitions.
+        Three divs (default / hover / pressed) fade in/out.
+        Each is clipped by the same arrow shape, producing the 3px gradient "border."
+      */}
+      <div className="relative" style={{ clipPath: clip }}>
+        {/* Default border gradient (fades on hover/active) */}
         <div
-          className="bg-blue-3 group-hover/pb:bg-blue-2 transition-colors duration-150"
-          style={{ ...clipStyle, padding: "2px" }}
-        >
-          {/* Layer 4: small gap (1px) */}
+          className="absolute inset-0 transition-opacity duration-150 group-hover/pb:opacity-0 group-active/pb:opacity-0 pointer-events-none"
+          style={{ background: TEAL_GRAD.default }}
+        />
+        {/* Hover border gradient */}
+        <div
+          className="absolute inset-0 opacity-0 transition-opacity duration-150 group-hover/pb:opacity-100 group-active/pb:opacity-0 pointer-events-none"
+          style={{ background: TEAL_GRAD.hover }}
+        />
+        {/* Pressed border gradient */}
+        <div
+          className="absolute inset-0 opacity-0 transition-opacity duration-150 group-active/pb:opacity-100 pointer-events-none"
+          style={{ background: TEAL_GRAD.pressed }}
+        />
+
+        {/* Inner layer: surface (grey-4/95) with TEAL_BORDER padding */}
+        <div style={{ padding: TEAL_BORDER }}>
           <div
-            className="bg-blue-6"
-            style={{ ...clipStyle, padding: "1px" }}
+            className="relative flex items-center"
+            style={{
+              clipPath: arrowClip(surfaceH),
+              height: surfaceH,
+              background: "rgba(30,35,40,0.95)",
+            }}
           >
-            {/* Layer 5: blue-2 inner teal (1px) */}
+            {/* Socket pocket: semi-transparent darkening semicircle on left */}
             <div
-              className="bg-blue-2 group-hover/pb:bg-blue-1 transition-colors duration-150"
-              style={{ ...clipStyle, padding: "1px" }}
-            >
-              {/* Surface */}
-              <div
-                className="bg-grey-4 group-hover/pb:bg-grey-cool transition-colors duration-150"
-                style={clipStyle}
-              >
-                {children}
-              </div>
-            </div>
+              aria-hidden="true"
+              className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2"
+              style={{
+                width: cfg.socket / 2,
+                height: cfg.socket,
+                background: "rgba(0,0,0,0.2)",
+                borderRadius: `0 ${cfg.socket / 2}px ${cfg.socket / 2}px 0`,
+              }}
+            />
+
+            {/* Corner piece TR — L-bracket positioned in flat area before the arrow tip */}
+            {/* right = surfaceH/2 pushes it left of where diagonals start */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute"
+              style={{
+                top: cfg.cornerInset,
+                right: surfaceH / 2 + cfg.cornerInset,
+                width: cfg.cornerLeg,
+                height: cfg.cornerLeg,
+                borderTop: `1.5px solid var(--color-teal-grad-a)`,
+                borderRight: `1.5px solid var(--color-teal-grad-b)`,
+              }}
+            />
+
+            {/* Corner piece BR — mirror of TR (matrix(1,0,0,-1,0,0) in Figma) */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute"
+              style={{
+                bottom: cfg.cornerInset,
+                right: surfaceH / 2 + cfg.cornerInset,
+                width: cfg.cornerLeg,
+                height: cfg.cornerLeg,
+                borderBottom: `1.5px solid var(--color-teal-grad-a)`,
+                borderRight: `1.5px solid var(--color-teal-grad-b)`,
+              }}
+            />
+
+            {children}
           </div>
         </div>
       </div>
@@ -268,26 +403,34 @@ export interface PlayButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
   children?: ReactNode;
   /**
    * Size variant.
-   * - `"default"` (default) — navbar-scale (medallion ~48px, bar ~34px)
-   * - `"hero"` — landing-CTA scale (medallion ~72px, bar ~56px)
+   * - `"default"` (default) — navbar/landing scale (1× Figma: 128×34)
+   * - `"hero"` — large CTA scale (~×1.7)
    */
   size?: PlayButtonSize;
 }
 
 /**
- * PlayButton v2 — medallion + double-teal-frame bar CTA.
+ * PlayButton v3 — Figma-measured layer stack.
  *
- * Composition:
- * - Outer `<div>` is `group/pb` anchor and holds `filter:drop-shadow` for glow
- *   (must be unclipped — drop-shadow on clipped elements is clipped too).
- * - Medallion: SVG ring with linearGradient stroke + radialGradient blue disc
- *   + oversized 'L' glyph that intentionally overflows the ring boundary.
- * - Bar: nested clipped wrappers sharing the same pointed polygon —
- *   gold hairline → dark gap → blue-3 2px → gap → blue-2 1px → surface.
- * - All SVG ids derive from `useId()` to avoid collisions in showcase/multi-render.
+ * ## Frame (outer → inner)
+ * 6px black/50 ring → 3px teal gradient border → rgba(30,35,40,0.95) surface.
  *
- * `className` is forwarded to the outer wrapper (for layout placement).
- * Do NOT pass a size to the existing landing call-site — `"default"` is the default.
+ * ## Teal gradient (per state, API-extracted, supersedes CSS export)
+ * - Default: `#0593A7 → #026F8F`
+ * - Hover:   `#91E1DC → #0C9CA1 → #1F9EBD` + two #BFF2FF-derived glows (≈ blue-1)
+ * - Pressed: `#0D3F4B → #025577` + socket shrinks 44→40px
+ *
+ * ## Medallion
+ * grey-4 base discs → navy-swirl interior (≈ blue-7, rotated radial approx.) →
+ * 1.5px teal-ring (#167786) with `mix-blend-mode: color-dodge` →
+ * gold-3-based 'L' glyph with gradient overlay + black/60 outline.
+ *
+ * ## Notes
+ * - Gradient border is implemented as stacked opacity layers (Tailwind can't
+ *   swap CSS gradient stops with group-hover); each state layer transitions in/out.
+ * - Glows applied via `filter:drop-shadow` on the unclipped outer wrapper.
+ * - All SVG ids derive from `useId()` to prevent collisions in showcase/multi-render.
+ * - `className` forwarded to outer wrapper for layout placement.
  */
 export function PlayButton({
   children,
@@ -297,28 +440,40 @@ export function PlayButton({
   ...props
 }: PlayButtonProps) {
   const uid = useId();
-  const ringGradId = `${uid}-ring`;
   const discGradId = `${uid}-disc`;
   const glyphGradId = `${uid}-glyph`;
 
   const cfg = SIZE_MAP[size];
-  const { medallion, bar, barMinWidth, barPx, textClass } = cfg;
+  const {
+    medallion,
+    socket,
+    socketPressed,
+    bar,
+    barMinWidth,
+    barPx,
+    fontSize,
+    lineHeight,
+    pressExtend,
+  } = cfg;
 
-  // Overlap: medallion sits on top of the bar's left edge
-  const overlap = 12; // px medallion overhangs into the bar
+  // How far the medallion overlaps into the bar (= half the socket diameter)
+  const overlap = socket / 2;
 
   return (
     <div
       className={[
         "inline-flex items-center group/pb",
         "transition-all duration-150",
-        // CSS-based disabled fallback — catches consumers who spread `disabled` as a DOM attribute
+        // Drop-shadow lives on the unclipped wrapper so the clipped bar
+        // silhouette receives the glow correctly.
         "has-[:disabled]:[filter:none]",
         "has-[:disabled]:hover:[filter:none]",
         disabled
           ? "[filter:none]"
           : [
-              "hover:[filter:drop-shadow(0_0_14px_var(--color-blue-2))]",
+              // Hover: two #BFF2FF-derived glows (≈blue-1 #CDFAFA mapped to available token)
+              // Issue comment: 0 0 6px #BFF2FF @30% + 0 -2px 6px #BFF2FF @60%
+              "hover:[filter:drop-shadow(0_0_6px_color-mix(in_srgb,var(--color-blue-1)_30%,transparent))_drop-shadow(0_-2px_6px_color-mix(in_srgb,var(--color-blue-1)_60%,transparent))]",
               "active:[filter:none]",
               "has-[:focus-visible]:[filter:drop-shadow(0_0_8px_var(--color-gold-2))]",
             ].join(" "),
@@ -332,13 +487,12 @@ export function PlayButton({
         <Medallion
           size={medallion}
           disabled={disabled}
-          ringGradId={ringGradId}
           discGradId={discGradId}
           glyphGradId={glyphGradId}
         />
       </div>
 
-      {/* Bar frame — all clipped layers + button inside */}
+      {/* Bar */}
       <BarFrame cfg={cfg} disabled={disabled}>
         <button
           type="button"
@@ -350,14 +504,17 @@ export function PlayButton({
             "active:text-gold-3",
             "disabled:cursor-not-allowed disabled:text-grey-2",
             "focus-visible:outline-none",
-            "transition-colors duration-150",
-            textClass,
+            "transition-all duration-150",
           ].join(" ")}
           style={{
-            height: bar - FRAME_INSET, // subtract total frame inset (14px: see FRAME_INSET)
+            fontSize,
+            lineHeight: `${lineHeight}px`,
+            height: bar - TOTAL_INSET,
             minWidth: barMinWidth,
-            paddingLeft: barPx + overlap, // add overlap so text doesn't hide under medallion
-            paddingRight: barPx + bar / 2, // add tip depth so text doesn't crowd the point
+            // left pad: content pad + half-socket overlap (so text clears the medallion)
+            paddingLeft: barPx + overlap,
+            // right pad: content pad + tip depth (so text clears the arrow tip)
+            paddingRight: barPx + bar / 2,
           }}
         >
           {children ?? "Play"}
