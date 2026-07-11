@@ -126,4 +126,4 @@ When the goal is matching a reference, adjectives are not a spec. Required extra
 6. **Mandate the loop**: reference image committed to docs/reference/, showcase
    replica variants with data-shot attributes, `node tools/screenshot.mjs <url>
    <selector> <out.png> 2` rounds until no nameable delta, per-round delta log in
-   the PR. The review of record re-screenshots independently.
+   the PR. The review of record re-screenshots independently — and so does EVERY re-review after a fix wave: a diff-only re-review cannot catch rendering regressions (this bit us on PlayButton v3: an approved diff-only re-review shipped a solid-gold bar).
