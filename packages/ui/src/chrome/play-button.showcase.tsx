@@ -57,5 +57,18 @@ export const playButtonShowcase: ShowcaseEntry = {
         "Click to toggle queueing. PLAY exits downward / STOP enters from above — 500ms cubic-bezier ease-in-out matching the XAML Checked/UnChecked storyboards.",
       render: () => <PlayButtonQueueingToggleDemo />,
     },
+    {
+      name: "With real emblem (default)",
+      notes:
+        "emblemSrc='/lol-emblem.png' — the real LoL fist-and-banner crest (497×474 RGBA) rendered at XAML Height=38 inside the medallion socket. " +
+        "Note: '/lol-emblem.png' resolves from apps/web/public/; this variant only renders correctly when the showcase runs inside apps/web.",
+      render: () => <PlayButton emblemSrc="/lol-emblem.png" />,
+    },
+    {
+      name: "With real emblem (hero)",
+      notes:
+        "size='hero' + emblemSrc — emblem scales proportionally with the hero bar height (~62px socket). Explicit width/height on <img> prevents layout shift.",
+      render: () => <PlayButton size="hero" emblemSrc="/lol-emblem.png" />,
+    },
   ],
 };
