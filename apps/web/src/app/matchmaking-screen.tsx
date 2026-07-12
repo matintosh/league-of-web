@@ -2,20 +2,10 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  LobbyPlayerCard,
   QueueStatus,
   MatchFoundModal,
-  RoleSelector,
-  HextechButton,
 } from "@low/ui";
-import type { Role } from "@low/ui";
-import { demoSummoner, profileIconUrl, championSplashUrl } from "@low/fixtures";
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-type LobbyState = "lobby" | "queue" | "found";
+import { championSplashUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -67,6 +57,16 @@ function HexModeIcon() {
 }
 
 // ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+/**
+ * State machine: queue → found (→ accepted transitions out of component).
+ * The old pre-queue lobby phase has been removed — PartyLobbyScreen owns it.
+ */
+type LobbyState = "queue" | "found";
+
+// ---------------------------------------------------------------------------
 // MatchmakingScreen
 // ---------------------------------------------------------------------------
 
@@ -77,27 +77,29 @@ export interface MatchmakingScreenProps {
    * Called when the player accepts a match, immediately after clearing timers.
    * When provided, the parent handles the transition (e.g. to the loadout
    * screen). When absent, the screen shows its own "entering game" beat and
-   * resets to the lobby — preserving the original behaviour for standalone use.
+   * resets — preserving standalone usability in the showcase.
    */
   onAccept?: () => void;
   /**
-   * When true, the screen skips its own lobby phase and enters the queue
-   * immediately on mount. Used when entering from PartyLobbyScreen (the
-   * party lobby already handled role selection — queue starts right away).
-   * Pre-selects fixture roles (mid + support) so the internal role gating is
-   * satisfied. The old-style role selector UI is still rendered for standalone
-   * use when this prop is absent or false.
+   * Called when the player cancels the queue or declines a match.
+   * The parent (client-shell) routes back to party-lobby when provided.
+   * When absent the component has no navigation target for those actions —
+   * this prop is required in production wiring; optional only for showcase use.
    */
-  startInQueue?: boolean;
+  onExitQueue?: () => void;
 }
 
 /**
- * MatchmakingScreen — lobby → queue → match-found state machine.
+ * MatchmakingScreen — queue → match-found state machine.
+ *
+ * The internal pre-queue lobby phase (role selectors + player card slots)
+ * has been removed. PartyLobbyScreen now owns role selection and party setup;
+ * this screen mounts directly into queue. Cancel and decline call onExitQueue
+ * to return to party-lobby (1-click re-entry via FIND MATCH).
  *
  * State machine:
- * - lobby: player cards + role selectors; FIND MATCH gated on primary role
- * - queue: QueueStatus layout="panel" top-right; cancel → lobby; auto match-found after 5–10 s
- * - found: MatchFoundModal counting down; accept/decline/timeout → lobby
+ * - queue: QueueStatus panel top-right; cancel → onExitQueue; auto match-found after 5–10 s
+ * - found: MatchFoundModal counting down; accept → onAccept; decline/timeout → onExitQueue
  *
  * All timers are owned here (no intervals inside child components).
  * Every transition clears previous timers to avoid orphans.
@@ -106,12 +108,8 @@ export interface MatchmakingScreenProps {
  * Sized for exactly 1280×720 inside the WindowFrame content area (no
  * responsive units).
  */
-export function MatchmakingScreen({ onBack, onAccept, startInQueue = false }: MatchmakingScreenProps) {
-  const [lobbyState, setLobbyState] = useState<LobbyState>("lobby");
-  // When startInQueue is true, pre-populate fixture roles (mid + support) so
-  // the internal role gating is satisfied before auto-starting the queue.
-  const [primaryRole, setPrimaryRole] = useState<Role | null>(startInQueue ? "mid" : null);
-  const [secondaryRole, setSecondaryRole] = useState<Role | null>(null);
+export function MatchmakingScreen({ onBack, onAccept, onExitQueue }: MatchmakingScreenProps) {
+  const [lobbyState, setLobbyState] = useState<LobbyState>("queue");
 
   // Queue timer
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -119,7 +117,7 @@ export function MatchmakingScreen({ onBack, onAccept, startInQueue = false }: Ma
   // Match found countdown
   const [secondsRemaining, setSecondsRemaining] = useState(MATCH_ACCEPT_SECONDS);
 
-  // "Entering game" transient state after accept
+  // "Entering game" transient state after accept (standalone fallback only)
   const [enteringGame, setEnteringGame] = useState(false);
 
   // Stable refs for interval ids so cleanup is reliable
@@ -171,7 +169,7 @@ export function MatchmakingScreen({ onBack, onAccept, startInQueue = false }: Ma
   }, [clearAllTimers]);
 
   // ---------------------------------------------------------------------------
-  // Transition handlers
+  // Queue start — fires on mount (screen always enters queue immediately)
   // ---------------------------------------------------------------------------
 
   const startQueue = useCallback(() => {
@@ -197,85 +195,58 @@ export function MatchmakingScreen({ onBack, onAccept, startInQueue = false }: Ma
     }, randomMatchDelay());
   }, [clearAllTimers, clearQueueTimers]);
 
-  // Auto-start queue on mount when arriving from PartyLobbyScreen.
-  // Placed after startQueue declaration so the function ref is stable.
-  // Empty dep array: intentional single-fire on mount.
+  // Mount = enter queue immediately. Empty dep array: intentional single-fire.
   useEffect(() => {
-    if (startInQueue) {
-      startQueue();
-    }
+    startQueue();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ---------------------------------------------------------------------------
+  // Transition handlers
+  // ---------------------------------------------------------------------------
+
   const cancelQueue = useCallback(() => {
     clearAllTimers();
-    setLobbyState("lobby");
     setElapsedSeconds(0);
-  }, [clearAllTimers]);
+    onExitQueue?.();
+  }, [clearAllTimers, onExitQueue]);
 
   const acceptMatch = useCallback(() => {
     clearAllTimers();
-    setLobbyState("lobby"); // hide the modal immediately
 
     if (onAccept) {
-      // Parent owns the post-accept transition (e.g. loadout screen).
-      // Reset internal state so the screen is clean if returned to.
-      setPrimaryRole(null);
-      setSecondaryRole(null);
       setElapsedSeconds(0);
       setSecondsRemaining(MATCH_ACCEPT_SECONDS);
       onAccept();
       return;
     }
 
-    // Standalone fallback: show "entering game" beat then reset.
+    // Standalone fallback: show "entering game" beat then restart queue.
     setEnteringGame(true);
     enteringGameTimeoutRef.current = setTimeout(() => {
       setEnteringGame(false);
-      setPrimaryRole(null);
-      setSecondaryRole(null);
       setElapsedSeconds(0);
       setSecondsRemaining(MATCH_ACCEPT_SECONDS);
+      startQueue();
     }, 2000);
-  }, [clearAllTimers, onAccept]);
+  }, [clearAllTimers, onAccept, startQueue]);
 
   const declineMatch = useCallback(() => {
     clearAllTimers();
     setSecondsRemaining(MATCH_ACCEPT_SECONDS);
-    setLobbyState("lobby");
-  }, [clearAllTimers]);
+    onExitQueue?.();
+  }, [clearAllTimers, onExitQueue]);
 
-  // Countdown timeout → back to lobby.
+  // Countdown timeout → exit queue (auto-decline path).
   // Fires when the pure tick reaches 0 while a match is still pending.
   // Transitioning lobbyState away from "found" immediately unsatisfies this
-  // condition, so it cannot double-fire.
+  // condition, so it cannot double-fire. Timer cleanup inside declineMatch
+  // prevents orphaned intervals.
   useEffect(() => {
     if (secondsRemaining === 0 && lobbyState === "found") {
       declineMatch();
     }
   }, [secondsRemaining, lobbyState, declineMatch]);
-
-  // ---------------------------------------------------------------------------
-  // Role constraints: secondary cannot equal primary
-  // ---------------------------------------------------------------------------
-
-  const handlePrimarySelect = useCallback(
-    (role: Role) => {
-      setPrimaryRole(role);
-      if (secondaryRole === role) setSecondaryRole(null);
-    },
-    [secondaryRole],
-  );
-
-  const handleSecondarySelect = useCallback(
-    (role: Role) => {
-      if (role === primaryRole) return; // no-op
-      setSecondaryRole(role);
-    },
-    [primaryRole],
-  );
-
-  const secondaryDisabled: Role[] = primaryRole ? [primaryRole] : [];
 
   // ---------------------------------------------------------------------------
   // Render
@@ -360,7 +331,7 @@ export function MatchmakingScreen({ onBack, onAccept, startInQueue = false }: Ma
 
         {/* ---- Main content area (flex-1, relative for absolute panel) ---- */}
         <div className="relative flex flex-1 flex-col">
-          {/* Queue panel — top-right in queue state */}
+          {/* Queue panel — top-right */}
           {lobbyState === "queue" && (
             <div className="absolute top-4 right-6 z-10">
               <QueueStatus
@@ -372,67 +343,13 @@ export function MatchmakingScreen({ onBack, onAccept, startInQueue = false }: Ma
             </div>
           )}
 
-          {/* ---- Player cards row ---- */}
-          <div className="flex flex-1 items-center justify-center gap-4 px-6">
-            {/* Slot 1 — local player, emphasized */}
-            <LobbyPlayerCard
-              summoner={demoSummoner}
-              profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
-              emphasized
-              roleSlot={
-                <div className="flex w-full flex-col gap-2">
-                  {/* Primary role */}
-                  <div className="flex flex-col items-center gap-0.5">
-                    <span className="font-body text-xs uppercase leading-none tracking-widest text-grey-2">
-                      Primary
-                    </span>
-                    <RoleSelector
-                      label="Primary role"
-                      selected={primaryRole}
-                      onSelect={handlePrimarySelect}
-                    />
-                  </div>
-                  {/* Secondary role */}
-                  <div className="flex flex-col items-center gap-0.5">
-                    <span className="font-body text-xs uppercase leading-none tracking-widest text-grey-2">
-                      Secondary
-                    </span>
-                    <RoleSelector
-                      label="Secondary role"
-                      selected={secondaryRole}
-                      onSelect={handleSecondarySelect}
-                      disabledRoles={secondaryDisabled}
-                    />
-                  </div>
-                </div>
-              }
-            />
-
-            {/* Slots 2–5 — empty invite slots */}
-            {([2, 3, 4, 5] as const).map((n) => (
-              <LobbyPlayerCard
-                key={n}
-                onInvite={() => console.log(`Invite slot ${n}`)}
-              />
-            ))}
-          </div>
-
           {/* ---- Bottom control strip ---- */}
-          <div className="flex h-20 shrink-0 items-center justify-center border-t border-gold-5">
-            {enteringGame ? (
+          <div className="flex flex-1 items-center justify-center">
+            {enteringGame && (
               <p className="font-display text-base uppercase tracking-widest text-gold-1">
                 Entering game…
               </p>
-            ) : lobbyState === "lobby" ? (
-              <HextechButton
-                variant="primary"
-                size="large"
-                disabled={primaryRole === null}
-                onClick={startQueue}
-              >
-                Find Match
-              </HextechButton>
-            ) : null /* queue → panel top-right; found → modal */}
+            )}
           </div>
         </div>
       </div>

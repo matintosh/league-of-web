@@ -506,7 +506,7 @@ export function ClientShell() {
                 <MatchmakingScreen
                   onBack={() => { setView("home"); setActiveNavId("home"); }}
                   onAccept={() => setView("pick")}
-                  startInQueue
+                  onExitQueue={() => setView("party-lobby")}
                 />
               ) : view === "mode-select" ? (
                 <ModeSelectScreen
