@@ -34,6 +34,7 @@ import { tabBarShowcase } from "./chrome/tab-bar.showcase";
 import { topNavbarShowcase } from "./chrome/top-navbar.showcase";
 import { windowFrameShowcase } from "./chrome/window-frame.showcase";
 import { championCardShowcase } from "./collection/champion-card.showcase";
+import { championDetailShowcase } from "./collection/champion-detail.showcase";
 import { skinCardShowcase } from "./collection/skin-card.showcase";
 import { statMedallionShowcase } from "./collection/stat-medallion.showcase";
 import { gameModeCardShowcase } from "./lobby/game-mode-card.showcase";
@@ -93,8 +94,9 @@ export const registry: ShowcaseEntry[] = [
   loginCheckboxShowcase,
   loginTextInputShowcase,
   socialLoginButtonsShowcase,
-  // collection
+  // collection — alphabetical: ChampionCard < ChampionDetail < SkinCard < StatMedallion
   championCardShowcase,
+  championDetailShowcase,
   skinCardShowcase,
   statMedallionShowcase,
   // lobby
