@@ -10,16 +10,22 @@ import {
   SearchInput,
   HextechCheckbox,
   HextechSelect,
+  HextechButton,
   SkinCard,
+  EmoteTile,
+  EmoteWheel,
 } from "@low/ui";
 import {
   demoChampions,
   demoSkins,
   demoChromas,
+  demoEmotes,
+  defaultEmoteSlots,
   loadingArtUrl,
   warwickDetail,
 } from "@low/fixtures";
 import type { SelectOption } from "@low/ui";
+import type { SlotId } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Sub-nav tab definitions.
@@ -31,7 +37,7 @@ import type { SelectOption } from "@low/ui";
 const TABS = [
   { id: "champions", label: "Champions", live: true },
   { id: "skins",     label: "Skins",     live: true },
-  { id: "emotes",    label: "Emotes",    live: false },
+  { id: "emotes",    label: "Emotes",    live: true },
   { id: "runes",     label: "Runes",     live: false },
   { id: "spells",    label: "Spells",    live: false },
   { id: "items",     label: "Items",     live: false },
@@ -567,6 +573,195 @@ function ChromasTab({
 }
 
 // ---------------------------------------------------------------------------
+// EmotesTab
+//
+// Layout: left inventory sidebar (~420px) + right emote wheel editor.
+//
+// Assign flow (documented):
+//   Option A: click inventory emote first → then click a wheel slot to assign.
+//   Option B: click wheel slot first → then click an inventory emote to assign.
+//   Both directions are supported; the first click sets the "pending" side,
+//   and the second click completes the assignment. Unowned emotes are blocked.
+//
+// ASSET DIVERGENCE: Emote art is not available on DDragon v16.13.1.
+// profileIconUrl stand-ins are used (circular icons). All IDs verified HTTP 200.
+// ---------------------------------------------------------------------------
+
+const EMOTE_SORT_OPTIONS: SelectOption[] = [
+  { value: "acquired", label: "Acquired Date" },
+  { value: "name-asc", label: "Name (A–Z)" },
+  { value: "name-desc", label: "Name (Z–A)" },
+];
+
+interface EmotesTabProps {
+  emoteSort: string;
+  onEmoteSortChange: (v: string) => void;
+  showUnowned: boolean;
+  onShowUnownedChange: (v: boolean) => void;
+  slots: Record<SlotId, string | null>;
+  savedSlots: Record<SlotId, string | null>;
+  selectedSlot: SlotId | undefined;
+  selectedEmoteId: string | undefined;
+  onSlotClick: (slot: SlotId) => void;
+  onEmoteSelect: (id: string) => void;
+  onSave: () => void;
+  onRevert: () => void;
+}
+
+function EmotesTab({
+  emoteSort,
+  onEmoteSortChange,
+  showUnowned,
+  onShowUnownedChange,
+  slots,
+  savedSlots,
+  selectedSlot,
+  selectedEmoteId,
+  onSlotClick,
+  onEmoteSelect,
+  onSave,
+  onRevert,
+}: EmotesTabProps) {
+  const hasChanges = JSON.stringify(slots) !== JSON.stringify(savedSlots);
+
+  const visibleEmotes = useMemo(() => {
+    let list = [...demoEmotes];
+    if (!showUnowned) list = list.filter((e) => e.owned);
+    if (emoteSort === "name-asc") {
+      list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+    } else if (emoteSort === "name-desc") {
+      list = [...list].sort((a, b) => b.name.localeCompare(a.name));
+    }
+    return list;
+  }, [showUnowned, emoteSort]);
+
+  const totalOwned = demoEmotes.filter((e) => e.owned).length;
+  const totalEmotes = demoEmotes.length;
+
+  return (
+    <div className="flex h-full min-h-0">
+      {/* ------------------------------------------------------------------ */}
+      {/* Left inventory sidebar — ~420px                                     */}
+      {/* ------------------------------------------------------------------ */}
+      <aside className="flex w-[420px] shrink-0 flex-col border-r border-grey-3 bg-hextech-black">
+        {/* Header */}
+        <div className="shrink-0 flex items-baseline gap-3 px-5 pt-5 pb-3">
+          <span className="font-display text-sm uppercase tracking-widest text-gold-cream">
+            Emotes
+          </span>
+          <span className="font-body text-sm text-grey-1">
+            {totalOwned}/{totalEmotes}
+          </span>
+        </div>
+
+        {/* Controls row */}
+        <div className="shrink-0 flex items-center gap-3 px-5 pb-3">
+          <div className="flex-1">
+            <HextechSelect
+              ariaLabel="Sort emotes"
+              value={emoteSort}
+              onChange={onEmoteSortChange}
+              options={EMOTE_SORT_OPTIONS}
+              placeholder="Acquired Date"
+            />
+          </div>
+          <HextechCheckbox
+            checked={showUnowned}
+            onChange={onShowUnownedChange}
+            label="Show Unowned"
+          />
+        </div>
+
+        {/* Scrollable 4-column emote grid */}
+        <div className="flex-1 overflow-y-auto px-5 pb-5">
+          {visibleEmotes.length === 0 ? (
+            <div className="flex h-full items-center justify-center">
+              <p className="font-body text-sm text-grey-2">No emotes found</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-4 gap-2">
+              {visibleEmotes.map((emote) => (
+                <EmoteTile
+                  key={emote.id}
+                  name={emote.name}
+                  imageSrc={emote.imageSrc}
+                  owned={emote.owned}
+                  selected={selectedEmoteId === emote.id}
+                  onSelect={() => onEmoteSelect(emote.id)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </aside>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Right — emote wheel editor                                          */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="flex flex-1 flex-col items-center justify-center gap-6 bg-hextech-black px-8 py-6">
+        <EmoteWheel
+          slots={slots}
+          selectedSlot={selectedSlot}
+          onSlotClick={onSlotClick}
+        />
+
+        {/* Action row: revert icon + SAVE button */}
+        <div className="flex items-center gap-4">
+          {/* Revert icon button */}
+          <button
+            type="button"
+            aria-label="Revert changes"
+            title="Revert changes"
+            disabled={!hasChanges}
+            onClick={onRevert}
+            className={[
+              "flex items-center justify-center w-8 h-8 rounded border transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+              hasChanges
+                ? "border-grey-3 text-grey-1 hover:border-gold-4 hover:text-gold-2 cursor-pointer"
+                : "border-grey-3 text-grey-3 cursor-not-allowed opacity-40",
+            ].join(" ")}
+          >
+            {/* Circular undo arrow */}
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="none">
+              <path
+                d="M3.5 5.5H7a4.5 4.5 0 1 1 0 9H4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              <path
+                d="M3.5 5.5L5.5 3M3.5 5.5L5.5 8"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          <HextechButton
+            variant="primary"
+            disabled={!hasChanges}
+            onClick={onSave}
+          >
+            SAVE
+          </HextechButton>
+        </div>
+
+        {/* Assign-flow hint */}
+        <p className="font-body text-xs text-grey-2 text-center max-w-xs">
+          {selectedSlot
+            ? "Slot selected — click an emote in the inventory to assign"
+            : selectedEmoteId
+            ? "Emote selected — click a wheel slot to assign"
+            : "Click a wheel slot or an inventory emote to start"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // CollectionScreen
 // ---------------------------------------------------------------------------
 
@@ -591,6 +786,63 @@ export function CollectionScreen() {
   const [chromaShowUnavailable, setChromaShowUnavailable] = useState(false);
   const [chromaChampionFilter, setChromaChampionFilter] = useState("");
   const [chromaSort, setChromaSort] = useState("");
+
+  // Emotes tab state — hoisted so state survives tab switches
+  const [emoteSort, setEmoteSort] = useState("acquired");
+  const [emoteShowUnowned, setEmoteShowUnowned] = useState(true);
+  const [emoteSlots, setEmoteSlots] = useState<Record<SlotId, string | null>>(defaultEmoteSlots);
+  const [emoteSavedSlots, setEmoteSavedSlots] = useState<Record<SlotId, string | null>>(defaultEmoteSlots);
+  const [emoteSelectedSlot, setEmoteSelectedSlot] = useState<SlotId | undefined>(undefined);
+  const [emoteSelectedId, setEmoteSelectedId] = useState<string | undefined>(undefined);
+
+  function handleEmoteSlotClick(slot: SlotId) {
+    // Toggle deselect if same slot clicked again
+    if (emoteSelectedSlot === slot) {
+      setEmoteSelectedSlot(undefined);
+      return;
+    }
+    // If an emote is pending in inventory, assign immediately
+    if (emoteSelectedId) {
+      const emote = demoEmotes.find((e) => e.id === emoteSelectedId);
+      if (emote?.owned) {
+        setEmoteSlots((prev) => ({ ...prev, [slot]: emote.imageSrc }));
+        setEmoteSelectedSlot(undefined);
+        setEmoteSelectedId(undefined);
+        return;
+      }
+    }
+    setEmoteSelectedSlot(slot);
+  }
+
+  function handleEmoteSelect(emoteId: string) {
+    const emote = demoEmotes.find((e) => e.id === emoteId);
+    if (!emote?.owned) return; // Unowned emotes cannot be assigned
+
+    // Toggle deselect if same emote clicked again
+    if (emoteSelectedId === emoteId) {
+      setEmoteSelectedId(undefined);
+      return;
+    }
+    // If a slot is pending on the wheel, assign immediately
+    if (emoteSelectedSlot) {
+      setEmoteSlots((prev) => ({ ...prev, [emoteSelectedSlot]: emote.imageSrc }));
+      setEmoteSelectedSlot(undefined);
+      setEmoteSelectedId(undefined);
+      return;
+    }
+    setEmoteSelectedId(emoteId);
+  }
+
+  function handleEmoteSave() {
+    console.log("Emote wheel saved", emoteSlots);
+    setEmoteSavedSlots({ ...emoteSlots });
+  }
+
+  function handleEmoteRevert() {
+    setEmoteSlots({ ...emoteSavedSlots });
+    setEmoteSelectedSlot(undefined);
+    setEmoteSelectedId(undefined);
+  }
 
   // Dead tabs are no-ops — clicking them does not change activeTab
   const handleTabSelect = (id: string) => {
@@ -714,10 +966,30 @@ export function CollectionScreen() {
           </div>
         )}
 
+        {activeTab === "emotes" && (
+          <div className="h-full min-h-0 flex">
+            <EmotesTab
+              emoteSort={emoteSort}
+              onEmoteSortChange={setEmoteSort}
+              showUnowned={emoteShowUnowned}
+              onShowUnownedChange={setEmoteShowUnowned}
+              slots={emoteSlots}
+              savedSlots={emoteSavedSlots}
+              selectedSlot={emoteSelectedSlot}
+              selectedEmoteId={emoteSelectedId}
+              onSlotClick={handleEmoteSlotClick}
+              onEmoteSelect={handleEmoteSelect}
+              onSave={handleEmoteSave}
+              onRevert={handleEmoteRevert}
+            />
+          </div>
+        )}
+
         {/* Dead + unknown tabs show coming-soon placeholder */}
         {activeTab !== "champions" &&
           activeTab !== "skins" &&
-          activeTab !== "chromas" && (
+          activeTab !== "chromas" &&
+          activeTab !== "emotes" && (
             <div className="flex h-full items-center justify-center">
               <p className="font-body text-sm text-grey-2">Coming soon</p>
             </div>

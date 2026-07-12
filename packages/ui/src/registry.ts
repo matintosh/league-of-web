@@ -37,6 +37,8 @@ import { topNavbarShowcase } from "./chrome/top-navbar.showcase";
 import { windowFrameShowcase } from "./chrome/window-frame.showcase";
 import { championCardShowcase } from "./collection/champion-card.showcase";
 import { championDetailShowcase } from "./collection/champion-detail.showcase";
+import { emoteTileShowcase } from "./collection/emote-tile.showcase";
+import { emoteWheelShowcase } from "./collection/emote-wheel.showcase";
 import { skinCardShowcase } from "./collection/skin-card.showcase";
 import { statMedallionShowcase } from "./collection/stat-medallion.showcase";
 import { gameModeCardShowcase } from "./lobby/game-mode-card.showcase";
@@ -98,9 +100,11 @@ export const registry: ShowcaseEntry[] = [
   loginCheckboxShowcase,
   loginTextInputShowcase,
   socialLoginButtonsShowcase,
-  // collection — alphabetical: ChampionCard < ChampionDetail < SkinCard < StatMedallion
+  // collection — alphabetical: ChampionCard < ChampionDetail < EmoteTile < EmoteWheel < SkinCard < StatMedallion
   championCardShowcase,
   championDetailShowcase,
+  emoteTileShowcase,
+  emoteWheelShowcase,
   skinCardShowcase,
   statMedallionShowcase,
   // lobby
