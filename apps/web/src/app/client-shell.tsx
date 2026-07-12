@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import {
   PlayerHovercard,
   ProfileChip,
   PartyStatusPanel,
+  FindingMatchPanel,
   SettingsModal,
   SettingsRow,
   HextechToggle,
@@ -33,7 +34,6 @@ import {
   navIconUrl,
   gameModeMapUrl,
 } from "@low/fixtures";
-import { MatchmakingScreen } from "./matchmaking-screen";
 import { CollectionScreen } from "./collection-screen";
 import { ModeSelectScreen } from "./mode-select-screen";
 import { PartyLobbyScreen } from "./party-lobby-screen";
@@ -42,7 +42,9 @@ import { LoadoutScreen } from "./loadout-screen";
 import { ProfileScreen } from "./profile-screen";
 import { StoreScreen } from "./store-screen";
 
-type View = "home" | "mode-select" | "party-lobby" | "matchmaking" | "collection" | "pick" | "loadout" | "profile" | "store";
+// "matchmaking" view has been retired (issue #174): queue state now lives
+// inside PartyLobbyScreen; the shell no longer has a separate queue route.
+type View = "home" | "mode-select" | "party-lobby" | "collection" | "pick" | "loadout" | "profile" | "store";
 
 // Nav set matches the reference left→right: Home (live), Profile (dead),
 // Collection (live), Store (live — #171), Teamfight Tactics (dead).
@@ -101,6 +103,9 @@ const SOCIAL_VERSION = "V26.14";
 
 /** Queue label for the party lobby — feeds ProfileChip statusText + PartyStatusPanel. */
 const PARTY_QUEUE_LABEL = "Normal Draft";
+
+/** Fixture estimated wait label fed to FindingMatchPanel when in queue. */
+const ESTIMATED_LABEL = "Estimated: 3:00";
 
 /**
  * Docked rail width in px.
@@ -211,18 +216,50 @@ export function ClientShell() {
   // panel header label and the PARTY text in the TopNavbar PARTY pill.
   const [partyOpen, setPartyOpen] = useState(true);
 
+  // Queue phase lifted from PartyLobbyScreen — drives FindingMatchPanel vs
+  // PartyStatusPanel in the rail, and ProfileChip statusText while queueing.
+  // "idle" means no queue; "queue" / "found" mean in-progress.
+  const [queuePhase, setQueuePhase] = useState<"idle" | "queue" | "found">("idle");
+  const [queueElapsedLabel, setQueueElapsedLabel] = useState<string>("0:00");
+
+  // Stable callback passed to PartyLobbyScreen — never recreated so the
+  // screen's useEffect dep on it does not re-fire unnecessarily.
+  const handleQueuePhaseChange = useCallback(
+    (phase: "idle" | "queue" | "found", elapsedLabel?: string) => {
+      setQueuePhase(phase);
+      if (elapsedLabel !== undefined) setQueueElapsedLabel(elapsedLabel);
+    },
+    [],
+  );
+
   const toggleSocialPanel = () => setSocialExpanded((prev) => !prev);
 
   // Views that show the docked social rail alongside content.
   // pick and loadout are full-bleed (no rail) per issue spec.
   const railVisible = view !== "pick" && view !== "loadout";
 
-  // ProfileChip statusText — party queue string while on the party lobby screen:
-  // "1/5 Normal Draft" (filled/capacity + queue label, truncated to chip width).
-  // Other views use the default availability label (undefined → ProfileChip renders availability).
-  // Replaces the previous static "In Lobby" per issue #163 spec.
+  // Reset queue state when leaving the party-lobby view so rail reverts to PartyStatusPanel.
+  // This runs synchronously with the view change so there's no flash.
+  const handleLeaveLobby = useCallback((nextView: View) => {
+    setQueuePhase("idle");
+    setQueueElapsedLabel("0:00");
+    setView(nextView);
+  }, []);
+
+  // Ref to PartyLobbyScreen's cancelQueue function.
+  // PartyLobbyScreen registers it via onRegisterCancel. The shell calls it when
+  // the FindingMatchPanel rail widget ✕ is clicked — this lets the widget cancel
+  // the queue while keeping all timer cleanup inside the lobby screen.
+  const lobbyCancel = useRef<(() => void) | null>(null);
+
+  // ProfileChip statusText:
+  //   idle lobby  → "1/5 Normal Draft" (filled/capacity + queue label)
+  //   in queue    → "In Queue" (per issue #174)
+  //   other views → undefined (ProfileChip renders availability)
   const profileChipStatusText =
-    view === "party-lobby" ? `1/5 ${PARTY_QUEUE_LABEL}` : undefined;
+    view === "party-lobby"
+      ? (queuePhase !== "idle" ? "In Queue" : `1/5 ${PARTY_QUEUE_LABEL}`)
+      : undefined;
 
   const handleToggleFriendGroup = (name: string) => {
     setFriendGroups((groups) =>
@@ -353,11 +390,10 @@ export function ClientShell() {
   //   home         → label "PLAY",  enabled
   //   mode-select  → label "PLAY",  disabled (greyed — choosing a mode)
   //   party-lobby  → label "PARTY", disabled (reference: greyed "PARTY" while in lobby)
-  //   matchmaking  → label "PARTY", disabled (still in the party flow, queued)
   //   pick/loadout → label "PLAY",  disabled (full-bleed screens, flow locked)
   //   collection/profile → label "PLAY", disabled
   const playDisabled = view !== "home";
-  const playLabel = (view === "party-lobby" || view === "matchmaking") ? "PARTY" : undefined;
+  const playLabel = view === "party-lobby" ? "PARTY" : undefined;
 
   return (
     <div
@@ -522,17 +558,17 @@ export function ClientShell() {
                   }}
                 />
               ) : view === "party-lobby" ? (
+                // Queue state machine now lives inside PartyLobbyScreen (issue #174).
+                // The shell receives phase changes via onQueuePhaseChange and updates
+                // the rail column (FindingMatchPanel vs PartyStatusPanel) accordingly.
                 <PartyLobbyScreen
-                  onBack={() => setView("mode-select")}
-                  onFindMatch={() => setView("matchmaking")}
+                  onBack={() => handleLeaveLobby("mode-select")}
+                  onAccept={() => { handleLeaveLobby("pick"); }}
                   partyOpen={partyOpen}
                   onPartyToggle={setPartyOpen}
-                />
-              ) : view === "matchmaking" ? (
-                <MatchmakingScreen
-                  onBack={() => { setView("home"); setActiveNavId("home"); }}
-                  onAccept={() => setView("pick")}
-                  onExitQueue={() => setView("party-lobby")}
+                  onQueuePhaseChange={handleQueuePhaseChange}
+                  onRegisterCancel={(fn) => { lobbyCancel.current = fn; }}
+                  onChangeMode={() => handleLeaveLobby("mode-select")}
                 />
               ) : view === "mode-select" ? (
                 <ModeSelectScreen
@@ -566,18 +602,31 @@ export function ClientShell() {
                   statusText={profileChipStatusText}
                 />
 
-                {/* PartyStatusPanel — only on party-lobby view, directly below ProfileChip.
-                    open state is synced with the partyOpen toggle so header label + pill agree.
-                    crestSrc uses gameModeMapUrl("sr") for Summoner's Rift Normal Draft. */}
+                {/* Rail widget below ProfileChip — only shown on the party-lobby view.
+                    Idle: PartyStatusPanel (party info + open/closed toggle).
+                    Queueing (queue|found): FindingMatchPanel (elapsed timer + ✕ cancel).
+                    The shell owns which panel renders; PartyLobbyScreen notifies via
+                    onQueuePhaseChange. FindingMatchPanel ✕ calls lobbyCancel.current()
+                    which is the lobby screen's cancelQueue — all timer cleanup stays
+                    inside the lobby screen. */}
                 {view === "party-lobby" && (
-                  <PartyStatusPanel
-                    queueLabel={PARTY_QUEUE_LABEL}
-                    crestSrc={gameModeMapUrl("sr")}
-                    filled={1}
-                    capacity={5}
-                    open={partyOpen}
-                    onToggleOpen={() => setPartyOpen((prev) => !prev)}
-                  />
+                  queuePhase !== "idle" ? (
+                    <FindingMatchPanel
+                      elapsedLabel={queueElapsedLabel}
+                      estimatedLabel={ESTIMATED_LABEL}
+                      crestSrc={gameModeMapUrl("sr")}
+                      onCancel={() => lobbyCancel.current?.()}
+                    />
+                  ) : (
+                    <PartyStatusPanel
+                      queueLabel={PARTY_QUEUE_LABEL}
+                      crestSrc={gameModeMapUrl("sr")}
+                      filled={1}
+                      capacity={5}
+                      open={partyOpen}
+                      onToggleOpen={() => setPartyOpen((prev) => !prev)}
+                    />
+                  )
                 )}
 
                 {/* SocialPanel fills all height except the dock */}

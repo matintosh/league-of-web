@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   LobbyHeader,
   PlayerBanner,
   RoleSlotRow,
   LockInButton,
   ChatPanel,
+  MatchFoundModal,
+  formatQueueTime,
 } from "@low/ui";
 import type { ChatMessage, RoleSlot, WingTier, Role } from "@low/ui";
 import {
@@ -16,6 +18,7 @@ import {
   profileIconUrl,
   positionIconUrl,
   gameModeMapUrl,
+  championSplashUrl,
 } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -118,10 +121,6 @@ const DEMO_PARTY: [DemoPartyMember, DemoPartyMember, DemoPartyMember, DemoPartyM
 
 // ---------------------------------------------------------------------------
 // Self's role slots — 2 fixture roles + 1 empty.
-//
-// Queue entry decision: the two picked roles (mid + support) are passed to
-// the queue flow as-is. Role popover is out of scope per issue spec.
-// Slot clicks cycle the displayed slot state but do not alter queue entry.
 // ---------------------------------------------------------------------------
 
 const SELF_ROLE_SLOTS: RoleSlot[] = [
@@ -131,20 +130,44 @@ const SELF_ROLE_SLOTS: RoleSlot[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Queue constants
+// ---------------------------------------------------------------------------
+
+/** Dummy delay (ms) before auto-triggering match found: random 5–10 s */
+function randomMatchDelay() {
+  return (5 + Math.random() * 5) * 1000;
+}
+
+const MATCH_ACCEPT_SECONDS = 10;
+
+/** Fixture estimated wait shown in FindingMatchPanel and ProfileChip. */
+const ESTIMATED_LABEL = "Estimated: 3:00";
+
+/** Fixture champion keyart for MatchFoundModal. */
+const DEMO_KEYART_SRC = championSplashUrl("Jinx");
+
+// ---------------------------------------------------------------------------
+// Queue phase type (internal to this screen)
+// ---------------------------------------------------------------------------
+
+type QueuePhase = "idle" | "queue" | "found";
+
+// ---------------------------------------------------------------------------
 // PartyLobbyScreen
 // ---------------------------------------------------------------------------
 
 export interface PartyLobbyScreenProps {
   /**
-   * Called when the back chevron or the ✕ cancel button is clicked.
-   * Both navigate back to the mode-select screen.
+   * Called when the back chevron or the ✕ cancel button is clicked
+   * while the lobby is in the idle (pre-queue) state.
+   * Navigates back to the mode-select screen.
    */
   onBack: () => void;
   /**
-   * Called when FIND MATCH is clicked. Transitions the parent to the queue
-   * phase (queue → found → accept → pick chain is handled elsewhere).
+   * Called when the player accepts a match.
+   * The shell transitions to the pick screen when this fires.
    */
-  onFindMatch: () => void;
+  onAccept: () => void;
   /**
    * Party open/closed state — OWNED BY THE SHELL (single source of truth,
    * shared with the rail's PartyStatusPanel so the header pill and the
@@ -152,6 +175,25 @@ export interface PartyLobbyScreenProps {
    */
   partyOpen: boolean;
   onPartyToggle: (open: boolean) => void;
+  /**
+   * Called when the queue phase changes so the shell can update the
+   * FindingMatchPanel in the rail column.
+   *
+   * Fired with:
+   *   phase === "queue" | "found" — include elapsedLabel (pre-formatted "m:ss")
+   *   phase === "idle"            — elapsedLabel is undefined (queue stopped)
+   *
+   * The shell uses this to decide whether to show FindingMatchPanel instead
+   * of PartyStatusPanel, and to pass the correct elapsedLabel down.
+   */
+  onQueuePhaseChange: (phase: QueuePhase, elapsedLabel?: string) => void;
+  /**
+   * Called once on mount with a function that, when invoked, cancels the queue
+   * and returns the lobby to the idle state. The shell stores this reference
+   * so the FindingMatchPanel rail widget ✕ can trigger cancel without needing
+   * to reach into the lobby screen's internal timer state.
+   */
+  onRegisterCancel?: (cancelFn: () => void) => void;
   /**
    * Called when the "Change Mode" button in the lobby header is clicked.
    * Defaults to onBack behavior when omitted — navigates to mode-select.
@@ -162,29 +204,201 @@ export interface PartyLobbyScreenProps {
 /**
  * PartyLobbyScreen — the hi-fi pre-game party lobby phase.
  *
+ * This screen owns the full queue state machine (idle → queue → found) and
+ * all associated timers. The real client never leaves the lobby while
+ * queueing; navigation away only happens on accept (→ pick) or back (→
+ * mode-select from idle). The shell receives phase change notifications via
+ * onQueuePhaseChange and renders FindingMatchPanel or PartyStatusPanel in
+ * the rail column accordingly.
+ *
+ * State machine:
+ *   idle → FIND MATCH click → queue (timer starts, auto match-found 5–10 s)
+ *   queue → ✕ cancel → idle (timers cleared, lobby stays mounted)
+ *   queue → match found (auto) → found (accept countdown starts)
+ *   found → ACCEPT → onAccept() (shell → pick)
+ *   found → DECLINE / countdown→0 → idle (timers cleared, lobby stays mounted)
+ *
+ * Timer rigor (issue #161 standard):
+ *   All intervals/timeouts are stored in stable refs.
+ *   clearAllTimers() is called at every state transition and on unmount.
+ *   Every exit path (cancel, decline, accept, auto-decline, unmount) clears
+ *   all timers before any state update, preventing orphaned callbacks.
+ *
  * Composition zones:
- * - LobbyHeader (top): segmented "Intro ◆ Blind ◆ Summoner's Rift 5v5" title + (30) chip +
- *   ward glyph + "Change Mode" secondary button → mode-select. SR map crest, back chevron.
- *   Party-open pill toggle (page-level state).
+ * - LobbyHeader (top): mode title + crest + back chevron. Party-open pill toggle.
  * - Center: 5 banner slots (L2 · L1 · SELF · R1 · R2).
- *   Self: isSelf=true, heraldic shape, gold wings, crown+name above, level badge, autofill chip,
- *   RoleSlotRow md (2 picked roles + 1 empty). Flanking 4: empty + circles (SHOW_DEMO_PARTY=false).
+ *   In idle: empty slots show + circles (standard). In queue: blue-glow circles + self asterisk.
  * - Bottom bar (height 120):
  *   Left (280px): ChatPanel with lobby fixture messages, input appends.
- *   Center (flex-1): ✕ cancel circle → mode-select; FIND MATCH (LockInButton, 200px
- *   wide); 2 dead circular icon buttons (role shield + ward eye glyphs, aria-disabled).
- *   Right (200px): "Suggested | Invited (1)" tab strip. Invited is default-active with a
- *   checkmark + demoSummoner.gameName fixture row. Suggested shows "No suggestions".
- *
- * Role strategy: self fixture roles are mid + support. Queue entry uses these
- * two roles. Popover picker is out of scope — documented here and in issue #155.
- *
- * Default: SHOW_DEMO_PARTY = false (solo lobby). Set to true at compile-time
- * for full composition screenshots. No runtime toggle UI is exposed.
+ *   Center (flex-1): ✕ cancel circle (behavior: idle→back, queue→cancel);
+ *   FIND MATCH / "In Queue" button (LockInButton, 200px wide, disabled while queuing);
+ *   2 dead circular icon buttons (role shield + ward eye glyphs, aria-disabled).
+ *   Right (200px): "Suggested | Invited (1)" tab strip.
+ * - MatchFoundModal renders over the lobby (z-50) in the "found" phase.
  */
-export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle, onChangeMode }: PartyLobbyScreenProps) {
+export function PartyLobbyScreen({
+  onBack,
+  onAccept,
+  partyOpen,
+  onPartyToggle,
+  onQueuePhaseChange,
+  onRegisterCancel,
+  onChangeMode,
+}: PartyLobbyScreenProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(LOBBY_MESSAGES);
   const [inviteTab, setInviteTab] = useState<"suggested" | "invited">("invited");
+
+  // ---------------------------------------------------------------------------
+  // Queue state machine
+  // ---------------------------------------------------------------------------
+
+  const [queuePhase, setQueuePhase] = useState<QueuePhase>("idle");
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [secondsRemaining, setSecondsRemaining] = useState(MATCH_ACCEPT_SECONDS);
+
+  // Stable refs for all timers — allows clearAllTimers() to work reliably
+  // regardless of closure age.
+  const queueIntervalRef    = useRef<ReturnType<typeof setInterval> | null>(null);
+  const matchDelayRef       = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // ---------------------------------------------------------------------------
+  // Timer cleanup helpers
+  // ---------------------------------------------------------------------------
+
+  const clearQueueTimers = useCallback(() => {
+    if (queueIntervalRef.current !== null) {
+      clearInterval(queueIntervalRef.current);
+      queueIntervalRef.current = null;
+    }
+    if (matchDelayRef.current !== null) {
+      clearTimeout(matchDelayRef.current);
+      matchDelayRef.current = null;
+    }
+  }, []);
+
+  const clearCountdownTimer = useCallback(() => {
+    if (countdownIntervalRef.current !== null) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+  }, []);
+
+  const clearAllTimers = useCallback(() => {
+    clearQueueTimers();
+    clearCountdownTimer();
+  }, [clearQueueTimers, clearCountdownTimer]);
+
+  // Clean up all timers on unmount.
+  useEffect(() => {
+    return () => {
+      clearAllTimers();
+    };
+  }, [clearAllTimers]);
+
+
+  // ---------------------------------------------------------------------------
+  // Notify shell whenever phase or elapsed seconds changes
+  // ---------------------------------------------------------------------------
+
+  useEffect(() => {
+    if (queuePhase === "idle") {
+      onQueuePhaseChange("idle");
+    } else {
+      // Notify for both "queue" and "found" phases so the shell always
+      // has the current elapsed label for FindingMatchPanel.
+      onQueuePhaseChange(queuePhase, formatQueueTime(elapsedSeconds));
+    }
+    // onQueuePhaseChange is stable (useCallback in ClientShell); safe dep.
+  }, [queuePhase, elapsedSeconds, onQueuePhaseChange]);
+
+  // ---------------------------------------------------------------------------
+  // Queue start
+  // ---------------------------------------------------------------------------
+
+  const startQueue = useCallback(() => {
+    clearAllTimers();
+    setElapsedSeconds(0);
+    setQueuePhase("queue");
+
+    // Tick the elapsed counter every second.
+    queueIntervalRef.current = setInterval(() => {
+      setElapsedSeconds((s) => s + 1);
+    }, 1000);
+
+    // Auto match-found after a random 5–10 s delay.
+    matchDelayRef.current = setTimeout(() => {
+      clearQueueTimers();
+      setSecondsRemaining(MATCH_ACCEPT_SECONDS);
+      setQueuePhase("found");
+
+      // Accept countdown — pure tick; the effect below handles the timeout.
+      countdownIntervalRef.current = setInterval(() => {
+        setSecondsRemaining((r) => Math.max(0, r - 1));
+      }, 1000);
+    }, randomMatchDelay());
+  }, [clearAllTimers, clearQueueTimers]);
+
+  // ---------------------------------------------------------------------------
+  // Transition handlers
+  // ---------------------------------------------------------------------------
+
+  /** Cancel queue from widget ✕ or bottom-bar ✕ while in queue phase. */
+  const handleCancelQueue = useCallback(() => {
+    clearAllTimers();
+    setElapsedSeconds(0);
+    setQueuePhase("idle");
+    // onQueuePhaseChange("idle") fires via the effect above.
+  }, [clearAllTimers]);
+
+  // Register the cancel function with the shell so the FindingMatchPanel rail
+  // widget ✕ can trigger queue cancellation without reaching into this screen's
+  // internal timer state. handleCancelQueue is stable (useCallback), so this
+  // effect only ever runs once (like componentDidMount).
+  useEffect(() => {
+    onRegisterCancel?.(handleCancelQueue);
+  }, [onRegisterCancel, handleCancelQueue]);
+
+  /** Accept the match — clear timers, notify shell to navigate to pick. */
+  const handleAcceptMatch = useCallback(() => {
+    clearAllTimers();
+    setElapsedSeconds(0);
+    setSecondsRemaining(MATCH_ACCEPT_SECONDS);
+    setQueuePhase("idle");
+    onAccept();
+  }, [clearAllTimers, onAccept]);
+
+  /** Decline or auto-decline — clear timers, return to idle lobby in place. */
+  const handleDeclineMatch = useCallback(() => {
+    clearAllTimers();
+    setSecondsRemaining(MATCH_ACCEPT_SECONDS);
+    setQueuePhase("idle");
+    // onQueuePhaseChange("idle") fires via the effect above.
+  }, [clearAllTimers]);
+
+  // Auto-decline when the countdown reaches 0 while in the "found" phase.
+  // Transitioning queuePhase away from "found" immediately prevents double-fire.
+  useEffect(() => {
+    if (secondsRemaining === 0 && queuePhase === "found") {
+      handleDeclineMatch();
+    }
+  }, [secondsRemaining, queuePhase, handleDeclineMatch]);
+
+  // ---------------------------------------------------------------------------
+  // Bottom-bar cancel ✕ — navigates back in idle, cancels queue when queuing
+  // ---------------------------------------------------------------------------
+
+  const handleCancelOrBack = useCallback(() => {
+    if (queuePhase === "idle") {
+      onBack();
+    } else {
+      handleCancelQueue();
+    }
+  }, [queuePhase, onBack, handleCancelQueue]);
+
+  // ---------------------------------------------------------------------------
+  // Chat
+  // ---------------------------------------------------------------------------
 
   const handleSend = useCallback((text: string) => {
     setMessages((prev) => [
@@ -200,8 +414,10 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
     }
   }, []);
 
+  // ---------------------------------------------------------------------------
   // Banner slot arrays (L2, L1 | SELF | R1, R2)
-  // DEMO_PARTY is a 4-tuple so element access is always DemoPartyMember (not undefined).
+  // ---------------------------------------------------------------------------
+
   const leftMembers:  (DemoPartyMember | null)[] = SHOW_DEMO_PARTY
     ? [DEMO_PARTY[0] as DemoPartyMember, DEMO_PARTY[1] as DemoPartyMember]
     : [null, null];
@@ -209,8 +425,10 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
     ? [DEMO_PARTY[2] as DemoPartyMember, DEMO_PARTY[3] as DemoPartyMember]
     : [null, null];
 
+  const isQueueing = queuePhase !== "idle";
+
   return (
-    <div className="flex h-full flex-col bg-hextech-black" data-shot="party-lobby">
+    <div className="relative flex h-full flex-col bg-hextech-black" data-shot="party-lobby">
       {/* ------------------------------------------------------------------ */}
       {/* LobbyHeader                                                          */}
       {/* ------------------------------------------------------------------ */}
@@ -245,7 +463,7 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
               />
             </PlayerBanner>
           ) : (
-            <PlayerBanner key={`le${i}`} name="" avatarSrc="" empty />
+            <PlayerBanner key={`le${i}`} name="" avatarSrc="" empty queueing={isQueueing} />
           ),
         )}
 
@@ -257,6 +475,7 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
           isSelf
           level={demoSummoner.level}
           autofillProtected
+          queueing={isQueueing}
         >
           <RoleSlotRow
             size="md"
@@ -281,7 +500,7 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
               />
             </PlayerBanner>
           ) : (
-            <PlayerBanner key={`re${i}`} name="" avatarSrc="" empty />
+            <PlayerBanner key={`re${i}`} name="" avatarSrc="" empty queueing={isQueueing} />
           ),
         )}
       </div>
@@ -302,13 +521,13 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
           />
         </div>
 
-        {/* Center: cancel ✕ + FIND MATCH + 2 dead icon buttons */}
+        {/* Center: cancel ✕ + FIND MATCH / In Queue + 2 dead icon buttons */}
         <div className="flex flex-1 items-center justify-center gap-3">
-          {/* ✕ cancel → mode-select */}
+          {/* ✕ cancel — in idle: goes back to mode-select; in queue: cancels queue */}
           <button
             type="button"
-            aria-label="Cancel — return to mode select"
-            onClick={onBack}
+            aria-label={isQueueing ? "Cancel queue" : "Cancel — return to mode select"}
+            onClick={handleCancelOrBack}
             className={[
               "flex shrink-0 items-center justify-center rounded-full",
               "h-10 w-10",
@@ -335,9 +554,13 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
             </svg>
           </button>
 
-          {/* FIND MATCH (LockInButton, 200px wide) */}
+          {/* FIND MATCH / In Queue (LockInButton, 200px wide) */}
           <div style={{ width: 200 }}>
-            <LockInButton label="Find Match" onLockIn={onFindMatch} />
+            <LockInButton
+              label={isQueueing ? "In Queue" : "Find Match"}
+              disabled={isQueueing}
+              onLockIn={startQueue}
+            />
           </div>
 
           {/* Dead: role preferences button */}
@@ -517,6 +740,19 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
           </div>
         </div>
       </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Match Found modal — renders over the lobby at z-50 in "found" phase  */}
+      {/* ------------------------------------------------------------------ */}
+      <MatchFoundModal
+        open={queuePhase === "found"}
+        secondsRemaining={secondsRemaining}
+        totalSeconds={MATCH_ACCEPT_SECONDS}
+        onAccept={handleAcceptMatch}
+        onDecline={handleDeclineMatch}
+        subtitle="Summoner's Rift • Normal • 5v5"
+        keyartSrc={DEMO_KEYART_SRC}
+      />
     </div>
   );
 }

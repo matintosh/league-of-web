@@ -57,6 +57,13 @@ export interface PlayerBannerProps {
    * Defaults to 15 when omitted (preserves current visual appearance).
    */
   level?: number;
+  /**
+   * Queueing state presentation variant.
+   * - On empty slots: dark banner with glowing blue outer ring (replaces the + circle).
+   * - On the self banner: adds an asterisk glyph at the foot to mark the queued player.
+   * Has no visual effect on filled teammate banners.
+   */
+  queueing?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -162,6 +169,27 @@ function ShieldGlyph() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Asterisk glyph — self-player queue marker at banner foot
+// ---------------------------------------------------------------------------
+
+function AsteriskGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <line x1="5" y1="1" x2="5" y2="9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="1" y1="3" x2="9" y2="7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="9" y1="3" x2="1" y2="7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -366,6 +394,7 @@ export function PlayerBanner({
   children,
   empty = false,
   level,
+  queueing = false,
 }: PlayerBannerProps) {
   const uid = useId();
   const showCrown = crownChip ?? isSelf;
@@ -373,8 +402,40 @@ export function PlayerBanner({
   // Width: self is wider (120px), teammates are narrower (96px)
   const wClass = isSelf ? "w-[120px]" : "w-[96px]";
 
-  // Empty slot — large circular + placeholder
+  // Empty slot — idle: large circular + placeholder; queueing: dark banner with blue glow ring
   if (empty) {
+    if (queueing) {
+      // Queue treatment: dark banner rectangle with glowing blue outer ring
+      return (
+        <div
+          data-shot="player-banner-empty-queuing"
+          className="flex flex-col items-center justify-center"
+          style={{ width: 90, height: 90 }}
+          aria-label="Empty party slot — searching"
+        >
+          <div
+            className="relative flex items-center justify-center rounded-full bg-blue-7"
+            style={{
+              width: 90,
+              height: 90,
+              border: "2px solid var(--color-blue-2)",
+              boxShadow: "0 0 10px 2px var(--color-blue-3), inset 0 0 6px 1px var(--color-blue-6)",
+            }}
+          >
+            {/* Inner ring — inset 4px */}
+            <div
+              className="absolute rounded-full"
+              style={{
+                inset: 4,
+                border: "1px solid var(--color-blue-3)",
+                opacity: 0.6,
+              }}
+            />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div
         data-shot="player-banner-empty"
@@ -533,7 +594,7 @@ export function PlayerBanner({
             </div>
           )}
 
-          {/* Footer: autofill chip + foot glyph */}
+          {/* Footer: autofill chip + foot glyph + optional queue asterisk on self */}
           <div className="flex flex-col items-center gap-1 mt-auto">
             {autofillProtected && (
               <div className="flex items-center gap-0.5 rounded-full border border-grey-2 bg-grey-4 px-2 py-0.5 text-grey-1">
@@ -546,6 +607,12 @@ export function PlayerBanner({
             <span className="text-grey-3">
               <FootGlyph />
             </span>
+            {/* Asterisk glyph — marks self as the queued player */}
+            {isSelf && queueing && (
+              <span className="text-blue-2" aria-label="In queue">
+                <AsteriskGlyph />
+              </span>
+            )}
           </div>
         </div>
       </div>
