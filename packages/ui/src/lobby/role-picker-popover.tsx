@@ -266,7 +266,7 @@ export function RolePickerPopover({
         "absolute bottom-full left-1/2 z-30 mb-3",
         "-translate-x-1/2",
       ].join(" ")}
-      style={{ minWidth: 300 }}
+      style={{ minWidth: 340 }}
     >
       {/* Panel */}
       <div
@@ -320,7 +320,7 @@ export function RolePickerPopover({
                 aria-disabled={isDisabled ? true : undefined}
                 aria-label={ROLE_LABELS[role]}
                 disabled={isDisabled}
-                onClick={() => !isDisabled && handleSelect(role)}
+                onClick={() => handleSelect(role)}
                 onMouseEnter={() => !isDisabled && setHovered(role)}
                 onMouseLeave={() => setHovered(null)}
                 className={[
