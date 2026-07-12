@@ -80,6 +80,15 @@ export interface MatchmakingScreenProps {
    * resets to the lobby — preserving the original behaviour for standalone use.
    */
   onAccept?: () => void;
+  /**
+   * When true, the screen skips its own lobby phase and enters the queue
+   * immediately on mount. Used when entering from PartyLobbyScreen (the
+   * party lobby already handled role selection — queue starts right away).
+   * Pre-selects fixture roles (mid + support) so the internal role gating is
+   * satisfied. The old-style role selector UI is still rendered for standalone
+   * use when this prop is absent or false.
+   */
+  startInQueue?: boolean;
 }
 
 /**
@@ -97,9 +106,11 @@ export interface MatchmakingScreenProps {
  * Sized for exactly 1280×720 inside the WindowFrame content area (no
  * responsive units).
  */
-export function MatchmakingScreen({ onBack, onAccept }: MatchmakingScreenProps) {
+export function MatchmakingScreen({ onBack, onAccept, startInQueue = false }: MatchmakingScreenProps) {
   const [lobbyState, setLobbyState] = useState<LobbyState>("lobby");
-  const [primaryRole, setPrimaryRole] = useState<Role | null>(null);
+  // When startInQueue is true, pre-populate fixture roles (mid + support) so
+  // the internal role gating is satisfied before auto-starting the queue.
+  const [primaryRole, setPrimaryRole] = useState<Role | null>(startInQueue ? "mid" : null);
   const [secondaryRole, setSecondaryRole] = useState<Role | null>(null);
 
   // Queue timer
@@ -185,6 +196,16 @@ export function MatchmakingScreen({ onBack, onAccept }: MatchmakingScreenProps) 
       }, 1000);
     }, randomMatchDelay());
   }, [clearAllTimers, clearQueueTimers]);
+
+  // Auto-start queue on mount when arriving from PartyLobbyScreen.
+  // Placed after startQueue declaration so the function ref is stable.
+  // Empty dep array: intentional single-fire on mount.
+  useEffect(() => {
+    if (startInQueue) {
+      startQueue();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const cancelQueue = useCallback(() => {
     clearAllTimers();
