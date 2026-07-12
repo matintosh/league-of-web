@@ -34,11 +34,12 @@ import {
 import { MatchmakingScreen } from "./matchmaking-screen";
 import { CollectionScreen } from "./collection-screen";
 import { ModeSelectScreen } from "./mode-select-screen";
+import { PartyLobbyScreen } from "./party-lobby-screen";
 import { PickScreen } from "./pick-screen";
 import { LoadoutScreen } from "./loadout-screen";
 import { ProfileScreen } from "./profile-screen";
 
-type View = "home" | "mode-select" | "matchmaking" | "collection" | "pick" | "loadout" | "profile";
+type View = "home" | "mode-select" | "party-lobby" | "matchmaking" | "collection" | "pick" | "loadout" | "profile";
 
 // Nav set matches the reference left→right: Home (live), Profile (dead),
 // Collection (live), Teamfight Tactics (dead).
@@ -204,6 +205,10 @@ export function ClientShell() {
   // Views that show the docked social rail alongside content.
   // pick and loadout are full-bleed (no rail) per issue spec.
   const railVisible = view !== "pick" && view !== "loadout";
+
+  // ProfileChip statusText — "In Lobby" while on the party lobby screen.
+  // Other views use the default availability label (undefined → ProfileChip renders availability).
+  const profileChipStatusText = view === "party-lobby" ? "In Lobby" : undefined;
 
   const handleToggleFriendGroup = (name: string) => {
     setFriendGroups((groups) =>
@@ -492,14 +497,20 @@ export function ClientShell() {
                     setView("loadout");
                   }}
                 />
+              ) : view === "party-lobby" ? (
+                <PartyLobbyScreen
+                  onBack={() => setView("mode-select")}
+                  onFindMatch={() => setView("matchmaking")}
+                />
               ) : view === "matchmaking" ? (
                 <MatchmakingScreen
                   onBack={() => { setView("home"); setActiveNavId("home"); }}
                   onAccept={() => setView("pick")}
+                  startInQueue
                 />
               ) : view === "mode-select" ? (
                 <ModeSelectScreen
-                  onConfirm={() => setView("matchmaking")}
+                  onConfirm={() => setView("party-lobby")}
                   onBack={() => { setView("home"); setActiveNavId("home"); }}
                 />
               ) : (
@@ -526,6 +537,7 @@ export function ClientShell() {
                   level={demoSummoner.level}
                   profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
                   onNotifications={() => console.log("notifications")}
+                  statusText={profileChipStatusText}
                 />
 
                 {/* SocialPanel fills all height except the dock */}
