@@ -1,9 +1,9 @@
 "use client";
 
-import { demoWallet } from "@low/fixtures";
+import { demoWallet, rpIconUrl, blueEssenceIconUrl } from "@low/fixtures";
 import { CurrencyDisplay } from "./currency-display";
 
-/** Default demo — realistic wallet values, noop callbacks */
+/** Default demo — realistic wallet values, noop callbacks, inline SVG glyph fallback */
 export function CurrencyDisplayDefaultDemo() {
   return (
     <CurrencyDisplay
@@ -44,6 +44,33 @@ export function CurrencyDisplayStackedDemo() {
       onBuyRp={() => console.log("buy RP")}
       onBuyBe={() => console.log("buy BE")}
       stacked
+    />
+  );
+}
+
+/** Real icons variant — rpIconUrl() / blueEssenceIconUrl() from CommunityDragon */
+export function CurrencyDisplayRealIconsDemo() {
+  return (
+    <CurrencyDisplay
+      wallet={demoWallet}
+      onBuyRp={() => console.log("buy RP")}
+      onBuyBe={() => console.log("buy BE")}
+      rpIconSrc={rpIconUrl()}
+      beIconSrc={blueEssenceIconUrl()}
+    />
+  );
+}
+
+/** Real icons + stacked — the production navbar configuration */
+export function CurrencyDisplayRealIconsStackedDemo() {
+  return (
+    <CurrencyDisplay
+      wallet={demoWallet}
+      onBuyRp={() => console.log("buy RP")}
+      onBuyBe={() => console.log("buy BE")}
+      stacked
+      rpIconSrc={rpIconUrl()}
+      beIconSrc={blueEssenceIconUrl()}
     />
   );
 }

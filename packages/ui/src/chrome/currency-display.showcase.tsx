@@ -4,6 +4,8 @@ import {
   CurrencyDisplayZeroDemo,
   CurrencyDisplayLargeDemo,
   CurrencyDisplayStackedDemo,
+  CurrencyDisplayRealIconsDemo,
+  CurrencyDisplayRealIconsStackedDemo,
 } from "./currency-display.demo";
 
 export const currencyDisplayShowcase: ShowcaseEntry = {
@@ -14,8 +16,8 @@ export const currencyDisplayShowcase: ShowcaseEntry = {
     "The RP and BE currency readout shown in the top-right navbar — icon, formatted amount, and a + buy button per currency.",
   variants: [
     {
-      name: "Default",
-      notes: "Realistic wallet values from demoWallet (1,350 RP · 48,210 BE).",
+      name: "Default (glyph fallback)",
+      notes: "Realistic wallet values from demoWallet (1,350 RP · 48,210 BE). Inline SVG glyph fallback — no rpIconSrc/beIconSrc passed.",
       render: () => <CurrencyDisplayDefaultDemo />,
     },
     {
@@ -29,9 +31,19 @@ export const currencyDisplayShowcase: ShowcaseEntry = {
       render: () => <CurrencyDisplayLargeDemo />,
     },
     {
-      name: "Stacked",
+      name: "Stacked (glyph fallback)",
       notes: "stacked=true — two right-aligned rows (RP/BE) matching the reference top-bar two-row currency block.",
       render: () => <CurrencyDisplayStackedDemo />,
+    },
+    {
+      name: "Real Icons (CommunityDragon)",
+      notes: "rpIconSrc=rpIconUrl() · beIconSrc=blueEssenceIconUrl() — real Riot client assets from CommunityDragon. Gold RP coin SVG + blue hexagon BE PNG.",
+      render: () => <CurrencyDisplayRealIconsDemo />,
+    },
+    {
+      name: "Real Icons + Stacked",
+      notes: "Production configuration — stacked two-row layout with real CommunityDragon currency icons. This is what the live navbar renders.",
+      render: () => <CurrencyDisplayRealIconsStackedDemo />,
     },
   ],
 };

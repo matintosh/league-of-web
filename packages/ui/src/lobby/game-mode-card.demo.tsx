@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import type { ReactNode } from "react";
 import { GameModeCard } from "./game-mode-card";
+import { gameModeMapUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Crest SVGs — content, not part of the component
@@ -221,7 +222,7 @@ const MODES: Array<{
   { key: "tft", countLabel: "FFA", name: "Teamfight Tactics", icon: <TftCrest /> },
 ];
 
-/** Clickable 4-card game mode row — mirrors the PvP mode-select screen. */
+/** Clickable 4-card game mode row — mirrors the PvP mode-select screen (glyph fallback). */
 export function GameModeCardRowDemo() {
   const [selected, setSelected] = useState<ModeKey>("tt");
 
@@ -236,6 +237,62 @@ export function GameModeCardRowDemo() {
         <GameModeCard
           key={mode.key}
           icon={mode.icon}
+          countLabel={mode.countLabel}
+          name={mode.name}
+          selected={selected === mode.key}
+          onSelect={() => setSelected(mode.key)}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Real crest demos — CommunityDragon parties map PNGs
+// ---------------------------------------------------------------------------
+
+type RealModeKey = "sr" | "tt" | "ha" | "tft";
+
+const REAL_MODES: Array<{
+  key: RealModeKey;
+  countLabel: string;
+  name: string;
+  cdMap: "sr" | "ha" | "tft" | "tt" | "rgm";
+}> = [
+  { key: "sr", countLabel: "5v5", name: "Summoner's Rift", cdMap: "sr" },
+  { key: "tt", countLabel: "3v3", name: "Twisted Treeline", cdMap: "tt" },
+  { key: "ha", countLabel: "5v5", name: "ARAM", cdMap: "ha" },
+  { key: "tft", countLabel: "FFA", name: "Teamfight Tactics", cdMap: "tft" },
+];
+
+/** Real map crest img for use in GameModeCard icon slot. */
+function RealMapCrest({ map }: { map: "sr" | "ha" | "tft" | "tt" | "rgm" }) {
+  return (
+    <img
+      src={gameModeMapUrl(map)}
+      alt=""
+      aria-hidden="true"
+      width={128}
+      height={128}
+      style={{ objectFit: "contain" }}
+    />
+  );
+}
+
+/** Clickable 4-card row with real CommunityDragon map crests. */
+export function GameModeCardRowRealCrests() {
+  const [selected, setSelected] = useState<RealModeKey>("sr");
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Game mode"
+      className="flex items-start justify-center gap-12 px-8 py-10 bg-hextech-black"
+    >
+      {REAL_MODES.map((mode) => (
+        <GameModeCard
+          key={mode.key}
+          icon={<RealMapCrest map={mode.cdMap} />}
           countLabel={mode.countLabel}
           name={mode.name}
           selected={selected === mode.key}

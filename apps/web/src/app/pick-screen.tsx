@@ -52,6 +52,7 @@ import {
   pickTeam,
   DEFAULT_PICK_CHAMPION_ID,
   championSquareUrl,
+  positionIconUrl,
 } from "@low/fixtures";
 import type { ChampionRole } from "@low/fixtures";
 
@@ -61,6 +62,27 @@ import type { ChampionRole } from "@low/fixtures";
 
 /** Total seconds for the pick phase countdown. */
 const PICK_SECONDS = 80;
+
+// ---------------------------------------------------------------------------
+// Role → CommunityDragon slug mapping (mid→middle, support→utility)
+// ---------------------------------------------------------------------------
+
+const ROLE_TO_CDRAGON: Record<Role, "top" | "jungle" | "middle" | "bottom" | "utility"> = {
+  top: "top",
+  jungle: "jungle",
+  mid: "middle",
+  bottom: "bottom",
+  support: "utility",
+};
+
+/**
+ * Supplies real CommunityDragon position SVG URLs for the RoleSelector.
+ * Selected role gets the "-light" (near-white) variant; unselected gets
+ * the default gold variant (hardcoded #c8aa6e fills on dark bg).
+ */
+function pickRoleIconSrc(role: Role, isSelected: boolean): string {
+  return positionIconUrl(ROLE_TO_CDRAGON[role], isSelected ? "light" : undefined);
+}
 
 // ---------------------------------------------------------------------------
 // Fixture chat messages
@@ -263,13 +285,15 @@ export function PickScreen({ onLockIn }: PickScreenProps) {
         <main className="flex flex-1 min-w-0 flex-col min-h-0 overflow-hidden px-3 py-2">
           {/* ── Filter bar ─────────────────────────────────────────────── */}
           <div className="flex shrink-0 items-center gap-2 pb-2">
-            {/* Role glyph buttons — reusing RoleSelector from lobby */}
+            {/* Role filter buttons — real CommunityDragon position SVGs.
+                Default variant = gold fills; selected = light (near-white) variant. */}
             <RoleSelector
               selected={roleFilter}
               onSelect={(role) =>
                 setRoleFilter((prev) => (prev === role ? null : role))
               }
               label="Filter by role"
+              iconSrcFor={pickRoleIconSrc}
             />
 
             {/* Spacer */}
