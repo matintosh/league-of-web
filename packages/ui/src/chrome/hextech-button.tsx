@@ -183,7 +183,7 @@ function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps
               className="absolute inset-0 opacity-0 group-active/hb:opacity-100 transition-opacity duration-100 pointer-events-none"
               style={{
                 background:
-                  "linear-gradient(to bottom, rgba(1,10,19,0.35) 0%, rgba(1,10,19,0.08) 40%, transparent 80%)",
+                  "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 35%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 8%, transparent) 40%, transparent 80%)",
               }}
             />
           )}
@@ -288,7 +288,7 @@ function TealFrame({ clipPath, height, disabled, children }: TealFrameProps) {
                   style={{
                     clipPath,
                     background:
-                      "linear-gradient(to bottom, rgba(1,10,19,0.35) 0%, rgba(1,10,19,0.08) 40%, transparent 80%)",
+                      "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 35%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 8%, transparent) 40%, transparent 80%)",
                   }}
                 />
                 {children}

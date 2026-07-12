@@ -227,6 +227,7 @@ function Medallion({ size, greyed, discId, glyphId, swirlId, emblemSrc, emblemHe
             <circle
               cx={r} cy={r} r={innerR}
               fill={`url(#${swirlId})`}
+              clipPath={`url(#${swirlId}-clip)`}
               style={{ mixBlendMode: "screen" }}
             />
             {/* Secondary center glow — adds depth to the socket swirl */}
@@ -235,6 +236,7 @@ function Medallion({ size, greyed, discId, glyphId, swirlId, emblemSrc, emblemHe
               r={innerR * 0.5}
               fill="var(--color-teal-ring)"
               fillOpacity={0.18}
+              clipPath={`url(#${swirlId}-clip)`}
               style={{ mixBlendMode: "screen" }}
             />
           </>
@@ -521,7 +523,7 @@ export function PlayButton({
                 queueing   ? "var(--color-grey-2)" :
                 `url(#${dsId})`
               }
-              strokeWidth={2.5}
+              strokeWidth={2.5 * (bar / 28)}
               className={!greyed ? "transition-opacity duration-150 group-hover/pb:opacity-0" : undefined}
             />
             {/* Hover state: lifted fill gradient + bright-cyan stroke */}
@@ -530,7 +532,7 @@ export function PlayButton({
                 d={d}
                 fill={`url(#${hfId})`}
                 stroke={`url(#${hsId})`}
-                strokeWidth={2.5}
+                strokeWidth={2.5 * (bar / 28)}
                 className="opacity-0 transition-opacity duration-150 group-hover/pb:opacity-100"
               />
             )}
