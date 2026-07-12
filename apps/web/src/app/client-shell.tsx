@@ -89,8 +89,18 @@ const DIAGONAL_OFFSET = 80; // px — how much the top edge is inset further rig
 /** Version string shown in the SocialDock bottom strip. */
 const SOCIAL_VERSION = "V26.14";
 
-/** Width of the social overlay panel in px. */
-const SOCIAL_PANEL_WIDTH = 250;
+/**
+ * Docked rail width in px.
+ *
+ * Measured from the real client pvp-mode-select reference (client-pvp-mode-select.jpg):
+ * - Reference image is approximately 1440px wide.
+ * - Rail starts at ~x=1190, ends at ~x=1440 → rail ≈ 250px on a 1440px frame.
+ * - Ratio: 250/1440 ≈ 17.4% — slightly above the 15–16% spec range.
+ * - At our 1280px window, 15.6% ≈ 200px (matching issue guidance and leaving
+ *   ~1080px for content, which comfortably fits all railed screens).
+ * - We land on 200px: content area = 1280 − 200 = 1080px.
+ */
+const SOCIAL_RAIL_WIDTH = 200;
 
 // ---------------------------------------------------------------------------
 // Social rail fixtures — groups built from demoFriends (page-level values)
@@ -178,11 +188,16 @@ export function ClientShell() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState("general");
 
-  // Social rail state — panel open/closed, group collapse map
-  const [socialOpen, setSocialOpen] = useState(false);
+  // Social rail state — expanded/collapsed, group collapse map.
+  // Default EXPANDED per issue spec (real client keeps rail visible by default).
+  const [socialExpanded, setSocialExpanded] = useState(true);
   const [friendGroups, setFriendGroups] = useState<FriendGroup[]>(INITIAL_FRIEND_GROUPS);
 
-  const toggleSocialPanel = () => setSocialOpen((prev) => !prev);
+  const toggleSocialPanel = () => setSocialExpanded((prev) => !prev);
+
+  // Views that show the docked social rail alongside content.
+  // pick and loadout are full-bleed (no rail) per issue spec.
+  const railVisible = view !== "pick" && view !== "loadout";
 
   const handleToggleFriendGroup = (name: string) => {
     setFriendGroups((groups) =>
@@ -346,15 +361,16 @@ export function ClientShell() {
                   summoner={demoSummoner}
                   profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
                 />
-                {/* Social toggle button — opens/closes the right overlay panel */}
+                {/* Social toggle button — collapses/expands the docked rail.
+                    aria-expanded reflects current expanded state per ARIA spec. */}
                 <button
                   type="button"
-                  aria-label={socialOpen ? "Close social panel" : "Open social panel"}
-                  aria-expanded={socialOpen}
+                  aria-label={socialExpanded ? "Collapse social panel" : "Expand social panel"}
+                  aria-expanded={socialExpanded}
                   onClick={toggleSocialPanel}
                   className={[
                     "flex h-7 w-7 cursor-pointer items-center justify-center transition-colors duration-150",
-                    socialOpen ? "text-gold-2" : "text-grey-1 hover:text-gold-1",
+                    socialExpanded ? "text-gold-2" : "text-grey-1 hover:text-gold-1",
                   ].join(" ")}
                 >
                   {/* People/social icon */}
@@ -372,13 +388,12 @@ export function ClientShell() {
                     <path d="M12 11c1.5.3 3 1.1 3 3" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
                   </svg>
                 </button>
+                {/* Settings modal opens at z-50 — overlays the docked rail without
+                    closing it (no coupling needed; z-50 > rail's in-flow z). */}
                 <button
                   type="button"
                   aria-label="Settings"
-                  onClick={() => {
-                    setSocialOpen(false);
-                    setSettingsOpen(true);
-                  }}
+                  onClick={() => setSettingsOpen(true)}
                   className="flex h-7 w-7 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
                 >
                   {/* Gear icon */}
@@ -402,94 +417,76 @@ export function ClientShell() {
             }
           />
 
-          {/* Content area — switches between home, mode-select, matchmaking, collection, pick, loadout */}
-          <div className="relative flex-1 overflow-hidden">
-            {view === "collection" ? (
-              <CollectionScreen />
-            ) : view === "loadout" ? (
-              <LoadoutScreen
-                chosenChampionId={chosenChampionId}
-                onComplete={() => { setView("home"); setActiveNavId("home"); }}
-              />
-            ) : view === "pick" ? (
-              <PickScreen
-                onLockIn={(championId) => {
-                  setChosenChampionId(championId);
-                  setView("loadout");
-                }}
-              />
-            ) : view === "matchmaking" ? (
-              <MatchmakingScreen
-                onBack={() => { setView("home"); setActiveNavId("home"); }}
-                onAccept={() => setView("pick")}
-              />
-            ) : view === "mode-select" ? (
-              <ModeSelectScreen
-                onConfirm={() => setView("matchmaking")}
-                onBack={() => { setView("home"); setActiveNavId("home"); }}
-              />
-            ) : (
-              <HomeLanding onPlay={() => setView("mode-select")} newsItems={NEWS_ITEMS} />
+          {/* Content row — flex row containing the screen (flex-1 min-w-0) and,
+              on railed views, the docked social rail as a normal in-flow column.
+              pick / loadout are full-bleed: rail is absent entirely on those views. */}
+          <div className="flex flex-1 overflow-hidden">
+            {/* Screen content — fills all available width (minus rail when present) */}
+            <div className="relative flex-1 min-w-0 overflow-hidden">
+              {view === "collection" ? (
+                <CollectionScreen />
+              ) : view === "loadout" ? (
+                <LoadoutScreen
+                  chosenChampionId={chosenChampionId}
+                  onComplete={() => { setView("home"); setActiveNavId("home"); }}
+                />
+              ) : view === "pick" ? (
+                <PickScreen
+                  onLockIn={(championId) => {
+                    setChosenChampionId(championId);
+                    setView("loadout");
+                  }}
+                />
+              ) : view === "matchmaking" ? (
+                <MatchmakingScreen
+                  onBack={() => { setView("home"); setActiveNavId("home"); }}
+                  onAccept={() => setView("pick")}
+                />
+              ) : view === "mode-select" ? (
+                <ModeSelectScreen
+                  onConfirm={() => setView("matchmaking")}
+                  onBack={() => { setView("home"); setActiveNavId("home"); }}
+                />
+              ) : (
+                <HomeLanding onPlay={() => setView("mode-select")} newsItems={NEWS_ITEMS} />
+              )}
+            </div>
+
+            {/* ---------------------------------------------------------------- */}
+            {/* Docked social rail — in-flow right column, visible on home /      */}
+            {/* mode-select / matchmaking / collection; absent on pick / loadout. */}
+            {/* Width: 200px (15.6% of 1280) — measured from pvp-mode-select ref. */}
+            {/* Collapse: socialExpanded=false → display:none → content reflows.  */}
+            {/* ---------------------------------------------------------------- */}
+            {railVisible && socialExpanded && (
+              <div
+                aria-label="Social panel"
+                className="flex shrink-0 flex-col border-l border-gold-5"
+                style={{ width: SOCIAL_RAIL_WIDTH }}
+              >
+                {/* SocialPanel fills all height except the dock */}
+                <div className="min-h-0 flex-1">
+                  <SocialPanel
+                    width={SOCIAL_RAIL_WIDTH}
+                    groups={friendGroups}
+                    requestCount={2}
+                    onToggleGroup={handleToggleFriendGroup}
+                    onFriendClick={(s) => console.log("friend click:", s.gameName)}
+                    profileIconSrcFor={(s) => profileIconUrl(s.profileIconId)}
+                  />
+                </div>
+
+                {/* SocialDock pinned at panel bottom */}
+                <SocialDock
+                  buttons={DOCK_BUTTONS}
+                  version={SOCIAL_VERSION}
+                  onAction={(id) => console.log("dock action:", id)}
+                />
+              </div>
             )}
           </div>
         </div>
       </WindowFrame>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Social rail overlay — 250px panel sliding in from the right.        */}
-      {/* Positioned fixed at z-40 (below modals at z-50). Visually contained */}
-      {/* within the 1280×720 window because the browser window is scaled to  */}
-      {/* that exact size. Panel stays open across view transitions; it closes */}
-      {/* when the settings modal opens (handled in the gear button onClick).  */}
-      {/* MatchFoundModal uses z-50 so it layers above this panel naturally.   */}
-      {/* ------------------------------------------------------------------ */}
-      <div
-        aria-label="Social panel"
-        aria-hidden={!socialOpen}
-        className="fixed top-0 right-0 flex flex-col"
-        style={{
-          // WindowFrame titlebar is 32px, TopNavbar is 48px → total 80px
-          top: 80,
-          width: SOCIAL_PANEL_WIDTH,
-          height: CLIENT_HEIGHT - 80,
-          zIndex: 40,
-          transform: socialOpen ? "translateX(0)" : `translateX(${SOCIAL_PANEL_WIDTH}px)`,
-          transition: "transform 200ms ease-in-out",
-        }}
-      >
-        {/* ── Panel top: close button ── */}
-        <div className="flex shrink-0 items-center justify-end border-b border-gold-5 bg-blue-7 px-2 py-1">
-          <button
-            type="button"
-            aria-label="Close social panel"
-            onClick={() => setSocialOpen(false)}
-            className="flex h-6 w-6 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
-          >
-            <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
-              <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
-            </svg>
-          </button>
-        </div>
-
-        {/* ── SocialPanel: fills remaining height above dock ── */}
-        <div className="min-h-0 flex-1">
-          <SocialPanel
-            groups={friendGroups}
-            requestCount={2}
-            onToggleGroup={handleToggleFriendGroup}
-            onFriendClick={(s) => console.log("friend click:", s.gameName)}
-            profileIconSrcFor={(s) => profileIconUrl(s.profileIconId)}
-          />
-        </div>
-
-        {/* ── SocialDock: pinned at panel bottom ── */}
-        <SocialDock
-          buttons={DOCK_BUTTONS}
-          version={SOCIAL_VERSION}
-          onAction={(id) => console.log("dock action:", id)}
-        />
-      </div>
 
       <SettingsModal
         open={settingsOpen}
@@ -574,10 +571,13 @@ function HomeLanding({ onPlay, newsItems }: HomeLandingProps) {
           }}
         />
 
-        {/* 3-card row */}
+        {/* 3-card row — each card takes equal share of available width.
+            Using flex-1 min-w-0 so cards reflow when content width changes
+            (e.g. with the 200px docked rail, content is ~1080px, available
+            right of the diagonal seam at 566px ≈ 494px, cards ~148px each). */}
         <div className="relative flex gap-4" style={{ zIndex: 1 }}>
-          {newsItems.map((item, i) => (
-            <div key={item.title} style={{ width: 210, flexShrink: 0 }}>
+          {newsItems.map((item) => (
+            <div key={item.title} className="flex-1 min-w-0">
               <NewsCard {...item} />
             </div>
           ))}
