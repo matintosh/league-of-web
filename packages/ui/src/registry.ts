@@ -47,7 +47,9 @@ import { lobbyPlayerCardShowcase } from "./lobby/lobby-player-card.showcase";
 import { matchFoundModalShowcase } from "./lobby/match-found-modal.showcase";
 import { queueStatusShowcase } from "./lobby/queue-status.showcase";
 import { queueTypeListShowcase } from "./lobby/queue-type-list.showcase";
+import { playerBannerShowcase } from "./lobby/player-banner.showcase";
 import { roleSelectorShowcase } from "./lobby/role-selector.showcase";
+import { roleSlotRowShowcase } from "./lobby/role-slot-row.showcase";
 import { circleSubmitButtonShowcase } from "./login/circle-submit-button.showcase";
 import { loginCheckboxShowcase } from "./login/login-checkbox.showcase";
 import { loginTextInputShowcase } from "./login/login-text-input.showcase";
@@ -108,12 +110,14 @@ export const registry: ShowcaseEntry[] = [
   emoteWheelShowcase,
   skinCardShowcase,
   statMedallionShowcase,
-  // lobby — alphabetical: GameModeCard < LobbyHeader < LobbyPlayerCard ...
+  // lobby — alphabetical: GameModeCard < LobbyHeader < LobbyPlayerCard < MatchFoundModal < PlayerBanner < QueueStatus < QueueTypeList < RoleSelector < RoleSlotRow
   gameModeCardShowcase,
   lobbyHeaderShowcase,
   lobbyPlayerCardShowcase,
   matchFoundModalShowcase,
+  playerBannerShowcase,
   queueStatusShowcase,
   queueTypeListShowcase,
   roleSelectorShowcase,
+  roleSlotRowShowcase,
 ];
