@@ -1,6 +1,5 @@
 "use client";
 
-import { HextechButton } from "./hextech-button";
 import { SearchInput } from "./search-input";
 
 // ---------------------------------------------------------------------------

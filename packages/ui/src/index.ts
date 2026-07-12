@@ -11,10 +11,10 @@ export type { SkinCarouselProps, SkinThumbStripProps, SkinOption } from "./champ
 export { TeamPlayerRow } from "./champ-select/team-player-row";
 export type { TeamPlayerRowProps, PickState } from "./champ-select/team-player-row";
 // chrome
-export { ClubsEmptyState } from "./chrome/clubs-empty-state";
-export type { ClubsEmptyStateProps } from "./chrome/clubs-empty-state";
 export { ChatPanel } from "./chrome/chat-panel";
 export type { ChatPanelProps, ChatMessage } from "./chrome/chat-panel";
+export { ClubsEmptyState } from "./chrome/clubs-empty-state";
+export type { ClubsEmptyStateProps } from "./chrome/clubs-empty-state";
 export { CrestDivider } from "./chrome/crest-divider";
 export type { CrestDividerProps } from "./chrome/crest-divider";
 export { CurrencyDisplay } from "./chrome/currency-display";
