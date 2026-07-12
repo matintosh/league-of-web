@@ -169,8 +169,8 @@ function LeagueGlyph({ size, gradId, greyed }: { size: number; gradId: string; g
 // Medallion — v3-proven disc + ring + glyph (or real emblem image)
 // ---------------------------------------------------------------------------
 
-function Medallion({ size, greyed, discId, glyphId, emblemSrc, emblemHeight }: {
-  size: number; greyed?: boolean; discId: string; glyphId: string;
+function Medallion({ size, greyed, discId, glyphId, swirlId, emblemSrc, emblemHeight }: {
+  size: number; greyed?: boolean; discId: string; glyphId: string; swirlId: string;
   /** When set, renders the real LoL emblem image instead of the abstract glyph. */
   emblemSrc?: string;
   /** Rendered height for the emblem image (px). Width scales proportionally via object-contain. */
@@ -178,6 +178,8 @@ function Medallion({ size, greyed, discId, glyphId, emblemSrc, emblemHeight }: {
 }) {
   const r = size / 2;
   const sw = size >= 60 ? 2.5 : 1.5;
+  // Inner socket radius (inside the ring stroke)
+  const innerR = r - sw - 1;
   return (
     <div
       aria-hidden="true"
@@ -186,14 +188,59 @@ function Medallion({ size, greyed, discId, glyphId, emblemSrc, emblemHeight }: {
     >
       <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} className="absolute inset-0" overflow="visible">
         <defs>
+          {/* Deep background disc gradient */}
           <radialGradient id={discId} cx="40%" cy="35%" r="70%">
             <stop offset="0%" stopColor="var(--color-navy-swirl)" stopOpacity="0.8" />
             <stop offset="55%" stopColor="var(--color-navy-swirl)" />
             <stop offset="100%" stopColor="var(--color-grey-4)" />
           </radialGradient>
+          {/* Teal energy-swirl socket fill — v5
+              Sampled from play-button-hifi-closeup.png:
+                wisp center  ≈ #3b8585 (muted teal, maps to teal-ring @ 60% on dark)
+                bright wisps ≈ #3fe7ff (cyan-1, visible in the brighter reference wisps)
+                deep base    ≈ #024950 (maps to teal-frame)
+              Offset radial simulates the wisp positioned at upper-left of socket. */}
+          <radialGradient id={swirlId} cx="35%" cy="38%" r="65%">
+            <stop offset="0%"   stopColor="var(--color-cyan-1)"     stopOpacity="0.55" />
+            <stop offset="20%"  stopColor="var(--color-teal-ring)"  stopOpacity="0.65" />
+            <stop offset="50%"  stopColor="var(--color-teal-frame)" stopOpacity="0.80" />
+            <stop offset="80%"  stopColor="var(--color-navy-swirl)" stopOpacity="0.90" />
+            <stop offset="100%" stopColor="var(--color-grey-4)"     stopOpacity="1" />
+          </radialGradient>
+          {/* Socket clip — clips swirl to inner circle */}
+          <clipPath id={`${swirlId}-clip`}>
+            <circle cx={r} cy={r} r={innerR} />
+          </clipPath>
         </defs>
+
+        {/* Base disc */}
         <circle cx={r} cy={r} r={r} fill="var(--color-grey-4)" />
-        <circle cx={r} cy={r} r={r - sw - 1} fill={greyed ? "var(--color-grey-4)" : `url(#${discId})`} />
+
+        {/* Socket fill: deep disc background */}
+        <circle cx={r} cy={r} r={innerR} fill={greyed ? "var(--color-grey-4)" : `url(#${discId})`} />
+
+        {/* Energy swirl layer — clipped to inner socket, hidden in queueing state.
+            Two overlapping radial passes to approximate the multi-wisp swirl texture:
+            primary (upper-left brighter), secondary (center glow). */}
+        {!greyed && (
+          <>
+            <circle
+              cx={r} cy={r} r={innerR}
+              fill={`url(#${swirlId})`}
+              style={{ mixBlendMode: "screen" }}
+            />
+            {/* Secondary center glow — adds depth to the socket swirl */}
+            <circle
+              cx={r * 0.85} cy={r * 0.80}
+              r={innerR * 0.5}
+              fill="var(--color-teal-ring)"
+              fillOpacity={0.18}
+              style={{ mixBlendMode: "screen" }}
+            />
+          </>
+        )}
+
+        {/* Gold ring stroke */}
         <circle
           cx={r} cy={r} r={r - sw / 2}
           fill="none"
@@ -294,6 +341,7 @@ export function PlayButton({
   const uid = useId();
   const discId  = `${uid}-d`;
   const glyphId = `${uid}-g`;
+  const swirlId = `${uid}-sw`;
   const dsId    = `${uid}-ds`;
   const hsId    = `${uid}-hs`;
   const hfId    = `${uid}-hf`;
@@ -391,6 +439,7 @@ export function PlayButton({
             greyed={greyed}
             discId={discId}
             glyphId={glyphId}
+            swirlId={swirlId}
             emblemSrc={emblemSrc}
             emblemHeight={totalH}
           />
@@ -452,6 +501,17 @@ export function PlayButton({
             overflow="visible"
             aria-hidden="true"
           >
+            {/* Backing plate: extends past the chevron tip to the right.
+                Sampled from hi-res closeup: plate extends ~23px past tip at 1×.
+                The stepped corner top-right is achieved by the rectangle shape that
+                the chevron tip cuts through visually. Color: pb-inner-border (sampled ≈ #073b44). */}
+            <rect
+              x={tipNarrowX}
+              y={0}
+              width={barWidth - tipNarrowX + Math.round(5 * (bar / 28))}
+              height={bar}
+              fill="var(--color-pb-outer-bg)"
+            />
             {/* Default state: grey-4 fill + 80%-alpha cyan gradient stroke */}
             <path
               d={d}
@@ -461,7 +521,7 @@ export function PlayButton({
                 queueing   ? "var(--color-grey-2)" :
                 `url(#${dsId})`
               }
-              strokeWidth={2}
+              strokeWidth={2.5}
               className={!greyed ? "transition-opacity duration-150 group-hover/pb:opacity-0" : undefined}
             />
             {/* Hover state: lifted fill gradient + bright-cyan stroke */}
@@ -470,7 +530,7 @@ export function PlayButton({
                 d={d}
                 fill={`url(#${hfId})`}
                 stroke={`url(#${hsId})`}
-                strokeWidth={2}
+                strokeWidth={2.5}
                 className="opacity-0 transition-opacity duration-150 group-hover/pb:opacity-100"
               />
             )}
@@ -488,7 +548,7 @@ export function PlayButton({
           className={[
             "absolute inset-0 z-[3]",
             "flex items-center cursor-pointer overflow-hidden",
-            "font-display uppercase tracking-widest",
+            "font-display uppercase tracking-[0.15em]",
             disabled
               ? "cursor-not-allowed text-grey-2"
               : queueing

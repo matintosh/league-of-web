@@ -165,16 +165,28 @@ function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps
       >
         {/* Fill layer: covers the inner area, providing the charcoal background.
             Uses inline style for default fill (avoids Tailwind tree-shaking of bg-grey-4
-            when used alongside group-hover). Hover fill change via group-hover class. */}
+            when used alongside group-hover). Hover fill change via group-hover class.
+            Relative positioning supports the pressed inner-shadow overlay (item 9). */}
         <div
           className={[
-            "transition-colors duration-150",
+            "relative transition-colors duration-150",
             !disabled && "group-hover/hb:bg-[var(--color-grey-hover)]",
           ]
             .filter(Boolean)
             .join(" ")}
           style={{ background: "var(--color-grey-4)" }}
         >
+          {/* Pressed-state inner shadow — gradient overlay from top edge (item 9).
+              No clip-path here so standard approach works; pointer-events:none. */}
+          {!disabled && (
+            <div
+              className="absolute inset-0 opacity-0 group-active/hb:opacity-100 transition-opacity duration-100 pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(to bottom, rgba(1,10,19,0.35) 0%, rgba(1,10,19,0.08) 40%, transparent 80%)",
+              }}
+            />
+          )}
           <button
             type="button"
             disabled={disabled}
@@ -260,10 +272,25 @@ function TealFrame({ clipPath, height, disabled, children }: TealFrameProps) {
               className="bg-blue-2 group-hover/hb:bg-blue-1 transition-colors duration-150"
               style={{ ...clipStyle, padding: "1px" }}
             >
+              {/* Surface with inner top-edge highlight (item 7) + pressed darkening (item 9).
+                  The highlight is a 1px linear gradient from slightly lighter top to fill bg.
+                  The pressed overlay darkens via a gradient that fades from top; clip-path
+                  on the outer wrapper means box-shadow inset is clipped — gradient is the
+                  correct approach per the drop-shadow rule. */}
               <div
-                className="bg-grey-4 group-hover/hb:bg-grey-cool transition-colors duration-150"
+                className="relative bg-grey-4 group-hover/hb:bg-grey-cool transition-colors duration-150"
                 style={clipStyle}
               >
+                {/* Pressed-state inner shadow gradient overlay — fades dark-to-transparent
+                    from the top edge downward; pointer-events:none so it doesn't block clicks. */}
+                <div
+                  className="absolute inset-0 opacity-0 group-active/hb:opacity-100 transition-opacity duration-100 pointer-events-none"
+                  style={{
+                    clipPath,
+                    background:
+                      "linear-gradient(to bottom, rgba(1,10,19,0.35) 0%, rgba(1,10,19,0.08) 40%, transparent 80%)",
+                  }}
+                />
                 {children}
               </div>
             </div>
