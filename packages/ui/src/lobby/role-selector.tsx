@@ -132,6 +132,18 @@ export interface RoleSelectorProps {
   disabledRoles?: Role[];
   /** Accessible group label, e.g. "Primary role". */
   label: string;
+  /**
+   * Optional function to supply a real asset URL for a role's icon.
+   * When provided, an <img> is rendered instead of the inline SVG glyph.
+   * For the selected state the caller should return the "-light" variant URL.
+   * When omitted, falls back to the current inline SVG glyphs for all roles.
+   *
+   * Example (using @low/fixtures cdragon helpers):
+   *   iconSrcFor={(role, isSelected) =>
+   *     positionIconUrl(ROLE_TO_CDRAGON[role], isSelected ? "light" : undefined)
+   *   }
+   */
+  iconSrcFor?: (role: Role, isSelected: boolean) => string;
 }
 
 // ---------------------------------------------------------------------------
@@ -169,12 +181,17 @@ const ROLE_ORDER: Role[] = ["top", "jungle", "mid", "bottom", "support"];
  *
  * Layout is stable: unselected buttons use `border-transparent` so that the
  * 1px selected border never causes reflow.
+ *
+ * `iconSrcFor`: optional real-asset injection. When provided, renders an <img>
+ * instead of the inline SVG glyph; callers supply the URL per role + state.
+ * Falls back to inline glyphs when omitted.
  */
 export function RoleSelector({
   selected,
   onSelect,
   disabledRoles = [],
   label,
+  iconSrcFor,
 }: RoleSelectorProps) {
   return (
     <div role="radiogroup" aria-label={label} className="flex items-center gap-1.5">
@@ -183,6 +200,7 @@ export function RoleSelector({
         const isDisabled = disabledRoles.includes(role);
         const Glyph = ROLE_GLYPHS[role];
         const roleLabel = ROLE_LABELS[role];
+        const iconSrc = iconSrcFor ? iconSrcFor(role, isSelected) : undefined;
 
         return (
           <button
@@ -202,7 +220,7 @@ export function RoleSelector({
               isDisabled && "cursor-not-allowed opacity-40",
               // Not disabled interactive states
               !isDisabled && "cursor-pointer",
-              // Selected
+              // Selected — keep color classes for glyph fallback; img ignores text-*
               isSelected
                 ? "border-gold-4 text-gold-2"
                 : [
@@ -215,7 +233,11 @@ export function RoleSelector({
               .filter(Boolean)
               .join(" ")}
           >
-            <Glyph />
+            {iconSrc ? (
+              <img src={iconSrc} alt="" aria-hidden="true" width={22} height={22} />
+            ) : (
+              <Glyph />
+            )}
           </button>
         );
       })}

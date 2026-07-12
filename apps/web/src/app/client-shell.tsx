@@ -27,6 +27,9 @@ import {
   profileIconUrl,
   championSplashUrl,
   loadingArtUrl,
+  rpIconUrl,
+  blueEssenceIconUrl,
+  navIconUrl,
 } from "@low/fixtures";
 import { MatchmakingScreen } from "./matchmaking-screen";
 import { CollectionScreen } from "./collection-screen";
@@ -364,46 +367,42 @@ export function ClientShell() {
               // Right region: icon pair (zone 3) + divider (zone 4) + stacked currency (zone 5)
               // Composed at page level so TopNavbar stays slot-agnostic.
               <div className="flex items-center gap-3">
-                {/* Zone 3 — Loot + Essence icon buttons (dead, no-op) */}
+                {/* Zone 3 — Loot + Essence icon buttons (dead, no-op).
+                    Real nav icons from CommunityDragon static-assets. */}
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
                     aria-label="Loot"
-                    className="flex h-7 w-7 cursor-default items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+                    className="flex h-7 w-7 cursor-default items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
                     onClick={() => console.log("loot")}
                   >
-                    {/* Loot chest icon ~18px */}
-                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="1.5" y="7" width="15" height="9.5" rx="1" stroke="currentColor" strokeWidth="1.25" />
-                      <path d="M1.5 10h15" stroke="currentColor" strokeWidth="1.25" />
-                      <rect x="3" y="1.5" width="12" height="5.5" rx="1" stroke="currentColor" strokeWidth="1.25" />
-                      <path d="M7 10v2.5a2 2 0 0 0 4 0V10" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-                    </svg>
+                    {/* Real nav-icon-loot.svg — hardcoded gold fills, no filter needed */}
+                    <img src={navIconUrl("loot")} alt="" aria-hidden="true" width={22} height={22} />
                   </button>
                   <button
                     type="button"
                     aria-label="Essence"
-                    className="flex h-7 w-7 cursor-default items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+                    className="flex h-7 w-7 cursor-default items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
                     onClick={() => console.log("essence")}
                   >
-                    {/* Essence/coins icon ~18px */}
-                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="1.25" />
-                      <circle cx="9" cy="9" r="4" stroke="currentColor" strokeWidth="1.25" />
-                      <path d="M9 5.5v7M5.5 9h7" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-                    </svg>
+                    {/* BE icon — no dedicated nav-icon-essence; use be-icon.png at nav size.
+                        The CommunityDragon be-icon.png is the canonical blue-essence hexagon. */}
+                    <img src={blueEssenceIconUrl()} alt="" aria-hidden="true" width={18} height={18} />
                   </button>
                 </div>
 
                 {/* Zone 4 — 1px vertical divider */}
                 <div className="h-5 w-px bg-gold-5 shrink-0" aria-hidden="true" />
 
-                {/* Zone 5 — stacked currency (RP on top, BE below, right-aligned) */}
+                {/* Zone 5 — stacked currency (RP on top, BE below, right-aligned).
+                    Real currency icons from CommunityDragon. */}
                 <CurrencyDisplay
                   wallet={demoWallet}
                   onBuyRp={() => console.log("buy rp")}
                   onBuyBe={() => console.log("buy be")}
                   stacked
+                  rpIconSrc={rpIconUrl()}
+                  beIconSrc={blueEssenceIconUrl()}
                 />
               </div>
             }

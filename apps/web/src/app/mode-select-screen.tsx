@@ -2,6 +2,7 @@
 
 import { useState, useId } from "react";
 import { GameModeCard, QueueTypeList, HextechButton, TabBar } from "@low/ui";
+import { gameModeMapUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Crest SVGs — duplicated from game-mode-card.demo.tsx (page-level content).
@@ -201,17 +202,38 @@ function TftCrest() {
 }
 
 // ---------------------------------------------------------------------------
-// Mode data — page-level fixtures
+// CdragonMapCrest — real map crest img from CommunityDragon parties plugin.
+// Falls back to a plain box if the CDN img fails to load.
+// ---------------------------------------------------------------------------
+
+function CdragonMapCrest({ map }: { map: "sr" | "ha" | "tft" | "tt" }) {
+  return (
+    <img
+      src={gameModeMapUrl(map)}
+      alt=""
+      aria-hidden="true"
+      width={128}
+      height={128}
+      style={{ objectFit: "contain" }}
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Mode data — page-level fixtures.
+// Icons are real CommunityDragon map crests (parties plugin PNGs).
+// ARAM maps to "ha" (Howling Abyss) in the parties CDN.
 // ---------------------------------------------------------------------------
 
 type ModeKey = "sr" | "tt" | "aram" | "tft";
 
 const MODES = [
-  { key: "sr" as ModeKey, countLabel: "5v5", name: "Summoner's Rift", icon: <SummonersRiftCrest /> },
-  { key: "tt" as ModeKey, countLabel: "3v3", name: "Twisted Treeline", icon: <TwistedTreelineCrest /> },
-  { key: "aram" as ModeKey, countLabel: "5v5", name: "ARAM", icon: <AramCrest /> },
-  { key: "tft" as ModeKey, countLabel: "FFA", name: "Teamfight Tactics", icon: <TftCrest /> },
+  { key: "sr" as ModeKey, countLabel: "5v5", name: "Summoner's Rift", icon: <CdragonMapCrest map="sr" /> },
+  { key: "tt" as ModeKey, countLabel: "3v3", name: "Twisted Treeline", icon: <CdragonMapCrest map="tt" /> },
+  { key: "aram" as ModeKey, countLabel: "5v5", name: "ARAM", icon: <CdragonMapCrest map="ha" /> },
+  { key: "tft" as ModeKey, countLabel: "FFA", name: "Teamfight Tactics", icon: <CdragonMapCrest map="tft" /> },
 ];
+
 
 const MODE_DESCRIPTIONS: Record<ModeKey, string> = {
   sr: "5v5 — Battle on the classic three-lane map. Destroy the enemy Nexus to win.",

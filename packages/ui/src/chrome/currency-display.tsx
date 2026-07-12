@@ -15,6 +15,18 @@ export interface CurrencyDisplayProps {
    * are unaffected). Use in the navbar for the reference two-row currency block.
    */
   stacked?: boolean;
+  /**
+   * Optional URL for the RP icon image. When provided, renders a real asset
+   * <img> instead of the inline SVG glyph fallback.
+   * Pass `rpIconUrl()` from `@low/fixtures` at the page level.
+   */
+  rpIconSrc?: string;
+  /**
+   * Optional URL for the Blue Essence icon image. When provided, renders a
+   * real asset <img> instead of the inline SVG glyph fallback.
+   * Pass `blueEssenceIconUrl()` from `@low/fixtures` at the page level.
+   */
+  beIconSrc?: string;
 }
 
 /** Formats an integer with thousands separators, e.g. 34500 → "34,500". */
@@ -81,12 +93,20 @@ const buyButtonClass =
  * `stacked` (default false): when true renders two right-aligned rows
  * (RP on top, BE below) to match the reference top-bar two-row layout.
  * Back-compat: existing call sites omitting stacked see no change.
+ *
+ * `rpIconSrc` / `beIconSrc`: optional real-asset URLs (pass `rpIconUrl()` /
+ * `blueEssenceIconUrl()` from `@low/fixtures` at the page/showcase level).
+ * When omitted, the component falls back to its inline SVG glyphs.
  */
-export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false }: CurrencyDisplayProps) {
+export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false, rpIconSrc, beIconSrc }: CurrencyDisplayProps) {
   const rpRow = (
     <div className={["flex items-center gap-1.5", stacked ? "justify-end" : ""].join(" ")}>
-      <span className="text-blue-2">
-        <RpIcon />
+      <span className={rpIconSrc ? undefined : "text-blue-2"}>
+        {rpIconSrc ? (
+          <img src={rpIconSrc} alt="" aria-hidden="true" width={14} height={14} style={{ display: "inline-block", verticalAlign: "middle" }} />
+        ) : (
+          <RpIcon />
+        )}
       </span>
       <span className={stacked ? "font-body text-xs tabular-nums text-gold-2" : "font-body text-sm tabular-nums text-gold-1"}>
         {formatAmount(wallet.rp)}
@@ -104,8 +124,12 @@ export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false }: C
 
   const beRow = (
     <div className={["flex items-center gap-1.5", stacked ? "justify-end" : ""].join(" ")}>
-      <span className="text-blue-3">
-        <BeIcon />
+      <span className={beIconSrc ? undefined : "text-blue-3"}>
+        {beIconSrc ? (
+          <img src={beIconSrc} alt="" aria-hidden="true" width={14} height={14} style={{ display: "inline-block", verticalAlign: "middle" }} />
+        ) : (
+          <BeIcon />
+        )}
       </span>
       <span className={stacked ? "font-body text-xs tabular-nums text-gold-2" : "font-body text-sm tabular-nums text-gold-1"}>
         {formatAmount(wallet.blueEssence)}

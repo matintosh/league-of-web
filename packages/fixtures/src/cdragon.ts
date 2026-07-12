@@ -1,0 +1,127 @@
+/**
+ * CommunityDragon — public mirror of the real LoL client assets.
+ * Fan-content policy: https://www.riotgames.com/en/legal (fan-made, non-commercial)
+ * CommunityDragon: https://raw.communitydragon.org
+ *
+ * Usage in components: pass returned URLs as `src` to <img> elements.
+ * Tokens rule applies to CSS colors, not to asset URLs — these are safe to use.
+ */
+
+const CDRAGON_STATIC =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default";
+
+const CDRAGON_PARTIES =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-parties/global/default";
+
+/**
+ * Base URL builder for rcp-fe-lol-static-assets (generic escape hatch).
+ * Source: CommunityDragon rcp-fe-lol-static-assets plugin mirror.
+ */
+export const cdragonStaticUrl = (path: string): string =>
+  `${CDRAGON_STATIC}/${path}`;
+
+/**
+ * Base URL builder for rcp-fe-lol-parties (map crest PNGs).
+ * Source: CommunityDragon rcp-fe-lol-parties plugin mirror.
+ */
+export const cdragonPartiesUrl = (path: string): string =>
+  `${CDRAGON_PARTIES}/${path}`;
+
+/**
+ * Riot Points icon — the hexagonal RP coin mark (gold, ~13×14px SVG).
+ * Source: CommunityDragon rcp-fe-lol-static-assets · currency/icons/rp.svg
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const rpIconUrl = (): string =>
+  cdragonStaticUrl("currency/icons/rp.svg");
+
+/**
+ * Blue Essence icon — the hexagonal BE mark (PNG, ~22px).
+ * Source: CommunityDragon rcp-fe-lol-static-assets · images/be-icon.png
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const blueEssenceIconUrl = (): string =>
+  cdragonStaticUrl("images/be-icon.png");
+
+/**
+ * RP icon at a specific pixel size (24, 32, 48, or 72).
+ * Source: CommunityDragon rcp-fe-lol-static-assets · images/icon-rp-{size}.png
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const rpIconSizedUrl = (size: 24 | 32 | 48 | 72): string =>
+  cdragonStaticUrl(`images/icon-rp-${size}.png`);
+
+/**
+ * Navigation bar icon for a named section.
+ * Supported names: "loot", "collections", "store", "profile".
+ * Source: CommunityDragon rcp-fe-lol-static-assets · images/nav-icon-{name}.svg
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const navIconUrl = (
+  name: "loot" | "collections" | "store" | "profile",
+): string => cdragonStaticUrl(`images/nav-icon-${name}.svg`);
+
+/**
+ * Position (role) icon SVG.
+ *
+ * The default variant uses Hextech gold fills (#c8aa6e / #785a28) — readable
+ * on our dark tokens without filtering.
+ * The "light" variant uses near-white fills (#edeeee / #c0c2c2) — prefer for
+ * selected/hover states or bright backgrounds.
+ * The "red" variant is for enemy-side use (not needed in our client clone).
+ *
+ * CommunityDragon role slug mapping:
+ *   top → top | jungle → jungle | mid → middle | bot → bottom | support → utility
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · svg/position-{role}[-{variant}].svg
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const positionIconUrl = (
+  role: "top" | "jungle" | "middle" | "bottom" | "utility",
+  variant?: "light" | "red",
+): string =>
+  cdragonStaticUrl(
+    `svg/position-${role}${variant ? `-${variant}` : ""}.svg`,
+  );
+
+/**
+ * Game mode map crest PNG from the parties plugin.
+ * Maps: "sr" = Summoner's Rift | "ha" = Howling Abyss (ARAM) |
+ *        "tft" = Teamfight Tactics | "tt" = Twisted Treeline | "rgm" = RGM/misc.
+ * Source: CommunityDragon rcp-fe-lol-parties · map_{map}.png
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const gameModeMapUrl = (
+  map: "sr" | "ha" | "tft" | "tt" | "rgm",
+): string => cdragonPartiesUrl(`map_${map}.png`);
+
+/**
+ * Ranked tier mini-crest SVG (small badge form, used in profile chips etc.).
+ * Tier should be lowercase, e.g. "gold", "silver", "diamond".
+ * Source: CommunityDragon rcp-fe-lol-static-assets · ranked-mini-crests/{tier}.svg
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const rankedMiniCrestUrl = (tier: string): string =>
+  cdragonStaticUrl(`ranked-mini-crests/${tier.toLowerCase()}.svg`);
+
+/**
+ * Ranked emblem PNG (full-size shield art) from the magisteriis/lol-icons-and-emblems
+ * repository on jsDelivr CDN.
+ * Supported tiers: Iron, Bronze, Silver, Gold, Platinum, Diamond, Master, Grandmaster, Challenger.
+ * Note: Emerald is NOT available (404 as of 2026-07 — not included in that repo).
+ * Source: https://cdn.jsdelivr.net/gh/magisteriis/lol-icons-and-emblems@main/ranked-emblems/Emblem_{Tier}.png
+ * License: Unlicense (public domain) — https://github.com/magisteriis/lol-icons-and-emblems
+ */
+export const rankedEmblemUrl = (
+  tier:
+    | "Iron"
+    | "Bronze"
+    | "Silver"
+    | "Gold"
+    | "Platinum"
+    | "Diamond"
+    | "Master"
+    | "Grandmaster"
+    | "Challenger",
+): string =>
+  `https://cdn.jsdelivr.net/gh/magisteriis/lol-icons-and-emblems@main/ranked-emblems/Emblem_${tier}.png`;
