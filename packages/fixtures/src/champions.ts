@@ -306,6 +306,12 @@ export interface ChromaEntry {
   /** Whether this chroma is owned in the demo fixture. */
   owned: boolean;
   /**
+   * Whether the chroma can currently be obtained. Unavailable chromas are
+   * hidden unless "Show Unavailable" is checked (real-client behavior).
+   * Absent = available.
+   */
+  available?: boolean;
+  /**
    * 3-4 hex color strings representing the chroma's palette.
    * These are DATA values (the chroma colors themselves), not style tokens.
    * Stored in fixtures, not in components, per project rules.
@@ -376,7 +382,7 @@ export const demoChromas: ChromaChampionGroup[] = [
         baseSkinIndex: 4,
         chromas: [
           { name: "Catseye Popstar Ahri",  owned: false, palette: ["#8e44ad", "#9b59b6", "#d7bde2"] },
-          { name: "Pearl Popstar Ahri",    owned: false, palette: ["#e056b0", "#c0198a", "#f8a5e0"] },
+          { name: "Pearl Popstar Ahri",    owned: false, available: false, palette: ["#e056b0", "#c0198a", "#f8a5e0"] },
           { name: "Rose Quartz Popstar Ahri", owned: false, palette: ["#e8a090", "#c07060", "#fad0c0"] },
           { name: "Tanzanite Popstar Ahri", owned: false, palette: ["#e08060", "#b05030", "#f0b090"] },
         ],

@@ -362,6 +362,19 @@ function ChromasTab({
     return map;
   }, []);
 
+  // Per skin-line owned — also from the full fixture, so the "x/y" header
+  // stays accurate while search/toggles narrow the visible cards (mirrors
+  // champStats; counting the filtered array would undercount during search).
+  const skinLineOwned = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const g of demoChromas) {
+      for (const sl of g.skinLines) {
+        map[sl.skinLineName] = sl.chromas.filter((c) => c.owned).length;
+      }
+    }
+    return map;
+  }, []);
+
   const groups = useMemo(() => {
     const query = search.trim().toLowerCase();
     let list = [...demoChromas];
@@ -386,6 +399,8 @@ function ChromasTab({
           .map((sl) => {
             let chromas = sl.chromas;
             if (!showUnowned) chromas = chromas.filter((c) => c.owned);
+            if (!showUnavailable)
+              chromas = chromas.filter((c) => c.available !== false);
             if (query) {
               chromas = chromas.filter(
                 (c) =>
@@ -401,7 +416,7 @@ function ChromasTab({
         return { ...g, skinLines };
       })
       .filter((g) => g.skinLines.length > 0);
-  }, [search, showUnowned, championFilter, sort]);
+  }, [search, showUnowned, showUnavailable, championFilter, sort]);
 
   return (
     <div className="flex h-full min-h-0">
@@ -510,7 +525,7 @@ function ChromasTab({
 
                 {/* Level 2 — skin-line sub-groups */}
                 {g.skinLines.map((sl) => {
-                  const slOwned = sl.chromas.filter((c) => c.owned).length;
+                  const slOwned = skinLineOwned[sl.skinLineName] ?? 0;
                   const slTotal = skinLineTotals[sl.skinLineName] ?? sl.chromas.length;
 
                   return (
