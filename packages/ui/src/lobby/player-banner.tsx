@@ -401,7 +401,7 @@ export function PlayerBanner({
           <CrownGlyph />
           {isSelf && (
             <span className="font-body text-[10px] leading-none uppercase tracking-wide text-gold-2">
-              CAPTAIN
+              Captain
             </span>
           )}
         </div>
