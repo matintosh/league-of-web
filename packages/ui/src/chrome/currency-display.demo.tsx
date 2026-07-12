@@ -35,3 +35,15 @@ export function CurrencyDisplayLargeDemo() {
     />
   );
 }
+
+/** Stacked variant — two right-aligned rows (RP on top, BE below) matching the reference top-bar layout */
+export function CurrencyDisplayStackedDemo() {
+  return (
+    <CurrencyDisplay
+      wallet={demoWallet}
+      onBuyRp={() => console.log("buy RP")}
+      onBuyBe={() => console.log("buy BE")}
+      stacked
+    />
+  );
+}

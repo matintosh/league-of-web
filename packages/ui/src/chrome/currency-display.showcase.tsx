@@ -3,6 +3,7 @@ import {
   CurrencyDisplayDefaultDemo,
   CurrencyDisplayZeroDemo,
   CurrencyDisplayLargeDemo,
+  CurrencyDisplayStackedDemo,
 } from "./currency-display.demo";
 
 export const currencyDisplayShowcase: ShowcaseEntry = {
@@ -26,6 +27,11 @@ export const currencyDisplayShowcase: ShowcaseEntry = {
       name: "Large Numbers",
       notes: "12,345 RP and 1,234,567 BE — confirms thousands separator at every magnitude.",
       render: () => <CurrencyDisplayLargeDemo />,
+    },
+    {
+      name: "Stacked",
+      notes: "stacked=true — two right-aligned rows (RP/BE) matching the reference top-bar two-row currency block.",
+      render: () => <CurrencyDisplayStackedDemo />,
     },
   ],
 };
