@@ -131,6 +131,13 @@ export interface PartyLobbyScreenProps {
    * phase (queue → found → accept → pick chain is handled elsewhere).
    */
   onFindMatch: () => void;
+  /**
+   * Party open/closed state — OWNED BY THE SHELL (single source of truth,
+   * shared with the rail's PartyStatusPanel so the header pill and the
+   * panel always agree).
+   */
+  partyOpen: boolean;
+  onPartyToggle: (open: boolean) => void;
 }
 
 /**
@@ -155,8 +162,7 @@ export interface PartyLobbyScreenProps {
  * Default: SHOW_DEMO_PARTY = false (solo lobby). Set to true at compile-time
  * for full composition screenshots. No runtime toggle UI is exposed.
  */
-export function PartyLobbyScreen({ onBack, onFindMatch }: PartyLobbyScreenProps) {
-  const [partyOpen, setPartyOpen] = useState(false);
+export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle }: PartyLobbyScreenProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(LOBBY_MESSAGES);
   const [inviteTab, setInviteTab] = useState<"suggested" | "invited">("suggested");
 
@@ -186,7 +192,7 @@ export function PartyLobbyScreen({ onBack, onFindMatch }: PartyLobbyScreenProps)
         crestSrc={gameModeMapUrl("sr")}
         onBack={onBack}
         partyOpen={partyOpen}
-        onPartyToggle={setPartyOpen}
+        onPartyToggle={onPartyToggle}
       />
 
       {/* ------------------------------------------------------------------ */}

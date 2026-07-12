@@ -98,6 +98,9 @@ const DIAGONAL_OFFSET = 80; // px — how much the top edge is inset further rig
 /** Version string shown in the SocialDock bottom strip. */
 const SOCIAL_VERSION = "V26.14";
 
+/** Queue label for the party lobby — feeds ProfileChip statusText + PartyStatusPanel. */
+const PARTY_QUEUE_LABEL = "Normal Draft";
+
 /**
  * Docked rail width in px.
  *
@@ -217,7 +220,6 @@ export function ClientShell() {
   // "1/5 Normal Draft" (filled/capacity + queue label, truncated to chip width).
   // Other views use the default availability label (undefined → ProfileChip renders availability).
   // Replaces the previous static "In Lobby" per issue #163 spec.
-  const PARTY_QUEUE_LABEL = "Normal Draft";
   const profileChipStatusText =
     view === "party-lobby" ? `1/5 ${PARTY_QUEUE_LABEL}` : undefined;
 
@@ -519,6 +521,8 @@ export function ClientShell() {
                 <PartyLobbyScreen
                   onBack={() => setView("mode-select")}
                   onFindMatch={() => setView("matchmaking")}
+                  partyOpen={partyOpen}
+                  onPartyToggle={setPartyOpen}
                 />
               ) : view === "matchmaking" ? (
                 <MatchmakingScreen
