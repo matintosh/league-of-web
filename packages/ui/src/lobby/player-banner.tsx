@@ -358,20 +358,35 @@ export function PlayerBanner({
   // Width: self is wider (120px), teammates are narrower (96px)
   const wClass = isSelf ? "w-[120px]" : "w-[96px]";
 
-  // Empty banner — dark panel, no content
+  // Empty slot — large circular + placeholder
   if (empty) {
     return (
       <div
         data-shot="player-banner-empty"
-        className={[
-          "flex flex-col items-center",
-          wClass,
-          "h-[300px]",
-          "bg-grey-4 border border-grey-3",
-          "opacity-40",
-        ].join(" ")}
-        aria-label="Empty player slot"
-      />
+        className="flex flex-col items-center justify-center"
+        style={{ width: 90, height: 90 }}
+        aria-label="Empty party slot"
+      >
+        {/* Outer ring */}
+        <div
+          className="relative flex items-center justify-center rounded-full border border-grey-3 bg-grey-4"
+          style={{ width: 90, height: 90 }}
+        >
+          {/* Inner ring — inset 4px */}
+          <div
+            className="absolute rounded-full border border-grey-4"
+            style={{ inset: 4 }}
+          />
+          {/* Plus glyph */}
+          <span
+            aria-hidden="true"
+            className="relative z-10 text-grey-2 select-none"
+            style={{ fontSize: 32, lineHeight: 1, fontWeight: 300 }}
+          >
+            +
+          </span>
+        </div>
+      </div>
     );
   }
 
