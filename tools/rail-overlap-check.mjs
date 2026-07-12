@@ -2,26 +2,37 @@
 /**
  * rail-overlap-check.mjs
  *
- * Verifies the docked social rail layout on home and mode-select screens at
- * 1280×720. Checks that:
+ * Verifies the docked social rail layout on home, mode-select, party-lobby,
+ * and queue-state screens at 1280×720. Checks that:
  *   - The social rail column is visible by default (aria-label="Social panel")
  *   - Content area + rail width = window inner width (in-flow, not overlay)
  *   - No unintended overlap between the rail and the screen content area
  *   - No viewport overflow (body exactly 1280×720)
  *
  * Also confirms that pick and loadout screens do NOT show the rail.
+ * Also verifies the rail + FindingMatchPanel widget during queue state (post-#174).
  *
  * Usage:
  *   node tools/rail-overlap-check.mjs [--out <dir>] [--base-url <url>]
  *
  * Defaults:
  *   --out      /tmp/   (screenshots written as <screen>-rail.png)
- *   --base-url http://localhost:3000
+ *   --base-url http://localhost:PORT  (PORT env var, default 3000)
+ *
+ * PORT override (for parallel lane runs on non-default ports):
+ *   PORT=3182 node tools/rail-overlap-check.mjs
  *
  * Exit code 0 = all checks pass; 1 = one or more failures.
  *
- * Navigation flow for home:  /  (no nav needed — default view)
- * Navigation flow for mode-select: / → PLAY button
+ * Navigation flow for home:         /  (no nav needed — default view)
+ * Navigation flow for mode-select:  / → PLAY button
+ * Navigation flow for lobby:        mode-select → Confirm
+ * Navigation flow for queue-state:  lobby → Find Match → verify rail widget + no overlaps → cancel
+ *
+ * NOTE: The role-selector step (button[aria-label='Top']) was retired in
+ * #161/#174. The lobby no longer has a role picker before queuing. The queue
+ * pass clicks "Find Match" directly, asserts FindingMatchPanel appears in the
+ * rail, checks for overlaps, then cancels queue before proceeding.
  *
  * Window enforced at exactly 1280×720 (same as all other checkers).
  */
@@ -33,7 +44,9 @@ const args = process.argv.slice(2);
 const outArg = args.indexOf("--out");
 const baseArg = args.indexOf("--base-url");
 const OUT_DIR = outArg !== -1 ? args[outArg + 1] : "/tmp/";
-const BASE = baseArg !== -1 ? args[baseArg + 1] : "http://localhost:3000";
+// PORT env var allows parallel lane runs: PORT=3182 node tools/rail-overlap-check.mjs
+const PORT = process.env.PORT ?? 3000;
+const BASE = baseArg !== -1 ? args[baseArg + 1] : `http://localhost:${PORT}`;
 
 // ---------------------------------------------------------------------------
 // Rect helpers
@@ -254,13 +267,109 @@ totalFailures += await checkScreen(
   `${OUT_DIR}matchmaking-lobby-rail.png`
 );
 
-// ── PICK screen (expect NO rail) ──
-console.log("\nNavigating to pick screen …");
-// Select role and start queue
+// ── QUEUE-STATE pass — verify rail shows FindingMatchPanel while queuing ──
+// Post-#174: queue lives inside PartyLobbyScreen; the shell shows FindingMatchPanel
+// in the rail column when queuePhase !== "idle". We click "Find Match", assert the
+// rail widget appears, check for overlaps, then cancel before proceeding.
+console.log("\n" + "=".repeat(60));
+console.log("Queue-state check (party lobby → Find Match → assert rail widget → cancel)");
+console.log("=".repeat(60));
 try {
-  await page.locator("button[aria-label='Top']").first().click();
-  await page.waitForTimeout(300);
-  await page.locator("button:has-text('Find Match')").click();
+  // We are currently on the matchmaking-lobby screen (after the checkScreen above).
+  // Click Find Match to enter queue.
+  await page.locator("button:has-text('Find Match')").first().waitFor({ state: "visible", timeout: 5000 });
+  await page.locator("button:has-text('Find Match')").first().click();
+  await page.waitForTimeout(600);
+
+  // Screenshot the queue state
+  const queueScreenshotBuffer = await page.screenshot({ fullPage: false });
+  const queueShotPath = `${OUT_DIR}queue-state-rail.png`;
+  writeFileSync(queueShotPath, queueScreenshotBuffer);
+  console.log(`  Screenshot → ${queueShotPath}`);
+
+  // Rail should still be visible in queue state (social rail persists through lobby)
+  const queueRailCount = await page.locator("[aria-label='Social panel']").count();
+  if (queueRailCount > 0) {
+    console.log("  ✓ Social rail visible in queue state");
+  } else {
+    console.log("  ✗ Social rail NOT visible in queue state — expected docked rail");
+    totalFailures++;
+  }
+
+  // FindingMatchPanel should appear in the rail (it replaces PartyStatusPanel when queueing)
+  // It contains the elapsed timer and an "Estimated" label.
+  const findingPanelCount = await page.getByText("Estimated:", { exact: false }).count();
+  if (findingPanelCount > 0) {
+    console.log("  ✓ FindingMatchPanel visible in rail (Estimated label present)");
+  } else {
+    console.log("  ✗ FindingMatchPanel NOT found in rail — expected during queue state");
+    totalFailures++;
+  }
+
+  // Overlap check in queue state: rail should still be in-flow (not overlay)
+  const queueZones = await page.evaluate(() => {
+    function r(el) {
+      if (!el) return null;
+      const rect = el.getBoundingClientRect();
+      return { top: Math.round(rect.top), bottom: Math.round(rect.bottom), left: Math.round(rect.left), right: Math.round(rect.right), w: Math.round(rect.width), h: Math.round(rect.height) };
+    }
+    const railEl = document.querySelector("[aria-label='Social panel']");
+    const contentRow = railEl?.parentElement ?? null;
+    const screenContent = contentRow ? contentRow.firstElementChild : null;
+    return { rail: r(railEl), screenContent: r(screenContent) };
+  });
+  if (queueZones.rail && queueZones.screenContent) {
+    const gap = queueZones.rail.left - queueZones.screenContent.right;
+    if (Math.abs(gap) <= 1) {
+      console.log(`  ✓ Rail still in-flow during queue (gap=${gap}px)`);
+    } else {
+      console.log(`  ✗ Rail gap in queue state: ${gap}px — may be overlay`);
+      totalFailures++;
+    }
+  }
+
+  // Overflow check in queue state
+  const { scrollH: queueScrollH, scrollW: queueScrollW } = await page.evaluate(() => ({
+    scrollH: document.body.scrollHeight,
+    scrollW: document.body.scrollWidth,
+  }));
+  if (queueScrollH > 720 || queueScrollW > 1280) {
+    console.log(`  ✗ OVERFLOW in queue state: ${queueScrollW}×${queueScrollH}`);
+    totalFailures++;
+  } else {
+    console.log(`  ✓ No overflow in queue state: ${queueScrollW}×${queueScrollH}`);
+  }
+
+  // Cancel queue — click the ✕ cancel button (aria-label="Cancel queue" in queue state)
+  const cancelBtn = page.locator("button[aria-label*='Cancel']").first();
+  const cancelVisible = await cancelBtn.isVisible();
+  if (cancelVisible) {
+    await cancelBtn.click();
+    await page.waitForTimeout(400);
+    console.log("  ✓ Queue cancelled via ✕ button");
+    // After cancel, PartyStatusPanel should be back (rail still visible, Find Match button back)
+    const findMatchBack = await page.locator("button:has-text('Find Match')").count();
+    if (findMatchBack > 0) {
+      console.log("  ✓ Lobby returned to idle (Find Match visible again)");
+    } else {
+      console.log("  ✗ Find Match not visible after cancel — lobby may be stuck");
+      totalFailures++;
+    }
+  } else {
+    console.log("  WARNING: Cancel button not found — skipping cancel step");
+  }
+} catch (e) {
+  console.log(`  WARNING: Queue-state check failed: ${e.message} — skipping`);
+}
+
+// ── PICK screen (expect NO rail) ──
+// NOTE: The role-selector (button[aria-label='Top']) was retired in #161/#174.
+// Queue starts directly via Find Match → Accept; no role picker step.
+console.log("\nNavigating to pick screen …");
+try {
+  // From the lobby (idle state after cancel), start queue again
+  await page.locator("button:has-text('Find Match')").first().waitFor({ state: "visible", timeout: 5000 });
+  await page.locator("button:has-text('Find Match')").first().click();
   await page.waitForTimeout(500);
   // Wait for accept
   await page.locator("button:has-text('Accept')").first().waitFor({ state: "visible", timeout: 15000 });

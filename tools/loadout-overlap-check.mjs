@@ -11,13 +11,23 @@
  *
  * Defaults:
  *   --out      /tmp/loadout-screenshot.png
- *   --base-url http://localhost:3000
+ *   --base-url http://localhost:PORT  (PORT env var, default 3000)
+ *
+ * PORT override (for parallel lane runs on non-default ports):
+ *   PORT=3182 node tools/loadout-overlap-check.mjs
  *
  * Exit code 0 = no unintended overlaps; 1 = overlaps found (or navigation failed).
  *
- * Navigation flow:
- *   / → PLAY button → Confirm (mode-select) → Top role → Find Match →
- *   wait for Accept (up to 15 s) → click → wait 1.5 s → measure
+ * Navigation flow (post-#174 queue-in-lobby rework):
+ *   / → PLAY button → Confirm (mode-select) → Find Match (party lobby) →
+ *   wait for Accept modal (up to 15 s) → click Accept →
+ *   wait 1.5 s → pick screen → click first champion tile →
+ *   click LOCK IN → wait 1 s → measure loadout screen
+ *
+ * NOTE: The role-selector step (button[aria-label='Top']) was retired in
+ * #161/#174. The lobby no longer has a role picker before queuing. The new
+ * flow goes straight from party-lobby Find Match → queue → Accept → pick →
+ * champion selection → LOCK IN → loadout.
  *
  * Intentional overlaps (whitelisted — by design):
  *   - carouselSvg ∩ splashSvg: the two SVGs are stacked absolutely in the same
@@ -25,6 +35,11 @@
  *   - teamRail row divider lines: rows share their bottom/top pixel (divide-y).
  *
  * Re-run after fixes to verify zero unintended intersections.
+ *
+ * Chrome geometry (h-16 navbar, 33px titlebar):
+ *   titlebar: 0–33px
+ *   navbar:   33–97px
+ *   content:  97px and below
  */
 
 import { chromium } from "/Users/matintosh/dev/league-of-web/node_modules/playwright/index.mjs";
@@ -34,7 +49,9 @@ const args = process.argv.slice(2);
 const outArg = args.indexOf("--out");
 const baseArg = args.indexOf("--base-url");
 const OUT = outArg !== -1 ? args[outArg + 1] : "/tmp/loadout-screenshot.png";
-const BASE = baseArg !== -1 ? args[baseArg + 1] : "http://localhost:3000";
+// PORT env var allows parallel lane runs: PORT=3182 node tools/loadout-overlap-check.mjs
+const PORT = process.env.PORT ?? 3000;
+const BASE = baseArg !== -1 ? args[baseArg + 1] : `http://localhost:${PORT}`;
 
 // ---------------------------------------------------------------------------
 // Rect helpers
@@ -83,14 +100,21 @@ try {
   process.exit(1);
 }
 
-// 3. Select a primary role (Top) and Find Match
-console.log("Step 3: Select Top role + Find Match …");
-await page.locator("button[aria-label='Top']").first().click();
-await page.waitForTimeout(300);
-await page.locator("button:has-text('Find Match')").click();
-await page.waitForTimeout(500);
+// 3. Party lobby → Find Match
+// NOTE: The role-selector (button[aria-label='Top']) was retired in #161/#174.
+// The party lobby no longer has a role picker; queue starts directly via Find Match.
+console.log("Step 3: Find Match (party lobby) …");
+try {
+  await page.locator("button:has-text('Find Match')").first().waitFor({ state: "visible", timeout: 5000 });
+  await page.locator("button:has-text('Find Match')").first().click();
+  await page.waitForTimeout(500);
+} catch (e) {
+  console.error("Find Match button not found:", e.message);
+  await browser.close();
+  process.exit(1);
+}
 
-// 4. Wait for Accept (match found auto-triggers after 5–10 s)
+// 4. Wait for Accept modal (MatchFoundModal auto-appears after 5–10 s random delay)
 console.log("Step 4: Waiting for match found (up to 15 s) …");
 try {
   await page.locator("button:has-text('Accept')").first().waitFor({ state: "visible", timeout: 15000 });
@@ -101,6 +125,32 @@ try {
   process.exit(1);
 }
 await page.waitForTimeout(1500);
+
+// Verify we reached the pick screen
+const onPick = await page.getByText("Choose Your Champion!", { exact: false }).count();
+if (onPick === 0) {
+  console.error("ERROR: Could not reach pick screen ('Choose Your Champion!' not found).");
+  await browser.close();
+  process.exit(1);
+}
+console.log("✓ Pick screen reached.");
+
+// 5. Select a champion and lock in to reach the loadout screen
+// Click the first available champion tile in the grid, then click LOCK IN.
+console.log("Step 5: Select champion and Lock In …");
+try {
+  await page.locator("[role='listbox'] > *").first().waitFor({ state: "visible", timeout: 5000 });
+  await page.locator("[role='listbox'] > *").first().click();
+  await page.waitForTimeout(300);
+  // LOCK IN button is now enabled (no aria-disabled). Find it by text inside main.
+  await page.locator("main button:has-text('Lock In')").first().waitFor({ state: "visible", timeout: 3000 });
+  await page.locator("main button:has-text('Lock In')").first().click();
+  await page.waitForTimeout(1000);
+} catch (e) {
+  console.error("Champion selection or Lock In failed:", e.message);
+  await browser.close();
+  process.exit(1);
+}
 
 // Verify we're on the loadout screen by checking for the progressbar
 const onLoadout = await page.locator("[role='progressbar']").count();
