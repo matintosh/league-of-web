@@ -284,3 +284,124 @@ export const pickTeam: PickTeamMember[] = [
   { summonerName: "HowarqLqUq", lockedChampionName: "Malphite", lockedChampionId: "Malphite" },
   { summonerName: "CallMeCallMeStar", lockedChampionName: "Kindred", lockedChampionId: "Kindred" },
 ];
+
+// ---------------------------------------------------------------------------
+// Chroma fixtures
+// ---------------------------------------------------------------------------
+
+/**
+ * A single chroma variant entry.
+ *
+ * ASSET DIVERGENCE NOTE: DDragon has no chroma render images. In this v1
+ * implementation we display the base skin's loading art dimmed + a strip of
+ * colored circles derived from the `palette` array to visually differentiate
+ * variants. `palette` values are DATA (the actual chroma colors from Riot's
+ * design), not styling tokens — storing hex in fixtures is intentional and
+ * documented here. Components must never hardcode these values; they receive
+ * them as props.
+ */
+export interface ChromaEntry {
+  /** Human-readable chroma name, e.g. "Ruby Mecha Aatrox". */
+  name: string;
+  /** Whether this chroma is owned in the demo fixture. */
+  owned: boolean;
+  /**
+   * Whether the chroma can currently be obtained. Unavailable chromas are
+   * hidden unless "Show Unavailable" is checked (real-client behavior).
+   * Absent = available.
+   */
+  available?: boolean;
+  /**
+   * 3-4 hex color strings representing the chroma's palette.
+   * These are DATA values (the chroma colors themselves), not style tokens.
+   * Stored in fixtures, not in components, per project rules.
+   */
+  palette: string[];
+}
+
+/**
+ * A skin-line grouping of chromas, e.g. "MECHA AATROX".
+ */
+export interface ChromaSkinLine {
+  /** Skin-line name for the sub-header, e.g. "Mecha Aatrox". */
+  skinLineName: string;
+  /**
+   * DDragon skin index for the base skin's loading art (used dimmed as
+   * chroma background per asset-divergence plan).
+   */
+  baseSkinIndex: number;
+  /** Chroma variants in this skin line. */
+  chromas: ChromaEntry[];
+}
+
+/**
+ * Champion-level grouping for the Chromas tab grid.
+ */
+export interface ChromaChampionGroup {
+  /** Human-readable champion name. */
+  championName: string;
+  /** DDragon champion id (case-sensitive, used for loadingArtUrl). */
+  championId: string;
+  /** Skin lines for this champion that have chromas available. */
+  skinLines: ChromaSkinLine[];
+}
+
+/**
+ * Demo chromas data for the Collection > Chromas tab.
+ *
+ * 3 champions × 1-2 skin lines × 3-4 chromas each.
+ * Skin indices verified against DDragon loading-art CDN.
+ *
+ * ASSET DIVERGENCE: DDragon v16.13.1 does not expose chroma render images.
+ * Each ChromaEntry uses the parent skin's loadingArtUrl (dimmed via CSS) as
+ * background art, plus `palette` hex colors as color-dot identifiers.
+ * Palette values are real Riot chroma colors included as data, not style.
+ */
+export const demoChromas: ChromaChampionGroup[] = [
+  {
+    championName: "Aatrox",
+    championId: "Aatrox",
+    skinLines: [
+      {
+        skinLineName: "Mecha Aatrox",
+        baseSkinIndex: 7,  // DDragon 16.13.1: index 4-6 return 403; verified index 7 = Mecha Aatrox
+        chromas: [
+          { name: "Ruby Mecha Aatrox",   owned: false, palette: ["#c0392b", "#7f0000", "#e74c3c"] },
+          { name: "Citrine Mecha Aatrox", owned: false, palette: ["#f39c12", "#e6b800", "#ffd700"] },
+          { name: "Pearl Mecha Aatrox",  owned: false, palette: ["#9b59b6", "#6c3483", "#d7bde2"] },
+        ],
+      },
+    ],
+  },
+  {
+    championName: "Ahri",
+    championId: "Ahri",
+    skinLines: [
+      {
+        skinLineName: "Popstar Ahri",
+        baseSkinIndex: 4,
+        chromas: [
+          { name: "Catseye Popstar Ahri",  owned: false, palette: ["#8e44ad", "#9b59b6", "#d7bde2"] },
+          { name: "Pearl Popstar Ahri",    owned: false, available: false, palette: ["#e056b0", "#c0198a", "#f8a5e0"] },
+          { name: "Rose Quartz Popstar Ahri", owned: false, palette: ["#e8a090", "#c07060", "#fad0c0"] },
+          { name: "Tanzanite Popstar Ahri", owned: false, palette: ["#e08060", "#b05030", "#f0b090"] },
+        ],
+      },
+    ],
+  },
+  {
+    championName: "Jinx",
+    championId: "Jinx",
+    skinLines: [
+      {
+        skinLineName: "Firecracker Jinx",
+        baseSkinIndex: 2,
+        chromas: [
+          { name: "Catseye Firecracker Jinx",  owned: true,  palette: ["#e74c3c", "#c0392b", "#f1948a"] },
+          { name: "Pearl Firecracker Jinx",    owned: false, palette: ["#f9f9f9", "#bdc3c7", "#ecf0f1"] },
+          { name: "Rose Quartz Firecracker Jinx", owned: false, palette: ["#e56b9a", "#c0396a", "#f0a0c0"] },
+        ],
+      },
+    ],
+  },
+];
