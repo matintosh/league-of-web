@@ -141,7 +141,6 @@ function randomMatchDelay() {
 const MATCH_ACCEPT_SECONDS = 10;
 
 /** Fixture estimated wait shown in FindingMatchPanel and ProfileChip. */
-const ESTIMATED_LABEL = "Estimated: 3:00";
 
 /** Fixture champion keyart for MatchFoundModal. */
 const DEMO_KEYART_SRC = championSplashUrl("Jinx");
