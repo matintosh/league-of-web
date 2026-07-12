@@ -1,4 +1,4 @@
-// Keep in sync with packages/tokens/src/theme.css — same 51 hex values.
+// Keep in sync with packages/tokens/src/theme.css — same 52 hex values.
 /** Hextech palette as TS constants — for the rare case CSS classes can't be used (e.g. canvas). */
 export const palette = {
   gold1: "#f0e6d2",
@@ -54,6 +54,10 @@ export const palette = {
   /** PlayButton v4 GreenLine inner border — XAML #09343D */
   pbInnerBorder: "#09343d",
   statusOnline: "#00c853",
+  /** Dark forest green band background for the OPEN PARTY rail block (issue #163).
+   *  Pixel-sampled from docs/reference/client-lobby-solo.jpg — distinct from
+   *  statusOnline (#00c853 bright lime). */
+  partyBand: "#1a3a1a",
   /** Warning/alert accent — queue-type-list warning triangle, pixel-sampled from client-pvp-mode-select.jpg (issue #80) */
   warning: "#ed2c49",
   // Login — light-theme palette (issue #100, pixel-sampled from docs/reference/riot-login-page.png)

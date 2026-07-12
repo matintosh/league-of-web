@@ -39,6 +39,8 @@ export { ModalFrame } from "./chrome/modal-frame";
 export type { ModalFrameProps, ModalFrameSize } from "./chrome/modal-frame";
 export { NewsCard } from "./chrome/news-card";
 export type { NewsCardProps } from "./chrome/news-card";
+export { PartyStatusPanel } from "./chrome/party-status-panel";
+export type { PartyStatusPanelProps } from "./chrome/party-status-panel";
 export { PlayButton } from "./chrome/play-button";
 export type { PlayButtonProps, PlayButtonSize } from "./chrome/play-button";
 export { PlayerHovercard } from "./chrome/player-hovercard";
