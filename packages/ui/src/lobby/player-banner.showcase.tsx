@@ -8,6 +8,7 @@ import {
   PlayerBannerAutofillDemo,
   PlayerBannerHeraldShapeDemo,
   PlayerBannerLevelBadgeDemo,
+  PlayerBannerQueueingDemo,
 } from "./player-banner.demo";
 
 export const playerBannerShowcase: ShowcaseEntry = {
@@ -15,7 +16,7 @@ export const playerBannerShowcase: ShowcaseEntry = {
   name: "Player Banner",
   area: "lobby",
   description:
-    "Vertical heraldic banner card for the pre-game lobby. Pointed double-V bottom with gold trim via clip-path shell technique. Crown+name above the shape. Self: larger scale, gold wings, level badge (level prop, defaults 15), autofill chip. Medallion proportions sampled from party reference: 56px/120px=46.7% (self), 44px/96px=45.8% (teammate). Empty: large grey + circle (~90px). Wing art from CommunityDragon ranked-emblem PNGs.",
+    "Vertical heraldic banner card for the pre-game lobby. Pointed double-V bottom with gold trim via clip-path shell technique. Crown+name above the shape. Self: larger scale, gold wings, level badge (level prop, defaults 15), autofill chip. Medallion proportions sampled from party reference: 56px/120px=46.7% (self), 44px/96px=45.8% (teammate). Empty: large grey + circle (~90px). Queue treatment (queueing=true): empty slots show dark circle with blue glow ring; self banner shows asterisk foot glyph. Wing art from CommunityDragon ranked-emblem PNGs.",
   variants: [
     {
       name: "Heraldic shape — self + teammate + empty circle",
@@ -64,6 +65,12 @@ export const playerBannerShowcase: ShowcaseEntry = {
       notes:
         "autofillProtected=true on a teammate banner. Shield glyph + text chip at banner foot.",
       render: () => <PlayerBannerAutofillDemo />,
+    },
+    {
+      name: "Queueing state — blue glow empty slots + self asterisk",
+      notes:
+        "queueing=true: empty slots render as dark circles with glowing blue rings (replacing the + placeholder). Self banner shows an asterisk glyph at the foot marking the queued player. Matches the queue-in-lobby reference (issue #174).",
+      render: () => <PlayerBannerQueueingDemo />,
     },
   ],
 };

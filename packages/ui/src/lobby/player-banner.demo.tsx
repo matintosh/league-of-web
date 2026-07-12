@@ -252,3 +252,31 @@ export function PlayerBannerAutofillDemo() {
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Queueing state — blue glow empty slots + self asterisk glyph (issue #174)
+// ---------------------------------------------------------------------------
+
+export function PlayerBannerQueueingDemo() {
+  return (
+    <div className="flex items-center justify-center gap-3 p-8 bg-hextech-black">
+      <PlayerBanner name="" avatarSrc="" empty queueing />
+      <PlayerBanner name="" avatarSrc="" empty queueing />
+      <PlayerBanner
+        name="TristanaPrey"
+        avatarSrc={AVATAR_1}
+        wingTier="gold"
+        isSelf
+        autofillProtected
+        queueing
+      >
+        <RoleSlotRow
+          slots={[{ role: "mid" }, { role: "support" }]}
+          iconSrcFor={roleIconSrc}
+        />
+      </PlayerBanner>
+      <PlayerBanner name="" avatarSrc="" empty queueing />
+      <PlayerBanner name="" avatarSrc="" empty queueing />
+    </div>
+  );
+}
