@@ -51,6 +51,7 @@ import { matchFoundModalShowcase } from "./lobby/match-found-modal.showcase";
 import { queueStatusShowcase } from "./lobby/queue-status.showcase";
 import { queueTypeListShowcase } from "./lobby/queue-type-list.showcase";
 import { playerBannerShowcase } from "./lobby/player-banner.showcase";
+import { rolePickerPopoverShowcase } from "./lobby/role-picker-popover.showcase";
 import { roleSelectorShowcase } from "./lobby/role-selector.showcase";
 import { roleSlotRowShowcase } from "./lobby/role-slot-row.showcase";
 import { circleSubmitButtonShowcase } from "./login/circle-submit-button.showcase";
@@ -120,7 +121,7 @@ export const registry: ShowcaseEntry[] = [
   emoteWheelShowcase,
   skinCardShowcase,
   statMedallionShowcase,
-  // lobby — alphabetical: GameModeCard < LobbyHeader < LobbyPlayerCard < MatchFoundModal < PlayerBanner < QueueStatus < QueueTypeList < RoleSelector < RoleSlotRow
+  // lobby — alphabetical: GameModeCard < LobbyHeader < LobbyPlayerCard < MatchFoundModal < PlayerBanner < QueueStatus < QueueTypeList < RolePickerPopover < RoleSelector < RoleSlotRow
   gameModeCardShowcase,
   lobbyHeaderShowcase,
   lobbyPlayerCardShowcase,
@@ -128,6 +129,7 @@ export const registry: ShowcaseEntry[] = [
   playerBannerShowcase,
   queueStatusShowcase,
   queueTypeListShowcase,
+  rolePickerPopoverShowcase,
   roleSelectorShowcase,
   roleSlotRowShowcase,
   // store — alphabetical: FeaturedTab < HeroCarousel < StoreItemTile < StoreSubNavBar

@@ -114,6 +114,8 @@ export { QueueStatus, formatQueueTime } from "./lobby/queue-status";
 export type { QueueStatusProps, QueueStatusLayout } from "./lobby/queue-status";
 export { QueueTypeList } from "./lobby/queue-type-list";
 export type { QueueTypeListProps, QueueOption } from "./lobby/queue-type-list";
+export { RolePickerPopover } from "./lobby/role-picker-popover";
+export type { RolePickerPopoverProps, PickableRole } from "./lobby/role-picker-popover";
 export { RoleSelector } from "./lobby/role-selector";
 export type { RoleSelectorProps, Role } from "./lobby/role-selector";
 export { RoleSlotRow } from "./lobby/role-slot-row";
