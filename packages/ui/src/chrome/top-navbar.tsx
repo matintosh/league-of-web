@@ -5,6 +5,12 @@ import type { ReactNode } from "react";
 export interface NavItem {
   id: string;
   label: string;
+  /**
+   * When true the item renders with aria-disabled + pointer-events-none and
+   * does not fire onNavigate. Back-compat: existing items without this field
+   * remain fully interactive.
+   */
+  disabled?: boolean;
 }
 
 export interface TopNavbarProps {
@@ -46,18 +52,22 @@ export function TopNavbar({
       <div className="flex flex-1 items-center justify-center gap-6 overflow-x-auto">
         {navItems.map((item) => {
           const isActive = item.id === activeId;
+          const isDisabled = item.disabled === true;
           return (
             <button
               key={item.id}
               type="button"
               aria-current={isActive ? "page" : undefined}
-              onClick={() => onNavigate(item.id)}
+              aria-disabled={isDisabled ? true : undefined}
+              onClick={isDisabled ? undefined : () => onNavigate(item.id)}
               className={[
-                "font-display uppercase tracking-widest text-sm transition-colors duration-150 cursor-pointer",
+                "font-display uppercase tracking-widest text-sm transition-colors duration-150",
                 "border-b-2 pb-0.5",
-                isActive
-                  ? "border-gold-3 text-gold-2"
-                  : "border-transparent text-grey-1 hover:text-gold-1",
+                isDisabled
+                  ? "cursor-default border-transparent text-grey-2 pointer-events-none"
+                  : isActive
+                  ? "cursor-pointer border-gold-3 text-gold-2"
+                  : "cursor-pointer border-transparent text-grey-1 hover:text-gold-1",
               ].join(" ")}
             >
               {item.label}

@@ -8,10 +8,10 @@ import { CLIENT_WIDTH, CLIENT_HEIGHT } from "../lib/client-window";
 import {
   WindowFrame,
   TopNavbar,
-  HextechButton,
   PlayButton,
   CurrencyDisplay,
   PlayerHovercard,
+  ProfileChip,
   SettingsModal,
   SettingsRow,
   HextechToggle,
@@ -35,13 +35,14 @@ import { LoadoutScreen } from "./loadout-screen";
 
 type View = "home" | "mode-select" | "matchmaking" | "collection" | "pick" | "loadout";
 
+// Nav set matches the reference left→right: Home (live), Profile (dead),
+// Collection (live), Teamfight Tactics (dead).
+// Dead items use aria-disabled and a no-op onClick per the issue spec.
 const NAV_ITEMS: NavItem[] = [
-  { id: "home", label: "Home" },
-  { id: "tft", label: "TFT" },
+  { id: "home",       label: "Home" },
+  { id: "profile",    label: "Profile",           disabled: true },
   { id: "collection", label: "Collection" },
-  { id: "loot", label: "Loot" },
-  { id: "store", label: "Store" },
-  { id: "profile", label: "Profile" },
+  { id: "tft",        label: "Teamfight Tactics", disabled: true },
 ];
 
 const KEYART_CHAMPION = "Jinx";
@@ -324,6 +325,11 @@ export function ClientShell() {
     },
   ];
 
+  // PLAY button is enabled only on the home view; disabled (greyed v5 treatment)
+  // on every other view. This follows the reference where the greyed PLAY is
+  // visible in the navbar while the mode-select screen is already shown.
+  const playDisabled = view !== "home";
+
   return (
     <div
       className="overflow-hidden"
@@ -337,9 +343,14 @@ export function ClientShell() {
         <div className="flex h-full flex-col">
           <TopNavbar
             playSlot={
-              <HextechButton size="large" onClick={() => setView("mode-select")}>
-                Play
-              </HextechButton>
+              // PlayButton lives permanently in the navbar (zone 1).
+              // On home: enabled → click → mode-select.
+              // On every other view: disabled (greyed v5 treatment).
+              <PlayButton
+                disabled={playDisabled}
+                emblemSrc="/lol-emblem.png"
+                onClick={() => { if (!playDisabled) setView("mode-select"); }}
+              />
             }
             navItems={NAV_ITEMS}
             activeId={activeNavId}
@@ -349,11 +360,51 @@ export function ClientShell() {
               else if (id === "home") setView("home");
             }}
             currencySlot={
-              <CurrencyDisplay
-                wallet={demoWallet}
-                onBuyRp={() => console.log("buy rp")}
-                onBuyBe={() => console.log("buy be")}
-              />
+              // Right region: icon pair (zone 3) + divider (zone 4) + stacked currency (zone 5)
+              // Composed at page level so TopNavbar stays slot-agnostic.
+              <div className="flex items-center gap-3">
+                {/* Zone 3 — Loot + Essence icon buttons (dead, no-op) */}
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    aria-label="Loot"
+                    className="flex h-7 w-7 cursor-default items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+                    onClick={() => console.log("loot")}
+                  >
+                    {/* Loot chest icon ~18px */}
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="1.5" y="7" width="15" height="9.5" rx="1" stroke="currentColor" strokeWidth="1.25" />
+                      <path d="M1.5 10h15" stroke="currentColor" strokeWidth="1.25" />
+                      <rect x="3" y="1.5" width="12" height="5.5" rx="1" stroke="currentColor" strokeWidth="1.25" />
+                      <path d="M7 10v2.5a2 2 0 0 0 4 0V10" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Essence"
+                    className="flex h-7 w-7 cursor-default items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+                    onClick={() => console.log("essence")}
+                  >
+                    {/* Essence/coins icon ~18px */}
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="1.25" />
+                      <circle cx="9" cy="9" r="4" stroke="currentColor" strokeWidth="1.25" />
+                      <path d="M9 5.5v7M5.5 9h7" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Zone 4 — 1px vertical divider */}
+                <div className="h-5 w-px bg-gold-5 shrink-0" aria-hidden="true" />
+
+                {/* Zone 5 — stacked currency (RP on top, BE below, right-aligned) */}
+                <CurrencyDisplay
+                  wallet={demoWallet}
+                  onBuyRp={() => console.log("buy rp")}
+                  onBuyBe={() => console.log("buy be")}
+                  stacked
+                />
+              </div>
             }
             playerSlot={
               <div className="flex items-center gap-2">
@@ -448,7 +499,7 @@ export function ClientShell() {
                   onBack={() => { setView("home"); setActiveNavId("home"); }}
                 />
               ) : (
-                <HomeLanding onPlay={() => setView("mode-select")} newsItems={NEWS_ITEMS} />
+                <HomeLanding newsItems={NEWS_ITEMS} />
               )}
             </div>
 
@@ -464,6 +515,15 @@ export function ClientShell() {
                 className="flex shrink-0 flex-col border-l border-gold-5"
                 style={{ width: SOCIAL_RAIL_WIDTH }}
               >
+                {/* Zone 6 — ProfileChip heads the rail column (above SocialPanel).
+                    Width inherits from the 200px rail parent; chip is full-width. */}
+                <ProfileChip
+                  summoner={demoSummoner}
+                  level={demoSummoner.level}
+                  profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+                  onNotifications={() => console.log("notifications")}
+                />
+
                 {/* SocialPanel fills all height except the dock */}
                 <div className="min-h-0 flex-1">
                   <SocialPanel
@@ -502,18 +562,16 @@ export function ClientShell() {
 // ---------------------------------------------------------------------------
 // HomeLanding — diagonal-split layout per issue #37 / Figma node 50-583
 //
-// CTA decision: PlayButton is placed in the home CONTENT left panel as the
-// primary landing CTA. The TopNavbar playSlot retains its HextechButton so the
-// play action remains reachable from every view (matchmaking, collection, etc.)
-// Both CTAs call setView("mode-select") with the same effect.
+// CTA decision (superseded by issue #139): The PlayButton now lives permanently
+// in TopNavbar (enabled on home, disabled elsewhere). The home content panel
+// no longer has its own PlayButton CTA.
 // ---------------------------------------------------------------------------
 
 interface HomeLandingProps {
-  onPlay: () => void;
   newsItems: NewsCardProps[];
 }
 
-function HomeLanding({ onPlay, newsItems }: HomeLandingProps) {
+function HomeLanding({ newsItems }: HomeLandingProps) {
   // Art container clip: top-left starts at PANEL_WIDTH + DIAGONAL_OFFSET px,
   // bottom-left starts at PANEL_WIDTH px. Right side is full width.
   // polygon: top-left, top-right, bottom-right, bottom-left
@@ -620,10 +678,9 @@ function HomeLanding({ onPlay, newsItems }: HomeLandingProps) {
           </div>
 
           {/* Thin gold divider under wordmark */}
-          <div className="mb-8 h-px w-32 bg-gold-4" />
-
-          {/* Play CTA — PlayButton from issue #35; emblem from issue #115 */}
-          <PlayButton onClick={onPlay} emblemSrc="/lol-emblem.png" />
+          <div className="h-px w-32 bg-gold-4" />
+          {/* PlayButton CTA removed: superseded by issue #139 — PLAY now lives
+              permanently in TopNavbar (enabled on home, disabled elsewhere). */}
         </div>
 
         {/* Footer caption — bottom-left */}

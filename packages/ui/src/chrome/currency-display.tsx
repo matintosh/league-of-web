@@ -9,6 +9,12 @@ export interface CurrencyDisplayProps {
   onBuyRp: () => void;
   /** Called when the user clicks the BE "+" (buy) button. */
   onBuyBe: () => void;
+  /**
+   * When true, renders RP and BE as two right-aligned stacked rows instead
+   * of a single inline row. Default false (back-compat — existing call sites
+   * are unaffected). Use in the navbar for the reference two-row currency block.
+   */
+  stacked?: boolean;
 }
 
 /** Formats an integer with thousands separators, e.g. 34500 → "34,500". */
@@ -71,45 +77,63 @@ const buyButtonClass =
  * CurrencyDisplay shows RP and BE balances in the top-right navbar.
  * Each currency has an icon, a formatted amount, and a "+" buy button.
  * Presentational only — buy actions are wired via callbacks.
+ *
+ * `stacked` (default false): when true renders two right-aligned rows
+ * (RP on top, BE below) to match the reference top-bar two-row layout.
+ * Back-compat: existing call sites omitting stacked see no change.
  */
-export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe }: CurrencyDisplayProps) {
+export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false }: CurrencyDisplayProps) {
+  const rpRow = (
+    <div className={["flex items-center gap-1.5", stacked ? "justify-end" : ""].join(" ")}>
+      <span className="text-blue-2">
+        <RpIcon />
+      </span>
+      <span className={stacked ? "font-body text-xs tabular-nums text-gold-2" : "font-body text-sm tabular-nums text-gold-1"}>
+        {formatAmount(wallet.rp)}
+      </span>
+      <button
+        type="button"
+        aria-label="Buy Riot Points"
+        onClick={onBuyRp}
+        className={buyButtonClass}
+      >
+        +
+      </button>
+    </div>
+  );
+
+  const beRow = (
+    <div className={["flex items-center gap-1.5", stacked ? "justify-end" : ""].join(" ")}>
+      <span className="text-blue-3">
+        <BeIcon />
+      </span>
+      <span className={stacked ? "font-body text-xs tabular-nums text-gold-2" : "font-body text-sm tabular-nums text-gold-1"}>
+        {formatAmount(wallet.blueEssence)}
+      </span>
+      <button
+        type="button"
+        aria-label="Buy Blue Essence"
+        onClick={onBuyBe}
+        className={buyButtonClass}
+      >
+        +
+      </button>
+    </div>
+  );
+
+  if (stacked) {
+    return (
+      <div className="flex flex-col items-end gap-0.5">
+        {rpRow}
+        {beRow}
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center gap-4">
-      {/* RP counter */}
-      <div className="flex items-center gap-1.5">
-        <span className="text-blue-2">
-          <RpIcon />
-        </span>
-        <span className="font-body text-sm text-gold-1 tabular-nums">
-          {formatAmount(wallet.rp)}
-        </span>
-        <button
-          type="button"
-          aria-label="Buy Riot Points"
-          onClick={onBuyRp}
-          className={buyButtonClass}
-        >
-          +
-        </button>
-      </div>
-
-      {/* BE counter */}
-      <div className="flex items-center gap-1.5">
-        <span className="text-gold-2">
-          <BeIcon />
-        </span>
-        <span className="font-body text-sm text-gold-1 tabular-nums">
-          {formatAmount(wallet.blueEssence)}
-        </span>
-        <button
-          type="button"
-          aria-label="Buy Blue Essence"
-          onClick={onBuyBe}
-          className={buyButtonClass}
-        >
-          +
-        </button>
-      </div>
+      {rpRow}
+      {beRow}
     </div>
   );
 }

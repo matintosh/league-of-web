@@ -43,6 +43,8 @@ export { PlayButton } from "./chrome/play-button";
 export type { PlayButtonProps, PlayButtonSize } from "./chrome/play-button";
 export { PlayerHovercard } from "./chrome/player-hovercard";
 export type { PlayerHovercardProps } from "./chrome/player-hovercard";
+export { ProfileChip } from "./chrome/profile-chip";
+export type { ProfileChipProps } from "./chrome/profile-chip";
 export { SearchInput } from "./chrome/search-input";
 export type { SearchInputProps } from "./chrome/search-input";
 export { SectionHeader } from "./chrome/section-header";
