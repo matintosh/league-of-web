@@ -44,13 +44,13 @@ export interface StoreSubNavBarProps {
 // ---------------------------------------------------------------------------
 
 const TABS: StoreTabDef[] = [
-  { id: "featured",    label: "FEATURED" },
-  { id: "champions",   label: "CHAMPIONS" },
-  { id: "skins",       label: "SKINS" },
-  { id: "loot",        label: "LOOT" },
-  { id: "emotes",      label: "EMOTES" },
-  { id: "accessories", label: "ACCESSORIES" },
-  { id: "esports",     label: "ESPORTS" },
+  { id: "featured",    label: "Featured" },
+  { id: "champions",   label: "Champions" },
+  { id: "skins",       label: "Skins" },
+  { id: "loot",        label: "Loot" },
+  { id: "emotes",      label: "Emotes" },
+  { id: "accessories", label: "Accessories" },
+  { id: "esports",     label: "Esports" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -78,7 +78,7 @@ export function StoreSubNavBar({
     <div
       role="tablist"
       aria-label="Store navigation"
-      className="flex h-10 w-full shrink-0 items-stretch overflow-hidden border-b border-gold-5 bg-blue-8 px-4"
+      className="flex h-10 w-full shrink-0 items-stretch overflow-hidden border-b border-gold-5 bg-blue-6 px-4"
     >
       {/* Tab buttons — left-aligned, vertically centered with active underline */}
       <div className="flex flex-1 items-end gap-6 overflow-hidden">

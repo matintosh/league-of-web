@@ -12,34 +12,34 @@ import type { StoreItem, HeroSlide } from "./types";
 
 export const demoHeroSlides: HeroSlide[] = [
   {
-    skinLine: "DEMACIA VICE",
+    skinLine: "Demacia Vice",
     subtitle:
       "FREEZE! DEMACIA VICE! Clean the streets as Demacia Vice Garen and Lucian for 1350 RP each.",
     rpPrice: 1350,
     splashUrl: championSplashUrl("Garen", 6),
   },
   {
-    skinLine: "STAR GUARDIAN",
+    skinLine: "Star Guardian",
     subtitle:
       "Answer the call of the stars. Star Guardian bundles available for a limited time.",
     rpPrice: 1820,
     splashUrl: championSplashUrl("Jinx", 4),
   },
   {
-    skinLine: "PROJECT",
+    skinLine: "Project",
     subtitle:
       "The future is now. PROJECT skins redefine what it means to be a champion.",
     rpPrice: 1350,
     splashUrl: championSplashUrl("Vayne", 4),
   },
   {
-    skinLine: "PULSEFIRE",
+    skinLine: "Pulsefire",
     subtitle: "Time is on your side. Pulsefire skins bend the laws of the universe.",
     rpPrice: 1350,
     splashUrl: championSplashUrl("Ezreal", 5),
   },
   {
-    skinLine: "DARK STAR",
+    skinLine: "Dark Star",
     subtitle:
       "From the void between galaxies, darkness descends. Dark Star collection now available.",
     rpPrice: 1820,

@@ -95,7 +95,7 @@ export function HeroCarousel({
       <div className="absolute bottom-0 left-0 z-10 px-4 pb-4 flex flex-col gap-0.5">
         {/* "NEW EPIC SKINS" eyebrow label */}
         <span className="font-display text-xs uppercase tracking-widest text-gold-3">
-          NEW EPIC SKINS
+          New Epic Skins
         </span>
 
         {/* Skin-line name — large display text */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+// useId removed — wishlist labels are self-contained via aria-label
 import type { StoreItem } from "@low/fixtures";
 
 // Re-export so consumers can import the type from this component module.
@@ -67,18 +67,17 @@ function HeartIcon({ filled }: { filled: boolean }) {
 /** Wishlist badge button — shown at bottom-right of tiles. */
 function WishlistButton({
   wishlisted,
-  labelId,
+  itemName,
   onWishlist,
 }: {
   wishlisted: boolean;
-  labelId: string;
+  itemName: string;
   onWishlist?: () => void;
 }) {
   return (
     <button
       type="button"
-      aria-label="Toggle wishlist"
-      aria-labelledby={labelId}
+      aria-label={`Toggle wishlist: ${itemName}`}
       aria-pressed={wishlisted}
       onClick={(e) => {
         e.stopPropagation();
@@ -104,8 +103,6 @@ function GridTile({
   onWishlist,
   rpIconSrc,
 }: Omit<StoreItemTileProps, "size">) {
-  const labelId = useId();
-
   return (
     <button
       type="button"
@@ -146,7 +143,7 @@ function GridTile({
         {(item.type === "bundle" || item.type === "pass") && (
           <span
             aria-hidden="true"
-            className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white"
+            className="flex h-5 w-5 items-center justify-center rounded-full bg-riot-red text-[9px] font-bold text-white"
           >
             !
           </span>
@@ -156,7 +153,7 @@ function GridTile({
       {/* Top-right: quantity badge */}
       {item.quantity !== undefined && (
         <div className="absolute top-1.5 right-1.5 z-10">
-          <span className="flex items-center gap-0.5 rounded-sm bg-red-600 px-1 py-0.5 text-[10px] font-bold text-white leading-none">
+          <span className="flex items-center gap-0.5 rounded-sm bg-riot-red px-1 py-0.5 text-[10px] font-bold text-white leading-none">
             {item.quantity}
             <span className="text-[8px]">x</span>
           </span>
@@ -167,7 +164,6 @@ function GridTile({
       <div className="absolute bottom-0 inset-x-0 z-10 flex flex-col px-2 pb-2 pt-4">
         {/* Item name */}
         <span
-          id={labelId}
           className="font-display text-xs uppercase tracking-wide text-gold-1 line-clamp-2 text-center leading-tight"
         >
           {item.name}
@@ -185,7 +181,7 @@ function GridTile({
 
         {/* Insufficient RP label */}
         {item.insufficientRP && (
-          <span className="mt-0.5 text-center text-[10px] font-body text-red-400">
+          <span className="mt-0.5 text-center text-[10px] font-body text-warning">
             * Not enough RP
           </span>
         )}
@@ -194,7 +190,7 @@ function GridTile({
         <div className="absolute bottom-1.5 right-2">
           <WishlistButton
             wishlisted={item.isWishlisted ?? false}
-            labelId={labelId}
+            itemName={item.name}
             onWishlist={() => onWishlist?.(item.id)}
           />
         </div>
@@ -213,8 +209,6 @@ function StripTile({
   onWishlist,
   rpIconSrc,
 }: Omit<StoreItemTileProps, "size">) {
-  const labelId = useId();
-
   return (
     <button
       type="button"
@@ -244,7 +238,7 @@ function StripTile({
         <div className="absolute top-1 left-1">
           <span
             aria-hidden="true"
-            className="flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[8px] font-bold text-white"
+            className="flex h-4 w-4 items-center justify-center rounded-full bg-riot-red text-[8px] font-bold text-white"
           >
             !
           </span>
@@ -254,7 +248,7 @@ function StripTile({
         <div className="absolute bottom-1 right-1">
           <WishlistButton
             wishlisted={item.isWishlisted ?? false}
-            labelId={labelId}
+            itemName={item.name}
             onWishlist={() => onWishlist?.(item.id)}
           />
         </div>
@@ -269,7 +263,6 @@ function StripTile({
           <img src={rpIconSrc} alt="RP" width={10} height={10} aria-hidden="true" />
         )}
         <span
-          id={labelId}
           className="font-display text-[10px] text-gold-2 truncate"
         >
           {fmtRp(item.rpPrice)}
