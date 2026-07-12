@@ -118,71 +118,77 @@ function OverviewTab({ champion }: OverviewTabProps) {
       />
 
       {/* Info panel — sits above the scrim */}
-      <div className="relative z-10 flex h-full flex-col justify-center gap-5 px-8 py-10" style={{ width: 340 }}>
-        {/* Damage */}
-        <div>
-          <p className="font-body text-xs uppercase tracking-widest text-grey-1">
-            Damage:
-          </p>
-          <p className="font-body text-sm text-gold-cream">{champion.damage}</p>
-        </div>
-
-        {/* Style slider */}
-        <div>
-          <p className="font-body text-xs uppercase tracking-widest text-grey-1 mb-2">
-            Style:
-          </p>
-          <div className="relative flex items-center gap-2">
-            {/* Left glyph — fighter/melee */}
-            <svg width={16} height={16} viewBox="0 0 16 16" aria-hidden="true" className="shrink-0 text-grey-1">
-              <path d="M8 2 L14 8 L8 14 L2 8 Z" fill="none" stroke="currentColor" strokeWidth="1.2" />
-            </svg>
-            {/* Track */}
-            <div className="relative flex-1 h-[2px] bg-grey-3">
-              {/* Filled portion */}
-              <div
-                className="absolute inset-y-0 left-0 bg-gold-3"
-                style={{ width: `${champion.styleFraction * 100}%` }}
-              />
-              {/* Dot */}
-              <div
-                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-3 w-3 rounded-full border-2 border-gold-3 bg-hextech-black"
-                style={{ left: `${champion.styleFraction * 100}%` }}
-              />
+      <div className="relative z-10 flex h-full flex-col justify-center gap-3 px-8 py-6" style={{ width: 380 }}>
+        {/* Two-column row: stats labels left, RadialStatWheel right */}
+        <div className="flex items-center gap-6">
+          {/* Left column: Damage / Style / Difficulty */}
+          <div className="flex flex-col gap-3 flex-1 min-w-0">
+            {/* Damage */}
+            <div>
+              <p className="font-body text-xs uppercase tracking-widest text-grey-1">
+                Damage:
+              </p>
+              <p className="font-body text-sm text-gold-cream">{champion.damage}</p>
             </div>
-            {/* Right glyph — mage/ranged */}
-            <svg width={16} height={16} viewBox="0 0 16 16" aria-hidden="true" className="shrink-0 text-grey-1">
-              <circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" strokeWidth="1.2" />
-              <circle cx="8" cy="8" r="2" fill="currentColor" />
-            </svg>
-          </div>
-        </div>
 
-        {/* Difficulty */}
-        <div>
-          <p className="font-body text-xs uppercase tracking-widest text-grey-1 mb-2">
-            Difficulty:
-          </p>
-          <div className="flex items-center gap-1.5">
-            {Array.from({ length: TOTAL_SEGS }).map((_, i) => (
-              <div
-                key={i}
-                className={[
-                  "h-[6px] flex-1 rounded-sm",
-                  i < FILLED_SEGS ? "bg-gold-3" : "bg-grey-3",
-                ].join(" ")}
-              />
-            ))}
-          </div>
-        </div>
+            {/* Style slider */}
+            <div>
+              <p className="font-body text-xs uppercase tracking-widest text-grey-1 mb-2">
+                Style:
+              </p>
+              <div className="relative flex items-center gap-2">
+                {/* Left glyph — fighter/melee */}
+                <svg width={16} height={16} viewBox="0 0 16 16" aria-hidden="true" className="shrink-0 text-grey-1">
+                  <path d="M8 2 L14 8 L8 14 L2 8 Z" fill="none" stroke="currentColor" strokeWidth="1.2" />
+                </svg>
+                {/* Track */}
+                <div className="relative flex-1 h-[2px] bg-grey-3">
+                  {/* Filled portion */}
+                  <div
+                    className="absolute inset-y-0 left-0 bg-gold-3"
+                    style={{ width: `${champion.styleFraction * 100}%` }}
+                  />
+                  {/* Dot */}
+                  <div
+                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-3 w-3 rounded-full border-2 border-gold-3 bg-hextech-black"
+                    style={{ left: `${champion.styleFraction * 100}%` }}
+                  />
+                </div>
+                {/* Right glyph — mage/ranged */}
+                <svg width={16} height={16} viewBox="0 0 16 16" aria-hidden="true" className="shrink-0 text-grey-1">
+                  <circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+                  <circle cx="8" cy="8" r="2" fill="currentColor" />
+                </svg>
+              </div>
+            </div>
 
-        {/* Radial stat wheel — decorative SVG approximation */}
-        <div className="flex justify-center">
-          <RadialStatWheel />
+            {/* Difficulty */}
+            <div>
+              <p className="font-body text-xs uppercase tracking-widest text-grey-1 mb-2">
+                Difficulty:
+              </p>
+              <div className="flex items-center gap-1.5">
+                {Array.from({ length: TOTAL_SEGS }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={[
+                      "h-[6px] flex-1 rounded-sm",
+                      i < FILLED_SEGS ? "bg-gold-3" : "bg-grey-3",
+                    ].join(" ")}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right column: RadialStatWheel */}
+          <div className="shrink-0">
+            <RadialStatWheel />
+          </div>
         </div>
 
         {/* Lore */}
-        <p className="font-body text-sm leading-relaxed text-grey-1 line-clamp-6">
+        <p className="font-body text-sm leading-relaxed text-grey-1 line-clamp-5">
           {champion.lore}
         </p>
 
@@ -297,7 +303,7 @@ function AbilitiesTab({ abilities, champId }: AbilitiesTabProps) {
       <div
         aria-hidden="true"
         className="absolute inset-0"
-        style={{ background: "rgba(1, 10, 19, 0.72)" }}
+        style={{ background: "color-mix(in srgb, var(--color-hextech-black) 72%, transparent)" }}
       />
 
       {/* Content panel */}
@@ -308,7 +314,7 @@ function AbilitiesTab({ abilities, champId }: AbilitiesTabProps) {
           aria-label="Ability slots"
           className="flex items-end gap-3 mb-8"
         >
-          {abilities.map((ability, idx) => {
+          {abilities.map((ability) => {
             const isActive = ability.key === selectedKey;
             return (
               <div key={ability.key} className="flex flex-col items-center gap-1.5">
