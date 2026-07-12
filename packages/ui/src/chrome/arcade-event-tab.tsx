@@ -148,6 +148,22 @@ function SkinCard({
 }
 
 // ---------------------------------------------------------------------------
+// Arcade Pass unlock list — constant data (not a prop; fixed per the event)
+// ---------------------------------------------------------------------------
+
+interface UnlockItem {
+  id: string;
+  label: string;
+}
+
+const ARCADE_PASS_UNLOCKS: UnlockItem[] = [
+  { id: "star-icon",    label: "Arcade Star Icon" },
+  { id: "four-orbs",   label: "Four Arcade Orbs" },
+  { id: "200-tokens",  label: "200 Arcade Tokens" },
+  { id: "per-game",    label: "Additional tokens per game" },
+];
+
+// ---------------------------------------------------------------------------
 // ArcadeEventTab
 // ---------------------------------------------------------------------------
 
@@ -179,7 +195,7 @@ export function ArcadeEventTab({
       className="relative flex h-full w-full overflow-hidden"
       style={{
         background:
-          "linear-gradient(135deg, #0d0520 0%, #091428 40%, #0a1428 70%, #050e20 100%)",
+          "linear-gradient(135deg, var(--color-arcade-bg-dark) 0%, var(--color-blue-6) 40%, var(--color-blue-7) 70%, var(--color-arcade-bg-deep) 100%)",
       }}
     >
       {/* Scanline texture overlay — CSS only, no asset required */}
@@ -253,12 +269,17 @@ export function ArcadeEventTab({
             ].join(" ")}
             style={{ width: 350, height: 150 }}
           >
-            {/* Dark video-thumbnail background */}
+            {/* Dark video-thumbnail background.
+                Gradient stops mapped to nearest tokens — deltas are imperceptible
+                in this small dark tile:
+                  #0a0518 → arcade-bg-dark (#0d0520, ΔE≈2),
+                  #0d1a35 → blue-6 (#091428, marginal; both near-black navy),
+                  #050e22 → arcade-bg-deep (#050e20, Δblue=2). */}
             <div
               className="absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(135deg, #0a0518 0%, #0d1a35 50%, #050e22 100%)",
+                  "linear-gradient(135deg, var(--color-arcade-bg-dark) 0%, var(--color-blue-6) 50%, var(--color-arcade-bg-deep) 100%)",
               }}
             />
             {/* Pixel-art neon grid lines to suggest arcade video feel */}
@@ -454,19 +475,3 @@ export function ArcadeEventTab({
     </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Arcade Pass unlock list — constant data (not a prop; fixed per the event)
-// ---------------------------------------------------------------------------
-
-interface UnlockItem {
-  id: string;
-  label: string;
-}
-
-const ARCADE_PASS_UNLOCKS: UnlockItem[] = [
-  { id: "star-icon",    label: "Arcade Star Icon" },
-  { id: "four-orbs",   label: "Four Arcade Orbs" },
-  { id: "200-tokens",  label: "200 Arcade Tokens" },
-  { id: "per-game",    label: "Additional tokens per game" },
-];

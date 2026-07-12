@@ -25,14 +25,14 @@ const DEMO_SKINS = [
     championName: "Yasuo",
     skinName: "Battle Boss",
     rpPrice: 1350,
-    splashUrl: loadingArtUrl("Yasuo", 7),
+    splashUrl: loadingArtUrl("Yasuo", 17),
   },
   {
     id: "arcade-kaisa",
     championName: "Kai'Sa",
     skinName: "Arcade",
     rpPrice: 1350,
-    splashUrl: loadingArtUrl("Kaisa", 5),
+    splashUrl: loadingArtUrl("Kaisa", 17),
   },
 ];
 

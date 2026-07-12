@@ -9,7 +9,7 @@
  *   tokens used only in inline `style={{}}` props or SVG attributes are
  *   always present — regardless of Tailwind's class-usage scan.
  *
- * Keep ALL THREE in sync (same 52 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
+ * Keep ALL THREE in sync (same 54 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
  */
 
 @theme {
@@ -96,6 +96,10 @@
   --color-login-ink: #343434;
   --color-brand-facebook: #1877f2;
   --color-login-black: #000000;
+
+  /* Arcade event — deep purple-navy bg stops for the Arcade 2019 tab gradient (issue #187) */
+  --color-arcade-bg-dark: #0d0520;
+  --color-arcade-bg-deep: #050e20;
 
   /* Typography — font files loaded by the app via next/font, exposed as vars */
   --font-display: var(--font-marcellus), "Marcellus", serif;
@@ -184,5 +188,9 @@
     --color-login-ink: #343434;
     --color-brand-facebook: #1877f2;
     --color-login-black: #000000;
+
+    /* Arcade event — deep purple-navy bg stops for the Arcade 2019 tab gradient (issue #187) */
+    --color-arcade-bg-dark: #0d0520;
+    --color-arcade-bg-deep: #050e20;
   }
 }
