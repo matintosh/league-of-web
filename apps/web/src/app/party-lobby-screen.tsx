@@ -157,17 +157,18 @@ export interface PartyLobbyScreenProps {
  * PartyLobbyScreen — the hi-fi pre-game party lobby phase.
  *
  * Composition zones:
- * - LobbyHeader (top): "SR · Normal Draft", SR map crest, back → mode-select,
- *   party-open pill toggle (page-level state).
+ * - LobbyHeader (top): segmented "Intro ◆ Blind ◆ Summoner's Rift 5v5" title + (30) chip +
+ *   ward glyph + "Change Mode" secondary button → mode-select. SR map crest, back chevron.
+ *   Party-open pill toggle (page-level state).
  * - Center: 5 banner slots (L2 · L1 · SELF · R1 · R2).
- *   Self: isSelf=true, gold wings, crown, autofill chip, RoleSlotRow md
- *   (2 picked roles + 1 empty). Flanking 4: empty by default (SHOW_DEMO_PARTY=false).
+ *   Self: isSelf=true, heraldic shape, gold wings, crown+name above, level badge, autofill chip,
+ *   RoleSlotRow md (2 picked roles + 1 empty). Flanking 4: empty + circles (SHOW_DEMO_PARTY=false).
  * - Bottom bar (height 120):
  *   Left (280px): ChatPanel with lobby fixture messages, input appends.
  *   Center (flex-1): ✕ cancel circle → mode-select; FIND MATCH (LockInButton, 200px
  *   wide); 2 dead circular icon buttons (role shield + ward eye glyphs, aria-disabled).
- *   Right (200px): "Suggested | Invited" tab strip (Suggested active, Invited dead)
- *   over an empty dark panel.
+ *   Right (200px): "Suggested | Invited (1)" tab strip. Invited is default-active with a
+ *   checkmark + demoSummoner.gameName fixture row. Suggested shows "No suggestions".
  *
  * Role strategy: self fixture roles are mid + support. Queue entry uses these
  * two roles. Popover picker is out of scope — documented here and in issue #155.
