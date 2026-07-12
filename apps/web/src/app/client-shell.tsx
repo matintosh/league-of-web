@@ -20,8 +20,9 @@ import {
   NewsCard,
   SocialPanel,
   SocialDock,
+  ArcadeEventTab,
 } from "@low/ui";
-import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton } from "@low/ui";
+import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -679,10 +680,10 @@ interface HomeTab {
 }
 
 const HOME_TABS: HomeTab[] = [
-  { id: "overview",   label: "OVERVIEW" },
-  { id: "arcade",     label: "ARCADE 2019", disabled: true, dot: true },
-  { id: "news",       label: "NEWS",        disabled: true },
-  { id: "patch-notes",label: "PATCH NOTES", disabled: true },
+  { id: "overview",    label: "OVERVIEW" },
+  { id: "arcade",      label: "ARCADE 2019", dot: true },
+  { id: "news",        label: "NEWS",        disabled: true },
+  { id: "patch-notes", label: "PATCH NOTES", disabled: true },
 ];
 
 // ---------------------------------------------------------------------------
@@ -703,18 +704,55 @@ const SKIN_PROMOS: SkinPromo[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// HomeView — wraps the sub-tab strip + HomeLanding for the home route.
+// Arcade 2019 skin fixtures — page-level values fed to ArcadeEventTab
+// ---------------------------------------------------------------------------
+
+const ARCADE_SKINS: EventSkinCard[] = [
+  {
+    id: "demacia-vice-garen",
+    championName: "Garen",
+    skinName: "Demacia Vice",
+    rpPrice: 1350,
+    splashUrl: loadingArtUrl("Garen", 6),
+  },
+  {
+    id: "demacia-vice-lucian",
+    championName: "Lucian",
+    skinName: "Demacia Vice",
+    rpPrice: 1350,
+    splashUrl: loadingArtUrl("Lucian", 8),
+  },
+  {
+    id: "battle-boss-yasuo",
+    championName: "Yasuo",
+    skinName: "Battle Boss",
+    rpPrice: 1350,
+    splashUrl: loadingArtUrl("Yasuo", 17),
+  },
+  {
+    id: "arcade-kaisa",
+    championName: "Kai'Sa",
+    skinName: "Arcade",
+    rpPrice: 1350,
+    splashUrl: loadingArtUrl("Kaisa", 17),
+  },
+];
+
+// ---------------------------------------------------------------------------
+// HomeView — wraps the sub-tab strip + content for the home route.
 // Sub-nav is a narrow bar (~32px) across the full content width.
+// OVERVIEW and ARCADE 2019 are live; NEWS and PATCH NOTES remain dead.
 // ---------------------------------------------------------------------------
 
 interface HomeViewProps {
   newsItems: NewsCardProps[];
 }
 
-/** Renders the home sub-tab strip above the diagonal hero. */
+/** Renders the home sub-tab strip and the active sub-tab content. */
 function HomeView({ newsItems }: HomeViewProps) {
-  // Overview is the only live tab; active state is static (no nav happens).
-  const activeTabId = "overview";
+  const [activeTabId, setActiveTabId] = useState<string>("overview");
+  // Arcade skin selection state — lifted here so it persists across tab switches.
+  const [selectedSkinId, setSelectedSkinId] = useState<string>("battle-boss-yasuo");
 
   return (
     <div className="flex h-full flex-col">
@@ -739,13 +777,19 @@ function HomeView({ newsItems }: HomeViewProps) {
               aria-selected={isActive}
               aria-disabled={tab.disabled ? true : undefined}
               disabled={tab.disabled}
+              onClick={!tab.disabled ? () => setActiveTabId(tab.id) : undefined}
               className={[
-                "relative flex h-full shrink-0 cursor-default items-center gap-1.5 px-4",
+                "relative flex h-full shrink-0 items-center gap-1.5 px-4",
                 "font-display text-xs uppercase tracking-widest transition-colors duration-150",
                 "border-b-2",
+                tab.disabled
+                  ? "cursor-default opacity-50"
+                  : "cursor-pointer",
                 isActive
                   ? "border-gold-4 text-gold-1"
-                  : "border-transparent text-gold-cream opacity-70",
+                  : tab.disabled
+                  ? "border-transparent text-gold-cream"
+                  : "border-transparent text-gold-cream hover:text-gold-2",
               ].join(" ")}
             >
               {tab.label}
@@ -761,9 +805,21 @@ function HomeView({ newsItems }: HomeViewProps) {
         })}
       </div>
 
-      {/* Hero + media row */}
+      {/* Tab content area — fills remaining height */}
       <div className="relative flex-1 min-h-0">
-        <HomeLanding newsItems={newsItems} />
+        {activeTabId === "arcade" ? (
+          <ArcadeEventTab
+            skins={ARCADE_SKINS}
+            selectedSkinId={selectedSkinId}
+            onSkinSelect={setSelectedSkinId}
+            onLearnMore={() => console.log("arcade: learn more")}
+            onTrailerClick={() => console.log("arcade: trailer")}
+            onNewChampionClick={() => console.log("arcade: new champion")}
+            newChampionSplashUrl={championSplashUrl("Qiyana")}
+          />
+        ) : (
+          <HomeLanding newsItems={newsItems} />
+        )}
       </div>
     </div>
   );
