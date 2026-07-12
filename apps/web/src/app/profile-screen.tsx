@@ -1,6 +1,7 @@
 "use client";
 
-import { ProfileBanner, RankedQueuePanel, SearchInput } from "@low/ui";
+import { useState } from "react";
+import { ProfileBanner, RankedQueuePanel, SearchInput, ClubsEmptyState } from "@low/ui";
 import type { ProfileBannerStat } from "@low/ui";
 import {
   demoSummoner,
@@ -23,7 +24,7 @@ const PROFILE_TABS: ProfileTab[] = [
   { id: "overview",       label: "OVERVIEW" },
   { id: "match-history",  label: "MATCH HISTORY", disabled: true },
   { id: "ranked",         label: "RANKED",         disabled: true },
-  { id: "clubs",          label: "CLUBS",          disabled: true },
+  { id: "clubs",          label: "CLUBS" },
   { id: "highlights",     label: "HIGHLIGHTS",     disabled: true },
   { id: "stats",          label: "STATS",          disabled: true },
 ];
@@ -201,18 +202,20 @@ function GearIcon() {
 // ---------------------------------------------------------------------------
 
 /**
- * ProfileScreen — the Profile > Overview view.
+ * ProfileScreen — Profile view with Overview and Clubs sub-tabs live.
  *
  * Layout per reference:
- *  - Sub-tab strip (full width, ~32px): Overview (live) + 5 dead tabs on left,
+ *  - Sub-tab strip (full width, ~36px): Overview + Clubs (live), 4 dead tabs,
  *    SearchInput + gear button on right.
- *  - Content area: 260px ProfileBanner on left; rest split between RankedQueuePanel
- *    (top) and TrophyShelf (bottom).
+ *  - Overview content: 260px ProfileBanner on left; RankedQueuePanel + TrophyShelf right.
+ *  - Clubs content: full-width ClubsEmptyState (no banner — matches reference).
  *
- * All fixture values are supplied at this page level; both components remain
+ * All fixture values are supplied at this page level; components remain
  * fixture-value-free per the component contract.
  */
 export function ProfileScreen() {
+  const [activeTab, setActiveTab] = useState<string>("overview");
+
   const summoner = demoSummoner;
   const profileIconSrc = profileIconUrl(summoner.profileIconId);
   // demoSummoner.level = 247; xp fraction arbitrary demo value
@@ -235,7 +238,8 @@ export function ProfileScreen() {
         {/* Left: tab buttons */}
         <div className="flex h-full flex-1 items-end">
           {PROFILE_TABS.map((tab) => {
-            const isActive = tab.id === "overview";
+            const isActive = tab.id === activeTab;
+            const isClickable = !tab.disabled;
             return (
               <button
                 key={tab.id}
@@ -244,10 +248,12 @@ export function ProfileScreen() {
                 aria-selected={isActive}
                 aria-disabled={tab.disabled ? true : undefined}
                 disabled={tab.disabled}
+                onClick={isClickable ? () => setActiveTab(tab.id) : undefined}
                 className={[
-                  "relative flex h-full shrink-0 cursor-default items-center px-4",
+                  "relative flex h-full shrink-0 items-center px-4",
                   "font-display text-xs uppercase tracking-widest transition-colors duration-150",
                   "border-b-2",
+                  isClickable ? "cursor-pointer" : "cursor-default",
                   isActive
                     ? "border-gold-4 text-gold-1"
                     : "border-transparent text-gold-cream opacity-60",
@@ -259,53 +265,67 @@ export function ProfileScreen() {
           })}
         </div>
 
-        {/* Right: search + gear */}
-        <div className="mb-1.5 mr-2 flex shrink-0 items-center gap-2">
-          <SearchInput
-            value=""
-            onChange={() => {}}
-            placeholder="Summoner Search"
-            aria-label="Summoner Search"
-          />
-          <button
-            type="button"
-            aria-label="Profile settings"
-            aria-disabled="true"
-            disabled
-            className="flex h-7 w-7 cursor-default items-center justify-center rounded border border-gold-5 text-grey-2 opacity-70 transition-colors duration-150 hover:border-gold-4 hover:text-gold-1"
-          >
-            <GearIcon />
-          </button>
-        </div>
+        {/* Right: search + gear — only shown on overview tab (matches reference) */}
+        {activeTab === "overview" && (
+          <div className="mb-1.5 mr-2 flex shrink-0 items-center gap-2">
+            <SearchInput
+              value=""
+              onChange={() => {}}
+              placeholder="Summoner Search"
+              aria-label="Summoner Search"
+            />
+            <button
+              type="button"
+              aria-label="Profile settings"
+              aria-disabled="true"
+              disabled
+              className="flex h-7 w-7 cursor-default items-center justify-center rounded border border-gold-5 text-grey-2 opacity-70 transition-colors duration-150 hover:border-gold-4 hover:text-gold-1"
+            >
+              <GearIcon />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Content area: banner left, main right                               */}
+      {/* Content area — switches per active tab                              */}
       {/* ------------------------------------------------------------------ */}
-      <div className="flex flex-1 min-h-0 overflow-hidden">
-        {/* Left: ProfileBanner column */}
-        <div className="shrink-0 overflow-y-auto border-r border-gold-5">
-          <ProfileBanner
-            name={summoner.gameName}
-            level={summoner.level}
-            xpFraction={XP_FRACTION}
-            profileIconSrc={profileIconSrc}
-            stats={DEMO_STATS}
+      {activeTab === "clubs" ? (
+        /* Clubs tab: full-width empty state, no banner column */
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          <ClubsEmptyState
+            onCreateClub={() => {}}
+            onLearnMore={() => {}}
+            onSummonerSearch={() => {}}
           />
         </div>
+      ) : (
+        /* Overview tab: banner left, ranked + trophy right */
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          {/* Left: ProfileBanner column */}
+          <div className="shrink-0 overflow-y-auto border-r border-gold-5">
+            <ProfileBanner
+              name={summoner.gameName}
+              level={summoner.level}
+              xpFraction={XP_FRACTION}
+              profileIconSrc={profileIconSrc}
+              stats={DEMO_STATS}
+            />
+          </div>
 
-        {/* Right: ranked panel + trophy shelf */}
-        <div className="flex flex-1 min-w-0 flex-col gap-6 overflow-y-auto p-6">
-          {/* Ranked queue panel */}
-          <RankedQueuePanel
-            queues={RANKED_QUEUES}
-            crestSrcFor={crestSrcFor}
-          />
+          {/* Right: ranked panel + trophy shelf */}
+          <div className="flex flex-1 min-w-0 flex-col gap-6 overflow-y-auto p-6">
+            {/* Ranked queue panel */}
+            <RankedQueuePanel
+              queues={RANKED_QUEUES}
+              crestSrcFor={crestSrcFor}
+            />
 
-          {/* Trophy shelf */}
-          <TrophyShelf />
+            {/* Trophy shelf */}
+            <TrophyShelf />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
