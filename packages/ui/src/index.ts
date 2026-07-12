@@ -13,6 +13,8 @@ export type { TeamPlayerRowProps, PickState } from "./champ-select/team-player-r
 // chrome
 export { ChatPanel } from "./chrome/chat-panel";
 export type { ChatPanelProps, ChatMessage } from "./chrome/chat-panel";
+export { ClubsEmptyState } from "./chrome/clubs-empty-state";
+export type { ClubsEmptyStateProps } from "./chrome/clubs-empty-state";
 export { CrestDivider } from "./chrome/crest-divider";
 export type { CrestDividerProps } from "./chrome/crest-divider";
 export { CurrencyDisplay } from "./chrome/currency-display";
