@@ -29,6 +29,19 @@ const LOBBY_MESSAGES: ChatMessage[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Fixture: invited players list — reference shows "INVITED (1)" tab active
+// with a checkmark + one player name.
+// ---------------------------------------------------------------------------
+
+interface InvitedEntry {
+  name: string;
+}
+
+const INVITED_FIXTURE: InvitedEntry[] = [
+  { name: demoSummoner.gameName },
+];
+
+// ---------------------------------------------------------------------------
 // Demo party — DEFAULT = empty banners (solo lobby).
 //
 // The real client shows empty slots when the player is solo, which is the
@@ -164,7 +177,7 @@ export interface PartyLobbyScreenProps {
  */
 export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle }: PartyLobbyScreenProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(LOBBY_MESSAGES);
-  const [inviteTab, setInviteTab] = useState<"suggested" | "invited">("suggested");
+  const [inviteTab, setInviteTab] = useState<"suggested" | "invited">("invited");
 
   const handleSend = useCallback((text: string) => {
     setMessages((prev) => [
@@ -188,9 +201,12 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
       {/* LobbyHeader                                                          */}
       {/* ------------------------------------------------------------------ */}
       <LobbyHeader
-        title="SR · Normal Draft"
+        title="Summoner's Rift · Normal"
+        segments={["Intro", "Blind", "Summoner's Rift 5v5"]}
+        queueCount={30}
         crestSrc={gameModeMapUrl("sr")}
         onBack={onBack}
+        onChangeMode={onBack}
         partyOpen={partyOpen}
         onPartyToggle={onPartyToggle}
       />
@@ -397,8 +413,8 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
               aria-selected={inviteTab === "suggested"}
               onClick={() => setInviteTab("suggested")}
               className={[
-                "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider",
-                "border-b-2 transition-colors duration-150 cursor-pointer",
+                "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider cursor-pointer",
+                "border-b-2 transition-colors duration-150",
                 inviteTab === "suggested"
                   ? "border-gold-4 text-gold-1"
                   : "border-transparent text-grey-2 hover:text-grey-1",
@@ -410,25 +426,67 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
               type="button"
               role="tab"
               aria-selected={inviteTab === "invited"}
-              aria-disabled="true"
-              disabled
+              onClick={() => setInviteTab("invited")}
               className={[
-                "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider",
-                "border-b-2 border-transparent text-grey-3",
-                "cursor-default opacity-50",
+                "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider cursor-pointer",
+                "border-b-2 transition-colors duration-150",
+                inviteTab === "invited"
+                  ? "border-gold-4 text-gold-1"
+                  : "border-transparent text-grey-2 hover:text-grey-1",
               ].join(" ")}
             >
-              Invited
+              {`Invited (${INVITED_FIXTURE.length})`}
             </button>
           </div>
 
-          {/* Empty dark list body */}
-          <div className="flex flex-1 items-center justify-center bg-blue-7 bg-opacity-30">
-            <span className="font-body text-xs text-grey-3 px-2 text-center">
-              {inviteTab === "suggested"
-                ? "No suggestions"
-                : "No pending invites"}
-            </span>
+          {/* Panel body */}
+          <div className="flex flex-1 flex-col bg-blue-7 bg-opacity-30 overflow-y-auto">
+            {inviteTab === "invited" ? (
+              INVITED_FIXTURE.length > 0 ? (
+                <ul className="flex flex-col py-1">
+                  {INVITED_FIXTURE.map((entry) => (
+                    <li
+                      key={entry.name}
+                      className="flex items-center gap-2 px-3 py-1.5"
+                    >
+                      {/* Checkmark */}
+                      <svg
+                        aria-hidden="true"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="shrink-0 text-gold-2"
+                      >
+                        <path
+                          d="M2 6l3 3 5-5"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span className="truncate font-body text-xs text-grey-1">
+                        {entry.name}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="flex flex-1 items-center justify-center">
+                  <span className="font-body text-xs text-grey-3 px-2 text-center">
+                    No pending invites
+                  </span>
+                </div>
+              )
+            ) : (
+              <div className="flex flex-1 items-center justify-center">
+                <span className="font-body text-xs text-grey-3 px-2 text-center">
+                  No suggestions
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
