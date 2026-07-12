@@ -320,10 +320,8 @@ const { scrollH, scrollW } = await page.evaluate(() => ({
 }));
 console.log(`  body: ${scrollW}×${scrollH} (target 1280×720)`);
 const overflow = scrollH > 720 || scrollW > 1280;
-// Note: body 1280×752 is a pre-existing issue with the WindowFrame layout
-// (same as reported by tools/loadout-overlap-check.mjs). Not introduced here.
 if (overflow) {
-  console.log(`  ⚠ body overflow (${scrollW}×${scrollH}) — pre-existing WindowFrame layout issue`);
+  console.log(`  ✗ OVERFLOW — body ${scrollW}×${scrollH}`);
 } else {
   console.log(`  ✓ no overflow`);
 }
@@ -332,9 +330,9 @@ if (overflow) {
 // Summary
 // ---------------------------------------------------------------------------
 console.log("\n=== Summary ===");
-const totalIssues = unintendedOverlaps + rowOverlaps;
+const totalIssues = unintendedOverlaps + rowOverlaps + (overflow ? 1 : 0);
 if (totalIssues === 0) {
-  console.log("✓ PASS — zero unintended overlaps (body overflow is pre-existing)");
+  console.log("✓ PASS — zero unintended overlaps, no overflow");
 } else {
   console.log(`✗ FAIL — ${totalIssues} issue(s) found`);
 }
