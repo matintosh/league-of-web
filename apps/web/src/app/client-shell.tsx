@@ -36,15 +36,16 @@ import { CollectionScreen } from "./collection-screen";
 import { ModeSelectScreen } from "./mode-select-screen";
 import { PickScreen } from "./pick-screen";
 import { LoadoutScreen } from "./loadout-screen";
+import { ProfileScreen } from "./profile-screen";
 
-type View = "home" | "mode-select" | "matchmaking" | "collection" | "pick" | "loadout";
+type View = "home" | "mode-select" | "matchmaking" | "collection" | "pick" | "loadout" | "profile";
 
 // Nav set matches the reference left→right: Home (live), Profile (dead),
 // Collection (live), Teamfight Tactics (dead).
 // Dead items use aria-disabled and a no-op onClick per the issue spec.
 const NAV_ITEMS: NavItem[] = [
   { id: "home",       label: "Home" },
-  { id: "profile",    label: "Profile",           disabled: true },
+  { id: "profile",    label: "Profile" },
   { id: "collection", label: "Collection" },
   { id: "tft",        label: "Teamfight Tactics", disabled: true },
 ];
@@ -361,6 +362,7 @@ export function ClientShell() {
             onNavigate={(id) => {
               setActiveNavId(id);
               if (id === "collection") setView("collection");
+              else if (id === "profile") setView("profile");
               else if (id === "home") setView("home");
             }}
             currencySlot={
@@ -474,7 +476,9 @@ export function ClientShell() {
           <div className="flex flex-1 overflow-hidden">
             {/* Screen content — fills all available width (minus rail when present) */}
             <div className="relative flex-1 min-w-0 overflow-hidden">
-              {view === "collection" ? (
+              {view === "profile" ? (
+                <ProfileScreen />
+              ) : view === "collection" ? (
                 <CollectionScreen />
               ) : view === "loadout" ? (
                 <LoadoutScreen
