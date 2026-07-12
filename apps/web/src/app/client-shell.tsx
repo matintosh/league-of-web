@@ -499,7 +499,7 @@ export function ClientShell() {
                   onBack={() => { setView("home"); setActiveNavId("home"); }}
                 />
               ) : (
-                <HomeLanding onPlay={() => setView("mode-select")} newsItems={NEWS_ITEMS} />
+                <HomeLanding newsItems={NEWS_ITEMS} />
               )}
             </div>
 
@@ -564,12 +564,10 @@ export function ClientShell() {
 //
 // CTA decision (superseded by issue #139): The PlayButton now lives permanently
 // in TopNavbar (enabled on home, disabled elsewhere). The home content panel
-// no longer has its own PlayButton CTA — the onPlay prop is retained for the
-// hero showcase variants but no longer used in the shell.
+// no longer has its own PlayButton CTA.
 // ---------------------------------------------------------------------------
 
 interface HomeLandingProps {
-  onPlay: () => void;
   newsItems: NewsCardProps[];
 }
 

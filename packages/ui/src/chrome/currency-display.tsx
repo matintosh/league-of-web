@@ -88,7 +88,7 @@ export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false }: C
       <span className="text-blue-2">
         <RpIcon />
       </span>
-      <span className="font-body text-xs tabular-nums text-gold-2">
+      <span className={stacked ? "font-body text-xs tabular-nums text-gold-2" : "font-body text-sm tabular-nums text-gold-1"}>
         {formatAmount(wallet.rp)}
       </span>
       <button
@@ -107,7 +107,7 @@ export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false }: C
       <span className="text-blue-3">
         <BeIcon />
       </span>
-      <span className="font-body text-xs tabular-nums text-gold-2">
+      <span className={stacked ? "font-body text-xs tabular-nums text-gold-2" : "font-body text-sm tabular-nums text-gold-1"}>
         {formatAmount(wallet.blueEssence)}
       </span>
       <button
