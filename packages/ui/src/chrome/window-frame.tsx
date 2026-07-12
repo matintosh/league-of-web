@@ -7,10 +7,14 @@ export interface WindowFrameProps {
   children?: ReactNode;
   /** Optional title text displayed in the title bar centre. */
   title?: string;
+  /** Whether the help (?) control is rendered. Defaults to true. */
+  showHelp?: boolean;
   /** Whether the minimize control is rendered. Defaults to true. */
   showMinimize?: boolean;
   /** Whether the close control is rendered. Defaults to true. */
   showClose?: boolean;
+  /** Called when the user clicks the help button. */
+  onHelp?: () => void;
   /** Called when the user clicks the minimize button. */
   onMinimize?: () => void;
   /** Called when the user clicks the close button. */
@@ -27,8 +31,10 @@ export interface WindowFrameProps {
 export function WindowFrame({
   children,
   title,
+  showHelp = true,
   showMinimize = true,
   showClose = true,
+  onHelp,
   onMinimize,
   onClose,
 }: WindowFrameProps) {
@@ -45,8 +51,34 @@ export function WindowFrame({
           ) : null}
         </div>
 
-        {/* Window controls */}
+        {/* Window controls — order: ? ─ ✕ per reference */}
         <div className="flex items-center gap-1">
+          {showHelp && (
+            <button
+              type="button"
+              aria-label="Help"
+              onClick={onHelp}
+              className="flex h-5 w-5 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+            >
+              {/* Help glyph — ? */}
+              <svg
+                width="8"
+                height="10"
+                viewBox="0 0 8 10"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M1.5 3C1.5 1.619 2.619 0.5 4 0.5C5.381 0.5 6.5 1.619 6.5 3C6.5 4.119 5.8 4.93 4.875 5.4C4.425 5.63 4 6.05 4 6.5V7"
+                  stroke="currentColor"
+                  strokeWidth="1.25"
+                  strokeLinecap="round"
+                />
+                <circle cx="4" cy="9" r="0.75" fill="currentColor" />
+              </svg>
+            </button>
+          )}
           {showMinimize && (
             <button
               type="button"

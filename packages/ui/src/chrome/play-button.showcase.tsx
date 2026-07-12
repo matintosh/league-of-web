@@ -37,6 +37,14 @@ export const playButtonShowcase: ShowcaseEntry = {
       render: () => <PlayButton size="hero" queueing />,
     },
     {
+      name: "Party label (lobby state)",
+      notes:
+        "label='PARTY' + disabled — renders the greyed button with 'PARTY' label as seen in the reference navbar while in a party lobby. " +
+        "label prop overrides the idle slide text without touching the STOP toggle or children slot. " +
+        "Default 'PLAY' label is untouched when label is omitted.",
+      render: () => <PlayButton label="PARTY" disabled emblemSrc="/lol-emblem.png" />,
+    },
+    {
       name: "Disabled",
       notes: "disabled prop — grey-3 stroke, grey-4 fill, glyph and ring greyed out, no glow.",
       render: () => <PlayButton disabled />,
