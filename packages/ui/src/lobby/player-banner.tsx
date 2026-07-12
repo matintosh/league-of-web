@@ -374,7 +374,7 @@ export function PlayerBanner({
         >
           {/* Inner ring — inset 4px */}
           <div
-            className="absolute rounded-full border border-grey-4"
+            className="absolute rounded-full border border-grey-3"
             style={{ inset: 4 }}
           />
           {/* Plus glyph */}
