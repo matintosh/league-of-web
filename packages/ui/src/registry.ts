@@ -9,6 +9,7 @@ import { chatPanelShowcase } from "./chrome/chat-panel.showcase";
 import { crestDividerShowcase } from "./chrome/crest-divider.showcase";
 import { currencyDisplayShowcase } from "./chrome/currency-display.showcase";
 import { filterTabsShowcase } from "./chrome/filter-tabs.showcase";
+import { findingMatchPanelShowcase } from "./chrome/finding-match-panel.showcase";
 import { friendGroupHeaderShowcase } from "./chrome/friend-group-header.showcase";
 import { friendRequestsRowShowcase } from "./chrome/friend-requests-row.showcase";
 import { friendRowShowcase } from "./chrome/friend-row.showcase";
@@ -73,6 +74,7 @@ export const registry: ShowcaseEntry[] = [
   crestDividerShowcase,
   currencyDisplayShowcase,
   filterTabsShowcase,
+  findingMatchPanelShowcase,
   friendGroupHeaderShowcase,
   friendRequestsRowShowcase,
   friendRowShowcase,
