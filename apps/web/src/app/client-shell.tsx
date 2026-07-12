@@ -40,16 +40,17 @@ import { PartyLobbyScreen } from "./party-lobby-screen";
 import { PickScreen } from "./pick-screen";
 import { LoadoutScreen } from "./loadout-screen";
 import { ProfileScreen } from "./profile-screen";
+import { StoreScreen } from "./store-screen";
 
-type View = "home" | "mode-select" | "party-lobby" | "matchmaking" | "collection" | "pick" | "loadout" | "profile";
+type View = "home" | "mode-select" | "party-lobby" | "matchmaking" | "collection" | "pick" | "loadout" | "profile" | "store";
 
 // Nav set matches the reference left→right: Home (live), Profile (dead),
-// Collection (live), Teamfight Tactics (dead).
-// Dead items use aria-disabled and a no-op onClick per the issue spec.
+// Collection (live), Store (live — #171), Teamfight Tactics (dead).
 const NAV_ITEMS: NavItem[] = [
   { id: "home",       label: "Home" },
   { id: "profile",    label: "Profile" },
   { id: "collection", label: "Collection" },
+  { id: "store",      label: "Store" },
   { id: "tft",        label: "Teamfight Tactics", disabled: true },
 ];
 
@@ -388,6 +389,7 @@ export function ClientShell() {
               setActiveNavId(id);
               if (id === "collection") setView("collection");
               else if (id === "profile") setView("profile");
+              else if (id === "store") setView("store");
               else if (id === "home") setView("home");
             }}
             currencySlot={
@@ -501,7 +503,9 @@ export function ClientShell() {
           <div className="flex flex-1 overflow-hidden">
             {/* Screen content — fills all available width (minus rail when present) */}
             <div className="relative flex-1 min-w-0 overflow-hidden">
-              {view === "profile" ? (
+              {view === "store" ? (
+                <StoreScreen />
+              ) : view === "profile" ? (
                 <ProfileScreen />
               ) : view === "collection" ? (
                 <CollectionScreen />
