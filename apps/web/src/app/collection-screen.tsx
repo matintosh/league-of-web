@@ -5,6 +5,7 @@ import {
   SectionHeader,
   TabBar,
   ChampionCard,
+  ChampionDetail,
   StatMedallion,
   SearchInput,
   HextechCheckbox,
@@ -16,6 +17,7 @@ import {
   demoSkins,
   demoChromas,
   loadingArtUrl,
+  warwickDetail,
 } from "@low/fixtures";
 import type { SelectOption } from "@low/ui";
 
@@ -571,6 +573,12 @@ function ChromasTab({
 export function CollectionScreen() {
   const [activeTab, setActiveTab] = useState("champions");
 
+  // Champion detail overlay — null = grid visible; string = champion id with overlay open.
+  // Currently only Warwick has a full ChampionDetail fixture; other champions fall back
+  // to Warwick's data with the correct name/id swapped is not in scope — for now only
+  // Warwick opens the real overlay; other cards log to console as before.
+  const [detailChampId, setDetailChampId] = useState<string | null>(null);
+
   // Skins tab state — hoisted so state survives tab switches
   const [skinSearch, setSkinSearch] = useState("");
   const [showUnowned, setShowUnowned] = useState(true);
@@ -649,7 +657,17 @@ export function CollectionScreen() {
           }}
         />
 
-        {activeTab === "champions" && (
+        {activeTab === "champions" && detailChampId !== null && (
+          /* Champion detail overlay — covers content area; rail/nav stay visible */
+          <div className="absolute inset-0 z-20">
+            <ChampionDetail
+              champion={warwickDetail}
+              onClose={() => setDetailChampId(null)}
+            />
+          </div>
+        )}
+
+        {activeTab === "champions" && detailChampId === null && (
           <div className="h-full overflow-y-auto bg-hextech-black">
             <div className="grid grid-cols-5 gap-4 p-6">
               {demoChampions.map((c) => (
@@ -657,7 +675,7 @@ export function CollectionScreen() {
                   key={c.id}
                   champion={c}
                   artSrc={loadingArtUrl(c.id)}
-                  onSelect={(id) => console.log("selected", id)}
+                  onSelect={(id) => setDetailChampId(id)}
                 />
               ))}
             </div>

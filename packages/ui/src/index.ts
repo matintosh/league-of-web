@@ -70,6 +70,8 @@ export type { WindowFrameProps } from "./chrome/window-frame";
 // collection
 export { ChampionCard } from "./collection/champion-card";
 export type { ChampionCardProps, ChampionCardSize } from "./collection/champion-card";
+export { ChampionDetail } from "./collection/champion-detail";
+export type { ChampionDetailProps, DetailTab } from "./collection/champion-detail";
 export { SkinCard } from "./collection/skin-card";
 export type { SkinCardProps } from "./collection/skin-card";
 export { StatMedallion } from "./collection/stat-medallion";
