@@ -99,9 +99,6 @@ const WING_SRC: Record<WingTier, string> = {
 const BANNER_CLIP =
   "polygon(0% 0%, 100% 0%, 100% 76%, 59% 76%, 50% 91%, 41% 76%, 0% 76%)";
 
-const BANNER_CLIP_INSET =
-  "polygon(0% 0%, 100% 0%, 100% 76%, 59% 76%, 50% 91%, 41% 76%, 0% 76%)";
-
 // ---------------------------------------------------------------------------
 // Crown chip icon — small gold crown SVG inline glyph
 // ---------------------------------------------------------------------------
@@ -408,7 +405,6 @@ export function PlayerBanner({
       {/* HERALDIC SHAPE: gold border shell (outer) + dark fill (inner)    */}
       {/* ---------------------------------------------------------------- */}
       <div
-        aria-hidden={false}
         className={[
           // Outer border shell — gold-4 background, clipped to heraldic polygon
           isSelf ? "bg-gold-4" : "bg-gold-6",
@@ -428,7 +424,7 @@ export function PlayerBanner({
             isSelf ? "bg-blue-7" : "bg-grey-4",
             "pt-3 pb-2 gap-1",
           ].join(" ")}
-          style={{ clipPath: BANNER_CLIP_INSET }}
+          style={{ clipPath: BANNER_CLIP }}
         >
           {/* Chevron texture band at top */}
           <div
