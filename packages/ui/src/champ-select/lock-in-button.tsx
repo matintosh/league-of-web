@@ -104,6 +104,9 @@ export function LockInButton({
       // The actual visual shape is painted by the inner shell + fill layers.
       className={[
         "group relative flex w-full items-center justify-center",
+        // Outer glow per the reference close-up — drop-shadow (not box-shadow:
+        // it must follow the trapezoid silhouette of the clipped layers)
+        !disabled && "[filter:drop-shadow(0_0_8px_color-mix(in_srgb,var(--color-cyan-4)_55%,transparent))]",
         // Vertical padding drives height — 12px top/bottom = ~44px total
         "py-3",
         // Focus ring on the outer container (keyboard a11y)
@@ -181,7 +184,13 @@ export function LockInButton({
       {/* Dark on bright enabled; grey on dark disabled.                        */}
       {/* ------------------------------------------------------------------ */}
       <span
-        className="relative z-10 font-display text-sm tracking-[0.2em] uppercase select-none"
+        className={[
+          "relative z-10 font-display text-sm tracking-[0.2em] uppercase select-none",
+          // Press: text dims to grey-1 over the darker press gradient (JSDoc contract)
+          !disabled && "group-active:!text-grey-1",
+        ]
+          .filter(Boolean)
+          .join(" ")}
         style={{
           color: textColor,
           transition: "color 150ms",
