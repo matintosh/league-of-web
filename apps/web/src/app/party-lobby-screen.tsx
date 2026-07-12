@@ -34,11 +34,12 @@ const LOBBY_MESSAGES: ChatMessage[] = [
 // ---------------------------------------------------------------------------
 
 interface InvitedEntry {
+  id: string;
   name: string;
 }
 
 const INVITED_FIXTURE: InvitedEntry[] = [
-  { name: demoSummoner.gameName },
+  { id: "invited-1", name: demoSummoner.gameName },
 ];
 
 // ---------------------------------------------------------------------------
@@ -151,6 +152,11 @@ export interface PartyLobbyScreenProps {
    */
   partyOpen: boolean;
   onPartyToggle: (open: boolean) => void;
+  /**
+   * Called when the "Change Mode" button in the lobby header is clicked.
+   * Defaults to onBack behavior when omitted — navigates to mode-select.
+   */
+  onChangeMode?: () => void;
 }
 
 /**
@@ -176,7 +182,7 @@ export interface PartyLobbyScreenProps {
  * Default: SHOW_DEMO_PARTY = false (solo lobby). Set to true at compile-time
  * for full composition screenshots. No runtime toggle UI is exposed.
  */
-export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle }: PartyLobbyScreenProps) {
+export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle, onChangeMode }: PartyLobbyScreenProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(LOBBY_MESSAGES);
   const [inviteTab, setInviteTab] = useState<"suggested" | "invited">("invited");
 
@@ -185,6 +191,13 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
       ...prev,
       { id: String(Date.now()), author: demoSummoner.gameName, text },
     ]);
+  }, []);
+
+  const handleTabKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault();
+      setInviteTab(prev => prev === "suggested" ? "invited" : "suggested");
+    }
   }, []);
 
   // Banner slot arrays (L2, L1 | SELF | R1, R2)
@@ -207,7 +220,7 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
         queueCount={30}
         crestSrc={gameModeMapUrl("sr")}
         onBack={onBack}
-        onChangeMode={onBack}
+        onChangeMode={onChangeMode ?? onBack}
         partyOpen={partyOpen}
         onPartyToggle={onPartyToggle}
       />
@@ -407,11 +420,15 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
             role="tablist"
             aria-label="Invite options"
             className="flex shrink-0 border-b border-gold-5"
+            onKeyDown={handleTabKeyDown}
           >
             <button
               type="button"
               role="tab"
+              id="tab-suggested"
+              aria-controls="panel-suggested"
               aria-selected={inviteTab === "suggested"}
+              tabIndex={inviteTab === "suggested" ? 0 : -1}
               onClick={() => setInviteTab("suggested")}
               className={[
                 "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider cursor-pointer",
@@ -426,7 +443,10 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
             <button
               type="button"
               role="tab"
+              id="tab-invited"
+              aria-controls="panel-invited"
               aria-selected={inviteTab === "invited"}
+              tabIndex={inviteTab === "invited" ? 0 : -1}
               onClick={() => setInviteTab("invited")}
               className={[
                 "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider cursor-pointer",
@@ -441,13 +461,18 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
           </div>
 
           {/* Panel body */}
-          <div className="flex flex-1 flex-col bg-blue-7 bg-opacity-30 overflow-y-auto">
+          <div
+            id={`panel-${inviteTab}`}
+            role="tabpanel"
+            aria-labelledby={`tab-${inviteTab}`}
+            className="flex flex-1 flex-col bg-blue-7/30 overflow-y-auto"
+          >
             {inviteTab === "invited" ? (
               INVITED_FIXTURE.length > 0 ? (
                 <ul className="flex flex-col py-1">
                   {INVITED_FIXTURE.map((entry) => (
                     <li
-                      key={entry.name}
+                      key={entry.id}
                       className="flex items-center gap-2 px-3 py-1.5"
                     >
                       {/* Checkmark */}

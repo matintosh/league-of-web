@@ -52,6 +52,11 @@ export interface PlayerBannerProps {
    * Represents an unfilled lobby slot — dead visual, no invite affordance.
    */
   empty?: boolean;
+  /**
+   * Summoner level shown in the badge overlapping the medallion bottom ring.
+   * Defaults to 15 when omitted (preserves current visual appearance).
+   */
+  level?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -351,6 +356,7 @@ export function PlayerBanner({
   autofillProtected = false,
   children,
   empty = false,
+  level,
 }: PlayerBannerProps) {
   const uid = useId();
   const showCrown = crownChip ?? isSelf;
@@ -402,7 +408,7 @@ export function PlayerBanner({
       {/* ---------------------------------------------------------------- */}
       <div className="flex items-center gap-1.5 pb-1 min-w-0">
         {showCrown && (
-          <span className="shrink-0 text-gold-2">
+          <span className="shrink-0 text-gold-2" aria-label="Captain">
             <CrownGlyph />
           </span>
         )}
@@ -487,7 +493,7 @@ export function PlayerBanner({
                 style={{ minWidth: 22, textAlign: "center" }}
               >
                 <span className="font-body text-[9px] leading-none text-grey-1 font-semibold">
-                  15
+                  {level ?? 15}
                 </span>
               </div>
             </div>
@@ -507,7 +513,7 @@ export function PlayerBanner({
 
           {/* Children slot */}
           {children && (
-            <div className="flex w-full items-center justify-center px-1 mt-auto">
+            <div className="flex w-full items-center justify-center px-1 mt-2">
               {children}
             </div>
           )}
