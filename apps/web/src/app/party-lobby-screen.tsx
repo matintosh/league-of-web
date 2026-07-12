@@ -29,6 +29,20 @@ const LOBBY_MESSAGES: ChatMessage[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Fixture: invited players list — reference shows "INVITED (1)" tab active
+// with a checkmark + one player name.
+// ---------------------------------------------------------------------------
+
+interface InvitedEntry {
+  id: string;
+  name: string;
+}
+
+const INVITED_FIXTURE: InvitedEntry[] = [
+  { id: "invited-1", name: demoSummoner.gameName },
+];
+
+// ---------------------------------------------------------------------------
 // Demo party — DEFAULT = empty banners (solo lobby).
 //
 // The real client shows empty slots when the player is solo, which is the
@@ -138,23 +152,29 @@ export interface PartyLobbyScreenProps {
    */
   partyOpen: boolean;
   onPartyToggle: (open: boolean) => void;
+  /**
+   * Called when the "Change Mode" button in the lobby header is clicked.
+   * Defaults to onBack behavior when omitted — navigates to mode-select.
+   */
+  onChangeMode?: () => void;
 }
 
 /**
  * PartyLobbyScreen — the hi-fi pre-game party lobby phase.
  *
  * Composition zones:
- * - LobbyHeader (top): "SR · Normal Draft", SR map crest, back → mode-select,
- *   party-open pill toggle (page-level state).
+ * - LobbyHeader (top): segmented "Intro ◆ Blind ◆ Summoner's Rift 5v5" title + (30) chip +
+ *   ward glyph + "Change Mode" secondary button → mode-select. SR map crest, back chevron.
+ *   Party-open pill toggle (page-level state).
  * - Center: 5 banner slots (L2 · L1 · SELF · R1 · R2).
- *   Self: isSelf=true, gold wings, crown, autofill chip, RoleSlotRow md
- *   (2 picked roles + 1 empty). Flanking 4: empty by default (SHOW_DEMO_PARTY=false).
+ *   Self: isSelf=true, heraldic shape, gold wings, crown+name above, level badge, autofill chip,
+ *   RoleSlotRow md (2 picked roles + 1 empty). Flanking 4: empty + circles (SHOW_DEMO_PARTY=false).
  * - Bottom bar (height 120):
  *   Left (280px): ChatPanel with lobby fixture messages, input appends.
  *   Center (flex-1): ✕ cancel circle → mode-select; FIND MATCH (LockInButton, 200px
  *   wide); 2 dead circular icon buttons (role shield + ward eye glyphs, aria-disabled).
- *   Right (200px): "Suggested | Invited" tab strip (Suggested active, Invited dead)
- *   over an empty dark panel.
+ *   Right (200px): "Suggested | Invited (1)" tab strip. Invited is default-active with a
+ *   checkmark + demoSummoner.gameName fixture row. Suggested shows "No suggestions".
  *
  * Role strategy: self fixture roles are mid + support. Queue entry uses these
  * two roles. Popover picker is out of scope — documented here and in issue #155.
@@ -162,15 +182,22 @@ export interface PartyLobbyScreenProps {
  * Default: SHOW_DEMO_PARTY = false (solo lobby). Set to true at compile-time
  * for full composition screenshots. No runtime toggle UI is exposed.
  */
-export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle }: PartyLobbyScreenProps) {
+export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle, onChangeMode }: PartyLobbyScreenProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(LOBBY_MESSAGES);
-  const [inviteTab, setInviteTab] = useState<"suggested" | "invited">("suggested");
+  const [inviteTab, setInviteTab] = useState<"suggested" | "invited">("invited");
 
   const handleSend = useCallback((text: string) => {
     setMessages((prev) => [
       ...prev,
       { id: String(Date.now()), author: demoSummoner.gameName, text },
     ]);
+  }, []);
+
+  const handleTabKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault();
+      setInviteTab(prev => prev === "suggested" ? "invited" : "suggested");
+    }
   }, []);
 
   // Banner slot arrays (L2, L1 | SELF | R1, R2)
@@ -188,9 +215,12 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
       {/* LobbyHeader                                                          */}
       {/* ------------------------------------------------------------------ */}
       <LobbyHeader
-        title="SR · Normal Draft"
+        title="Summoner's Rift · Normal"
+        segments={["Intro", "Blind", "Summoner's Rift 5v5"]}
+        queueCount={30}
         crestSrc={gameModeMapUrl("sr")}
         onBack={onBack}
+        onChangeMode={onChangeMode ?? onBack}
         partyOpen={partyOpen}
         onPartyToggle={onPartyToggle}
       />
@@ -390,15 +420,19 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
             role="tablist"
             aria-label="Invite options"
             className="flex shrink-0 border-b border-gold-5"
+            onKeyDown={handleTabKeyDown}
           >
             <button
               type="button"
               role="tab"
+              id="tab-suggested"
+              aria-controls="panel-suggested"
               aria-selected={inviteTab === "suggested"}
+              tabIndex={inviteTab === "suggested" ? 0 : -1}
               onClick={() => setInviteTab("suggested")}
               className={[
-                "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider",
-                "border-b-2 transition-colors duration-150 cursor-pointer",
+                "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider cursor-pointer",
+                "border-b-2 transition-colors duration-150",
                 inviteTab === "suggested"
                   ? "border-gold-4 text-gold-1"
                   : "border-transparent text-grey-2 hover:text-grey-1",
@@ -409,26 +443,76 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
             <button
               type="button"
               role="tab"
+              id="tab-invited"
+              aria-controls="panel-invited"
               aria-selected={inviteTab === "invited"}
-              aria-disabled="true"
-              disabled
+              tabIndex={inviteTab === "invited" ? 0 : -1}
+              onClick={() => setInviteTab("invited")}
               className={[
-                "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider",
-                "border-b-2 border-transparent text-grey-3",
-                "cursor-default opacity-50",
+                "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider cursor-pointer",
+                "border-b-2 transition-colors duration-150",
+                inviteTab === "invited"
+                  ? "border-gold-4 text-gold-1"
+                  : "border-transparent text-grey-2 hover:text-grey-1",
               ].join(" ")}
             >
-              Invited
+              {`Invited (${INVITED_FIXTURE.length})`}
             </button>
           </div>
 
-          {/* Empty dark list body */}
-          <div className="flex flex-1 items-center justify-center bg-blue-7 bg-opacity-30">
-            <span className="font-body text-xs text-grey-3 px-2 text-center">
-              {inviteTab === "suggested"
-                ? "No suggestions"
-                : "No pending invites"}
-            </span>
+          {/* Panel body */}
+          <div
+            id={`panel-${inviteTab}`}
+            role="tabpanel"
+            aria-labelledby={`tab-${inviteTab}`}
+            className="flex flex-1 flex-col bg-blue-7/30 overflow-y-auto"
+          >
+            {inviteTab === "invited" ? (
+              INVITED_FIXTURE.length > 0 ? (
+                <ul className="flex flex-col py-1">
+                  {INVITED_FIXTURE.map((entry) => (
+                    <li
+                      key={entry.id}
+                      className="flex items-center gap-2 px-3 py-1.5"
+                    >
+                      {/* Checkmark */}
+                      <svg
+                        aria-hidden="true"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="shrink-0 text-gold-2"
+                      >
+                        <path
+                          d="M2 6l3 3 5-5"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span className="truncate font-body text-xs text-grey-1">
+                        {entry.name}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="flex flex-1 items-center justify-center">
+                  <span className="font-body text-xs text-grey-3 px-2 text-center">
+                    No pending invites
+                  </span>
+                </div>
+              )
+            ) : (
+              <div className="flex flex-1 items-center justify-center">
+                <span className="font-body text-xs text-grey-3 px-2 text-center">
+                  No suggestions
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>

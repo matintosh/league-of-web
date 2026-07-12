@@ -6,6 +6,7 @@ import {
   PlayerBannerWingTiersDemo,
   PlayerBannerTruncationDemo,
   PlayerBannerAutofillDemo,
+  PlayerBannerHeraldShapeDemo,
 } from "./player-banner.demo";
 
 export const playerBannerShowcase: ShowcaseEntry = {
@@ -13,42 +14,48 @@ export const playerBannerShowcase: ShowcaseEntry = {
   name: "Player Banner",
   area: "lobby",
   description:
-    "Vertical party lobby banner card. Center (self): larger scale + gold wings + crown chip + autofill chip. Flanks (teammates): narrower, dimmed. Empty variant for unfilled slots. Wing art from CommunityDragon ranked-emblem PNGs.",
+    "Vertical heraldic banner card for the pre-game lobby. Pointed double-V bottom with gold trim via clip-path shell technique. Crown+name above the shape. Self: larger scale, gold wings, level badge, autofill chip. Empty: large grey + circle (~90px). Wing art from CommunityDragon ranked-emblem PNGs.",
   variants: [
+    {
+      name: "Heraldic shape — self + teammate + empty circle",
+      notes:
+        "Shows the pointed bottom silhouette on self (gold) and teammate (teal) banners with gold trim, crown+name floating above, level badge on medallion, and the new + circle empty slot side by side.",
+      render: () => <PlayerBannerHeraldShapeDemo />,
+    },
     {
       name: "Self banner (gold wings, autofill protected)",
       notes:
-        "isSelf=true: wider panel, gold wings, crown chip, autofill-protected chip at foot, bright gold ring. Contains a RoleSlotRow (mid + support).",
+        "isSelf=true: wider panel, gold wings, crown glyph + name above shape, heraldic silhouette, level badge, autofill-protected chip at foot. RoleSlotRow (mid + support).",
       render: () => <PlayerBannerSelfDemo />,
     },
     {
       name: "Full party (5 banners)",
       notes:
-        "All five banner cards side by side: self (center, gold) + four teammates in teal, green, blue, and bronze wings. Matches the reference lobby screenshot layout.",
+        "All five banner cards side by side: self (center, gold) + four teammates in teal, green, blue, and bronze wings.",
       render: () => <PlayerBannerFullPartyDemo />,
     },
     {
-      name: "Empty slots",
+      name: "Empty slots (+ circles)",
       notes:
-        "empty=true: dark panel, no avatar or name, opacity-dimmed. Represents unfilled lobby slots with no invite affordance (dead visual per spec).",
+        "empty=true: 90px grey double-ring + circle. Matches solo lobby reference showing 4 large circular empty slots.",
       render: () => <PlayerBannerEmptyDemo />,
     },
     {
       name: "All WingTiers",
       notes:
-        "Every WingTier value side by side: default (iron), bronze, gold, teal (platinum), green (emerald), blue (diamond). Real CommunityDragon ranked-emblem wing PNGs.",
+        "Every WingTier: default (iron), bronze, gold, teal (platinum), green (emerald), blue (diamond). All use heraldic shape.",
       render: () => <PlayerBannerWingTiersDemo />,
     },
     {
       name: "Long name + title truncation",
       notes:
-        "Extremely long summoner name and title — both truncated via CSS. Shows both teammate and self banner truncation behaviour.",
+        "Extremely long summoner name and title. Name truncates in above-banner row; title truncates inside the shape.",
       render: () => <PlayerBannerTruncationDemo />,
     },
     {
       name: "Autofill chip (non-self)",
       notes:
-        "autofillProtected=true on a teammate banner (no isSelf). Shield glyph + text chip at banner foot.",
+        "autofillProtected=true on a teammate banner. Shield glyph + text chip at banner foot.",
       render: () => <PlayerBannerAutofillDemo />,
     },
   ],

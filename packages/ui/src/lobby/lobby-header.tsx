@@ -1,5 +1,7 @@
 "use client";
 
+import { HextechButton } from "../chrome/hextech-button";
+
 // ---------------------------------------------------------------------------
 // LobbyHeader
 // ---------------------------------------------------------------------------
@@ -10,7 +12,8 @@
 // ---------------------------------------------------------------------------
 
 export interface LobbyHeaderProps {
-  /** Queue / game mode title, e.g. "SR · Normal Draft". CSS uppercase applied. */
+  /** Queue / game mode title, e.g. "SR · Normal Draft". CSS uppercase applied.
+   *  When `segments` is provided, this prop is used as the aria-label fallback only. */
   title: string;
   /**
    * Resolved URL for the small square queue crest image (from gameModeMapUrl).
@@ -24,6 +27,23 @@ export interface LobbyHeaderProps {
    * Optional; button renders but is visually de-emphasised when absent.
    */
   onInfo?: () => void;
+  /**
+   * Multi-segment title tokens — rendered with ◆ diamond separators between them.
+   * When provided, replaces the plain `title` text in the header.
+   * Example: ["Intro", "Blind", "Summoner's Rift 5v5"]
+   * → renders "INTRO ◆ BLIND ◆ SUMMONER'S RIFT 5V5"
+   */
+  segments?: string[];
+  /**
+   * (30) chip count — dead decoration matching the reference queue chip.
+   * aria-hidden. Rendered inline after the title/segments.
+   */
+  queueCount?: number;
+  /**
+   * Called when the "CHANGE MODE" button is clicked.
+   * When omitted, the button is not rendered.
+   */
+  onChangeMode?: () => void;
   /** Whether the party panel is currently open (controls the pill's aria-pressed). */
   partyOpen: boolean;
   /**
@@ -125,6 +145,44 @@ function PersonIcon() {
   );
 }
 
+/** ◆ diamond separator between title segments. 8×8. */
+function DiamondSep() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="8"
+      height="8"
+      viewBox="0 0 8 8"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M4 1L7 4L4 7L1 4Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Ward / eye glyph — dead decoration, aria-hidden. 16×16. */
+function WardGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M8 3C4 3 1.5 8 1.5 8s2.5 5 6.5 5 6.5-5 6.5-5-2.5-5-6.5-5Z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // LobbyHeader
 // ---------------------------------------------------------------------------
@@ -147,6 +205,9 @@ export function LobbyHeader({
   crestSrc,
   onBack,
   onInfo,
+  segments,
+  queueCount,
+  onChangeMode,
   partyOpen,
   onPartyToggle,
 }: LobbyHeaderProps) {
@@ -181,10 +242,40 @@ export function LobbyHeader({
           />
         )}
 
-        {/* Queue title — display font, CSS uppercase, truncated */}
-        <span className="min-w-0 truncate font-display text-sm uppercase tracking-widest text-gold-1">
-          {title}
-        </span>
+        {/* Queue title — either segmented or plain string */}
+        {segments && segments.length > 0 ? (
+          <span className="flex min-w-0 shrink items-center gap-1 overflow-hidden">
+            {segments.map((seg, i) => (
+              <span key={i} className="flex items-center gap-1">
+                {i > 0 && (
+                  <span className="shrink-0 text-gold-4 opacity-70">
+                    <DiamondSep />
+                  </span>
+                )}
+                <span className="font-display text-sm uppercase tracking-widest text-gold-1 whitespace-nowrap">
+                  {seg}
+                </span>
+              </span>
+            ))}
+            {/* (30) chip — dead decoration */}
+            {queueCount !== undefined && (
+              <span
+                aria-hidden="true"
+                className="shrink-0 rounded border border-grey-3 bg-grey-5 px-1 font-body text-[10px] leading-none text-grey-1 ml-1"
+              >
+                {queueCount}
+              </span>
+            )}
+            {/* Ward glyph — dead decoration */}
+            <span aria-hidden="true" className="shrink-0 text-grey-3 ml-0.5 opacity-60">
+              <WardGlyph />
+            </span>
+          </span>
+        ) : (
+          <span className="min-w-0 truncate font-display text-sm uppercase tracking-widest text-gold-1">
+            {title}
+          </span>
+        )}
 
         {/* Info circle button */}
         <button
@@ -196,6 +287,19 @@ export function LobbyHeader({
           <InfoCircle />
         </button>
       </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Center: Change Mode button (when onChangeMode is provided)          */}
+      {/* ------------------------------------------------------------------ */}
+      {onChangeMode && (
+        <HextechButton
+          variant="secondary"
+          onClick={onChangeMode}
+          className="shrink-0"
+        >
+          Change Mode
+        </HextechButton>
+      )}
 
       {/* ------------------------------------------------------------------ */}
       {/* Right cluster: party-visibility pill toggle                         */}

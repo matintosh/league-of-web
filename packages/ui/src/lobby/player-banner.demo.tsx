@@ -56,7 +56,7 @@ export function PlayerBannerSelfDemo() {
 
 export function PlayerBannerFullPartyDemo() {
   return (
-    <div className="flex items-end justify-center gap-2 p-8 bg-blue-6">
+    <div className="flex items-center justify-center gap-2 p-8 bg-blue-6">
       <PlayerBanner
         name="JinxFan99"
         title="The Loose Cannon"
@@ -108,21 +108,45 @@ export function PlayerBannerFullPartyDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// Empty banner
+// Heraldic shape — self + teammate + empty circle
+// ---------------------------------------------------------------------------
+
+export function PlayerBannerHeraldShapeDemo() {
+  return (
+    <div className="flex items-end justify-center gap-6 p-8 bg-blue-6">
+      <PlayerBanner
+        name="cherwood"
+        avatarSrc={AVATAR_1}
+        wingTier="gold"
+        isSelf
+        crownChip
+        autofillProtected
+      >
+        <RoleSlotRow
+          slots={[{ role: "mid" }, { role: "support" }]}
+          iconSrcFor={roleIconSrc}
+        />
+      </PlayerBanner>
+      <PlayerBanner
+        name="Teammate"
+        avatarSrc={AVATAR_2}
+        wingTier="teal"
+      />
+      <PlayerBanner name="" avatarSrc="" empty />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Empty banner (+ circles)
 // ---------------------------------------------------------------------------
 
 export function PlayerBannerEmptyDemo() {
   return (
-    <div className="flex items-end justify-center gap-2 p-8 bg-blue-6">
-      <PlayerBanner
-        name="TristanaPrey"
-        title="Dark Child"
-        avatarSrc={AVATAR_1}
-        wingTier="gold"
-        isSelf
-      />
-      <PlayerBanner name="x" avatarSrc="" empty />
-      <PlayerBanner name="x" avatarSrc="" empty />
+    <div className="flex items-center justify-center gap-4 p-8 bg-blue-6">
+      <PlayerBanner name="" avatarSrc="" empty />
+      <PlayerBanner name="" avatarSrc="" empty />
+      <PlayerBanner name="" avatarSrc="" empty />
     </div>
   );
 }
