@@ -21,7 +21,9 @@ import { modalFrameShowcase } from "./chrome/modal-frame.showcase";
 import { newsCardShowcase } from "./chrome/news-card.showcase";
 import { playButtonShowcase } from "./chrome/play-button.showcase";
 import { playerHovercardShowcase } from "./chrome/player-hovercard.showcase";
+import { profileBannerShowcase } from "./chrome/profile-banner.showcase";
 import { profileChipShowcase } from "./chrome/profile-chip.showcase";
+import { rankedQueuePanelShowcase } from "./chrome/ranked-queue-panel.showcase";
 import { searchInputShowcase } from "./chrome/search-input.showcase";
 import { sectionHeaderShowcase } from "./chrome/section-header.showcase";
 import { settingsModalShowcase } from "./chrome/settings-modal.showcase";
@@ -77,7 +79,9 @@ export const registry: ShowcaseEntry[] = [
   newsCardShowcase,
   playButtonShowcase,
   playerHovercardShowcase,
+  profileBannerShowcase,
   profileChipShowcase,
+  rankedQueuePanelShowcase,
   searchInputShowcase,
   sectionHeaderShowcase,
   settingsModalShowcase,
