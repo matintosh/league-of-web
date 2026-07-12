@@ -106,7 +106,7 @@ export function FindingMatchPanel({
       <div
         className="relative flex items-center"
         style={{
-          background: "rgba(1, 10, 19, 0.6)",
+          background: "color-mix(in srgb, var(--color-hextech-black) 60%, transparent)",
           minHeight: 52,
           paddingLeft: crestSrc ? 48 : 12,
           paddingRight: 12,
