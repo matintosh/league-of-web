@@ -5,6 +5,8 @@ import {
   LobbyHeaderPartyOpenDemo,
   LobbyHeaderInteractiveDemo,
   LobbyHeaderLongTitleDemo,
+  LobbyHeaderSegmentedDemo,
+  LobbyHeaderSegmentsNoCMDemo,
 } from "./lobby-header.demo";
 
 export const lobbyHeaderShowcase: ShowcaseEntry = {
@@ -43,6 +45,18 @@ export const lobbyHeaderShowcase: ShowcaseEntry = {
       notes:
         "Very long title string — must truncate with ellipsis; chip width must not overflow the container.",
       render: () => <LobbyHeaderLongTitleDemo />,
+    },
+    {
+      name: "Segmented title + Change Mode + (30) chip",
+      notes:
+        "segments prop: ['Intro', 'Blind', \"Summoner's Rift 5v5\"] renders with ◆ diamond separators. (30) chip + ward glyph dead decorations. Change Mode secondary button to right of title.",
+      render: () => <LobbyHeaderSegmentedDemo />,
+    },
+    {
+      name: "Segmented title (no Change Mode)",
+      notes:
+        "segments without onChangeMode — button absent. Verifies additive prop is truly optional.",
+      render: () => <LobbyHeaderSegmentsNoCMDemo />,
     },
   ],
 };

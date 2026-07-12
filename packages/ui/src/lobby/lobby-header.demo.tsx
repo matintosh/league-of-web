@@ -83,3 +83,38 @@ export function LobbyHeaderLongTitleDemo() {
     </div>
   );
 }
+
+/** Segmented title with Change Mode button. */
+export function LobbyHeaderSegmentedDemo() {
+  return (
+    <div className="w-full max-w-xl bg-hextech-black">
+      <LobbyHeader
+        title="Summoner's Rift · Normal"
+        segments={["Intro", "Blind", "Summoner's Rift 5v5"]}
+        queueCount={30}
+        crestSrc={gameModeMapUrl("sr")}
+        onBack={() => console.log("back")}
+        onInfo={() => console.log("info")}
+        onChangeMode={() => console.log("change mode")}
+        partyOpen={false}
+        onPartyToggle={() => {}}
+      />
+    </div>
+  );
+}
+
+/** Segmented title — no Change Mode button. */
+export function LobbyHeaderSegmentsNoCMDemo() {
+  return (
+    <div className="w-full max-w-xl bg-hextech-black">
+      <LobbyHeader
+        title="Summoner's Rift · Normal"
+        segments={["Blind", "Summoner's Rift 5v5"]}
+        crestSrc={gameModeMapUrl("sr")}
+        onBack={() => console.log("back")}
+        partyOpen={false}
+        onPartyToggle={() => {}}
+      />
+    </div>
+  );
+}
