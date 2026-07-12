@@ -5,3 +5,4 @@ export * from "./summoner";
 export * from "./champions";
 export * from "./champion-detail";
 export * from "./emotes";
+export * from "./store";

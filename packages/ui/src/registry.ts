@@ -55,6 +55,9 @@ import { circleSubmitButtonShowcase } from "./login/circle-submit-button.showcas
 import { loginCheckboxShowcase } from "./login/login-checkbox.showcase";
 import { loginTextInputShowcase } from "./login/login-text-input.showcase";
 import { socialLoginButtonsShowcase } from "./login/social-login-buttons.showcase";
+import { featuredTabShowcase } from "./store/featured-tab.showcase";
+import { storeItemTileShowcase } from "./store/store-item-tile.showcase";
+import { storeSubNavBarShowcase } from "./store/store-sub-nav-bar.showcase";
 
 /**
  * Every component registers its showcase entry here.
@@ -122,4 +125,8 @@ export const registry: ShowcaseEntry[] = [
   queueTypeListShowcase,
   roleSelectorShowcase,
   roleSlotRowShowcase,
+  // store — alphabetical: FeaturedTab < StoreItemTile < StoreSubNavBar
+  featuredTabShowcase,
+  storeItemTileShowcase,
+  storeSubNavBarShowcase,
 ];
