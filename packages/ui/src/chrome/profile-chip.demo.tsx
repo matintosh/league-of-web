@@ -81,3 +81,17 @@ export function ProfileChipLongNameDemo() {
     </div>
   );
 }
+
+export function ProfileChipStatusTextDemo() {
+  return (
+    <div className="w-[200px]">
+      <ProfileChip
+        summoner={demoSummoner}
+        level={demoSummoner.level}
+        profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+        onNotifications={() => console.log("notifications")}
+        statusText="Creating Ranked Solo/Duo Game..."
+      />
+    </div>
+  );
+}

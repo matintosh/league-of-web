@@ -96,6 +96,8 @@ export type { SocialLoginButtonsProps } from "./login/social-login-buttons";
 // lobby
 export { GameModeCard } from "./lobby/game-mode-card";
 export type { GameModeCardProps } from "./lobby/game-mode-card";
+export { LobbyHeader } from "./lobby/lobby-header";
+export type { LobbyHeaderProps } from "./lobby/lobby-header";
 export { LobbyPlayerCard } from "./lobby/lobby-player-card";
 export type { LobbyPlayerCardProps } from "./lobby/lobby-player-card";
 export { MatchFoundModal } from "./lobby/match-found-modal";

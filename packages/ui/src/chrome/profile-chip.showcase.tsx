@@ -5,6 +5,7 @@ import {
   ProfileChipInGameDemo,
   ProfileChipOfflineDemo,
   ProfileChipLongNameDemo,
+  ProfileChipStatusTextDemo,
 } from "./profile-chip.demo";
 
 export const profileChipShowcase: ShowcaseEntry = {
@@ -40,6 +41,12 @@ export const profileChipShowcase: ShowcaseEntry = {
       notes:
         "Very long gameName in a 200px container — must truncate with ellipsis.",
       render: () => <ProfileChipLongNameDemo />,
+    },
+    {
+      name: "Custom statusText (truncate)",
+      notes:
+        "statusText prop replaces the availability label with a custom string. Dot color still reflects availability (online=green). Long text truncates within the chip width — chip width must not grow.",
+      render: () => <ProfileChipStatusTextDemo />,
     },
   ],
 };

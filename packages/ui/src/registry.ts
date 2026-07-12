@@ -42,6 +42,7 @@ import { emoteWheelShowcase } from "./collection/emote-wheel.showcase";
 import { skinCardShowcase } from "./collection/skin-card.showcase";
 import { statMedallionShowcase } from "./collection/stat-medallion.showcase";
 import { gameModeCardShowcase } from "./lobby/game-mode-card.showcase";
+import { lobbyHeaderShowcase } from "./lobby/lobby-header.showcase";
 import { lobbyPlayerCardShowcase } from "./lobby/lobby-player-card.showcase";
 import { matchFoundModalShowcase } from "./lobby/match-found-modal.showcase";
 import { queueStatusShowcase } from "./lobby/queue-status.showcase";
@@ -107,8 +108,9 @@ export const registry: ShowcaseEntry[] = [
   emoteWheelShowcase,
   skinCardShowcase,
   statMedallionShowcase,
-  // lobby
+  // lobby — alphabetical: GameModeCard < LobbyHeader < LobbyPlayerCard ...
   gameModeCardShowcase,
+  lobbyHeaderShowcase,
   lobbyPlayerCardShowcase,
   matchFoundModalShowcase,
   queueStatusShowcase,

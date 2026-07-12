@@ -12,6 +12,13 @@ export interface ProfileChipProps {
   profileIconSrc: string;
   /** Called when the bell icon is clicked. Optional; no-op when absent. */
   onNotifications?: () => void;
+  /**
+   * Optional override for the availability label text. When provided, replaces
+   * the default availability label (e.g. "Online") with this string, truncated
+   * with ellipsis if it overflows the chip width. The status dot color continues
+   * to reflect summoner.availability. Omit to preserve current rendering.
+   */
+  statusText?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -191,11 +198,15 @@ export function ProfileChip({
   level,
   profileIconSrc,
   onNotifications,
+  statusText,
 }: ProfileChipProps) {
   const uid = useId();
   const { gameName, availability } = summoner;
   const dotClass = availabilityDot[availability];
   const statusLabel = availabilityLabel[availability];
+  // When statusText is provided it replaces the label; the dot aria-label still
+  // names the true availability state so screen readers get accurate status.
+  const displayLabel = statusText ?? statusLabel;
 
   const AVATAR_SIZE = 48;
   // Inner clip radius matches OrnateRing's clipR
@@ -243,14 +254,14 @@ export function ProfileChip({
         <p className="truncate font-body text-sm leading-tight text-gold-2">
           {gameName}
         </p>
-        {/* Availability row: status dot + label */}
-        <div className="mt-0.5 flex items-center gap-1.5">
+        {/* Availability row: status dot + label (or custom statusText) */}
+        <div className="mt-0.5 flex min-w-0 items-center gap-1.5">
           <span
             aria-label={statusLabel}
             className={`inline-block h-2 w-2 shrink-0 rounded-full transition-colors duration-150 ${dotClass}`}
           />
-          <span className="font-body text-xs leading-tight text-grey-1">
-            {statusLabel}
+          <span className="min-w-0 truncate font-body text-xs leading-tight text-grey-1">
+            {displayLabel}
           </span>
         </div>
       </div>
