@@ -84,17 +84,25 @@ export const demoEmotes: Emote[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Default wheel loadout — pre-populated for showcase / first-load
+// Default wheel loadout — pre-populated for showcase / first-load.
+// Values are image URLs (EmoteWheel.slots renders them directly as <image>
+// hrefs); resolved from demoEmotes by id so the two stay in sync.
 // ---------------------------------------------------------------------------
 
+const emoteSrc = (id: string): string => {
+  const e = demoEmotes.find((x) => x.id === id);
+  if (!e) throw new Error(`defaultEmoteSlots references unknown emote id "${id}"`);
+  return e.imageSrc;
+};
+
 export const defaultEmoteSlots: Record<SlotId, string | null> = {
-  "center":      "thumbs-up",
-  "wheel-n":     "pog",
-  "wheel-e":     "gg",
-  "wheel-s":     "100",
-  "wheel-w":     "clap",
-  "start":       "ez",
-  "first-blood": "rip",
+  "center":      emoteSrc("thumbs-up"),
+  "wheel-n":     emoteSrc("pog"),
+  "wheel-e":     emoteSrc("gg"),
+  "wheel-s":     emoteSrc("100"),
+  "wheel-w":     emoteSrc("clap"),
+  "start":       emoteSrc("ez"),
+  "first-blood": emoteSrc("rip"),
   "ace":         null,
   "victory":     null,
 };

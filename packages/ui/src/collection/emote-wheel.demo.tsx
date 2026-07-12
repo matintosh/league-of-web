@@ -87,9 +87,10 @@ export function EmoteWheelAssignDemo() {
       setSelectedSlot(undefined);
       return;
     }
-    setSelectedSlot(slot);
 
-    // If an emote is already selected in inventory, assign it immediately
+    // If an emote is already selected in inventory, assign it immediately —
+    // early return so the slot is never transiently marked selected
+    // (mirrors the collection screen's logic).
     if (selectedEmoteId) {
       const emote = demoEmotes.find((e) => e.id === selectedEmoteId);
       if (emote?.owned) {
@@ -97,7 +98,10 @@ export function EmoteWheelAssignDemo() {
         setSelectedSlot(undefined);
         setSelectedEmoteId(undefined);
       }
+      return;
     }
+
+    setSelectedSlot(slot);
   }
 
   function handleEmoteSelect(emoteId: string) {
