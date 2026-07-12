@@ -279,6 +279,15 @@ export interface PlayButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
   /** Label text. Defaults to "PLAY". */
   children?: ReactNode;
   /**
+   * Overrides the idle label text shown in the slide window.
+   * When omitted, falls back to `children`, then "PLAY".
+   *
+   * Use case: navbar shows "PARTY" (greyed/disabled) while in a lobby,
+   * without replacing the children ReactNode slot or touching the STOP toggle.
+   * Additive — existing call sites omitting this prop are unaffected.
+   */
+  label?: string;
+  /**
    * Size variant.
    * - `"default"` — XAML 1× (bar 118×28, total 165×38)
    * - `"hero"` — proportionally scaled ×1.643
@@ -302,7 +311,7 @@ export interface PlayButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
 }
 
 /**
- * PlayButton v4 — XAML-spec geometry + state gradients + STOP toggle.
+ * PlayButton v5 — XAML-spec geometry + state gradients + STOP toggle + label override.
  *
  * ## Shape: concave-left SVG arrow bar
  * Path: `M 0,0 L tx,0 L bw,ty L tx,bh L 0,bh C ci,ty 0,0 0,0 Z`
@@ -333,6 +342,7 @@ export interface PlayButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
  */
 export function PlayButton({
   children,
+  label,
   disabled,
   className,
   size = "default",
@@ -584,7 +594,7 @@ export function PlayButton({
               className="absolute inset-x-0 flex items-center justify-center transition-transform duration-500 ease-in-out"
               style={{ height: bar, transform: queueing ? "translateY(100%)" : "translateY(0%)" }}
             >
-              {children ?? "PLAY"}
+              {label ?? children ?? "PLAY"}
             </span>
             {/* STOP — enters from above on queueing */}
             <span
@@ -602,7 +612,7 @@ export function PlayButton({
           />
 
           <span className="sr-only">
-            {queueing ? "Stop" : typeof children === "string" ? children : "Play"}
+            {queueing ? "Stop" : label ?? (typeof children === "string" ? children : "Play")}
           </span>
         </button>
       </div>

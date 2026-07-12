@@ -335,10 +335,15 @@ export function ClientShell() {
     },
   ];
 
-  // PLAY button is enabled only on the home view; disabled (greyed v5 treatment)
-  // on every other view. This follows the reference where the greyed PLAY is
-  // visible in the navbar while the mode-select screen is already shown.
+  // PLAY button label + disabled state per view:
+  //   home         → label "PLAY",  enabled
+  //   mode-select  → label "PLAY",  disabled (greyed — choosing a mode)
+  //   party-lobby  → label "PARTY", disabled (reference: greyed "PARTY" while in lobby)
+  //   matchmaking  → label "PARTY", disabled (still in the party flow, queued)
+  //   pick/loadout → label "PLAY",  disabled (full-bleed screens, flow locked)
+  //   collection/profile → label "PLAY", disabled
   const playDisabled = view !== "home";
+  const playLabel = (view === "party-lobby" || view === "matchmaking") ? "PARTY" : undefined;
 
   return (
     <div
@@ -347,6 +352,7 @@ export function ClientShell() {
     >
       <WindowFrame
         title="League of Web"
+        onHelp={() => console.log("help")}
         onMinimize={() => console.log("minimize")}
         onClose={() => console.log("close")}
       >
@@ -358,6 +364,7 @@ export function ClientShell() {
               // On every other view: disabled (greyed v5 treatment).
               <PlayButton
                 disabled={playDisabled}
+                label={playLabel}
                 emblemSrc="/lol-emblem.png"
                 onClick={() => { if (!playDisabled) setView("mode-select"); }}
               />

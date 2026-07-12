@@ -62,11 +62,11 @@ export function TopNavbar({
               onClick={isDisabled ? undefined : () => onNavigate(item.id)}
               className={[
                 "font-display uppercase tracking-widest text-sm transition-colors duration-150",
-                "border-b-2 pb-0.5",
+                "border-t-2 pt-0.5",
                 isDisabled
                   ? "cursor-default border-transparent text-grey-2 pointer-events-none"
                   : isActive
-                  ? "cursor-pointer border-gold-3 text-gold-2"
+                  ? "cursor-pointer border-gold-3 text-gold-1"
                   : "cursor-pointer border-transparent text-grey-1 hover:text-gold-1",
               ].join(" ")}
             >
