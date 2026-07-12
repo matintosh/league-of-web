@@ -9,7 +9,7 @@
  *   tokens used only in inline `style={{}}` props or SVG attributes are
  *   always present — regardless of Tailwind's class-usage scan.
  *
- * Keep ALL THREE in sync (same 51 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
+ * Keep ALL THREE in sync (same 52 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
  */
 
 @theme {
@@ -78,6 +78,12 @@
 
   /* Status — availability indicators */
   --color-status-online: #00c853;
+
+  /* Party band — dark forest green background used in the OPEN PARTY rail block
+     (pixel-sampled from docs/reference/client-lobby-solo.jpg top-right block).
+     Sampled value: ~#1a3a1a. status-online (#00c853) is a bright lime and is
+     visually distinct — a new token is necessary for the muted band fill. */
+  --color-party-band: #1a3a1a;
 
   /* Warning — destructive/alert accent (queue-type-list warning triangle) */
   --color-warning: #ed2c49;
@@ -163,6 +169,9 @@
 
     /* Status */
     --color-status-online: #00c853;
+
+    /* Party band — dark forest green for OPEN PARTY rail block (issue #163) */
+    --color-party-band: #1a3a1a;
 
     /* Warning */
     --color-warning: #ed2c49;

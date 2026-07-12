@@ -12,6 +12,7 @@ import {
   CurrencyDisplay,
   PlayerHovercard,
   ProfileChip,
+  PartyStatusPanel,
   SettingsModal,
   SettingsRow,
   HextechToggle,
@@ -30,6 +31,7 @@ import {
   rpIconUrl,
   blueEssenceIconUrl,
   navIconUrl,
+  gameModeMapUrl,
 } from "@low/fixtures";
 import { MatchmakingScreen } from "./matchmaking-screen";
 import { CollectionScreen } from "./collection-screen";
@@ -200,15 +202,24 @@ export function ClientShell() {
   const [socialExpanded, setSocialExpanded] = useState(true);
   const [friendGroups, setFriendGroups] = useState<FriendGroup[]>(INITIAL_FRIEND_GROUPS);
 
+  // Party open/closed toggle — wired to PartyStatusPanel header when in lobby.
+  // Defaults to open (true) matching the reference; toggling reflects both the
+  // panel header label and the PARTY text in the TopNavbar PARTY pill.
+  const [partyOpen, setPartyOpen] = useState(true);
+
   const toggleSocialPanel = () => setSocialExpanded((prev) => !prev);
 
   // Views that show the docked social rail alongside content.
   // pick and loadout are full-bleed (no rail) per issue spec.
   const railVisible = view !== "pick" && view !== "loadout";
 
-  // ProfileChip statusText — "In Lobby" while on the party lobby screen.
+  // ProfileChip statusText — party queue string while on the party lobby screen:
+  // "1/5 Normal Draft" (filled/capacity + queue label, truncated to chip width).
   // Other views use the default availability label (undefined → ProfileChip renders availability).
-  const profileChipStatusText = view === "party-lobby" ? "In Lobby" : undefined;
+  // Replaces the previous static "In Lobby" per issue #163 spec.
+  const PARTY_QUEUE_LABEL = "Normal Draft";
+  const profileChipStatusText =
+    view === "party-lobby" ? `1/5 ${PARTY_QUEUE_LABEL}` : undefined;
 
   const handleToggleFriendGroup = (name: string) => {
     setFriendGroups((groups) =>
@@ -546,6 +557,20 @@ export function ClientShell() {
                   onNotifications={() => console.log("notifications")}
                   statusText={profileChipStatusText}
                 />
+
+                {/* PartyStatusPanel — only on party-lobby view, directly below ProfileChip.
+                    open state is synced with the partyOpen toggle so header label + pill agree.
+                    crestSrc uses gameModeMapUrl("sr") for Summoner's Rift Normal Draft. */}
+                {view === "party-lobby" && (
+                  <PartyStatusPanel
+                    queueLabel={PARTY_QUEUE_LABEL}
+                    crestSrc={gameModeMapUrl("sr")}
+                    filled={1}
+                    capacity={5}
+                    open={partyOpen}
+                    onToggleOpen={() => setPartyOpen((prev) => !prev)}
+                  />
+                )}
 
                 {/* SocialPanel fills all height except the dock */}
                 <div className="min-h-0 flex-1">
