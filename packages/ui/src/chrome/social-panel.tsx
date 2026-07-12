@@ -64,6 +64,17 @@ export interface SocialPanelProps {
    *   profileIconSrcFor={(s) => profileIconUrl(s.profileIconId)}
    */
   profileIconSrcFor: (s: Summoner) => string;
+  /**
+   * Panel width in pixels.
+   *
+   * Defaults to `250` for back-compat with the original overlay implementation.
+   * Pass a smaller value (e.g. `200`) when the panel is docked as an in-flow
+   * column so the content area has enough room at 1280×720.
+   *
+   * Measured from the real client pvp-mode-select reference: rail ≈ 15–16% of
+   * the 1280px window ≈ 192–205px. Recommended docked value: 200.
+   */
+  width?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -106,11 +117,12 @@ export function SocialPanel({
   onToggleGroup,
   onFriendClick,
   profileIconSrcFor,
+  width = 250,
 }: SocialPanelProps) {
   const showRequests = requestCount != null && requestCount > 0;
 
   return (
-    <div className="flex h-full w-[250px] flex-col bg-blue-7">
+    <div className="flex h-full flex-col bg-blue-7" style={{ width }}>
       {/* ── 1. Social header strip ── */}
       <SocialHeader />
 
