@@ -7,6 +7,7 @@ import {
   PlayerBannerTruncationDemo,
   PlayerBannerAutofillDemo,
   PlayerBannerHeraldShapeDemo,
+  PlayerBannerLevelBadgeDemo,
 } from "./player-banner.demo";
 
 export const playerBannerShowcase: ShowcaseEntry = {
@@ -14,7 +15,7 @@ export const playerBannerShowcase: ShowcaseEntry = {
   name: "Player Banner",
   area: "lobby",
   description:
-    "Vertical heraldic banner card for the pre-game lobby. Pointed double-V bottom with gold trim via clip-path shell technique. Crown+name above the shape. Self: larger scale, gold wings, level badge, autofill chip. Empty: large grey + circle (~90px). Wing art from CommunityDragon ranked-emblem PNGs.",
+    "Vertical heraldic banner card for the pre-game lobby. Pointed double-V bottom with gold trim via clip-path shell technique. Crown+name above the shape. Self: larger scale, gold wings, level badge (level prop, defaults 15), autofill chip. Medallion proportions sampled from party reference: 56px/120px=46.7% (self), 44px/96px=45.8% (teammate). Empty: large grey + circle (~90px). Wing art from CommunityDragon ranked-emblem PNGs.",
   variants: [
     {
       name: "Heraldic shape — self + teammate + empty circle",
@@ -51,6 +52,12 @@ export const playerBannerShowcase: ShowcaseEntry = {
       notes:
         "Extremely long summoner name and title. Name truncates in above-banner row; title truncates inside the shape.",
       render: () => <PlayerBannerTruncationDemo />,
+    },
+    {
+      name: "Level badge variants (1, 247, 999, absent→15)",
+      notes:
+        "Exercises level prop: single-digit, 3-digit (247 = demoSummoner fixture level), 3-digit maximum (999), and absent (defaults to 15). Badge minWidth grows to fit 3 digits without clipping.",
+      render: () => <PlayerBannerLevelBadgeDemo />,
     },
     {
       name: "Autofill chip (non-self)",

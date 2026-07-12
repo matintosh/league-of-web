@@ -255,6 +255,7 @@ export function PartyLobbyScreen({ onBack, onFindMatch, partyOpen, onPartyToggle
           avatarSrc={profileIconUrl(demoSummoner.profileIconId)}
           wingTier="gold"
           isSelf
+          level={demoSummoner.level}
           autofillProtected
         >
           <RoleSlotRow

@@ -198,6 +198,44 @@ export function PlayerBannerTruncationDemo() {
 }
 
 // ---------------------------------------------------------------------------
+// 3-digit level badge — badge must grow, not clip
+// ---------------------------------------------------------------------------
+
+export function PlayerBannerLevelBadgeDemo() {
+  return (
+    <div className="flex items-end justify-center gap-4 p-8 bg-blue-6">
+      <PlayerBanner
+        name="LevelTest"
+        avatarSrc={AVATAR_1}
+        wingTier="gold"
+        isSelf
+        level={1}
+      />
+      <PlayerBanner
+        name="LevelTest"
+        avatarSrc={AVATAR_2}
+        wingTier="gold"
+        isSelf
+        level={247}
+      />
+      <PlayerBanner
+        name="LevelTest"
+        avatarSrc={AVATAR_3}
+        wingTier="gold"
+        isSelf
+        level={999}
+      />
+      <PlayerBanner
+        name="NoLevel"
+        avatarSrc={AVATAR_1}
+        wingTier="teal"
+        level={undefined}
+      />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Autofill chip only (non-self)
 // ---------------------------------------------------------------------------
 
