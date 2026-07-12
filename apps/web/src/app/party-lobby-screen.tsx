@@ -520,7 +520,7 @@ export function PartyLobbyScreen({
           />
         </div>
 
-        {/* Center: cancel ✕ + FIND MATCH / In Queue + 2 dead icon buttons */}
+        {/* Center: cancel ✕ + [chips + FIND MATCH / In Queue] + 2 dead icon buttons */}
         <div className="flex flex-1 items-center justify-center gap-3">
           {/* ✕ cancel — in idle: goes back to mode-select; in queue: cancels queue */}
           <button
@@ -553,8 +553,70 @@ export function PartyLobbyScreen({
             </svg>
           </button>
 
-          {/* FIND MATCH / In Queue (LockInButton, 200px wide) */}
-          <div style={{ width: 200 }}>
+          {/* FIND MATCH slot: Autofill + Auto Accept chips stacked above button */}
+          <div className="flex flex-col items-center gap-1" style={{ width: 200 }}>
+            {/* Autofill activated chip — dead/decorative, aria-hidden */}
+            <div
+              aria-hidden="true"
+              className="flex items-center gap-1 rounded-sm px-2 py-0.5 bg-blue-5/60"
+            >
+              {/* Blue info/warning triangle glyph */}
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                className="shrink-0 text-blue-3"
+              >
+                <path
+                  d="M5 1L9 8.5H1L5 1Z"
+                  stroke="currentColor"
+                  strokeWidth="1.1"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M5 4.5V6"
+                  stroke="currentColor"
+                  strokeWidth="1.1"
+                  strokeLinecap="round"
+                />
+                <circle cx="5" cy="7.2" r="0.4" fill="currentColor" />
+              </svg>
+              <span className="font-body text-[10px] text-grey-1 leading-none">
+                Autofill activated
+              </span>
+            </div>
+
+            {/* Auto Accept row — dead/decorative, aria-hidden */}
+            <div
+              aria-hidden="true"
+              className="flex items-center gap-1 px-2 py-0.5"
+            >
+              {/* Diamond glyph */}
+              <svg
+                width="8"
+                height="8"
+                viewBox="0 0 8 8"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                className="shrink-0 text-gold-2"
+              >
+                <path
+                  d="M4 1L7 4L4 7L1 4Z"
+                  stroke="currentColor"
+                  strokeWidth="1.1"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="font-body text-[10px] text-grey-1 leading-none">
+                Auto Accept
+              </span>
+            </div>
+
+            {/* FIND MATCH / In Queue button */}
             <LockInButton
               label={isQueueing ? "In Queue" : "Find Match"}
               disabled={isQueueing}
