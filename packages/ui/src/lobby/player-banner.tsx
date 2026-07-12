@@ -88,6 +88,21 @@ const WING_SRC: Record<WingTier, string> = {
 };
 
 // ---------------------------------------------------------------------------
+// Heraldic banner clip-path — pointed double-V bottom silhouette.
+//
+// Outer border shell and inner fill both use this polygon;
+// the 2px gap between them (via p-[2px] on the outer div) creates the
+// gold-trim effect that follows the entire outline including the notch.
+// Proportions sampled from client-lobby-solo.jpg reference.
+// ---------------------------------------------------------------------------
+
+const BANNER_CLIP =
+  "polygon(0% 0%, 100% 0%, 100% 76%, 59% 76%, 50% 91%, 41% 76%, 0% 76%)";
+
+const BANNER_CLIP_INSET =
+  "polygon(0% 0%, 100% 0%, 100% 76%, 59% 76%, 50% 91%, 41% 76%, 0% 76%)";
+
+// ---------------------------------------------------------------------------
 // Crown chip icon — small gold crown SVG inline glyph
 // ---------------------------------------------------------------------------
 
@@ -313,10 +328,14 @@ function AvatarCrest({
 /**
  * PlayerBanner — a single vertical banner card from the pre-game party lobby.
  *
- * Self banner (isSelf=true): wider, brighter, large avatar crest, gold crown chip,
- * optional autofill-protected chip at foot.
+ * Self banner (isSelf=true): wider, brighter, large avatar crest, gold crown glyph
+ * + summoner name floating ABOVE the shaped banner, optional autofill-protected chip at foot.
  * Teammate banner: narrower, slightly dimmed, smaller avatar.
  * Empty banner (empty=true): dark panel with no content — represents an unfilled slot.
+ *
+ * Heraldic shape: clip-path polygon with double-V pointed bottom. Outer shell uses
+ * gold-4 background; inner fill uses blue-7 (self) or grey-4 (teammate). The 2px
+ * padding gap between shells creates the gold hairline trim at all edges including the notch.
  *
  * Wings: real CommunityDragon ranked-emblem PNGs (rcp-fe-lol-static-assets).
  * WingTier maps: default→iron, bronze→bronze, gold→gold, teal→platinum,
@@ -364,131 +383,139 @@ export function PlayerBanner({
   return (
     <div
       data-shot={isSelf ? "player-banner-self" : "player-banner-teammate"}
-      className={[
-        "relative flex flex-col items-center overflow-hidden",
-        wClass,
-        "h-[300px]",
-        // Background: dark panel with subtle dark-blue tint for self
-        isSelf ? "bg-blue-7" : "bg-grey-4",
-        // Border: gold for self, muted for teammate
-        "border",
-        isSelf ? "border-gold-5" : "border-grey-3",
-        "pt-3 pb-3 gap-1",
-        // Slight opacity dim on teammate
-        !isSelf && "opacity-85",
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className={["flex flex-col items-center", wClass].join(" ")}
     >
-      {/* -------------------------------------------------------------- */}
-      {/* Chevron texture band at top — subtle decorative stripe          */}
-      {/* -------------------------------------------------------------- */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 top-0 h-5 pointer-events-none"
-        style={{
-          background:
-            "repeating-linear-gradient(60deg, transparent, transparent 3px, var(--color-gold-5) 3px, var(--color-gold-5) 4px)",
-          opacity: 0.18,
-        }}
-      />
-
-      {/* -------------------------------------------------------------- */}
-      {/* Crown chip — small pill above the crest                         */}
-      {/* -------------------------------------------------------------- */}
-      {showCrown && (
-        <div className="relative z-10 flex items-center gap-0.5 rounded-sm border border-gold-4 bg-hextech-black px-1.5 py-0.5 text-gold-2">
-          <CrownGlyph />
-          {isSelf && (
-            <span className="font-body text-[10px] leading-none uppercase tracking-wide text-gold-2">
-              Captain
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* -------------------------------------------------------------- */}
-      {/* Wing crest area — wing PNG behind the circular avatar           */}
-      {/* -------------------------------------------------------------- */}
-      <div className="relative flex items-center justify-center mt-1" style={{ width: "100%", height: isSelf ? 120 : 100 }}>
-        {/* Wing PNG — oversized, centered, extends well beyond banner edges for dramatic sweep */}
-        <img
-          src={wingSrc}
-          alt=""
-          aria-hidden="true"
-          className="pointer-events-none absolute select-none"
-          style={{
-            width: isSelf ? 260 : 210,
-            height: "auto",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            opacity: isSelf ? 0.95 : 0.7,
-            filter: isSelf
-              ? "drop-shadow(0 0 6px var(--color-gold-4)) brightness(1.05)"
-              : "drop-shadow(0 0 3px var(--color-gold-5)) brightness(0.8)",
-          }}
-        />
-
-        {/* Avatar crest — on top of wings */}
-        <div className="relative z-10">
-          <AvatarCrest
-            avatarSrc={avatarSrc}
-            name={name}
-            isSelf={isSelf}
-            uid={uid}
-          />
-        </div>
-      </div>
-
-      {/* -------------------------------------------------------------- */}
-      {/* Name + title                                                     */}
-      {/* -------------------------------------------------------------- */}
-      <div className="flex w-full min-w-0 flex-col items-center gap-0.5 px-2 mt-1">
+      {/* ---------------------------------------------------------------- */}
+      {/* ABOVE-BANNER: crown glyph + summoner name                        */}
+      {/* ---------------------------------------------------------------- */}
+      <div className="flex items-center gap-1.5 pb-1 min-w-0">
+        {showCrown && (
+          <span className="shrink-0 text-gold-2">
+            <CrownGlyph />
+          </span>
+        )}
         <span
           className={[
-            "w-full truncate text-center font-display uppercase tracking-wide",
+            "truncate font-display uppercase tracking-wide",
             isSelf ? "text-sm text-gold-1" : "text-xs text-gold-cream",
           ].join(" ")}
         >
           {name}
         </span>
-        {title && (
-          <span
-            className={[
-              "w-full truncate text-center font-body italic",
-              isSelf ? "text-xs text-grey-1" : "text-[10px] text-grey-2",
-            ].join(" ")}
-          >
-            {title}
-          </span>
-        )}
       </div>
 
-      {/* -------------------------------------------------------------- */}
-      {/* Children slot — RoleSlotRow slotted in from parent screen       */}
-      {/* -------------------------------------------------------------- */}
-      {children && (
-        <div className="flex w-full items-center justify-center px-1 mt-auto">
-          {children}
-        </div>
-      )}
+      {/* ---------------------------------------------------------------- */}
+      {/* HERALDIC SHAPE: gold border shell (outer) + dark fill (inner)    */}
+      {/* ---------------------------------------------------------------- */}
+      <div
+        aria-hidden={false}
+        className={[
+          // Outer border shell — gold-4 background, clipped to heraldic polygon
+          isSelf ? "bg-gold-4" : "bg-gold-6",
+          "p-[2px]",
+          "w-full",
+        ].join(" ")}
+        style={{
+          clipPath: BANNER_CLIP,
+          // Height drives the shaped area; below the polygon is transparent
+          height: isSelf ? 300 : 260,
+        }}
+      >
+        {/* Inner surface — dark fill, same clip so fill matches silhouette */}
+        <div
+          className={[
+            "relative flex flex-col items-center overflow-hidden w-full h-full",
+            isSelf ? "bg-blue-7" : "bg-grey-4",
+            "pt-3 pb-2 gap-1",
+          ].join(" ")}
+          style={{ clipPath: BANNER_CLIP_INSET }}
+        >
+          {/* Chevron texture band at top */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 top-0 h-5 pointer-events-none"
+            style={{
+              background:
+                "repeating-linear-gradient(60deg, transparent, transparent 3px, var(--color-gold-5) 3px, var(--color-gold-5) 4px)",
+              opacity: 0.18,
+            }}
+          />
 
-      {/* -------------------------------------------------------------- */}
-      {/* Footer area: glyph + autofill chip                              */}
-      {/* -------------------------------------------------------------- */}
-      <div className="flex flex-col items-center gap-1 mt-auto">
-        {autofillProtected && (
-          <div className="flex items-center gap-0.5 rounded-full border border-grey-2 bg-grey-4 px-2 py-0.5 text-grey-1">
-            <ShieldGlyph />
-            <span className="font-body text-[9px] uppercase tracking-wide leading-none">
-              Autofill Protected
+          {/* Wing crest + avatar medallion */}
+          <div
+            className="relative flex items-center justify-center mt-1"
+            style={{ width: "100%", height: isSelf ? 140 : 110 }}
+          >
+            <img
+              src={wingSrc}
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none absolute select-none"
+              style={{
+                width: isSelf ? 260 : 210,
+                height: "auto",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                opacity: isSelf ? 0.95 : 0.7,
+                filter: isSelf
+                  ? "drop-shadow(0 0 6px var(--color-gold-4)) brightness(1.05)"
+                  : "drop-shadow(0 0 3px var(--color-gold-5)) brightness(0.8)",
+              }}
+            />
+            <div className="relative z-10 flex flex-col items-center">
+              <AvatarCrest
+                avatarSrc={avatarSrc}
+                name={name}
+                isSelf={isSelf}
+                uid={uid}
+              />
+              {/* Level badge — overlaps bottom of medallion ring */}
+              <div
+                className="relative -mt-3 z-20 rounded-full border border-grey-2 bg-grey-4 px-1.5 py-px"
+                style={{ minWidth: 22, textAlign: "center" }}
+              >
+                <span className="font-body text-[9px] leading-none text-grey-1 font-semibold">
+                  15
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Player title (inside banner — only when present) */}
+          {title && (
+            <span
+              className={[
+                "w-full truncate text-center font-body italic px-2",
+                isSelf ? "text-xs text-grey-1" : "text-[10px] text-grey-2",
+              ].join(" ")}
+            >
+              {title}
+            </span>
+          )}
+
+          {/* Children slot */}
+          {children && (
+            <div className="flex w-full items-center justify-center px-1 mt-auto">
+              {children}
+            </div>
+          )}
+
+          {/* Footer: autofill chip + foot glyph */}
+          <div className="flex flex-col items-center gap-1 mt-auto">
+            {autofillProtected && (
+              <div className="flex items-center gap-0.5 rounded-full border border-grey-2 bg-grey-4 px-2 py-0.5 text-grey-1">
+                <ShieldGlyph />
+                <span className="font-body text-[9px] uppercase tracking-wide leading-none">
+                  Autofill Protected
+                </span>
+              </div>
+            )}
+            <span className="text-grey-3">
+              <FootGlyph />
             </span>
           </div>
-        )}
-        <span className="text-grey-3">
-          <FootGlyph />
-        </span>
+        </div>
       </div>
     </div>
   );
