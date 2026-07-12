@@ -208,13 +208,22 @@ function AvatarCrest({
   isSelf: boolean;
   uid: string;
 }) {
-  const size = isSelf ? 80 : 64;
+  // Medallion proportions sampled from party reference (client-lobby-party.png):
+  // banner_width: ~178px in screenshot (scale 0.625) → 285px real
+  // ring outer diameter: ~88px in screenshot → ratio 88/178 = 49.4%
+  //
+  // For our CSS sizes:
+  //   Self   (120px banner): 120 × 0.494 ≈ 56px
+  //   Teammate (96px banner):  96 × 0.469 ≈ 44px
+  //
+  // Previously 80px / 120px = 66.7%; now 56/120 = 46.7%, 44/96 = 45.8%.
+  const size = isSelf ? 56 : 44;
   const cx = size / 2;
   const cy = size / 2;
 
   // Ring proportions adapted from ProfileChip/ProfileBanner ornate ring
   const outerR = size * 0.5 - 2;
-  const innerR = outerR - (isSelf ? 5 : 4);
+  const innerR = outerR - (isSelf ? 4 : 3);
   const clipR  = innerR - 2;
 
   const clipId = `${uid}-ac`;
@@ -222,9 +231,9 @@ function AvatarCrest({
 
   // Tick geometry — pairs flanking cardinal points
   const tickStart = outerR + 1.5;
-  const tickEnd   = outerR + (isSelf ? 6 : 5);
+  const tickEnd   = outerR + (isSelf ? 5 : 4);
   const cardinals = [0, 90, 180, 270];
-  const tickOffsets = [-4, 4];
+  const tickOffsets = [-3, 3];
 
   const toXY = (angleDeg: number, r: number) => {
     const rad = ((angleDeg - 90) * Math.PI) / 180;
@@ -242,8 +251,8 @@ function AvatarCrest({
 
   // Diagonal corner arcs
   const diagonals = [45, 135, 225, 315];
-  const arcR = outerR + 4;
-  const arcHalf = 7;
+  const arcR = outerR + 3;
+  const arcHalf = 6;
   const cornerArcs = diagonals.map((base) => {
     const start = toXY(base - arcHalf, arcR);
     const end   = toXY(base + arcHalf, arcR);
@@ -434,8 +443,9 @@ export function PlayerBanner({
         ].join(" ")}
         style={{
           clipPath: BANNER_CLIP,
-          // Height drives the shaped area; below the polygon is transparent
-          height: isSelf ? 300 : 260,
+          // Height drives the shaped area; below the polygon is transparent.
+          // Reduced slightly to stay proportional after medallion resize.
+          height: isSelf ? 270 : 240,
         }}
       >
         {/* Inner surface — dark fill, same clip so fill matches silhouette */}
@@ -458,10 +468,14 @@ export function PlayerBanner({
             }}
           />
 
-          {/* Wing crest + avatar medallion */}
+          {/* Wing crest + avatar medallion.
+               Wing art is sized relative to the banner (not the avatar ring) so
+               it continues to frame the full banner width at any ring size.
+               The wing image renders at 110% of banner width so the spread
+               extends naturally beyond the shaped edges. */}
           <div
             className="relative flex items-center justify-center mt-1"
-            style={{ width: "100%", height: isSelf ? 140 : 110 }}
+            style={{ width: "100%", height: isSelf ? 110 : 90 }}
           >
             <img
               src={wingSrc}
@@ -487,12 +501,13 @@ export function PlayerBanner({
                 isSelf={isSelf}
                 uid={uid}
               />
-              {/* Level badge — overlaps bottom of medallion ring */}
+              {/* Level badge — overlaps bottom of medallion ring.
+                   minWidth grows to accommodate 3-digit levels. */}
               <div
-                className="relative -mt-3 z-20 rounded-full border border-grey-2 bg-grey-4 px-1.5 py-px"
-                style={{ minWidth: 22, textAlign: "center" }}
+                className="relative -mt-2 z-20 rounded-full border border-grey-2 bg-grey-4 px-1.5 py-px"
+                style={{ minWidth: 20, textAlign: "center" }}
               >
-                <span className="font-body text-[9px] leading-none text-grey-1 font-semibold">
+                <span className="font-body text-[8px] leading-none text-grey-1 font-semibold">
                   {level ?? 15}
                 </span>
               </div>
