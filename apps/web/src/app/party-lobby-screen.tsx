@@ -5,12 +5,13 @@ import {
   LobbyHeader,
   PlayerBanner,
   RoleSlotRow,
+  RolePickerPopover,
   LockInButton,
   ChatPanel,
   MatchFoundModal,
   formatQueueTime,
 } from "@low/ui";
-import type { ChatMessage, RoleSlot, WingTier, Role } from "@low/ui";
+import type { ChatMessage, RoleSlot, WingTier, Role, PickableRole } from "@low/ui";
 import {
   demoSummoner,
   demoFriends,
@@ -57,7 +58,7 @@ const INVITED_FIXTURE: InvitedEntry[] = [
 const SHOW_DEMO_PARTY = false;
 
 // ---------------------------------------------------------------------------
-// Role icon resolver — CommunityDragon position SVGs via positionIconUrl
+// Role icon resolvers — CommunityDragon position SVGs via positionIconUrl
 // ---------------------------------------------------------------------------
 
 const ROLE_TO_CDRAGON: Record<Role, "top" | "jungle" | "middle" | "bottom" | "utility"> = {
@@ -68,8 +69,113 @@ const ROLE_TO_CDRAGON: Record<Role, "top" | "jungle" | "middle" | "bottom" | "ut
   support: "utility",
 };
 
+/** RoleSlotRow resolver: always gold (default) variant. */
 function iconSrcFor(role: Role): string {
   return positionIconUrl(ROLE_TO_CDRAGON[role]);
+}
+
+/**
+ * Maps PickableRole → CommunityDragon slug for the 5 named positions.
+ * "fill" has no position icon; when this returns undefined the inline
+ * FillGlyph (asterisk SVG) is rendered instead.
+ */
+const PICKABLE_TO_CDRAGON: Partial<Record<PickableRole, "top" | "jungle" | "middle" | "bottom" | "utility">> = {
+  top:     "top",
+  jungle:  "jungle",
+  middle:  "middle",
+  bottom:  "bottom",
+  utility: "utility",
+};
+
+/**
+ * RolePickerPopover iconSrcFor — returns CDragon URL with light variant for
+ * hover/selected states. Returns undefined for "fill" (FillGlyph used).
+ */
+function pickerIconSrcFor(
+  role: PickableRole,
+  state: "default" | "hover" | "selected",
+): string | undefined {
+  const cdragonRole = PICKABLE_TO_CDRAGON[role];
+  if (!cdragonRole) return undefined;
+  return positionIconUrl(cdragonRole, state !== "default" ? "light" : undefined);
+}
+
+/**
+ * Maps PickableRole → legacy RoleSlotRow Role type.
+ * "fill" renders as an empty slot (undefined) since Role doesn't include fill.
+ */
+function pickableToSlotRole(r: PickableRole): Role | undefined {
+  const map: Partial<Record<PickableRole, Role>> = {
+    top:     "top",
+    jungle:  "jungle",
+    middle:  "mid",
+    bottom:  "bottom",
+    utility: "support",
+  };
+  return map[r];
+}
+
+// ---------------------------------------------------------------------------
+// RolePickerTrigger — bottom-bar circle button that opens a role picker
+// ---------------------------------------------------------------------------
+
+/**
+ * Circular trigger for a role slot.
+ *
+ * Shows the current role's CDragon icon when a role is picked; shows an
+ * asterisk SVG for "fill"; shows a dashed empty-circle mark when unset.
+ * Disabled while queueing — roles cannot change mid-queue.
+ */
+function RolePickerTrigger({
+  role,
+  label,
+  isOpen,
+  disabled,
+  onClick,
+}: {
+  role: PickableRole | undefined;
+  label: string;
+  isOpen: boolean;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  const cdragonRole = role && role !== "fill" ? PICKABLE_TO_CDRAGON[role] : undefined;
+  const iconSrc = cdragonRole ? positionIconUrl(cdragonRole) : undefined;
+
+  return (
+    <button
+      type="button"
+      aria-label={`${label} role${role ? `: ${role}` : " (not set)"} — click to change`}
+      aria-expanded={isOpen}
+      aria-haspopup="listbox"
+      disabled={disabled}
+      onClick={onClick}
+      className={[
+        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+        "border transition-colors duration-150",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+        disabled
+          ? "cursor-not-allowed border-grey-4 bg-hextech-black text-grey-3 opacity-50"
+          : isOpen
+            ? "cursor-pointer border-gold-3 bg-gold-5/40 text-gold-1"
+            : "cursor-pointer border-grey-3 bg-grey-4 text-grey-2 hover:border-gold-4 hover:text-gold-2",
+      ].join(" ")}
+    >
+      {iconSrc ? (
+        <img src={iconSrc} alt="" aria-hidden="true" width={20} height={20} />
+      ) : role === "fill" ? (
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <line x1="10" y1="2" x2="10" y2="18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          <line x1="2.93" y1="6" x2="17.07" y2="14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          <line x1="2.93" y1="14" x2="17.07" y2="6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      ) : (
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="4" stroke="currentColor" strokeWidth="1.2" strokeDasharray="2 2" />
+        </svg>
+      )}
+    </button>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -120,14 +226,11 @@ const DEMO_PARTY: [DemoPartyMember, DemoPartyMember, DemoPartyMember, DemoPartyM
 ];
 
 // ---------------------------------------------------------------------------
-// Self's role slots — 2 fixture roles + 1 empty.
+// Self's initial role picks — fixture defaults (mutable via role picker)
 // ---------------------------------------------------------------------------
 
-const SELF_ROLE_SLOTS: RoleSlot[] = [
-  { role: "mid" },
-  { role: "support" },
-  { role: undefined },
-];
+const INITIAL_PRIORITY_ROLE: PickableRole = "middle";
+const INITIAL_SECONDARY_ROLE: PickableRole = "utility";
 
 // ---------------------------------------------------------------------------
 // Queue constants
@@ -246,6 +349,43 @@ export function PartyLobbyScreen({
 }: PartyLobbyScreenProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(LOBBY_MESSAGES);
   const [inviteTab, setInviteTab] = useState<"suggested" | "invited">("invited");
+
+  // ---------------------------------------------------------------------------
+  // Role picker state
+  //
+  // openPicker: which slot's popover is open (null = none, 0 = Priority, 1 = Secondary).
+  // Role picker triggers are disabled while queueing — the roles are already
+  // submitted to matchmaking and cannot change mid-queue.
+  // ---------------------------------------------------------------------------
+
+  const [priorityRole, setPriorityRole] = useState<PickableRole>(INITIAL_PRIORITY_ROLE);
+  const [secondaryRole, setSecondaryRole] = useState<PickableRole>(INITIAL_SECONDARY_ROLE);
+  const [openPicker, setOpenPicker] = useState<0 | 1 | null>(null);
+
+  // Outside-click ref — wraps the bottom-bar center section containing both
+  // triggers and their popovers. Clicks outside this area close the open popover.
+  const pickerContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (openPicker === null) return;
+    function handleOutsideClick(e: MouseEvent) {
+      if (pickerContainerRef.current && !pickerContainerRef.current.contains(e.target as Node)) {
+        setOpenPicker(null);
+      }
+    }
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [openPicker]);
+
+  const handlePickerTrigger = useCallback((slot: 0 | 1) => {
+    setOpenPicker((prev) => (prev === slot ? null : slot));
+  }, []);
+
+  const handleRoleSelect = useCallback((slot: 0 | 1, role: PickableRole) => {
+    if (slot === 0) setPriorityRole(role);
+    else setSecondaryRole(role);
+    setOpenPicker(null);
+  }, []);
 
   // ---------------------------------------------------------------------------
   // Queue state machine
@@ -478,7 +618,10 @@ export function PartyLobbyScreen({
         >
           <RoleSlotRow
             size="md"
-            slots={SELF_ROLE_SLOTS}
+            slots={[
+              { role: pickableToSlotRole(priorityRole) },
+              { role: pickableToSlotRole(secondaryRole) },
+            ]}
             iconSrcFor={iconSrcFor}
           />
         </PlayerBanner>
@@ -520,8 +663,9 @@ export function PartyLobbyScreen({
           />
         </div>
 
-        {/* Center: cancel ✕ + [chips + FIND MATCH / In Queue] + 2 dead icon buttons */}
-        <div className="flex flex-1 items-center justify-center gap-3">
+        {/* Center: cancel ✕ + [chips + FIND MATCH / In Queue] + Priority/Secondary role triggers */}
+        {/* pickerContainerRef wraps all triggers + popovers for outside-click detection */}
+        <div ref={pickerContainerRef} className="flex flex-1 items-center justify-center gap-3">
           {/* ✕ cancel — in idle: goes back to mode-select; in queue: cancels queue */}
           <button
             type="button"
@@ -624,75 +768,45 @@ export function PartyLobbyScreen({
             />
           </div>
 
-          {/* Dead: role preferences button */}
-          <button
-            type="button"
-            aria-label="Role preferences (unavailable)"
-            aria-disabled="true"
-            disabled
-            className={[
-              "flex shrink-0 items-center justify-center rounded-full",
-              "h-10 w-10",
-              "border border-grey-4 bg-hextech-black text-grey-3",
-              "cursor-default opacity-50",
-            ].join(" ")}
-          >
-            {/* Shield / role glyph */}
-            <svg
-              aria-hidden="true"
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M7 1L12.5 3.5V7.5Q12.5 12 7 13.5Q1.5 12 1.5 7.5V3.5Z"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M4.5 7L6.5 9L9.5 5.5"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+          {/* Priority role trigger + popover */}
+          <div className="relative">
+            <RolePickerTrigger
+              role={priorityRole}
+              label="Priority"
+              isOpen={openPicker === 0}
+              disabled={isQueueing}
+              onClick={() => handlePickerTrigger(0)}
+            />
+            <RolePickerPopover
+              open={openPicker === 0}
+              slotLabel="Priority"
+              selected={priorityRole}
+              disabledRoles={[secondaryRole]}
+              onSelect={(r) => handleRoleSelect(0, r)}
+              onClose={() => setOpenPicker(null)}
+              iconSrcFor={pickerIconSrcFor}
+            />
+          </div>
 
-          {/* Dead: ward skin button */}
-          <button
-            type="button"
-            aria-label="Ward skin preferences (unavailable)"
-            aria-disabled="true"
-            disabled
-            className={[
-              "flex shrink-0 items-center justify-center rounded-full",
-              "h-10 w-10",
-              "border border-grey-4 bg-hextech-black text-grey-3",
-              "cursor-default opacity-50",
-            ].join(" ")}
-          >
-            {/* Ward / eye glyph */}
-            <svg
-              aria-hidden="true"
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M7 2C3.5 2 1 7 1 7s2.5 5 6 5 6-5 6-5-2.5-5-6-5Z"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinejoin="round"
-              />
-              <circle cx="7" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.2" />
-            </svg>
-          </button>
+          {/* Secondary role trigger + popover */}
+          <div className="relative">
+            <RolePickerTrigger
+              role={secondaryRole}
+              label="Secondary"
+              isOpen={openPicker === 1}
+              disabled={isQueueing}
+              onClick={() => handlePickerTrigger(1)}
+            />
+            <RolePickerPopover
+              open={openPicker === 1}
+              slotLabel="Secondary"
+              selected={secondaryRole}
+              disabledRoles={[priorityRole]}
+              onSelect={(r) => handleRoleSelect(1, r)}
+              onClose={() => setOpenPicker(null)}
+              iconSrcFor={pickerIconSrcFor}
+            />
+          </div>
         </div>
 
         {/* Suggested | Invited panel — right */}
