@@ -26,6 +26,7 @@ import {
   demoFriends,
   profileIconUrl,
   championSplashUrl,
+  loadingArtUrl,
 } from "@low/fixtures";
 import { MatchmakingScreen } from "./matchmaking-screen";
 import { CollectionScreen } from "./collection-screen";
@@ -499,7 +500,7 @@ export function ClientShell() {
                   onBack={() => { setView("home"); setActiveNavId("home"); }}
                 />
               ) : (
-                <HomeLanding newsItems={NEWS_ITEMS} />
+                <HomeView newsItems={NEWS_ITEMS} />
               )}
             </div>
 
@@ -560,6 +561,111 @@ export function ClientShell() {
 }
 
 // ---------------------------------------------------------------------------
+// Sub-tab strip data — tabs under the home navbar (issue #145)
+// Overview is the only live tab; others are dead (aria-disabled).
+// ---------------------------------------------------------------------------
+
+/** Tab descriptor for the home sub-nav strip. */
+interface HomeTab {
+  id: string;
+  label: string;
+  disabled?: boolean;
+  /** Decorative gold dot badge (notification marker, per reference). */
+  dot?: boolean;
+}
+
+const HOME_TABS: HomeTab[] = [
+  { id: "overview",   label: "OVERVIEW" },
+  { id: "arcade",     label: "ARCADE 2019", disabled: true, dot: true },
+  { id: "news",       label: "NEWS",        disabled: true },
+  { id: "patch-notes",label: "PATCH NOTES", disabled: true },
+];
+
+// ---------------------------------------------------------------------------
+// Skin promo fixtures — two compact cards for the media row (issue #145)
+// Using DDragon loading art (308×560 crop) for the portrait tiles.
+// ---------------------------------------------------------------------------
+
+interface SkinPromo {
+  championId: string;
+  skin: number;
+  name: string;
+  price: number;
+}
+
+const SKIN_PROMOS: SkinPromo[] = [
+  { championId: "Garen",  skin: 6, name: "Demacia Vice Garen",  price: 1350 },
+  { championId: "Lucian", skin: 8, name: "Demacia Vice Lucian", price: 1350 },
+];
+
+// ---------------------------------------------------------------------------
+// HomeView — wraps the sub-tab strip + HomeLanding for the home route.
+// Sub-nav is a narrow bar (~32px) across the full content width.
+// ---------------------------------------------------------------------------
+
+interface HomeViewProps {
+  newsItems: NewsCardProps[];
+}
+
+/** Renders the home sub-tab strip above the diagonal hero. */
+function HomeView({ newsItems }: HomeViewProps) {
+  // Overview is the only live tab; active state is static (no nav happens).
+  const activeTabId = "overview";
+
+  return (
+    <div className="flex h-full flex-col">
+      {/* ------------------------------------------------------------------ */}
+      {/* Sub-tab strip — full content width, ~32px tall (issue #145)         */}
+      {/* Sits just below the TopNavbar; uses same bottom-border treatment as  */}
+      {/* Profile / Collection sub-navs for visual consistency.               */}
+      {/* ------------------------------------------------------------------ */}
+      <div
+        role="tablist"
+        aria-label="Home sections"
+        className="flex shrink-0 items-end border-b border-gold-5 bg-hextech-black"
+        style={{ height: 32 }}
+      >
+        {HOME_TABS.map((tab) => {
+          const isActive = tab.id === activeTabId;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              aria-disabled={tab.disabled ? true : undefined}
+              disabled={tab.disabled}
+              className={[
+                "relative flex h-full shrink-0 cursor-default items-center gap-1.5 px-4",
+                "font-display text-xs uppercase tracking-widest transition-colors duration-150",
+                "border-b-2",
+                isActive
+                  ? "border-gold-4 text-gold-1"
+                  : "border-transparent text-gold-cream opacity-70",
+              ].join(" ")}
+            >
+              {tab.label}
+              {/* Decorative gold dot notification marker on Arcade 2019 tab */}
+              {tab.dot && (
+                <span
+                  aria-hidden="true"
+                  className="inline-block h-1.5 w-1.5 rounded-full bg-gold-3 mb-0.5"
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Hero + media row */}
+      <div className="relative flex-1 min-h-0">
+        <HomeLanding newsItems={newsItems} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // HomeLanding — diagonal-split layout per issue #37 / Figma node 50-583
 //
 // CTA decision (superseded by issue #139): The PlayButton now lives permanently
@@ -607,13 +713,35 @@ function HomeLanding({ newsItems }: HomeLandingProps) {
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* NEWS FEED — gradient scrim + 3-card row, lower-right of art area     */}
-      {/* z above art, pointer events active on cards                          */}
+      {/* FREE CHAMPION ROTATION chip — top-right of content area (issue #145) */}
+      {/* Dead control: aria-disabled, no-op click. Hover lightens border.    */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="absolute top-3 right-3 z-10">
+        <button
+          type="button"
+          aria-label="Free Champion Rotation — view this week's free champions"
+          aria-disabled="true"
+          disabled
+          className={[
+            "cursor-default px-3 py-1",
+            "border border-gold-5 bg-grey-4",
+            "font-display text-xs uppercase tracking-widest text-gold-cream",
+            "transition-colors duration-150 hover:border-gold-1",
+          ].join(" ")}
+        >
+          Free Champion Rotation
+        </button>
+      </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* MEDIA ROW — gradient scrim + mixed card row, lower-right (issue #145) */}
+      {/* 1 wide NewsCard (LEC Mic Check) + 2 compact skin promo cards.       */}
+      {/* Replaces the previous 3-card news feed; news items now unused here  */}
+      {/* (kept in NewsItems fixture for future use / showcase reuse).        */}
       {/* ------------------------------------------------------------------ */}
       <div
         className="absolute bottom-0 right-0 flex flex-col justify-end"
         style={{
-          // occupies right portion of art region; left edge respects panel seam
           left: PANEL_WIDTH + DIAGONAL_OFFSET,
           paddingBottom: 20,
           paddingLeft: 20,
@@ -624,19 +752,68 @@ function HomeLanding({ newsItems }: HomeLandingProps) {
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0"
           style={{
-            height: 248,
+            height: 260,
             background: `linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 90%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 50%, transparent) 55%, transparent 100%)`,
           }}
         />
 
-        {/* 3-card row — each card takes equal share of available width.
-            Using flex-1 min-w-0 so cards reflow when content width changes
-            (e.g. with the 200px docked rail, content is ~1080px, available
-            right of the diagonal seam at 566px ≈ 494px, cards ~148px each). */}
-        <div className="relative flex gap-4" style={{ zIndex: 1 }}>
-          {newsItems.map((item) => (
-            <div key={item.title} className="flex-1 min-w-0">
-              <NewsCard {...item} />
+        {/* Card row — wide NewsCard + 2 compact skin promos */}
+        <div className="relative flex items-end gap-3" style={{ zIndex: 1 }}>
+          {/* Wide media card: "LEC Mic Check: Week 5 ↗" — reuse NewsCard */}
+          <div className="flex-[2] min-w-0">
+            <NewsCard
+              category="ESPORTS"
+              date="7/8/2026"
+              title="LEC Mic Check: Week 5 ↗"
+              imageSrc={championSplashUrl("Jinx")}
+              onOpen={() => console.log("open: LEC Mic Check")}
+            />
+          </div>
+
+          {/* 2 compact skin promo cards — page-level markup, no new @low/ui component */}
+          {SKIN_PROMOS.map((promo) => (
+            <div
+              key={promo.championId}
+              className="shrink-0 flex flex-col bg-blue-7/60 border border-grey-4"
+              style={{ width: 110 }}
+            >
+              {/* Loading art portrait — 308×560 source, cropped to card width */}
+              <div className="relative overflow-hidden" style={{ height: 120 }}>
+                <img
+                  src={loadingArtUrl(promo.championId, promo.skin)}
+                  alt={promo.name}
+                  className="absolute inset-0 w-full h-full object-cover object-top"
+                />
+              </div>
+
+              {/* Price row + caption */}
+              <div className="flex flex-col gap-0.5 p-2">
+                {/* RP glyph + price — aria-hidden icon copy per issue guidance */}
+                <div className="flex items-center gap-1">
+                  {/* Inline RP glyph (aria-hidden copy — not exported from CurrencyDisplay) */}
+                  <svg
+                    aria-hidden="true"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="text-blue-2 shrink-0"
+                  >
+                    <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M5 4h2.5a2 2 0 0 1 0 4H5V4Z" fill="currentColor" />
+                    <line x1="5" y1="8" x2="5" y2="10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="7" y1="8" x2="9" y2="10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                  <span className="font-body text-xs text-gold-cream tabular-nums">
+                    {promo.price}
+                  </span>
+                </div>
+                {/* Skin name caption */}
+                <span className="font-body text-xs text-gold-2 leading-tight line-clamp-2">
+                  {promo.name}
+                </span>
+              </div>
             </div>
           ))}
         </div>
