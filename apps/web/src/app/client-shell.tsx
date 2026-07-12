@@ -30,9 +30,10 @@ import {
 import { MatchmakingScreen } from "./matchmaking-screen";
 import { CollectionScreen } from "./collection-screen";
 import { ModeSelectScreen } from "./mode-select-screen";
+import { PickScreen } from "./pick-screen";
 import { LoadoutScreen } from "./loadout-screen";
 
-type View = "home" | "mode-select" | "matchmaking" | "collection" | "loadout";
+type View = "home" | "mode-select" | "matchmaking" | "collection" | "pick" | "loadout";
 
 const NAV_ITEMS: NavItem[] = [
   { id: "home", label: "Home" },
@@ -172,6 +173,8 @@ export function ClientShell() {
   const router = useRouter();
   const [view, setView] = useState<View>("home");
   const [activeNavId, setActiveNavId] = useState("home");
+  /** DDragon champion id chosen in the pick phase; passed to LoadoutScreen. */
+  const [chosenChampionId, setChosenChampionId] = useState<string | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState("general");
 
@@ -399,18 +402,26 @@ export function ClientShell() {
             }
           />
 
-          {/* Content area — switches between home, mode-select, matchmaking, collection, loadout */}
+          {/* Content area — switches between home, mode-select, matchmaking, collection, pick, loadout */}
           <div className="relative flex-1 overflow-hidden">
             {view === "collection" ? (
               <CollectionScreen />
             ) : view === "loadout" ? (
               <LoadoutScreen
+                chosenChampionId={chosenChampionId}
                 onComplete={() => { setView("home"); setActiveNavId("home"); }}
+              />
+            ) : view === "pick" ? (
+              <PickScreen
+                onLockIn={(championId) => {
+                  setChosenChampionId(championId);
+                  setView("loadout");
+                }}
               />
             ) : view === "matchmaking" ? (
               <MatchmakingScreen
                 onBack={() => { setView("home"); setActiveNavId("home"); }}
-                onAccept={() => setView("loadout")}
+                onAccept={() => setView("pick")}
               />
             ) : view === "mode-select" ? (
               <ModeSelectScreen

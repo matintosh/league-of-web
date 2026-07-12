@@ -1,5 +1,7 @@
 import type { ShowcaseEntry } from "./showcase";
+import { championPickTileShowcase } from "./champ-select/champion-pick-tile.showcase";
 import { countdownHeaderShowcase } from "./champ-select/countdown-header.showcase";
+import { lockInButtonShowcase } from "./champ-select/lock-in-button.showcase";
 import { skinCarouselShowcase } from "./champ-select/skin-carousel.showcase";
 import { skinThumbStripShowcase } from "./champ-select/skin-thumb-strip.showcase";
 import { teamPlayerRowShowcase } from "./champ-select/team-player-row.showcase";
@@ -49,8 +51,10 @@ import { socialLoginButtonsShowcase } from "./login/social-login-buttons.showcas
  * Keep sorted by area, then name.
  */
 export const registry: ShowcaseEntry[] = [
-  // champ-select
+  // champ-select — alphabetical: ChampionPickTile < CountdownHeader < LockInButton < SkinCarousel < SkinThumbStrip < TeamPlayerRow
+  championPickTileShowcase,
   countdownHeaderShowcase,
+  lockInButtonShowcase,
   skinCarouselShowcase,
   skinThumbStripShowcase,
   teamPlayerRowShowcase,

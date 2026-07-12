@@ -1,7 +1,11 @@
 export type { Area, ShowcaseEntry, ShowcaseVariant } from "./showcase";
 // champ-select
+export { ChampionPickTile } from "./champ-select/champion-pick-tile";
+export type { ChampionPickTileProps } from "./champ-select/champion-pick-tile";
 export { CountdownHeader } from "./champ-select/countdown-header";
 export type { CountdownHeaderProps } from "./champ-select/countdown-header";
+export { LockInButton } from "./champ-select/lock-in-button";
+export type { LockInButtonProps } from "./champ-select/lock-in-button";
 export { SkinCarousel, SkinThumbStrip } from "./champ-select/skin-carousel";
 export type { SkinCarouselProps, SkinThumbStripProps, SkinOption } from "./champ-select/skin-carousel";
 export { TeamPlayerRow } from "./champ-select/team-player-row";
