@@ -11,6 +11,8 @@ export type { SkinCarouselProps, SkinThumbStripProps, SkinOption } from "./champ
 export { TeamPlayerRow } from "./champ-select/team-player-row";
 export type { TeamPlayerRowProps, PickState } from "./champ-select/team-player-row";
 // chrome
+export { ArcadeEventTab } from "./chrome/arcade-event-tab";
+export type { ArcadeEventTabProps, EventSkinCard } from "./chrome/arcade-event-tab";
 export { ChatPanel } from "./chrome/chat-panel";
 export type { ChatPanelProps, ChatMessage } from "./chrome/chat-panel";
 export { ClubsEmptyState } from "./chrome/clubs-empty-state";

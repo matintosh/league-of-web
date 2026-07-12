@@ -5,6 +5,7 @@ import { lockInButtonShowcase } from "./champ-select/lock-in-button.showcase";
 import { skinCarouselShowcase } from "./champ-select/skin-carousel.showcase";
 import { skinThumbStripShowcase } from "./champ-select/skin-thumb-strip.showcase";
 import { teamPlayerRowShowcase } from "./champ-select/team-player-row.showcase";
+import { arcadeEventTabShowcase } from "./chrome/arcade-event-tab.showcase";
 import { clubsEmptyStateShowcase } from "./chrome/clubs-empty-state.showcase";
 import { chatPanelShowcase } from "./chrome/chat-panel.showcase";
 import { crestDividerShowcase } from "./chrome/crest-divider.showcase";
@@ -75,7 +76,8 @@ export const registry: ShowcaseEntry[] = [
   skinCarouselShowcase,
   skinThumbStripShowcase,
   teamPlayerRowShowcase,
-  // chrome
+  // chrome — alphabetical: ArcadeEventTab < ChatPanel < ClubsEmptyState < ...
+  arcadeEventTabShowcase,
   chatPanelShowcase,
   clubsEmptyStateShowcase,
   crestDividerShowcase,
