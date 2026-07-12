@@ -11,18 +11,32 @@
  *
  * Defaults:
  *   --out      /tmp/pick-screenshot.png
- *   --base-url http://localhost:3000
+ *   --base-url http://localhost:PORT  (PORT env var, default 3000)
+ *
+ * PORT override (for parallel lane runs on non-default ports):
+ *   PORT=3182 node tools/pick-overlap-check.mjs
  *
  * Exit code 0 = no unintended overlaps; 1 = overlaps found (or navigation failed).
  *
- * Navigation flow:
- *   / → PLAY button → Confirm (mode-select) → Top role → Find Match →
- *   wait for Accept (up to 15 s) → click → wait 1.5 s → measure pick screen
+ * Navigation flow (post-#174 queue-in-lobby rework):
+ *   / → PLAY button → Confirm (mode-select) → Find Match (party lobby) →
+ *   wait for Accept modal (up to 15 s) → click Accept →
+ *   wait 1.5 s → measure pick screen
+ *
+ * NOTE: The role-selector step (button[aria-label='Top']) was retired in
+ * #161/#174. The lobby no longer has a role picker before queuing; role slots
+ * appear on the pick screen filter bar only. The new flow goes straight from
+ * party-lobby Find Match → queue → Accept → pick.
  *
  * Intentional overlaps (whitelisted — by design):
  *   - progressbar/mainArea: progressbar is above main (border-touch parent)
  *   - bottomStrip/chatPanelWrapper: chatPanel is a child of bottomStrip
  *   - teamRail/selfChip: self countdown chip overlaps the self row region (designed)
+ *
+ * Chrome geometry (h-16 navbar, 33px titlebar):
+ *   titlebar: 0–33px
+ *   navbar:   33–97px
+ *   content:  97px and below
  */
 
 import { chromium } from "/Users/matintosh/dev/league-of-web/node_modules/playwright/index.mjs";
@@ -32,7 +46,9 @@ const args = process.argv.slice(2);
 const outArg = args.indexOf("--out");
 const baseArg = args.indexOf("--base-url");
 const OUT = outArg !== -1 ? args[outArg + 1] : "/tmp/pick-screenshot.png";
-const BASE = baseArg !== -1 ? args[baseArg + 1] : "http://localhost:3000";
+// PORT env var allows parallel lane runs: PORT=3182 node tools/pick-overlap-check.mjs
+const PORT = process.env.PORT ?? 3000;
+const BASE = baseArg !== -1 ? args[baseArg + 1] : `http://localhost:${PORT}`;
 
 // ---------------------------------------------------------------------------
 // Rect helpers
@@ -81,14 +97,21 @@ try {
   process.exit(1);
 }
 
-// 3. Select a primary role (Top) and Find Match
-console.log("Step 3: Select Top role + Find Match …");
-await page.locator("button[aria-label='Top']").first().click();
-await page.waitForTimeout(300);
-await page.locator("button:has-text('Find Match')").click();
-await page.waitForTimeout(500);
+// 3. Party lobby → Find Match
+// NOTE: The role-selector (button[aria-label='Top']) was retired in #161/#174.
+// The party lobby no longer has a role picker; queue starts directly via Find Match.
+console.log("Step 3: Find Match (party lobby) …");
+try {
+  await page.locator("button:has-text('Find Match')").first().waitFor({ state: "visible", timeout: 5000 });
+  await page.locator("button:has-text('Find Match')").first().click();
+  await page.waitForTimeout(500);
+} catch (e) {
+  console.error("Find Match button not found:", e.message);
+  await browser.close();
+  process.exit(1);
+}
 
-// 4. Wait for Accept
+// 4. Wait for Accept modal (MatchFoundModal auto-appears after 5–10 s random delay)
 console.log("Step 4: Waiting for match found (up to 15 s) …");
 try {
   await page.locator("button:has-text('Accept')").first().waitFor({ state: "visible", timeout: 15000 });
@@ -132,6 +155,14 @@ const zones = await page.evaluate(() => {
 
   const mainEl = document.querySelector("main");
 
+  // LockInButton: find the button inside main whose text content includes "Lock In".
+  // LockInButton uses aria-disabled="true" when disabled (no champion selected);
+  // when enabled it has no aria-disabled. We find it by text to avoid matching the
+  // navbar PlayButton which also carries aria-disabled in other states.
+  const lockInBtn = Array.from(document.querySelectorAll("main button")).find(
+    (b) => b.textContent?.trim().toLowerCase().includes("lock in"),
+  ) ?? null;
+
   return {
     // CountdownHeader progress bar
     progressbar: r(document.querySelector("[role='progressbar']")),
@@ -141,8 +172,8 @@ const zones = await page.evaluate(() => {
     mainArea: r(mainEl),
     // Champion grid (role=listbox)
     championGrid: r(document.querySelector("[role='listbox']")),
-    // LOCK IN button
-    lockInBtn: r(document.querySelector("button[aria-disabled='true']") ?? document.querySelector("button[class*='blue-2']")),
+    // LOCK IN button — found by text within main, not by aria-disabled alone
+    lockInBtn: r(lockInBtn),
     // Bottom strip (fixed-height row with border-t)
     bottomStrip: r(document.querySelector(".relative.flex.shrink-0.items-stretch.border-t")),
     // Chat panel wrapper (direct child of bottom strip, 220px wide)
@@ -179,12 +210,12 @@ console.log("\n=== Pairwise intersection checks ===");
 // getBoundingClientRect() on a scrollable element returns its full scroll-height rect,
 // which may extend beyond the visual clip set by an ancestor's overflow-hidden.
 // The grid (role=listbox) scrolls inside a flex-1/min-h-0 container — its content
-// rect extends to 716px even though it's visually clipped at ~608px.
+// rect extends to 713px even though it's visually clipped at ~589px (mainArea bottom).
 // This causes championGrid ∩ bottomStrip to appear as an overlap in the checker,
 // but it is NOT a visual defect — the grid is properly clipped.
 //
 // The true overlap check for these zones is: does mainArea overlap bottomStrip?
-// (mainArea bottom=608, bottomStrip top=608 — border-only, not an overlap)
+// (mainArea bottom=589, bottomStrip top=589 — border-only, not an overlap)
 // NOTE: wlKey sorts pair names alphabetically — keys must use sorted order.
 const WHITELIST = new Set([
   // Parent–child containment (mainArea contains all three)
