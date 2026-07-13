@@ -13,6 +13,9 @@ const CDRAGON_STATIC =
 const CDRAGON_PARTIES =
   "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-parties/global/default";
 
+const CDRAGON_TFT =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-tft/global/default";
+
 /**
  * Base URL builder for rcp-fe-lol-static-assets (generic escape hatch).
  * Source: CommunityDragon rcp-fe-lol-static-assets plugin mirror.
@@ -144,6 +147,21 @@ export const rankedEmblemUrl = (
  */
 export const rankedUnrankedEmblemUrl = (): string =>
   `https://cdn.jsdelivr.net/gh/magisteriis/lol-icons-and-emblems@main/ranked-emblems/Emblem_Iron.png`;
+
+/**
+ * TFT rank-up arrow SVG — two stacked upward chevrons (the TFT tier improvement emblem).
+ * viewBox 0 0 40 40, native fill #c8aa6e (Hextech gold).
+ *
+ * NOTE: This asset uses a hardcoded fill in its <style> block — it cannot receive
+ * currentColor when loaded via <img>. For token-colored use, inline the SVG paths
+ * directly in the component (see TftMissionBadge in tft-hub-screen.tsx).
+ * This URL is provided for reference / non-colored display only.
+ *
+ * Source: CommunityDragon rcp-fe-lol-tft · images/tft_up_arrow.svg
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const tftUpArrowUrl = (): string =>
+  `${CDRAGON_TFT}/images/tft_up_arrow.svg`;
 
 /*
  * MODE-SELECT BACKGROUND — CDragon asset search result (2026-07, issue #218).

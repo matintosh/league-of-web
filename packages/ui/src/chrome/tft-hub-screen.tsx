@@ -72,32 +72,52 @@ export interface TftHubScreenProps {
 }
 
 // ---------------------------------------------------------------------------
-// UpArrowIcon — reused in weekly missions reward column (teal arrow)
-// Approximates the chevron-up arrows in the reference.
+// TftMissionBadge — reward badge for weekly mission rows.
+//
+// Shape: two stacked upward chevrons from the TFT rank-up emblem.
+// Path sourced from CDragon rcp-fe-lol-tft/global/default/images/tft_up_arrow.svg
+// (viewBox 0 0 40 40 — Adobe Illustrator export). We inline the paths so we
+// can apply token colors; <img> cannot receive currentColor from an external SVG.
+//
+// Colors mapped from reference #225 samples:
+//   electric-blue highlight (#88dcff) → blue-1 (#cdfafa) via color-mix at 85%
+//   mid-blue body (#2f5b8c)           → blue-4 (#005a82) base fill
+//   dark frame (#0b0f18)              → blue-8 background
 // ---------------------------------------------------------------------------
 
-function UpArrowIcon() {
+function TftMissionBadge() {
   return (
-    <svg
+    <div
+      className="flex shrink-0 items-center justify-center border border-blue-4 bg-blue-8"
+      style={{
+        width: 40,
+        height: 40,
+        boxShadow:
+          "0 0 8px color-mix(in srgb, var(--color-blue-3) 50%, transparent), inset 0 0 6px color-mix(in srgb, var(--color-blue-5) 60%, transparent)",
+      }}
       aria-hidden="true"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="text-blue-2"
     >
-      <path
-        d="M12 5L19 12H5L12 5Z"
-        fill="currentColor"
-        opacity="0.9"
-      />
-      <path
-        d="M12 11L19 18H5L12 11Z"
-        fill="currentColor"
-        opacity="0.5"
-      />
-    </svg>
+      {/* CDragon tft_up_arrow.svg paths — two stacked chevrons pointing up */}
+      <svg
+        width="28"
+        height="28"
+        viewBox="0 0 40 40"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        {/* Upper chevron — brighter highlight */}
+        <path
+          d="M31,26.6l5-5.1L20,5L4,21.5l5.1,5.3L20,16L31,26.6z"
+          fill="color-mix(in srgb, var(--color-blue-1) 85%, var(--color-blue-3) 15%)"
+        />
+        {/* Lower chevron — slightly dimmer body */}
+        <path
+          d="M27.9,29.9L24,34l-4-4.1L16,34l-4-4.1l8-8.3L27.9,29.9z"
+          fill="color-mix(in srgb, var(--color-blue-1) 60%, var(--color-blue-4) 40%)"
+        />
+      </svg>
+    </div>
   );
 }
 
@@ -183,7 +203,6 @@ function OrbOfEnlightenmentPanel({
     <section
       aria-label="Orb of Enlightenment"
       className="flex flex-col gap-3 border border-gold-5 bg-blue-8 p-4"
-      style={{ flex: "0 0 38%" }}
     >
       {/* Header */}
       <h2 className="font-display text-sm uppercase tracking-widest text-gold-2">
@@ -274,8 +293,7 @@ function TftRankBanner({ profileIconSrc, rankLabel }: TftRankBannerProps) {
   return (
     <section
       aria-label="TFT rank"
-      className="flex flex-col items-center gap-0"
-      style={{ flex: "0 0 24%" }}
+      className="flex flex-col items-center gap-0 min-w-0"
     >
       {/* Profile icon — 110×110 with heavier gold ring, overlapping banner top */}
       <div className="relative z-10 -mb-4">
@@ -355,8 +373,7 @@ function WeeklyMissionsPanel({ missions }: WeeklyMissionsPanelProps) {
   return (
     <section
       aria-label="Weekly Missions"
-      className="flex flex-col gap-3 border border-gold-5 bg-blue-8 p-4"
-      style={{ flex: "0 0 38%" }}
+      className="flex flex-col gap-3 border border-gold-5 bg-blue-8 p-4 min-w-0"
     >
       {/* Header */}
       <h2 className="font-display text-sm uppercase tracking-widest text-gold-2">
@@ -390,9 +407,9 @@ function WeeklyMissionsPanel({ missions }: WeeklyMissionsPanelProps) {
               <span className="font-display text-xs text-grey-2">{mission.daysLabel}</span>
             </div>
 
-            {/* Reward — arrow icon + pts */}
-            <div className="flex shrink-0 flex-col items-center gap-0.5">
-              <UpArrowIcon />
+            {/* Reward — TFT mission badge + pts */}
+            <div className="flex shrink-0 flex-col items-center gap-1">
+              <TftMissionBadge />
               <span className="font-display text-xs text-gold-cream">{mission.rewardPts} pts</span>
             </div>
           </div>
@@ -610,8 +627,8 @@ export function TftHubScreen({ orb, rank, missions, pass }: TftHubScreenProps) {
 
       {/* Content column — sits above backdrop */}
       <div className="relative flex h-full flex-col gap-0 z-10">
-        {/* Top three-panel row */}
-        <div className="flex flex-1 min-h-0 items-stretch gap-4 p-4">
+        {/* Top three-panel row — grid so columns stay within viewport padding */}
+        <div className="grid flex-1 min-h-0 items-stretch gap-4 p-4" style={{ gridTemplateColumns: "38fr 24fr 38fr" }}>
           <OrbOfEnlightenmentPanel {...orb} />
           <TftRankBanner {...rank} />
           <WeeklyMissionsPanel {...missions} />

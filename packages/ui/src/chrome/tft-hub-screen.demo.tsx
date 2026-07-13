@@ -110,7 +110,7 @@ const SINGLE_COUNTER_MISSIONS: MissionRow[] = [
 
 export function TftHubScreenDefaultDemo() {
   return (
-    <div style={{ width: 1080, height: 620 }}>
+    <div className="w-full overflow-hidden" style={{ height: 620 }}>
       <TftHubScreen
         orb={DEFAULT_ORB}
         rank={DEFAULT_RANK}
@@ -123,7 +123,7 @@ export function TftHubScreenDefaultDemo() {
 
 export function TftHubScreenClaimableDemo() {
   return (
-    <div style={{ width: 1080, height: 620 }}>
+    <div className="w-full overflow-hidden" style={{ height: 620 }}>
       <TftHubScreen
         orb={CLAIMABLE_ORB}
         rank={DEFAULT_RANK}
@@ -136,7 +136,7 @@ export function TftHubScreenClaimableDemo() {
 
 export function TftHubScreenSingleCounterDemo() {
   return (
-    <div style={{ width: 1080, height: 620 }}>
+    <div className="w-full overflow-hidden" style={{ height: 620 }}>
       <TftHubScreen
         orb={DEFAULT_ORB}
         rank={DEFAULT_RANK}
@@ -149,7 +149,7 @@ export function TftHubScreenSingleCounterDemo() {
 
 export function TftHubScreenPartialPassDemo() {
   return (
-    <div style={{ width: 1080, height: 620 }}>
+    <div className="w-full overflow-hidden" style={{ height: 620 }}>
       <TftHubScreen
         orb={DEFAULT_ORB}
         rank={DEFAULT_RANK}
