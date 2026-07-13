@@ -11,7 +11,7 @@ import {
 const FLASH_URL =
   "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/data/spells/icons2d/summoner_flash.png";
 const IGNITE_URL =
-  "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/data/spells/icons2d/summoner_dot.png";
+  "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/data/spells/icons2d/summonerignite.png";
 
 export const champSelectActionBarShowcase: ShowcaseEntry = {
   slug: "champ-select-action-bar",

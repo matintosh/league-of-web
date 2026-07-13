@@ -23,7 +23,7 @@ const CDRAGON_GAME_DATA =
  * Summoner spell icon URL via CDragon game data.
  *
  * `iconBaseName` is the lowercased filename from CDragon v1/summoner-spells.json
- * `iconPath` field (e.g. "summoner_flash", "summoner_dot").
+ * `iconPath` field (e.g. "summoner_flash", "summonerignite").
  *
  * These icons are distinct from DDragon's `SummonerFlash.png` naming convention —
  * CDragon paths are all-lowercase with underscores and resolve to ~40×40 PNG art
@@ -31,7 +31,7 @@ const CDRAGON_GAME_DATA =
  *
  * Examples confirmed HTTP 200 (2026-07):
  *   summonerSpellIconUrl("summoner_flash")  → Flash icon
- *   summonerSpellIconUrl("summoner_dot")    → Ignite icon
+ *   summonerSpellIconUrl("summonerignite")  → Ignite icon
  *
  * Source: CommunityDragon rcp-be-lol-game-data · data/spells/icons2d/
  * License: Riot fan-content policy (non-commercial fan use).

@@ -19,7 +19,7 @@ export interface CountdownHeaderProps {
  * CountdownHeader — centered phase header for champion select.
  *
  * Renders a title (display font, uppercase, gold-1), a large seconds counter
- * below it (display, text-4xl, gold-1), and a thin teal/blue-2 progress bar
+ * below it (display, text-4xl, gold-1), and a thin teal/blue-3 progress bar
  * that drains left-to-right as seconds tick down. Gold-4 hairline ornaments
  * flank the title using the CrestDivider fading-line pattern (inlined).
  *
@@ -58,7 +58,7 @@ export function CountdownHeader({
         <div className="flex-1 h-px bg-linear-to-r from-gold-4 to-transparent" />
       </div>
 
-      {/* Progress bar: grey-3 track, teal/blue-2 fill draining left-to-right */}
+      {/* Progress bar: grey-3 track, teal/blue-3 fill draining left-to-right */}
       <div
         role="progressbar"
         aria-valuenow={secondsRemaining}
@@ -68,7 +68,7 @@ export function CountdownHeader({
       >
         {/* Teal fill — shrinks from right as seconds drain */}
         <div
-          className="absolute inset-y-0 left-0 bg-blue-2 transition-[width] duration-1000 ease-linear"
+          className="absolute inset-y-0 left-0 bg-blue-3 transition-[width] duration-1000 ease-linear"
           style={{ width: barWidthPct }}
         />
 

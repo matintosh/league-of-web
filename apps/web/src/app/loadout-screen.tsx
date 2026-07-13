@@ -354,7 +354,7 @@ export function LoadoutScreen({ onComplete, chosenChampionId }: LoadoutScreenPro
               runePageName="Sorcery: The Calamity"
               spellSrcs={[
                 summonerSpellIconUrl("summoner_flash"),
-                summonerSpellIconUrl("summoner_dot"),
+                summonerSpellIconUrl("summonerignite"),
               ]}
             />
           </div>

@@ -400,7 +400,7 @@ export function PickScreen({ onLockIn }: PickScreenProps) {
             runePageName="Sorcery: The Calamity"
             spellSrcs={[
               summonerSpellIconUrl("summoner_flash"),
-              summonerSpellIconUrl("summoner_dot"),
+              summonerSpellIconUrl("summonerignite"),
             ]}
           />
         </div>
