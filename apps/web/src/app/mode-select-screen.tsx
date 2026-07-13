@@ -203,19 +203,51 @@ function TftCrest() {
 
 // ---------------------------------------------------------------------------
 // CdragonMapCrest — real map crest img from CommunityDragon parties plugin.
-// Falls back to a plain box if the CDN img fails to load.
+// The CDN PNGs are vertical two-frame atlases: active (lit) frame on top,
+// inactive (dark) frame below. A fixed-size overflow-hidden container crops
+// to one frame: the img is stretched to 200% height, top-anchored for the
+// active frame, bottom-anchored for the inactive one. The active frame is
+// shown when the card is selected or hovered (GameModeCard's root carries
+// `group`; this crest renders as a descendant, so group-hover applies).
 // ---------------------------------------------------------------------------
 
-function CdragonMapCrest({ map }: { map: "sr" | "ha" | "tft" | "tt" }) {
+function CdragonMapCrest({
+  map,
+  active,
+}: {
+  map: "sr" | "ha" | "tft" | "tt";
+  active: boolean;
+}) {
+  const frameClass =
+    "absolute inset-x-0 h-[200%] w-full transition-opacity duration-150";
   return (
-    <img
-      src={gameModeMapUrl(map)}
-      alt=""
+    <span
       aria-hidden="true"
-      width={128}
-      height={128}
-      style={{ objectFit: "contain" }}
-    />
+      className="relative block h-32 w-32 overflow-hidden"
+    >
+      {/* Inactive (dark) frame — bottom half of the atlas */}
+      <img
+        src={gameModeMapUrl(map)}
+        alt=""
+        className={[
+          frameClass,
+          "bottom-0",
+          active ? "opacity-0" : "opacity-100 group-hover:opacity-0",
+        ].join(" ")}
+        style={{ objectFit: "fill" }}
+      />
+      {/* Active (lit) frame — top half of the atlas */}
+      <img
+        src={gameModeMapUrl(map)}
+        alt=""
+        className={[
+          frameClass,
+          "top-0",
+          active ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+        ].join(" ")}
+        style={{ objectFit: "fill" }}
+      />
+    </span>
   );
 }
 
@@ -228,10 +260,10 @@ function CdragonMapCrest({ map }: { map: "sr" | "ha" | "tft" | "tt" }) {
 type ModeKey = "sr" | "tt" | "aram" | "tft";
 
 const MODES = [
-  { key: "sr" as ModeKey, countLabel: "5v5", name: "Summoner's Rift", icon: <CdragonMapCrest map="sr" /> },
-  { key: "tt" as ModeKey, countLabel: "3v3", name: "Twisted Treeline", icon: <CdragonMapCrest map="tt" /> },
-  { key: "aram" as ModeKey, countLabel: "5v5", name: "ARAM", icon: <CdragonMapCrest map="ha" /> },
-  { key: "tft" as ModeKey, countLabel: "FFA", name: "Teamfight Tactics", icon: <CdragonMapCrest map="tft" /> },
+  { key: "sr" as ModeKey, countLabel: "5v5", name: "Summoner's Rift", map: "sr" as const },
+  { key: "tt" as ModeKey, countLabel: "3v3", name: "Twisted Treeline", map: "tt" as const },
+  { key: "aram" as ModeKey, countLabel: "5v5", name: "ARAM", map: "ha" as const },
+  { key: "tft" as ModeKey, countLabel: "FFA", name: "Teamfight Tactics", map: "tft" as const },
 ];
 
 
@@ -360,7 +392,7 @@ export function ModeSelectScreen({ onConfirm, onBack }: ModeSelectScreenProps) {
           {MODES.map((mode) => (
             <GameModeCard
               key={mode.key}
-              icon={mode.icon}
+              icon={<CdragonMapCrest map={mode.map} active={selectedMode === mode.key} />}
               countLabel={mode.countLabel}
               name={mode.name}
               selected={selectedMode === mode.key}
