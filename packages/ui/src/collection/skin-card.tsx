@@ -3,8 +3,12 @@
 // ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
+
+/** Skin tier label — union of known Riot tier names. */
+export type SkinTier = "Legacy" | "Epic" | "Ultimate" | "Mythic" | "Prestige";
+
 export interface SkinCardProps {
-  /** Skin name used for alt text and aria-label. */
+  /** Skin name used for alt text, aria-label, and hover tooltip. */
   name: string;
   /** Loading-art portrait URL, e.g. from loadingArtUrl(id, skinNum). */
   imageSrc: string;
@@ -12,6 +16,18 @@ export interface SkinCardProps {
   owned?: boolean;
   /** Called when card is clicked. When provided, root renders as <button>. */
   onSelect?: () => void;
+  /**
+   * Skin tier label shown in the hover tooltip badge.
+   * When provided, a tier badge row appears below the skin name.
+   * Typically supplied for unowned skins only.
+   */
+  tierLabel?: SkinTier;
+  /**
+   * Which side of the card the floating tooltip panel opens toward.
+   * Use "left" for cards in the last grid column to prevent viewport overflow.
+   * Defaults to "right".
+   */
+  tooltipSide?: "right" | "left";
 }
 
 // ---------------------------------------------------------------------------
@@ -19,6 +35,8 @@ export interface SkinCardProps {
 // ---------------------------------------------------------------------------
 const CARD_W = 150;
 const CARD_H = 220;
+/** Tooltip panel width in px — matches ~213px reference at 1280×720. */
+const TOOLTIP_W = 213;
 
 // ---------------------------------------------------------------------------
 // Internals
@@ -74,6 +92,59 @@ function LockBadge() {
   );
 }
 
+/**
+ * Hover tooltip panel — floats to the right (or left) of the card on group-hover,
+ * overlapping adjacent cards. Anchored at the card's vertical midpoint.
+ *
+ * Matches the reference: dark navy panel (~213×87px at 1280×720), skin name in
+ * uppercase display font, optional tier badge row below.
+ *
+ * pointer-events-none so it never intercepts clicks on the card or its neighbors.
+ */
+function HoverTooltip({
+  name,
+  tierLabel,
+  side,
+}: {
+  name: string;
+  tierLabel?: SkinTier;
+  side: "right" | "left";
+}) {
+  const positionClass =
+    side === "right"
+      ? "left-full top-1/2 -translate-y-1/2 ml-1"
+      : "right-full top-1/2 -translate-y-1/2 mr-1";
+
+  return (
+    <div
+      aria-hidden="true"
+      className={[
+        "pointer-events-none",
+        "absolute z-10",
+        positionClass,
+        "bg-blue-7/90",
+        "px-4 py-3",
+        "opacity-0 group-hover:opacity-100 transition-opacity duration-150",
+        "flex flex-col gap-2",
+      ].join(" ")}
+      style={{ width: TOOLTIP_W, minHeight: 87 }}
+    >
+      <span className="font-display text-sm uppercase tracking-wider text-gold-cream leading-snug">
+        {name}
+      </span>
+      {tierLabel && (
+        <div className="flex items-center gap-1.5">
+          {/* Diamond tier icon */}
+          <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" className="shrink-0 text-gold-3">
+            <rect x="2" y="2" width="6" height="6" fill="currentColor" transform="rotate(45, 5, 5)" />
+          </svg>
+          <span className="font-body text-xs text-gold-2 leading-none">{tierLabel}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // SkinCard
 // ---------------------------------------------------------------------------
@@ -85,9 +156,20 @@ function LockBadge() {
  * Unowned: brightness-50 art, no gold border, diamond lock badge at bottom-center.
  * NOTE: Hover brightens art only — no zoom. Reference shows brighten, not zoom.
  *
+ * On hover, a floating dark panel appears to the right of the card (or left when
+ * `tooltipSide="left"`) showing the skin name and optional tier badge. The panel
+ * overlaps adjacent cards intentionally — matches the reference screenshot.
+ *
  * Presentational only — props in, callbacks out. No data fetching.
  */
-export function SkinCard({ name, imageSrc, owned = true, onSelect }: SkinCardProps) {
+export function SkinCard({
+  name,
+  imageSrc,
+  owned = true,
+  onSelect,
+  tierLabel,
+  tooltipSide = "right",
+}: SkinCardProps) {
   const rootStyle = { width: CARD_W, height: CARD_H };
 
   const content = (
@@ -113,15 +195,16 @@ export function SkinCard({ name, imageSrc, owned = true, onSelect }: SkinCardPro
         </>
       )}
       {!owned && <LockBadge />}
+      <HoverTooltip name={name} tierLabel={tierLabel} side={tooltipSide} />
     </>
   );
 
-  // NOTE: no overflow-hidden on the root — the owned finials straddle the
-  // border (translated 50% outside) and must not be clipped. Nothing else
-  // overflows: hover brightens only, never zooms.
+  // NOTE: no overflow-hidden on the root — the owned finials straddle the border
+  // (translated 50% outside) and must not be clipped. The tooltip floats outside
+  // via absolute+left-full; it needs z-10 on hover to rise above sibling cards.
   const sharedClass = owned
-    ? "group relative border border-gold-3 hover:border-gold-2 transition-colors duration-150"
-    : "group relative";
+    ? "group relative hover:z-10 border border-gold-3 hover:border-gold-2 transition-colors duration-150"
+    : "group relative hover:z-10";
 
   if (onSelect) {
     return (

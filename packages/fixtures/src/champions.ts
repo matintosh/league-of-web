@@ -19,6 +19,8 @@ export interface SkinEntry {
   skinIndex: number;
   /** Whether this skin is owned in the demo fixture. */
   owned: boolean;
+  /** Optional skin tier label for tooltip display — union of known Riot tier names. */
+  tier?: "Legacy" | "Epic" | "Ultimate" | "Mythic" | "Prestige";
 }
 
 /**
@@ -32,35 +34,35 @@ export const demoSkins: Record<string, { championName: string; skins: SkinEntry[
     skins: [
       { name: "Kayle", skinIndex: 0, owned: true },
       { name: "Judgment Kayle", skinIndex: 1, owned: true },
-      { name: "Viridian Kayle", skinIndex: 2, owned: false },
-      { name: "Transcended Kayle", skinIndex: 3, owned: false },
-      { name: "Unmasked Kayle", skinIndex: 4, owned: false },
-      { name: "Battleborn Kayle", skinIndex: 5, owned: false },
-      { name: "Aether Wing Kayle", skinIndex: 6, owned: false },
-      { name: "Riot Kayle", skinIndex: 7, owned: false },
-      { name: "Silver Kayle", skinIndex: 8, owned: false },
+      { name: "Viridian Kayle", skinIndex: 2, owned: false, tier: "Legacy" },
+      { name: "Transcended Kayle", skinIndex: 3, owned: false, tier: "Legacy" },
+      { name: "Unmasked Kayle", skinIndex: 4, owned: false, tier: "Epic" },
+      { name: "Battleborn Kayle", skinIndex: 5, owned: false, tier: "Epic" },
+      { name: "Aether Wing Kayle", skinIndex: 6, owned: false, tier: "Epic" },
+      { name: "Riot Kayle", skinIndex: 7, owned: false, tier: "Legacy" },
+      { name: "Silver Kayle", skinIndex: 8, owned: false, tier: "Legacy" },
     ],
   },
   Ahri: {
     championName: "Ahri",
     skins: [
       { name: "Ahri", skinIndex: 0, owned: true },
-      { name: "Dynasty Ahri", skinIndex: 1, owned: false },
+      { name: "Dynasty Ahri", skinIndex: 1, owned: false, tier: "Epic" },
       { name: "Midnight Ahri", skinIndex: 2, owned: true },
-      { name: "Foxfire Ahri", skinIndex: 3, owned: false },
-      { name: "Popstar Ahri", skinIndex: 4, owned: false },
-      { name: "Challenger Ahri", skinIndex: 5, owned: false },
-      { name: "Academy Ahri", skinIndex: 6, owned: false },
-      { name: "Star Guardian Ahri", skinIndex: 7, owned: false },
+      { name: "Foxfire Ahri", skinIndex: 3, owned: false, tier: "Legacy" },
+      { name: "Popstar Ahri", skinIndex: 4, owned: false, tier: "Epic" },
+      { name: "Challenger Ahri", skinIndex: 5, owned: false, tier: "Legacy" },
+      { name: "Academy Ahri", skinIndex: 6, owned: false, tier: "Epic" },
+      { name: "Star Guardian Ahri", skinIndex: 7, owned: false, tier: "Epic" },
     ],
   },
   Jinx: {
     championName: "Jinx",
     skins: [
       { name: "Jinx", skinIndex: 0, owned: true },
-      { name: "Mafia Jinx", skinIndex: 1, owned: false },
-      { name: "Firecracker Jinx", skinIndex: 2, owned: false },
-      { name: "Ambitious Elf Jinx", skinIndex: 3, owned: false },
+      { name: "Mafia Jinx", skinIndex: 1, owned: false, tier: "Legacy" },
+      { name: "Firecracker Jinx", skinIndex: 2, owned: false, tier: "Epic" },
+      { name: "Ambitious Elf Jinx", skinIndex: 3, owned: false, tier: "Legacy" },
       { name: "Star Guardian Jinx", skinIndex: 4, owned: true },
     ],
   },
@@ -68,14 +70,14 @@ export const demoSkins: Record<string, { championName: string; skins: SkinEntry[
     championName: "Lux",
     skins: [
       { name: "Lux", skinIndex: 0, owned: true },
-      { name: "Sorceress Lux", skinIndex: 1, owned: false },
-      { name: "Spellthief Lux", skinIndex: 2, owned: false },
+      { name: "Sorceress Lux", skinIndex: 1, owned: false, tier: "Legacy" },
+      { name: "Spellthief Lux", skinIndex: 2, owned: false, tier: "Epic" },
       { name: "Imperial Lux", skinIndex: 3, owned: true },
-      { name: "Steel Legion Lux", skinIndex: 4, owned: false },
-      { name: "Star Guardian Lux", skinIndex: 5, owned: false },
-      { name: "Elementalist Lux", skinIndex: 6, owned: false },
-      { name: "Lunar Empress Lux", skinIndex: 7, owned: false },
-      { name: "Battle Academia Lux", skinIndex: 8, owned: false },
+      { name: "Steel Legion Lux", skinIndex: 4, owned: false, tier: "Epic" },
+      { name: "Star Guardian Lux", skinIndex: 5, owned: false, tier: "Epic" },
+      { name: "Elementalist Lux", skinIndex: 6, owned: false, tier: "Ultimate" },
+      { name: "Lunar Empress Lux", skinIndex: 7, owned: false, tier: "Epic" },
+      { name: "Battle Academia Lux", skinIndex: 8, owned: false, tier: "Epic" },
     ],
   },
 };
