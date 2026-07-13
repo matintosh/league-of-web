@@ -142,7 +142,7 @@ export type { FeaturedTabProps } from "./store/featured-tab";
 export { HeroCarousel } from "./store/hero-carousel";
 export type { HeroCarouselProps } from "./store/hero-carousel";
 export { StoreItemPurchaseModal } from "./store/store-item-purchase-modal";
-export type { StoreItemPurchaseModalProps, PurchaseItem } from "./store/store-item-purchase-modal";
+export type { StoreItemPurchaseModalProps } from "./store/store-item-purchase-modal";
 export { StoreItemTile } from "./store/store-item-tile";
 export type { StoreItemTileProps } from "./store/store-item-tile";
 export { StoreSubNavBar } from "./store/store-sub-nav-bar";

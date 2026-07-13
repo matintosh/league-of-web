@@ -2,21 +2,11 @@
 
 import { useRef } from "react";
 import type { MouseEvent } from "react";
+import type { PurchaseItem } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-
-export interface PurchaseItem {
-  /** Stable item id. */
-  id: string;
-  /** Display name shown inside the tile. */
-  name: string;
-  /** Category label shown below the name in the preview tile. */
-  category: "Champion" | "Skin" | "Ward Skin" | "Icon" | "Emote" | "Bundle";
-  /** Item art URL for the preview tile. */
-  artUrl: string;
-}
 
 export interface StoreItemPurchaseModalProps {
   /** Whether the modal is visible. When false, renders nothing. */
@@ -159,7 +149,7 @@ export function StoreItemPurchaseModal({
         {/* ---------------------------------------------------------------- */}
         <button
           type="button"
-          aria-label="Close"
+          aria-label="Close purchase modal"
           onClick={onClose}
           className={[
             "absolute -top-4 -right-4 z-10",
@@ -218,7 +208,7 @@ export function StoreItemPurchaseModal({
 
           {/* Insufficient RP — top error label */}
           {!canAfford && (
-            <p className="font-body text-xs text-red-500 mb-3">
+            <p className="font-body text-xs text-riot-red mb-3">
               * Not enough RP
             </p>
           )}
@@ -262,7 +252,7 @@ export function StoreItemPurchaseModal({
 
           {/* Insufficient RP — bottom caption */}
           {!canAfford && (
-            <p className="font-body text-xs text-red-500 mt-2">
+            <p className="font-body text-xs text-riot-red mt-2">
               Not enough RP
             </p>
           )}

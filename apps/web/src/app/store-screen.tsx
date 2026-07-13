@@ -44,6 +44,8 @@ export function StoreScreen() {
     setTopSellers(toggle);
   };
 
+  // Only featured-grid items have entries in demoPurchaseBundles — a
+  // top-seller click selects an id with no bundle and is a deliberate no-op.
   const selectedBundle =
     selectedItemId !== null ? demoPurchaseBundles[selectedItemId] : undefined;
 
