@@ -568,6 +568,60 @@ export function PartyLobbyScreen({
 
   return (
     <div className="relative flex h-full flex-col bg-hextech-black" data-shot="party-lobby">
+      {/*
+       * Atmospheric background — party lobby dark forest art.
+       *
+       * CDragon asset search result (2026-07): no standalone lobby background is
+       * exposed in rcp-fe-lol-parties, rcp-fe-lol-static-assets, or related plugins
+       * (see the mode-select note in packages/fixtures/src/cdragon.ts — same result
+       * applies here; rcp-fe-lol-parties only carries map crest PNGs + lottie/webm).
+       * The forest art appears baked into the client shell.
+       *
+       * Fallback: layered CSS gradient approximation, sampled from
+       * docs/reference/client-lobby-solo.jpg. Skews greener/teal than mode-select
+       * (same family, different hue — forest greens vs. mode-select's purple).
+       *
+       * Tone map (reference sample → token composition):
+       *   Upper sky      #050a0e → hextech-black   (#010a13, nearest darkest)
+       *   Mid fog        #0b1a14 → color-mix(blue-5 #0a323c 50%, party-band #1a3a1a 50%)
+       *   Ambient glow   #122416 → color-mix(party-band #1a3a1a 55%, hextech-black 45%)
+       *   Tree silhouette #071209 → hextech-black   (near-black, absorbed at 100% stop)
+       *
+       * party-band (#1a3a1a) is the only forest-green token in the set — it was added
+       * for the social rail's OPEN PARTY block and maps cleanly to the lobby's ambient hue.
+       * No new tokens needed; all stops compose from existing palette.
+       */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background: [
+            /* Base: deep green-dark sky blending upward from near-black to forest-fog teal-green */
+            `radial-gradient(ellipse 85% 65% at 50% 30%, color-mix(in srgb, var(--color-blue-5) 50%, var(--color-party-band) 50%) 0%, color-mix(in srgb, var(--color-party-band) 55%, var(--color-hextech-black) 45%) 45%, var(--color-hextech-black) 100%)`,
+            /* Mid-depth atmospheric fog band — faint green ambient glow at horizon center */
+            `radial-gradient(ellipse 55% 35% at 50% 55%, color-mix(in srgb, var(--color-party-band) 40%, var(--color-hextech-black) 60%) 0%, transparent 70%)`,
+            /* Corner darkening vignette — pulls corners to near-black, keeps center readable */
+            `radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, color-mix(in srgb, var(--color-hextech-black) 88%, transparent 12%) 100%)`,
+          ].join(", "),
+        }}
+      />
+      {/* Top-edge dark gradient — ensures LobbyHeader subbar text stays legible */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-20"
+        style={{
+          background: `linear-gradient(to bottom, var(--color-hextech-black), transparent)`,
+        }}
+      />
+      {/* Bottom-edge dark gradient — ensures action bar / chat panel stays legible */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-28"
+        style={{
+          background: `linear-gradient(to top, var(--color-hextech-black), transparent)`,
+        }}
+      />
+
       {/* ------------------------------------------------------------------ */}
       {/* LobbyHeader                                                          */}
       {/* ------------------------------------------------------------------ */}
@@ -585,7 +639,7 @@ export function PartyLobbyScreen({
       {/* ------------------------------------------------------------------ */}
       {/* Banner zone — 5 slots centered                                       */}
       {/* ------------------------------------------------------------------ */}
-      <div className="flex flex-1 items-center justify-center gap-3 px-4">
+      <div className="relative z-10 flex flex-1 items-center justify-center gap-3 px-4">
         {/* Left flankers */}
         {leftMembers.map((member, i) =>
           member ? (
@@ -651,7 +705,7 @@ export function PartyLobbyScreen({
       {/* Bottom bar (120px)                                                   */}
       {/* ------------------------------------------------------------------ */}
       <div
-        className="flex shrink-0 items-stretch border-t border-gold-5"
+        className="relative z-10 flex shrink-0 items-stretch border-t border-gold-5"
         style={{ height: 120 }}
       >
         {/* Chat panel — left */}
