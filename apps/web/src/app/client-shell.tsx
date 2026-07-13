@@ -573,7 +573,7 @@ export function ClientShell() {
                 <TftHubScreen
                   orb={TFT_ORB}
                   rank={{
-                    profileIconSrc: profileIconUrl(demoSummoner.profileIconId),
+                    profileIconSrc: profileIconUrl(4217),
                     rankLabel: "UNRANKED",
                   }}
                   missions={{ missions: TFT_MISSIONS }}
