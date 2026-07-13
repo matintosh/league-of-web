@@ -12,6 +12,7 @@ import {
   HextechSelect,
   HextechButton,
   SkinCard,
+  SkinPreview,
   EmoteTile,
   EmoteWheel,
   RunesScreen,
@@ -26,6 +27,7 @@ import {
   demoRunePages,
   defaultEmoteSlots,
   loadingArtUrl,
+  championSplashUrl,
   warwickDetail,
   RUNE_PATHS,
   SUMMONER_SPELLS,
@@ -71,6 +73,8 @@ interface SkinsTabProps {
   onChampionFilterChange: (v: string) => void;
   sort: string;
   onSortChange: (v: string) => void;
+  /** Called when the user clicks a skin card to open the detail overlay. */
+  onSkinSelect?: (champId: string, skinIndex: number) => void;
 }
 
 function SkinsTab({
@@ -82,6 +86,7 @@ function SkinsTab({
   onChampionFilterChange,
   sort,
   onSortChange,
+  onSkinSelect,
 }: SkinsTabProps) {
   const championOptions: SelectOption[] = useMemo(
     () => [
@@ -203,6 +208,11 @@ function SkinsTab({
                       name={skin.name}
                       imageSrc={loadingArtUrl(id, skin.skinIndex)}
                       owned={skin.owned}
+                      onSelect={
+                        onSkinSelect
+                          ? () => onSkinSelect(id, skin.skinIndex)
+                          : undefined
+                      }
                     />
                   ))}
                 </div>
@@ -785,6 +795,11 @@ export function CollectionScreen() {
   const [showUnowned, setShowUnowned] = useState(true);
   const [championFilter, setChampionFilter] = useState("");
   const [sort, setSort] = useState("");
+  // Skin preview overlay — null = grid; { champId, skinIndex } = overlay open
+  const [skinPreview, setSkinPreview] = useState<{
+    champId: string;
+    skinIndex: number;
+  } | null>(null);
 
   // Chromas tab state — hoisted so state survives tab switches
   const [chromaSearch, setChromaSearch] = useState("");
@@ -950,7 +965,60 @@ export function CollectionScreen() {
           </div>
         )}
 
-        {activeTab === "skins" && (
+        {activeTab === "skins" && skinPreview !== null && (() => {
+          const champData = demoSkins[skinPreview.champId];
+          const skins = champData?.skins ?? [];
+          const currentSkinIdx = skins.findIndex(
+            (s) => s.skinIndex === skinPreview.skinIndex
+          );
+          const currentSkin = skins[currentSkinIdx];
+          const thumbnails = skins.map((s) => ({
+            name: s.name,
+            imageSrc: loadingArtUrl(skinPreview.champId, s.skinIndex),
+            owned: s.owned,
+          }));
+          return (
+            <div className="absolute inset-0 z-20">
+              <SkinPreview
+                skinName={currentSkin?.name ?? ""}
+                description={
+                  currentSkin?.skinIndex === 8 && skinPreview.champId === "Kayle"
+                    ? "Given to players who purchased the Retail Collector's Edition of League of Legends."
+                    : undefined
+                }
+                acquiredDate={currentSkin?.owned ? "25/11/2010" : undefined}
+                owned={currentSkin?.owned ?? false}
+                splashSrc={championSplashUrl(
+                  skinPreview.champId,
+                  currentSkin?.skinIndex ?? 0
+                )}
+                thumbnails={thumbnails}
+                selectedIndex={currentSkinIdx >= 0 ? currentSkinIdx : 0}
+                onPrev={() => {
+                  const prevIdx =
+                    (currentSkinIdx - 1 + skins.length) % skins.length;
+                  const prevSkin = skins[prevIdx];
+                  if (prevSkin)
+                    setSkinPreview({ champId: skinPreview.champId, skinIndex: prevSkin.skinIndex });
+                }}
+                onNext={() => {
+                  const nextIdx = (currentSkinIdx + 1) % skins.length;
+                  const nextSkin = skins[nextIdx];
+                  if (nextSkin)
+                    setSkinPreview({ champId: skinPreview.champId, skinIndex: nextSkin.skinIndex });
+                }}
+                onThumbnailSelect={(i) => {
+                  const thumb = skins[i];
+                  if (thumb)
+                    setSkinPreview({ champId: skinPreview.champId, skinIndex: thumb.skinIndex });
+                }}
+                onClose={() => setSkinPreview(null)}
+              />
+            </div>
+          );
+        })()}
+
+        {activeTab === "skins" && skinPreview === null && (
           <div className="h-full min-h-0 flex">
             <SkinsTab
               search={skinSearch}
@@ -961,6 +1029,9 @@ export function CollectionScreen() {
               onChampionFilterChange={setChampionFilter}
               sort={sort}
               onSortChange={setSort}
+              onSkinSelect={(champId, skinIndex) =>
+                setSkinPreview({ champId, skinIndex })
+              }
             />
           </div>
         )}

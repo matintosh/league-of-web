@@ -98,6 +98,8 @@ export { RunesScreen, runePathIconUrl, runeIconUrl } from "./collection/runes-sc
 export type { RunesScreenProps, RunePage, RunePath } from "./collection/runes-screen";
 export { SkinCard } from "./collection/skin-card";
 export type { SkinCardProps } from "./collection/skin-card";
+export { SkinPreview } from "./collection/skin-preview";
+export type { SkinPreviewProps, SkinThumbnail } from "./collection/skin-preview";
 export { SpellsTab } from "./collection/spells-tab";
 export type { SpellsTabProps } from "./collection/spells-tab";
 export { StatMedallion } from "./collection/stat-medallion";
