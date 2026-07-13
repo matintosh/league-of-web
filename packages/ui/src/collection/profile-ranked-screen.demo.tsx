@@ -1,7 +1,7 @@
 "use client";
 
 import { ProfileRankedScreen } from "./profile-ranked-screen";
-import { rankedMiniCrestUrl, loadingArtUrl } from "@low/fixtures";
+import { loadingArtUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Shared fixture data
@@ -29,21 +29,21 @@ const FEATURE_COLUMNS = [
 ];
 
 const MILESTONES_DEFAULT = [
-  { label: "0/150 SP", reached: false, iconSrc: rankedMiniCrestUrl("iron") },
-  { label: "250 SP",   reached: false, iconSrc: rankedMiniCrestUrl("bronze") },
-  { label: "500 SP",   reached: false, iconSrc: rankedMiniCrestUrl("silver") },
+  { label: "0/150 SP", reached: false },
+  { label: "250 SP",   reached: false },
+  { label: "500 SP",   reached: false },
 ];
 
 const MILESTONES_IN_PROGRESS = [
-  { label: "0/150 SP", reached: true,  iconSrc: rankedMiniCrestUrl("iron") },
-  { label: "250 SP",   reached: false, iconSrc: rankedMiniCrestUrl("bronze") },
-  { label: "500 SP",   reached: false, iconSrc: rankedMiniCrestUrl("silver") },
+  { label: "0/150 SP", reached: true  },
+  { label: "250 SP",   reached: false },
+  { label: "500 SP",   reached: false },
 ];
 
 const MILESTONES_COMPLETE = [
-  { label: "0/150 SP", reached: true, iconSrc: rankedMiniCrestUrl("iron") },
-  { label: "250 SP",   reached: true, iconSrc: rankedMiniCrestUrl("bronze") },
-  { label: "500 SP",   reached: true, iconSrc: rankedMiniCrestUrl("silver") },
+  { label: "0/150 SP", reached: true },
+  { label: "250 SP",   reached: true },
+  { label: "500 SP",   reached: true },
 ];
 
 // ---------------------------------------------------------------------------

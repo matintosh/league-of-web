@@ -31,8 +31,11 @@ export interface RankedMilestone {
   label: string;
   /** Whether this milestone has been reached (fills the arc around icon). */
   reached: boolean;
-  /** Mini-crest image URL for the milestone node icon. */
-  iconSrc: string;
+  /**
+   * @deprecated No longer used — milestone nodes render a fixed inline SVG
+   * hexagonal SP checkpoint badge identical at all three positions.
+   */
+  iconSrc?: string;
 }
 
 export interface RankedSplitProgress {
@@ -162,6 +165,153 @@ function SearchIcon() {
 }
 
 // ---------------------------------------------------------------------------
+// SPCheckpointIcon — hexagonal SP milestone badge
+//
+// Reference: docs/reference/client-profile-ranked-split.png
+// Shape:     flat-top hexagon, ~40px total at 1920-wide reference (~27px at 1280px)
+// Design:    identical at all 3 milestone positions — tier-independent
+//
+// Token mapping (sampled from reference):
+//   Hex frame border (unreached): gold-4 (#785a28) / gold-5 (#463714) inner shadow
+//   Hex frame border (reached):   gold-3 (#c89b3c)
+//   Inner circle fill:            blue-5 (#0a323c) base — deep teal navy
+//   Inner circle highlight ring:  blue-3 (#0397ab)
+//   Center crest fill:            blue-2 (#0ac8b9) — bright teal
+//   Background fill:              blue-6 (#091428) — dark navy
+// ---------------------------------------------------------------------------
+
+interface SPCheckpointIconProps {
+  /** Whether the milestone has been reached — brightens gold border and teal fill. */
+  reached: boolean;
+  /** Unique id prefix from useId() to keep SVG gradient ids unique per instance. */
+  idPrefix: string;
+}
+
+function SPCheckpointIcon({ reached, idPrefix }: SPCheckpointIconProps) {
+  // Flat-top regular hexagon, 36×40 viewBox
+  // Points: flat-top means top/bottom edges are horizontal.
+  // At w=36, h=40: corners at angles 0°,60°,120°,180°,240°,300° from center.
+  // Center (18,20), radius ~18 in x, ~20 in y — using equal inset: r=17
+  // flat-top hex: top edge horizontal — vertices at:
+  //   (cx + r*cos(30°+60°*k), cy + r*sin(30°+60°*k)) for k=0..5
+  //   = (cx ± r*sin(60°*k), cy ± r*cos(60°*k)) with flat-top offset
+  // Simpler: flat-top hex with r=15, center=(18,20):
+  //   top-left:    (5.5, 12), top-right:  (30.5, 12)
+  //   right-top:   (33,   20), right-bot: (30.5, 28)
+  //   bot-right:   (30.5, 28), bot-left:  (5.5,  28)
+  //   left-bot:    (3,   20)
+  // Using apothem-exact formula for flat-top at r=15:
+  //   half-width = r = 15, apothem = r*sqrt(3)/2 ≈ 12.99 → ~13
+  //   cx=18, cy=20
+  //   Points (flat-top): TL(5,13) TR(31,13) MR(36,20) BR(31,27) BL(5,27) ML(0,20) — but clamps w to 36
+  // Let's use a clean 36×32 viewBox with r=15, apothem=13:
+  //   flat-top hexagon points:
+  //   (cx-r, cy), (cx-r/2, cy-apo), (cx+r/2, cy-apo), (cx+r, cy), (cx+r/2, cy+apo), (cx-r/2, cy+apo)
+  //   cx=18,cy=16, r=15, apo=13:
+  //   (3,16) (10.5,3) (25.5,3) (33,16) (25.5,29) (10.5,29)
+
+  const cx = 18, cy = 16;
+  const r = 14; // hex outer radius
+  const apo = Math.round(r * Math.sqrt(3) / 2); // ≈ 12
+  const hexPts = [
+    [cx - r,   cy],
+    [cx - r/2, cy - apo],
+    [cx + r/2, cy - apo],
+    [cx + r,   cy],
+    [cx + r/2, cy + apo],
+    [cx - r/2, cy + apo],
+  ].map(([x, y]) => `${x},${y}`).join(" ");
+
+  // Inner hexagon (frame thickness ~2.5px inset):
+  const ri = r - 2.5;
+  const apoi = Math.round(ri * Math.sqrt(3) / 2);
+  const innerHexPts = [
+    [cx - ri,   cy],
+    [cx - ri/2, cy - apoi],
+    [cx + ri/2, cy - apoi],
+    [cx + ri,   cy],
+    [cx + ri/2, cy + apoi],
+    [cx - ri/2, cy + apoi],
+  ].map(([x, y]) => `${x},${y}`).join(" ");
+
+  const circleR = ri - 2; // inner circle fits inside inner hex
+
+  const gradId = `${idPrefix}-grad`;
+  const goldBorder = reached ? "var(--color-gold-3)" : "var(--color-gold-4)";
+  const goldInner  = reached ? "var(--color-gold-4)" : "var(--color-gold-5)";
+  const tealFill   = reached ? "var(--color-blue-3)" : "var(--color-blue-5)";
+  const tealRing   = reached ? "var(--color-blue-2)" : "var(--color-blue-3)";
+  const crestFill  = reached ? "var(--color-blue-2)" : "var(--color-blue-3)";
+
+  return (
+    <svg
+      aria-hidden="true"
+      width="36"
+      height="32"
+      viewBox="0 0 36 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <radialGradient id={gradId} cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stopColor={tealRing} stopOpacity="0.5" />
+          <stop offset="100%" stopColor={tealFill} stopOpacity="1" />
+        </radialGradient>
+      </defs>
+
+      {/* Outer hex frame — gold border */}
+      <polygon
+        points={hexPts}
+        fill={goldInner}
+        stroke={goldBorder}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+
+      {/* Inner hex cutout — dark navy background */}
+      <polygon
+        points={innerHexPts}
+        fill="var(--color-blue-6)"
+        stroke="none"
+      />
+
+      {/* Teal circle badge */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={circleR}
+        fill={`url(#${gradId})`}
+        stroke={tealRing}
+        strokeWidth="1"
+      />
+
+      {/* Center Hextech crest: small 6-point star / gear shape — 3 concentric rings */}
+      {/* Outer dot ring (6 small dots at 60° intervals) */}
+      {[0, 60, 120, 180, 240, 300].map((deg, i) => {
+        const rad = (deg * Math.PI) / 180;
+        const dotR = circleR * 0.55;
+        const dx = cx + dotR * Math.cos(rad);
+        const dy = cy + dotR * Math.sin(rad);
+        return (
+          <circle key={i} cx={dx} cy={dy} r="0.9" fill={crestFill} />
+        );
+      })}
+      {/* Center ring */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={circleR * 0.3}
+        fill="none"
+        stroke={crestFill}
+        strokeWidth="1.2"
+      />
+      {/* Center dot */}
+      <circle cx={cx} cy={cy} r="1.4" fill={crestFill} />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // SummonerSearchInput — thin local input matching the profile tab strip style
 // ---------------------------------------------------------------------------
 
@@ -249,60 +399,13 @@ interface MilestoneNodeProps {
 }
 
 function MilestoneNode({ milestone, isCurrent }: MilestoneNodeProps) {
-  const arcSize = 36;
-  const r = 15;
-  const cx = arcSize / 2;
-  const cy = arcSize / 2;
-  const circumference = 2 * Math.PI * r;
+  const iconId = useId();
 
   return (
     <div className="flex flex-col items-center gap-1.5">
-      {/* Circular container with optional arc ring */}
-      <div className="relative flex h-9 w-9 items-center justify-center">
-        {/* Arc SVG ring — full ring when reached, partial when current, none otherwise */}
-        {(milestone.reached || isCurrent) && (
-          <svg
-            aria-hidden="true"
-            width={arcSize}
-            height={arcSize}
-            viewBox={`0 0 ${arcSize} ${arcSize}`}
-            className="absolute inset-0"
-          >
-            {/* Background ring track */}
-            <circle
-              cx={cx}
-              cy={cy}
-              r={r}
-              fill="none"
-              stroke="var(--color-gold-5)"
-              strokeWidth="2"
-            />
-            {/* Filled arc */}
-            <circle
-              cx={cx}
-              cy={cy}
-              r={r}
-              fill="none"
-              stroke={milestone.reached ? "var(--color-gold-3)" : "var(--color-gold-4)"}
-              strokeWidth="2"
-              strokeDasharray={`${milestone.reached ? circumference : circumference * 0.35} ${circumference}`}
-              strokeDashoffset={circumference / 4}
-              strokeLinecap="round"
-            />
-          </svg>
-        )}
-        {/* Mini-crest icon */}
-        <img
-          src={milestone.iconSrc}
-          alt=""
-          aria-hidden="true"
-          width={22}
-          height={22}
-          className={[
-            "relative z-10 h-[22px] w-[22px] object-contain",
-            milestone.reached ? "opacity-90" : "opacity-30 grayscale",
-          ].join(" ")}
-        />
+      {/* Hexagonal SP checkpoint badge — tier-independent, ~36×32px */}
+      <div className="relative flex items-center justify-center">
+        <SPCheckpointIcon reached={milestone.reached} idPrefix={iconId} />
       </div>
       {/* SP label */}
       <span
