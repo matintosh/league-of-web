@@ -11,6 +11,8 @@ import {
   demoLootResources,
   LOOT_SIDEBAR_ICON_URLS,
   LOOT_BAR_ICON_URLS,
+  SAMPLE_MYTHIC_SHOP_ITEMS,
+  mythicEssenceIconUrl,
 } from "@low/fixtures";
 import { LootTab } from "./loot-tab";
 import type { LootSubTab } from "./loot-tab";
@@ -60,10 +62,15 @@ export function LootTabDemo() {
         lootBags={demoLootResources.lootBags}
         sidebarIcons={LOOT_SIDEBAR_ICON_URLS}
         barIcons={LOOT_BAR_ICON_URLS}
+        mythicShopSkins={SAMPLE_MYTHIC_SHOP_ITEMS}
+        meIconSrc={mythicEssenceIconUrl()}
         onSearch={(q) => console.log("search:", q)}
         onItemClick={(item) => setSlots((prev) => addToFirstEmpty(prev, item))}
         onCraft={() => console.log("craft")}
         onClearSlot={(idx) => setSlots((prev) => clearSlot(prev, idx))}
+        onMythicShopSkinClick={(skin) =>
+          console.log("mythic shop skin clicked:", skin.skinName)
+        }
       />
     </div>
   );
@@ -88,6 +95,8 @@ export function LootTabEmptyDemo() {
         lootBags={0}
         sidebarIcons={LOOT_SIDEBAR_ICON_URLS}
         barIcons={LOOT_BAR_ICON_URLS}
+        mythicShopSkins={SAMPLE_MYTHIC_SHOP_ITEMS}
+        meIconSrc={mythicEssenceIconUrl()}
       />
     </div>
   );
@@ -114,9 +123,40 @@ export function LootTabFilledForgeDemo() {
         lootBags={demoLootResources.lootBags}
         sidebarIcons={LOOT_SIDEBAR_ICON_URLS}
         barIcons={LOOT_BAR_ICON_URLS}
+        mythicShopSkins={SAMPLE_MYTHIC_SHOP_ITEMS}
+        meIconSrc={mythicEssenceIconUrl()}
         onItemClick={(item) => setSlots((prev) => addToFirstEmpty(prev, item))}
         onCraft={() => console.log("craft!")}
         onClearSlot={(idx) => setSlots((prev) => clearSlot(prev, idx))}
+      />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Mythic Shop sub-tab active (reference screenshot state)
+// ---------------------------------------------------------------------------
+
+export function LootTabMythicShopDemo() {
+  const [subTab, setSubTab] = useState<LootSubTab>("mythic-shop");
+
+  return (
+    <div className="h-[500px] w-[900px]">
+      <LootTab
+        activeSubTab={subTab}
+        onSubTabChange={setSubTab}
+        lootItems={demoLootCategories}
+        forgeSlots={emptyForgeSlots}
+        keyFragments={demoLootResources.keyFragments}
+        keys={demoLootResources.keys}
+        lootBags={demoLootResources.lootBags}
+        sidebarIcons={LOOT_SIDEBAR_ICON_URLS}
+        barIcons={LOOT_BAR_ICON_URLS}
+        mythicShopSkins={SAMPLE_MYTHIC_SHOP_ITEMS}
+        meIconSrc={mythicEssenceIconUrl()}
+        onMythicShopSkinClick={(skin) =>
+          console.log("mythic shop skin clicked:", skin.skinName)
+        }
       />
     </div>
   );
