@@ -57,3 +57,39 @@ export interface StoreItem {
   /** When true, renders a "Not enough RP" label in red. */
   insufficientRP?: boolean;
 }
+
+// ---------------------------------------------------------------------------
+// Purchase modal
+// ---------------------------------------------------------------------------
+
+/** A single item shown in the 2×2 preview grid of the purchase modal. */
+export interface PurchaseItem {
+  /** Stable item id. */
+  id: string;
+  /** Display name shown inside the preview tile. */
+  name: string;
+  /** Category label shown below the name. */
+  category: "Champion" | "Skin" | "Ward Skin" | "Icon" | "Emote" | "Bundle";
+  /** Art URL for the preview tile. */
+  artUrl: string;
+}
+
+/** Bundle / set data used to populate StoreItemPurchaseModal. */
+export interface PurchaseBundle {
+  /** Stable bundle id — must match the StoreItem id it originates from. */
+  id: string;
+  /** Bundle display name, e.g. "Arcade Caitlyn Border Set". */
+  setName: string;
+  /** Portrait art shown in Zone 1. */
+  setArtUrl: string;
+  /** Bullet breakdown lines, e.g. ["1 Champion", "1 Skin"]. */
+  breakdown: string[];
+  /** Original (pre-discount) RP price; null means no discount. */
+  originalPrice: number | null;
+  /** Discount percentage 0–100; null means no discount. */
+  discountPct: number | null;
+  /** Final RP price shown on the purchase button. */
+  finalPrice: number;
+  /** 2×2 preview items (up to 4). */
+  items: PurchaseItem[];
+}

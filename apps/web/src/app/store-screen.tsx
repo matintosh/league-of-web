@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { StoreSubNavBar, FeaturedTab } from "@low/ui";
+import { StoreSubNavBar, FeaturedTab, StoreItemPurchaseModal } from "@low/ui";
 import type { StoreTab } from "@low/ui";
 import {
   demoHeroSlides,
   demoFeaturedItems,
   demoTopSellers,
+  demoPurchaseBundles,
   rpIconUrl,
 } from "@low/fixtures";
 import type { StoreItem } from "@low/fixtures";
@@ -21,6 +22,7 @@ import type { StoreItem } from "@low/fixtures";
  * Structure:
  * - StoreSubNavBar — horizontal tab strip (FEATURED through ESPORTS) + PURCHASE RP button
  * - Tab content panel — currently only FEATURED is live; other tabs are placeholder
+ * - StoreItemPurchaseModal — overlay opened when an item card is clicked
  *
  * All state is local (fixtures only, no data fetching).
  */
@@ -29,6 +31,9 @@ export function StoreScreen() {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [featuredItems, setFeaturedItems] = useState<StoreItem[]>(demoFeaturedItems);
   const [topSellers, setTopSellers] = useState<StoreItem[]>(demoTopSellers);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+
+  const rpIcon = rpIconUrl();
 
   const handleWishlist = (id: string) => {
     const toggle = (prev: StoreItem[]) =>
@@ -39,6 +44,11 @@ export function StoreScreen() {
     setTopSellers(toggle);
   };
 
+  // Only featured-grid items have entries in demoPurchaseBundles — a
+  // top-seller click selects an id with no bundle and is a deliberate no-op.
+  const selectedBundle =
+    selectedItemId !== null ? demoPurchaseBundles[selectedItemId] : undefined;
+
   return (
     <div className="flex h-full flex-col bg-blue-7">
       {/* Sub-nav bar */}
@@ -46,7 +56,7 @@ export function StoreScreen() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onPurchaseRP={() => console.log("purchase RP")}
-        rpIconSrc={rpIconUrl()}
+        rpIconSrc={rpIcon}
       />
 
       {/* Tab content */}
@@ -58,9 +68,9 @@ export function StoreScreen() {
             featuredItems={featuredItems}
             topSellers={topSellers}
             onSlideChange={setActiveSlideIndex}
-            onItemClick={(id) => console.log("item click:", id)}
+            onItemClick={(id) => setSelectedItemId(id)}
             onWishlist={handleWishlist}
-            rpIconSrc={rpIconUrl()}
+            rpIconSrc={rpIcon}
           />
         ) : (
           /* Placeholder for unimplemented tabs */
@@ -71,6 +81,25 @@ export function StoreScreen() {
           </div>
         )}
       </div>
+
+      {/* Purchase modal — rendered at StoreScreen level so it overlays the full store */}
+      {selectedBundle !== undefined && (
+        <StoreItemPurchaseModal
+          open={selectedItemId !== null}
+          setArtUrl={selectedBundle.setArtUrl}
+          setName={selectedBundle.setName}
+          breakdown={selectedBundle.breakdown}
+          originalPrice={selectedBundle.originalPrice}
+          discountPct={selectedBundle.discountPct}
+          finalPrice={selectedBundle.finalPrice}
+          canAfford={false}
+          items={selectedBundle.items}
+          rpIconSrc={rpIcon}
+          onPurchase={() => console.log("purchase", selectedItemId)}
+          onWishlist={() => console.log("wishlist", selectedItemId)}
+          onClose={() => setSelectedItemId(null)}
+        />
+      )}
     </div>
   );
 }
