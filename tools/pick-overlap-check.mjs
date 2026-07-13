@@ -18,15 +18,19 @@
  *
  * Exit code 0 = no unintended overlaps; 1 = overlaps found (or navigation failed).
  *
- * Navigation flow (post-#174 queue-in-lobby rework):
+ * Navigation flow (post-#275 ban-phase rework):
  *   / → PLAY button → Confirm (mode-select) → Find Match (party lobby) →
  *   wait for Accept modal (up to 15 s) → click Accept →
- *   wait 1.5 s → measure pick screen
+ *   wait 1 s → ban phase appears ("Ban a Champion!") →
+ *   click first champion tile → click BAN → wait 1 s → measure pick screen
  *
  * NOTE: The role-selector step (button[aria-label='Top']) was retired in
  * #161/#174. The lobby no longer has a role picker before queuing; role slots
- * appear on the pick screen filter bar only. The new flow goes straight from
- * party-lobby Find Match → queue → Accept → pick.
+ * appear on the pick screen filter bar only.
+ *
+ * Ban phase step added in #275: ACCEPT now transitions to BanPhaseScreen first.
+ * The checker clicks the first available champion tile in the grid and clicks BAN
+ * to proceed to the pick screen. If BAN phase text is not found, check fails.
  *
  * Intentional overlaps (whitelisted — by design):
  *   - progressbar/mainArea: progressbar is above main (border-touch parent)
@@ -121,7 +125,40 @@ try {
   await browser.close();
   process.exit(1);
 }
-await page.waitForTimeout(1500);
+await page.waitForTimeout(1000);
+
+// 5. Navigate through ban phase (#275): verify ban screen, click a champion, click BAN
+console.log("Step 5: Ban phase — verify, select champion, ban …");
+const onBan = await page.getByText("Ban a Champion!", { exact: false }).count();
+if (onBan === 0) {
+  console.error("ERROR: Could not reach ban phase screen ('Ban a Champion!' not found).");
+  await browser.close();
+  process.exit(1);
+}
+console.log("✓ Ban phase screen reached.");
+
+// Click the first champion tile in the champion grid
+try {
+  await page.locator("[role='listbox'] button").first().waitFor({ state: "visible", timeout: 5000 });
+  await page.locator("[role='listbox'] button").first().click();
+} catch (e) {
+  console.error("ERROR: Could not click champion tile in ban grid:", e.message);
+  await browser.close();
+  process.exit(1);
+}
+await page.waitForTimeout(300);
+
+// Click the BAN button (LockInButton with label "Ban")
+try {
+  const banBtn = page.locator("main button").filter({ hasText: /^ban$/i });
+  await banBtn.waitFor({ state: "visible", timeout: 3000 });
+  await banBtn.click();
+} catch (e) {
+  console.error("ERROR: Could not click BAN button:", e.message);
+  await browser.close();
+  process.exit(1);
+}
+await page.waitForTimeout(1000);
 
 // Verify we're on the pick screen by checking for "Choose Your Champion!"
 const onPick = await page.getByText("Choose Your Champion!", { exact: false }).count();

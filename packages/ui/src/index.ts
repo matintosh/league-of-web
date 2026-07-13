@@ -1,5 +1,7 @@
 export type { Area, ShowcaseEntry, ShowcaseVariant } from "./showcase";
 // champ-select
+export { BanStatusStrip } from "./champ-select/ban-status-strip";
+export type { BanStatusStripProps } from "./champ-select/ban-status-strip";
 export { ChampionPickTile } from "./champ-select/champion-pick-tile";
 export type { ChampionPickTileProps } from "./champ-select/champion-pick-tile";
 export { ChampSelectActionBar } from "./champ-select/champ-select-action-bar";

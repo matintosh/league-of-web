@@ -288,6 +288,34 @@ export const pickTeam: PickTeamMember[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Ban phase fixture
+// ---------------------------------------------------------------------------
+
+/**
+ * Fixture data for the ban phase screen (issue #275).
+ *
+ * v1 simplification: the local player bans first (slot 0 for ally).
+ * The other 9 ban slots are pre-populated — ally slots 1–4 with fixture
+ * champion IDs, enemy slots 0–4 fully filled. After the player completes
+ * their ban, the screen immediately transitions to the pick phase.
+ *
+ * allyBans[0] = null → player's own slot (active, they must choose).
+ * allyBans[1–4] = champion IDs that ally teammates "already banned".
+ * enemyBans[0–4] = champion IDs that enemies "already banned".
+ */
+export interface BanPhaseFixture {
+  allyBans: (string | null)[];
+  enemyBans: string[];
+  activeAllySlot: number;
+}
+
+export const banPhaseFixture: BanPhaseFixture = {
+  allyBans: [null, "Aatrox", "Jhin", "Sivir", "Teemo"],
+  enemyBans: ["Yasuo", "Zed", "Caitlyn", "Thresh", "Jinx"],
+  activeAllySlot: 0,
+};
+
+// ---------------------------------------------------------------------------
 // Chroma fixtures
 // ---------------------------------------------------------------------------
 

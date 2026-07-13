@@ -1,4 +1,4 @@
-// Keep in sync with packages/tokens/src/theme.css — same 56 hex values.
+// Keep in sync with packages/tokens/src/theme.css — same 60 hex values.
 /** Hextech palette as TS constants — for the rare case CSS classes can't be used (e.g. canvas). */
 export const palette = {
   gold1: "#f0e6d2",
@@ -85,6 +85,15 @@ export const palette = {
   /** Arcade CTA bright aqua — LEARN MORE button fill (issue #240, pixel-sampled from
    *  docs/reference/client-home-arcade2019.jpg y=978–990 x=1300–1430: mean #63eee6) */
   arcadeAqua: "#63eee6",
+  /** Ban phase bright border/accent red — BAN button border and BanStatusStrip X stroke (issue #275).
+   *  Brick-red family; distinct from riotRed (#eb022b login CTA) and warning (#ed2c49 queue alert). */
+  banRed1: "#d94444",
+  /** Ban phase fill gradient top stop — BAN button enabled fill top (#c13333, issue #275) */
+  banRed2: "#c13333",
+  /** Ban phase fill gradient bottom stop — BAN button enabled fill bottom (#8b1f1f, issue #275) */
+  banRed3: "#8b1f1f",
+  /** Ban phase press/active fill — BAN button active state darkened fill (#5c1414, issue #275) */
+  banRedPress: "#5c1414",
 } as const;
 
 export type Palette = typeof palette;
