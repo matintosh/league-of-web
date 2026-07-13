@@ -22,8 +22,9 @@ import {
   SocialPanel,
   SocialDock,
   ArcadeEventTab,
+  TftHubScreen,
 } from "@low/ui";
-import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard } from "@low/ui";
+import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -47,19 +48,46 @@ import { StoreScreen } from "./store-screen";
 
 // "matchmaking" view has been retired (issue #174): queue state now lives
 // inside PartyLobbyScreen; the shell no longer has a separate queue route.
-type View = "home" | "mode-select" | "party-lobby" | "collection" | "pick" | "loadout" | "profile" | "store";
+type View = "home" | "mode-select" | "party-lobby" | "collection" | "pick" | "loadout" | "profile" | "store" | "tft";
 
-// Nav set matches the reference left→right: Home (live), Profile (dead),
-// Collection (live), Store (live — #171), Teamfight Tactics (dead).
+// Nav set matches the reference left→right: Home (live), Profile (live),
+// Collection (live), Store (live — #171), Teamfight Tactics (live — #196).
 const NAV_ITEMS: NavItem[] = [
   { id: "home",       label: "Home" },
   { id: "profile",    label: "Profile" },
   { id: "collection", label: "Collection" },
   { id: "store",      label: "Store" },
-  { id: "tft",        label: "Teamfight Tactics", disabled: true },
+  { id: "tft",        label: "Teamfight Tactics" },
 ];
 
 const KEYART_CHAMPION = "Jinx";
+
+// ---------------------------------------------------------------------------
+// TFT Hub fixtures — page-level values (no fetching in @low/ui)
+// ---------------------------------------------------------------------------
+
+const TFT_ORB: OrbOfEnlightenmentPanelProps = {
+  countdownLabel: "AVAILABLE IN 21H 59M 55S",
+  progress: 0.45,
+  claimable: false,
+  onPlay: () => console.log("tft: play"),
+  onClaim: () => console.log("tft: claim"),
+};
+
+const TFT_MISSIONS: MissionRow[] = [
+  { counters: [{ current: 0, total: 5 }],  description: "Play 5 games of TFT to Round 20", daysLabel: "5 days", rewardPts: 50 },
+  { counters: [{ current: 0, total: 30 }, { current: 0, total: 30 }], description: "Play 30 Nobles OR Play 30 Pirates", daysLabel: "5 days", rewardPts: 50 },
+  { counters: [{ current: 0, total: 1 }],  description: "Mine 20 gold in one stage", daysLabel: "5 days", rewardPts: 50 },
+];
+
+const TFT_PASS_ITEMS: RewardItem[] = [
+  { id: "1", position: 1, locked: false },
+  { id: "2", position: 2, locked: true },
+  { id: "3", position: 3, locked: false },
+  { id: "4", position: 4, locked: true },
+  { id: "5", position: 5, locked: true },
+  { id: "6", position: 6, locked: true },
+];
 
 // ---------------------------------------------------------------------------
 // Fixture news items — 3 entries (page-level, no data fetching)
@@ -429,6 +457,7 @@ export function ClientShell() {
               if (id === "collection") setView("collection");
               else if (id === "profile") setView("profile");
               else if (id === "store") setView("store");
+              else if (id === "tft") setView("tft");
               else if (id === "home") setView("home");
             }}
             currencySlot={
@@ -542,7 +571,22 @@ export function ClientShell() {
           <div className="flex flex-1 overflow-hidden">
             {/* Screen content — fills all available width (minus rail when present) */}
             <div className="relative flex-1 min-w-0 overflow-hidden">
-              {view === "store" ? (
+              {view === "tft" ? (
+                <TftHubScreen
+                  orb={TFT_ORB}
+                  rank={{
+                    profileIconSrc: profileIconUrl(demoSummoner.profileIconId),
+                    rankLabel: "UNRANKED",
+                  }}
+                  missions={{ missions: TFT_MISSIONS }}
+                  pass={{
+                    items: TFT_PASS_ITEMS,
+                    currentPts: 0,
+                    totalPts: 100,
+                    onOpenLoot: () => console.log("tft: open loot"),
+                  }}
+                />
+              ) : view === "store" ? (
                 <StoreScreen />
               ) : view === "profile" ? (
                 <ProfileScreen />
