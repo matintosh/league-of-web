@@ -9,7 +9,7 @@
  *   tokens used only in inline `style={{}}` props or SVG attributes are
  *   always present — regardless of Tailwind's class-usage scan.
  *
- * Keep ALL THREE in sync (same 56 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
+ * Keep ALL THREE in sync (same 60 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
  */
 
 @theme {
@@ -108,6 +108,21 @@
      docs/reference/client-home-arcade2019.jpg y=978–990 x=1300–1430: mean #63eee6, std ≤ 25) */
   --color-arcade-aqua: #63eee6;
 
+  /* Ban phase red — brick-red palette for the BAN button in the champ-select ban phase (issue #275).
+     Sampled from the Riot-red design language (distinct from riot-red #eb022b login accent and
+     warning #ed2c49 — those are bright crimson; these are deeper brick-red fills for dark-bg CTAs).
+     ban-red-1: bright border/accent (#d94444)
+     ban-red-2: fill gradient top stop (#c13333)
+     ban-red-3: fill gradient bottom stop (#8b1f1f)
+     ban-red-press: press/active darkened fill (#5c1414)
+     Hover overlay bottom stop is composed via color-mix:
+       color-mix(in srgb, var(--color-ban-red-2) 55%, var(--color-ban-red-3) 45%) ≈ #a02828
+     — no separate token needed; compose at call site. */
+  --color-ban-red-1: #d94444;
+  --color-ban-red-2: #c13333;
+  --color-ban-red-3: #8b1f1f;
+  --color-ban-red-press: #5c1414;
+
   /* Typography — font files loaded by the app via next/font, exposed as vars */
   --font-display: var(--font-marcellus), "Marcellus", serif;
   --font-body: var(--font-inter), "Inter", sans-serif;
@@ -203,5 +218,11 @@
     --color-arcade-bg-deep: #050e20;
     /* Arcade CTA — bright aqua fill for the LEARN MORE button (issue #240) */
     --color-arcade-aqua: #63eee6;
+
+    /* Ban phase red — brick-red palette for the BAN button (issue #275) */
+    --color-ban-red-1: #d94444;
+    --color-ban-red-2: #c13333;
+    --color-ban-red-3: #8b1f1f;
+    --color-ban-red-press: #5c1414;
   }
 }

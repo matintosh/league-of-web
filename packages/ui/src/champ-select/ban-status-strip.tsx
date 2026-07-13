@@ -72,7 +72,7 @@ function BanSlot({
         filter: active
           ? `drop-shadow(0 0 5px var(--color-gold-3))`
           : undefined,
-        backgroundColor: "var(--color-grey-5, #1e2328)",
+        backgroundColor: "var(--color-grey-4)",
       }}
     >
       {filled && (
@@ -110,14 +110,14 @@ function BanSlot({
             </defs>
             <line
               x1="6" y1="6" x2="22" y2="22"
-              stroke="#d94444"
+              stroke="var(--color-ban-red-1)"
               strokeWidth="2.5"
               strokeLinecap="round"
               filter={`url(#${filterId})`}
             />
             <line
               x1="22" y1="6" x2="6" y2="22"
-              stroke="#d94444"
+              stroke="var(--color-ban-red-1)"
               strokeWidth="2.5"
               strokeLinecap="round"
               filter={`url(#${filterId})`}

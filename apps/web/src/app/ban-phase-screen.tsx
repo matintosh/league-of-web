@@ -22,10 +22,8 @@
  *   - Auto-ban fires at timer=0 (selected champion or DEFAULT_PICK_CHAMPION_ID).
  *
  * LockInButton reuse decision: variant="ban" prop added to LockInButton to
- * maintain the same trapezoid geometry while changing to the red gradient fill.
- * Color divergence note: red values (#c13333 → #8b1f1f, border #d94444) are
- * hardcoded hex — no red token exists in @low/tokens yet (follow-up ticket needed).
- * These match the Riot-red palette referenced in the issue spec.
+ * maintain the same trapezoid geometry while switching to the red gradient fill.
+ * Colors use ban-red-1/2/3/press tokens from @low/tokens (added in this issue).
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -125,7 +123,9 @@ export function BanPhaseScreen({ onBanComplete }: BanPhaseScreenProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
   const nextMsgIdRef = useRef(INITIAL_MESSAGES.length + 1);
 
-  // ── Timer cleanup ────────────────────────────────────────────────────────
+  // ── Timer start + cleanup ────────────────────────────────────────────────
+  // Single effect: starts the interval on mount; return cleanup clears it on unmount.
+  // This is the sole cleanup path — no separate cleanup-only effect needed.
   const clearCountdown = useCallback(() => {
     if (countdownRef.current !== null) {
       clearInterval(countdownRef.current);
@@ -133,13 +133,6 @@ export function BanPhaseScreen({ onBanComplete }: BanPhaseScreenProps) {
     }
   }, []);
 
-  useEffect(() => {
-    return () => {
-      clearCountdown();
-    };
-  }, [clearCountdown]);
-
-  // ── Start countdown on mount ─────────────────────────────────────────────
   useEffect(() => {
     countdownRef.current = setInterval(() => {
       setSecondsRemaining((s) => Math.max(0, s - 1));
@@ -222,8 +215,8 @@ export function BanPhaseScreen({ onBanComplete }: BanPhaseScreenProps) {
           style={{
             background: [
               "radial-gradient(ellipse 80% 60% at 50% 110%, color-mix(in srgb, var(--color-blue-7) 20%, transparent) 0%, transparent 70%)",
-              // Red tint overlay for ban phase context
-              "radial-gradient(ellipse 60% 40% at 50% 0%, color-mix(in srgb, #8b1f1f 10%, transparent) 0%, transparent 60%)",
+              // Red tint overlay for ban phase context — uses ban-red-3 token
+              "radial-gradient(ellipse 60% 40% at 50% 0%, color-mix(in srgb, var(--color-ban-red-3) 10%, transparent) 0%, transparent 60%)",
             ].join(", "),
           }}
         />
