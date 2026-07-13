@@ -29,6 +29,7 @@ import {
   loadingArtUrl,
   championSplashUrl,
   warwickDetail,
+  warwickMastery,
   RUNE_PATHS,
   SUMMONER_SPELLS,
 } from "@low/fixtures";
@@ -980,6 +981,7 @@ export function CollectionScreen() {
           <div className="absolute inset-0 z-20">
             <ChampionDetail
               champion={warwickDetail}
+              mastery={warwickMastery}
               onClose={() => setDetailChampId(null)}
             />
           </div>

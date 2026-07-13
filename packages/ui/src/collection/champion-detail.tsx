@@ -479,7 +479,7 @@ function MasteryTab({ mastery, champId }: MasteryTabProps) {
                     (e.currentTarget as HTMLImageElement).style.display = "none";
                   }}
                 />
-                {/* Always-present SVG overlaid — masked by image when it loads */}
+                {/* Always-present SVG overlay — renders ABOVE the crest img (level ring + number); img is the photographic base beneath */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <MasteryCrestSvg level={mastery.level} />
                 </div>

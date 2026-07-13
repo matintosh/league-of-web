@@ -218,5 +218,3 @@ export const warwickMastery: ChampionMastery = {
   nextMilestoneRewards: ["Mastery Chair", "x2 Marks of Mastery"],
 };
 
-/** Warwick mastery fixture — unranked / no mastery data state. */
-export const warwickMasteryUnranked: ChampionMastery | undefined = undefined;
