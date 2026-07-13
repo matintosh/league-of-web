@@ -77,13 +77,11 @@ export interface ProgressPanelProps {
 }
 
 /**
- * Props for the JourneyTab screen.
+ * Props for the JourneyTab screen (the Journey OVERVIEW).
  *
- * The shell always renders JourneyTab with `activeView="overview"` — the
- * "level-rewards" branch is handled by rendering LevelUpRewardsDetail directly
- * in the shell. The `activeView` prop is retained only so the shell can pass
- * the current conceptual state through; JourneyTab never renders the detail
- * view itself.
+ * JourneyTab renders only the overview. The level-rewards detail is a separate
+ * component (LevelUpRewardsDetail) that the shell renders directly, keeping
+ * view routing and selected-level state in the shell.
  */
 export interface JourneyTabProps {
   /** Left column Zone L1: Champion Starter Pack card. */
