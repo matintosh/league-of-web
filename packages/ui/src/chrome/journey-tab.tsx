@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useState } from "react";
 import type { ChampionIconEntry, LevelRewardCard } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -13,8 +13,14 @@ import type { ChampionIconEntry, LevelRewardCard } from "@low/fixtures";
 export interface StarterPackProps {
   /** Pack display name, e.g. "Bot Lane Pack". */
   label: string;
-  /** Champion icons to display in the horizontal strip. */
+  /** Champion icons to display in the carousel. */
   champions: ChampionIconEntry[];
+  /**
+   * Number of champion icons shown per carousel page.
+   * Defaults to 3 — matching the reference's visible slot count.
+   * Carousel is only shown when champions.length > pageSize.
+   */
+  pageSize?: number;
   /** Short sub-copy, e.g. "3 Champions + Skins and more!" */
   subCopy: string;
   /** Original (crossed-out) price in BE. */
@@ -274,10 +280,81 @@ function LockBadge() {
 }
 
 // ---------------------------------------------------------------------------
+// CarouselChevron — prev/next arrow button for the starter pack carousel
+// ---------------------------------------------------------------------------
+
+interface CarouselChevronProps {
+  direction: "prev" | "next";
+  disabled: boolean;
+  onClick: () => void;
+  label: string;
+}
+
+function CarouselChevron({ direction, disabled, onClick, label }: CarouselChevronProps) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className={[
+        "relative z-10 flex h-6 w-6 shrink-0 items-center justify-center transition-colors duration-150",
+        disabled
+          ? "cursor-default text-grey-3 opacity-40"
+          : "cursor-pointer text-grey-2 hover:text-gold-2",
+      ].join(" ")}
+    >
+      <svg
+        aria-hidden="true"
+        width="10"
+        height="14"
+        viewBox="0 0 10 14"
+        fill="none"
+      >
+        {direction === "prev" ? (
+          <path
+            d="M7 1L2 7l5 6"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ) : (
+          <path
+            d="M3 1l5 6-5 6"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
+      </svg>
+    </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // ChampionStarterPackCard — Zone L1
+//
+// Carousel state is component-internal (ephemeral UI — resets on unmount/nav,
+// which is intentional for the NPE-era home screen). When champions.length <=
+// pageSize the chevrons are omitted and dots are not rendered (single-page mode).
 // ---------------------------------------------------------------------------
 
 function ChampionStarterPackCard({ starterPack }: { starterPack: StarterPackProps }) {
+  const pageSize = starterPack.pageSize ?? 3;
+  const totalPages = Math.ceil(starterPack.champions.length / pageSize);
+  const [page, setPage] = useState(0);
+
+  const isMultiPage = totalPages > 1;
+  const isFirstPage = page === 0;
+  const isLastPage = page >= totalPages - 1;
+
+  const visibleChampions = starterPack.champions.slice(
+    page * pageSize,
+    page * pageSize + pageSize,
+  );
+
   return (
     <div
       className="flex flex-col overflow-hidden border border-gold-4"
@@ -301,42 +378,95 @@ function ChampionStarterPackCard({ starterPack }: { starterPack: StarterPackProp
         </svg>
       </div>
 
-      {/* Champion icon strip */}
-      <div className="flex items-center justify-center gap-1.5 px-3 py-3">
-        {starterPack.champions.map((champ) => (
-          <img
-            key={champ.id}
-            src={champ.iconSrc}
-            alt={champ.name}
-            width={56}
-            height={56}
-            className="border border-gold-5 object-cover"
+      {/* Champion icon carousel row */}
+      <div className="flex items-center gap-1 px-2 pt-3 pb-1">
+        {/* Prev chevron — only rendered in multi-page mode */}
+        {isMultiPage && (
+          <CarouselChevron
+            direction="prev"
+            disabled={isFirstPage}
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            label="Previous champions"
           />
-        ))}
-        {/* Blue Essence bonus icon */}
-        <div
-          className="flex h-14 w-14 items-center justify-center border border-blue-4"
-          style={{ background: "color-mix(in srgb, var(--color-blue-7) 80%, var(--color-hextech-black) 20%)" }}
-          aria-label="Blue Essence bonus"
-        >
-          <BlueEssenceIcon size={28} />
-        </div>
-        {/* Mastery bonus icon */}
-        <div
-          className="flex h-14 w-14 items-center justify-center border border-gold-5"
-          style={{ background: "color-mix(in srgb, var(--color-hextech-black) 70%, var(--color-gold-6) 30%)" }}
-          aria-label="Champion Mastery bonus"
-        >
-          <svg aria-hidden="true" width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <polygon
-              points="14,2 18,10 27,11 21,17 22.5,26 14,22 5.5,26 7,17 1,11 10,10"
-              fill="var(--color-gold-4)"
-              stroke="var(--color-gold-3)"
-              strokeWidth="1"
+        )}
+
+        {/* Champion icons for current page */}
+        <div className="flex flex-1 items-center justify-center gap-1.5">
+          {visibleChampions.map((champ) => (
+            <img
+              key={champ.id}
+              src={champ.iconSrc}
+              alt={champ.name}
+              width={56}
+              height={56}
+              className="border border-gold-5 object-cover"
             />
-          </svg>
+          ))}
+          {/* Blue Essence bonus icon — shown persistently (not paginated) */}
+          <div
+            className="flex h-14 w-14 items-center justify-center border border-blue-4"
+            style={{ background: "color-mix(in srgb, var(--color-blue-7) 80%, var(--color-hextech-black) 20%)" }}
+            aria-label="Blue Essence bonus"
+          >
+            <BlueEssenceIcon size={28} />
+          </div>
+          {/* Mastery bonus icon — shown persistently (not paginated) */}
+          <div
+            className="flex h-14 w-14 items-center justify-center border border-gold-5"
+            style={{ background: "color-mix(in srgb, var(--color-hextech-black) 70%, var(--color-gold-6) 30%)" }}
+            aria-label="Champion Mastery bonus"
+          >
+            <svg aria-hidden="true" width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <polygon
+                points="14,2 18,10 27,11 21,17 22.5,26 14,22 5.5,26 7,17 1,11 10,10"
+                fill="var(--color-gold-4)"
+                stroke="var(--color-gold-3)"
+                strokeWidth="1"
+              />
+            </svg>
+          </div>
         </div>
+
+        {/* Next chevron — only rendered in multi-page mode */}
+        {isMultiPage && (
+          <CarouselChevron
+            direction="next"
+            disabled={isLastPage}
+            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            label="Next champions"
+          />
+        )}
       </div>
+
+      {/* Pagination dots — only rendered in multi-page mode */}
+      {isMultiPage && (
+        <div
+          className="flex items-center justify-center gap-1.5 pb-2"
+          role="tablist"
+          aria-label="Carousel page"
+        >
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              role="tab"
+              aria-selected={i === page}
+              aria-label={`Page ${i + 1} of ${totalPages}`}
+              onClick={() => setPage(i)}
+              className="cursor-pointer rounded-full transition-colors duration-150"
+              style={{
+                width: 6,
+                height: 6,
+                background: i === page
+                  ? "var(--color-gold-3)"
+                  : "var(--color-grey-4)",
+                border: "none",
+                padding: 0,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Sub-copy */}
       <p className="px-3 pb-2 text-center font-body text-xs text-grey-1">

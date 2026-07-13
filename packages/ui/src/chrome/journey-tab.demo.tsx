@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   DEMO_STARTER_PACK,
+  DEMO_STARTER_PACK_MULTI_PAGE,
   DEMO_AWAKENING_MISSIONS,
   DEMO_LEVEL_UP_REWARDS,
   DEMO_DAILY_PLAY_REWARDS,
@@ -72,6 +73,23 @@ export function JourneyTabCompletedDemo() {
         awakeningMissions={{ ...DEMO_AWAKENING_MISSIONS, completedCount: 8 }}
         levelUpRewards={{ ...DEMO_LEVEL_UP_REWARDS, current: 10, total: 10 }}
         dailyPlayRewards={{ ...DEMO_DAILY_PLAY_REWARDS, current: 7, total: 7 }}
+      />
+    </div>
+  );
+}
+
+/**
+ * Demo: Journey tab with a 6-champion multi-page carousel (2 pages of 3).
+ * Demonstrates prev/next chevrons + pagination dots.
+ */
+export function JourneyTabMultiPageCarouselDemo() {
+  return (
+    <div style={{ width: "100%", height: 640 }}>
+      <JourneyTab
+        starterPack={DEMO_STARTER_PACK_MULTI_PAGE}
+        awakeningMissions={DEMO_AWAKENING_MISSIONS}
+        levelUpRewards={DEMO_LEVEL_UP_REWARDS}
+        dailyPlayRewards={DEMO_DAILY_PLAY_REWARDS}
       />
     </div>
   );

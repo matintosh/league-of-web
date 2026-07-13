@@ -60,6 +60,19 @@ export const STARTER_PACK_CHAMPIONS: ChampionIconEntry[] = [
   { id: "Jhin", name: "Jhin", iconSrc: championSquareUrl("Jhin") },
 ];
 
+/**
+ * Extended starter pack champion list (6 champions — two pages of 3) used by
+ * the multi-page carousel showcase variant.
+ */
+export const STARTER_PACK_CHAMPIONS_EXTENDED: ChampionIconEntry[] = [
+  { id: "Ashe", name: "Ashe", iconSrc: championSquareUrl("Ashe") },
+  { id: "MissFortune", name: "Miss Fortune", iconSrc: championSquareUrl("MissFortune") },
+  { id: "Jhin", name: "Jhin", iconSrc: championSquareUrl("Jhin") },
+  { id: "Garen", name: "Garen", iconSrc: championSquareUrl("Garen") },
+  { id: "Annie", name: "Annie", iconSrc: championSquareUrl("Annie") },
+  { id: "Jinx", name: "Jinx", iconSrc: championSquareUrl("Jinx") },
+];
+
 export const DEMO_STARTER_PACK = {
   label: "Bot Lane Pack",
   champions: STARTER_PACK_CHAMPIONS,
@@ -67,6 +80,16 @@ export const DEMO_STARTER_PACK = {
   originalPrice: 5670,
   discountPct: 89,
   discountedPrice: 650,
+} as const;
+
+/** Starter pack fixture with 6 champions — demonstrates a 2-page carousel. */
+export const DEMO_STARTER_PACK_MULTI_PAGE = {
+  label: "All Roles Pack",
+  champions: STARTER_PACK_CHAMPIONS_EXTENDED,
+  subCopy: "6 Champions + Skins and more!",
+  originalPrice: 9870,
+  discountPct: 89,
+  discountedPrice: 1100,
 } as const;
 
 export const DEMO_AWAKENING_MISSIONS = {
