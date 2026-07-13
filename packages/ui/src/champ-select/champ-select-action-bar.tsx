@@ -36,9 +36,8 @@ export interface ChampSelectActionBarProps {
 // ---------------------------------------------------------------------------
 // Bar background: #0c1a1d (measured) → closest token is grey-cool (#1e282d).
 //   We use bg-grey-cool as the nearest dark teal-grey token.
-// Rune dropdown border: #672725 (measured) — no token match.
-//   Known divergence: uses CSS custom property --color-rune-border (#672725)
-//   defined inline via style prop. Documented here per project policy.
+// Rune dropdown border: #672725 (measured) → token composition (delta≤7):
+//   riot-red 27% + gold-5 19% + grey-cool 54% (nested mix) ≈ rgb(103,39,43).
 // Rune dropdown bg: #252324 (measured) → nearest token is hextech-black (#010a13)
 //   or grey-4 (#1e2328). We use bg-grey-4 as the closest available surface.
 // Divider/separator lines: gold-5 (confirmed token match).
@@ -89,7 +88,6 @@ export function ChampSelectActionBar({
       </div>
 
       {/* Rune-page dropdown button */}
-      {/* Known divergence: border color #672725 has no token — documented above */}
       <button
         type="button"
         onClick={onRunePageClick}
@@ -105,7 +103,8 @@ export function ChampSelectActionBar({
           width: 200,
           borderWidth: 1,
           borderStyle: "solid",
-          borderColor: "#672725",
+          borderColor:
+            "color-mix(in srgb, var(--color-riot-red) 27%, color-mix(in srgb, var(--color-gold-5) 26%, var(--color-grey-cool) 74%))",
           borderRadius: 6,
         }}
       >
@@ -185,8 +184,7 @@ export function ChampSelectActionBar({
           "group flex h-9 w-9 shrink-0 items-center justify-center",
           "border border-gold-5 bg-grey-4",
           "transition-colors duration-150",
-          "hover:bg-grey-3",
-          onEmoteClick ? "cursor-pointer" : "cursor-default",
+          onEmoteClick ? "hover:bg-grey-3 cursor-pointer" : "cursor-default",
         ].join(" ")}
       >
         {/* Smiley face — matches the emote icon glyph in the reference */}

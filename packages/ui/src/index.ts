@@ -1,9 +1,9 @@
 export type { Area, ShowcaseEntry, ShowcaseVariant } from "./showcase";
 // champ-select
-export { ChampSelectActionBar } from "./champ-select/champ-select-action-bar";
-export type { ChampSelectActionBarProps } from "./champ-select/champ-select-action-bar";
 export { ChampionPickTile } from "./champ-select/champion-pick-tile";
 export type { ChampionPickTileProps } from "./champ-select/champion-pick-tile";
+export { ChampSelectActionBar } from "./champ-select/champ-select-action-bar";
+export type { ChampSelectActionBarProps } from "./champ-select/champ-select-action-bar";
 export { CountdownHeader } from "./champ-select/countdown-header";
 export type { CountdownHeaderProps } from "./champ-select/countdown-header";
 export { LockInButton } from "./champ-select/lock-in-button";
