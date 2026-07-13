@@ -6,7 +6,7 @@ export const arcadeEventTabShowcase: ShowcaseEntry = {
   name: "Arcade Event Tab",
   area: "chrome",
   description:
-    "Arcade 2019 event landing page — dark neon aesthetic with a 4-skin horizontal grid, Arcade Pass panel with unlock list and LEARN MORE CTA, event trailer tile, and New Champion tile.",
+    "Arcade 2019 event landing page — dark neon aesthetic with a 4-skin horizontal grid, Arcade Pass panel with unlock list and LEARN MORE CTA (bright aqua bg-arcade-aqua #63eee6, dark text), event trailer tile, and New Champion tile.",
   variants: [
     {
       name: "Default — Battle Boss Yasuo selected",

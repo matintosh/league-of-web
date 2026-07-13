@@ -1,4 +1,4 @@
-// Keep in sync with packages/tokens/src/theme.css — same 55 hex values.
+// Keep in sync with packages/tokens/src/theme.css — same 56 hex values.
 /** Hextech palette as TS constants — for the rare case CSS classes can't be used (e.g. canvas). */
 export const palette = {
   gold1: "#f0e6d2",
@@ -82,6 +82,9 @@ export const palette = {
   arcadeBgDark: "#0d0520",
   /** Arcade event deep navy-black — root gradient deep stop (issue #187) */
   arcadeBgDeep: "#050e20",
+  /** Arcade CTA bright aqua — LEARN MORE button fill (issue #240, pixel-sampled from
+   *  docs/reference/client-home-arcade2019.jpg y=978–990 x=1300–1430: mean #63eee6) */
+  arcadeAqua: "#63eee6",
 } as const;
 
 export type Palette = typeof palette;
