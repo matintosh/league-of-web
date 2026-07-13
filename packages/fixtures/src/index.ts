@@ -1,4 +1,5 @@
 export * from "./types";
+export * from "./battle-pass";
 export * from "./ddragon";
 export * from "./cdragon";
 export * from "./summoner";

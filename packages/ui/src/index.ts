@@ -13,6 +13,8 @@ export type { TeamPlayerRowProps, PickState } from "./champ-select/team-player-r
 // chrome
 export { ArcadeEventTab } from "./chrome/arcade-event-tab";
 export type { ArcadeEventTabProps, EventSkinCard } from "./chrome/arcade-event-tab";
+export { BattlePassScreen } from "./chrome/battle-pass-screen";
+export type { BattlePassScreenProps } from "./chrome/battle-pass-screen";
 export { ChatPanel } from "./chrome/chat-panel";
 export type { ChatPanelProps, ChatMessage } from "./chrome/chat-panel";
 export { ClashScreen } from "./chrome/clash-screen";
