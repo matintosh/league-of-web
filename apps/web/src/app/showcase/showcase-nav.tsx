@@ -93,6 +93,20 @@ function NavContent({ onNavigate, query, onQueryChange, searchInputRef, pathname
         Showcase
       </Link>
 
+      {/* Client Map — infra page link, secondary to main heading */}
+      <Link
+        href="/showcase/client-map"
+        onClick={onNavigate}
+        className={[
+          "mt-2 block font-display text-sm uppercase tracking-widest transition-colors duration-150",
+          pathname === "/showcase/client-map"
+            ? "text-gold-1"
+            : "text-gold-2 hover:text-gold-1",
+        ].join(" ")}
+      >
+        Client Map
+      </Link>
+
       {/* Search input */}
       <div className="relative mt-4">
         <input
