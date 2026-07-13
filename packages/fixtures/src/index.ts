@@ -2,6 +2,7 @@ export * from "./types";
 export * from "./battle-pass";
 export * from "./ddragon";
 export * from "./cdragon";
+export * from "./journey";
 export * from "./summoner";
 export * from "./champions";
 export * from "./champion-detail";
