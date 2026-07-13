@@ -27,6 +27,15 @@ export interface BattlePassRewardCard {
   isCurrent: boolean;
   /** Chapter-relative display index, 1-based. */
   index: number;
+  /**
+   * 0-based index into the parent screen's `levelRewards[]` array that this
+   * card corresponds to. When a card is clicked the screen jumps directly to
+   * this level-detail slot, avoiding the coordinate-space mismatch between
+   * within-chapter cardIdx and the flat levelRewards array.
+   *
+   * Set to -1 for cards that have no corresponding level reward entry.
+   */
+  levelRewardIndex: number;
 }
 
 /** A single chapter in the Battle Pass chapter overview. */
@@ -57,6 +66,11 @@ export interface BattlePassLevelReward {
 
 // ---------------------------------------------------------------------------
 // Demo chapter data — mirrors the 5-card layout from client-battle-pass-chapters.png
+//
+// levelRewardIndex values are 0-based indices into demoBattlePassLevelRewards[].
+// Chapters I–III have no corresponding strip entries (levelRewardIndex: -1).
+// Chapter IV cards map to strip positions 0–4 (levels 29–33).
+// Chapter V cards map to strip positions 5–7 (levels 34–36) + -1 for overflow.
 // ---------------------------------------------------------------------------
 
 export const demoBattlePassChapters: BattlePassChapter[] = [
@@ -72,6 +86,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 1,
+        levelRewardIndex: -1,
       },
       {
         id: "ch1-r2",
@@ -80,6 +95,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 2,
+        levelRewardIndex: -1,
       },
       {
         id: "ch1-r3",
@@ -88,6 +104,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 3,
+        levelRewardIndex: -1,
       },
       {
         id: "ch1-r4",
@@ -96,6 +113,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 4,
+        levelRewardIndex: -1,
       },
     ],
   },
@@ -111,6 +129,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 1,
+        levelRewardIndex: -1,
       },
       {
         id: "ch2-r2",
@@ -119,6 +138,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 2,
+        levelRewardIndex: -1,
       },
       {
         id: "ch2-r3",
@@ -127,6 +147,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 3,
+        levelRewardIndex: -1,
       },
       {
         id: "ch2-r4",
@@ -135,6 +156,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 4,
+        levelRewardIndex: -1,
       },
     ],
   },
@@ -150,6 +172,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 1,
+        levelRewardIndex: -1,
       },
       {
         id: "ch3-r2",
@@ -158,6 +181,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 2,
+        levelRewardIndex: -1,
       },
       {
         id: "ch3-r3",
@@ -166,6 +190,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 3,
+        levelRewardIndex: -1,
       },
       {
         id: "ch3-r4",
@@ -174,6 +199,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 4,
+        levelRewardIndex: -1,
       },
     ],
   },
@@ -189,6 +215,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 1,
+        levelRewardIndex: 0, // level 29
       },
       {
         id: "ch4-r2",
@@ -197,6 +224,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 2,
+        levelRewardIndex: 1, // level 30
       },
       {
         id: "ch4-r3",
@@ -205,6 +233,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: true,
         isCurrent: false,
         index: 3,
+        levelRewardIndex: 2, // level 31
       },
       {
         id: "ch4-r4",
@@ -213,6 +242,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: false,
         isCurrent: true,
         index: 4,
+        levelRewardIndex: 3, // level 32
       },
       {
         id: "ch4-r5",
@@ -221,6 +251,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: false,
         isCurrent: false,
         index: 5,
+        levelRewardIndex: 4, // level 33
       },
     ],
   },
@@ -236,6 +267,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: false,
         isCurrent: false,
         index: 1,
+        levelRewardIndex: 5, // level 34
       },
       {
         id: "ch5-r2",
@@ -244,6 +276,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: false,
         isCurrent: false,
         index: 2,
+        levelRewardIndex: 6, // level 35
       },
       {
         id: "ch5-r3",
@@ -252,6 +285,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: false,
         isCurrent: false,
         index: 3,
+        levelRewardIndex: 7, // level 36
       },
       {
         id: "ch5-r4",
@@ -260,6 +294,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
         isOwned: false,
         isCurrent: false,
         index: 4,
+        levelRewardIndex: -1,
       },
     ],
   },
@@ -270,12 +305,12 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
 // ---------------------------------------------------------------------------
 
 export const demoBattlePassLevelRewards: BattlePassLevelReward[] = [
-  { level: 29, artSrc: loadingArtUrl("Darius", 0),      label: "Darius Icon",      lane: "free",    isUnlocked: true  },
-  { level: 30, artSrc: loadingArtUrl("Katarina", 0),    label: "Key Fragment",     lane: "free",    isUnlocked: true  },
-  { level: 31, artSrc: loadingArtUrl("Draven", 0),      label: "Hextech Chest & Key", lane: "free", isUnlocked: false },
-  { level: 32, artSrc: loadingArtUrl("Cassiopeia", 0),  label: "2000 Tokens",      lane: "premium", isUnlocked: false },
-  { level: 33, artSrc: loadingArtUrl("Swain", 0),       label: "Emote",            lane: "free",    isUnlocked: false },
-  { level: 34, artSrc: loadingArtUrl("LeBlanc", 0),     label: "Ward Skin",        lane: "premium", isUnlocked: false },
-  { level: 35, artSrc: loadingArtUrl("Vladimir", 0),    label: "Icon Shard",       lane: "free",    isUnlocked: false },
-  { level: 36, artSrc: loadingArtUrl("Urgot", 0),       label: "Spray",            lane: "premium", isUnlocked: false },
+  { level: 29, artSrc: loadingArtUrl("Darius", 0),      label: "Darius Icon",         lane: "free",    isUnlocked: true  },
+  { level: 30, artSrc: loadingArtUrl("Katarina", 0),    label: "Key Fragment",         lane: "free",    isUnlocked: true  },
+  { level: 31, artSrc: loadingArtUrl("Draven", 0),      label: "Hextech Chest & Key",  lane: "free",    isUnlocked: false },
+  { level: 32, artSrc: loadingArtUrl("Cassiopeia", 0),  label: "2000 Tokens",          lane: "premium", isUnlocked: false },
+  { level: 33, artSrc: loadingArtUrl("Swain", 0),       label: "Emote",                lane: "free",    isUnlocked: false },
+  { level: 34, artSrc: loadingArtUrl("LeBlanc", 0),     label: "Ward Skin",            lane: "premium", isUnlocked: false },
+  { level: 35, artSrc: loadingArtUrl("Vladimir", 0),    label: "Icon Shard",           lane: "free",    isUnlocked: false },
+  { level: 36, artSrc: loadingArtUrl("Urgot", 0),       label: "Spray",                lane: "premium", isUnlocked: false },
 ];

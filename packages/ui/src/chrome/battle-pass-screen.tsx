@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useRef } from "react";
 import type { BattlePassChapter, BattlePassRewardCard, BattlePassLevelReward } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -28,18 +28,54 @@ export interface BattlePassScreenProps {
   /** Player's global pass level number (shown in the level chip). */
   playerLevel: number;
   /**
-   * 0-based index of the selected level-detail reward, or undefined
-   * to show the chapter overview (default).
+   * 0-based index into `levelRewards[]` of the currently selected level, or
+   * undefined to show the chapter overview. Pass undefined to return to the
+   * overview from the level-detail view (e.g. when the breadcrumb is clicked).
+   *
+   * NOTE: both `selectedLevelIndex` and `levelRewards` must be provided
+   * together for the level-detail view to render. If `selectedLevelIndex` is
+   * set but `levelRewards` is empty the screen silently falls back to the
+   * chapter overview; a dev-time warning is emitted.
    */
   selectedLevelIndex?: number;
   /** Level rewards shown in the horizontal strip of the detail view. */
   levelRewards?: BattlePassLevelReward[];
-  /** Called when a reward card or strip level is selected. */
-  onSelectLevel?: (idx: number) => void;
+  /**
+   * Called when a reward card or strip level is selected (passes the 0-based
+   * index into `levelRewards[]`), or with `undefined` when the user clicks the
+   * breadcrumb chapter label to return to the chapter overview.
+   */
+  onSelectLevel?: (idx: number | undefined) => void;
   /** Called when CLAIM button is pressed. */
   onClaim?: () => void;
   /** Called when PURCHASE PASS button is pressed. */
   onPurchasePass?: () => void;
+}
+
+// ---------------------------------------------------------------------------
+// LockIcon — private to this module (co-located; not shared cross-file)
+// ---------------------------------------------------------------------------
+
+function LockIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg
+      aria-hidden="true"
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="text-grey-2"
+    >
+      <rect x="3" y="7" width="10" height="8" rx="1" fill="currentColor" opacity="0.9" />
+      <path
+        d="M5 7V5a3 3 0 0 1 6 0v2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -76,7 +112,8 @@ function CheckIcon() {
 }
 
 // ---------------------------------------------------------------------------
-// CurrentMarker — "IV" style roman-numeral chip on the current card
+// CurrentMarker — label chip on the in-progress card
+// label should be the chapter label, e.g. "CHAPTER IV".
 // ---------------------------------------------------------------------------
 
 function CurrentMarker({ label }: { label: string }) {
@@ -96,7 +133,7 @@ function CurrentMarker({ label }: { label: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// RewardCard — one card in the chapter overview (190×350 per issue spec)
+// RewardCard — one card in the chapter overview grid
 // ---------------------------------------------------------------------------
 
 interface RewardCardProps {
@@ -127,8 +164,8 @@ function RewardCard({ card, chapterLabel, onSelect }: RewardCardProps) {
         .filter(Boolean)
         .join(" ")}
       style={{
-        width: 190,
-        height: 310,
+        width: 175,
+        height: 300,
         borderColor: isCyanHighlight ? "var(--color-blue-2)" : undefined,
         boxShadow: isCyanHighlight
           ? "0 0 16px color-mix(in srgb, var(--color-blue-2) 55%, transparent), inset 0 0 12px color-mix(in srgb, var(--color-blue-2) 20%, transparent)"
@@ -173,10 +210,10 @@ function RewardCard({ card, chapterLabel, onSelect }: RewardCardProps) {
         </div>
       )}
 
-      {/* Current-card bottom chip */}
+      {/* Current-card bottom chip — shows the chapter label (not hardcoded) */}
       {isCyanHighlight && (
         <div className="absolute inset-x-0 bottom-2 flex justify-center">
-          <CurrentMarker label={`IV`} />
+          <CurrentMarker label={chapterLabel} />
         </div>
       )}
 
@@ -192,17 +229,25 @@ function RewardCard({ card, chapterLabel, onSelect }: RewardCardProps) {
 
 // ---------------------------------------------------------------------------
 // BreadcrumbBar — Zone 1, top strip (~32px)
+//
+// In level-detail view, chapterLabel is rendered as a clickable button that
+// calls onBack() to return to the chapter overview — matching the real
+// client's breadcrumb navigation.
 // ---------------------------------------------------------------------------
 
 interface BreadcrumbBarProps {
   eventName: string;
   endsIn: string;
-  /** When set, shows the "> CHAPTER IV" portion for level-detail view. */
+  /**
+   * When provided, shows "> CHAPTER LABEL" in the breadcrumb.
+   * In level-detail view this becomes a clickable back button.
+   */
   chapterLabel?: string;
+  onBack?: () => void;
   uid: string;
 }
 
-function BreadcrumbBar({ eventName, endsIn, chapterLabel, uid }: BreadcrumbBarProps) {
+function BreadcrumbBar({ eventName, endsIn, chapterLabel, onBack, uid }: BreadcrumbBarProps) {
   return (
     <div
       aria-label="Battle Pass breadcrumb"
@@ -213,7 +258,7 @@ function BreadcrumbBar({ eventName, endsIn, chapterLabel, uid }: BreadcrumbBarPr
         borderBottom: "1px solid color-mix(in srgb, var(--color-gold-5) 40%, transparent)",
       }}
     >
-      {/* Left: event icon + event name [> chapter] */}
+      {/* Left: event icon + event name [> chapter crumb] */}
       <div className="flex items-center gap-2 min-w-0">
         {/* Event icon — inline SVG shield approximating Noxus iconography */}
         <svg
@@ -252,9 +297,15 @@ function BreadcrumbBar({ eventName, endsIn, chapterLabel, uid }: BreadcrumbBarPr
             <span aria-hidden="true" className="font-display text-xs text-grey-2">
               {" › "}
             </span>
-            <span className="font-display text-xs uppercase tracking-widest text-gold-1">
+            {/* Clickable chapter crumb — returns to chapter overview */}
+            <button
+              type="button"
+              aria-label={`Back to ${chapterLabel} overview`}
+              onClick={onBack}
+              className="font-display text-xs uppercase tracking-widest text-gold-1 cursor-pointer hover:text-gold-cream transition-colors duration-150"
+            >
               {chapterLabel}
-            </span>
+            </button>
           </>
         )}
       </div>
@@ -268,7 +319,8 @@ function BreadcrumbBar({ eventName, endsIn, chapterLabel, uid }: BreadcrumbBarPr
 }
 
 // ---------------------------------------------------------------------------
-// XpBar — Zone 4 bottom, shows level chip + progress bar
+// XpBar — level chip + filled progress bar + XP label + bonus XP icon
+// Used in both ChapterView (Zone 4) and LevelView action bar (Zone 4).
 // ---------------------------------------------------------------------------
 
 interface XpBarProps {
@@ -283,13 +335,7 @@ function XpBar({ playerLevel, currentXp, totalXp, uid }: XpBarProps) {
   const barId = `${uid}-xpbar`;
 
   return (
-    <div
-      className="flex shrink-0 items-center gap-3 px-4 py-3"
-      style={{
-        background: "color-mix(in srgb, var(--color-hextech-black) 90%, var(--color-gold-6) 10%)",
-        borderTop: "1px solid color-mix(in srgb, var(--color-gold-5) 40%, transparent)",
-      }}
-    >
+    <div className="flex items-center gap-3">
       {/* Level chip */}
       <div
         className="flex shrink-0 items-center justify-center border border-gold-3 bg-hextech-black font-display text-sm text-gold-2"
@@ -300,7 +346,7 @@ function XpBar({ playerLevel, currentXp, totalXp, uid }: XpBarProps) {
       </div>
 
       {/* Progress bar + label */}
-      <div className="flex flex-col gap-1 flex-1 min-w-0">
+      <div className="flex flex-col gap-1 min-w-0">
         <div className="flex items-center gap-2">
           <div
             id={barId}
@@ -309,8 +355,8 @@ function XpBar({ playerLevel, currentXp, totalXp, uid }: XpBarProps) {
             aria-valuemin={0}
             aria-valuemax={totalXp}
             aria-label="Chapter XP"
-            className="relative h-2 flex-1 bg-grey-4"
-            style={{ maxWidth: 220 }}
+            className="relative h-2 bg-grey-4"
+            style={{ width: 160 }}
           >
             <div
               aria-hidden="true"
@@ -318,17 +364,18 @@ function XpBar({ playerLevel, currentXp, totalXp, uid }: XpBarProps) {
               style={{ width: `${pct}%` }}
             />
             {/* Glow at fill head */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-y-0 pointer-events-none"
-              style={{
-                left: `calc(${pct}% - 4px)`,
-                width: 8,
-                background:
-                  "color-mix(in srgb, var(--color-gold-2) 60%, transparent)",
-                filter: "blur(3px)",
-              }}
-            />
+            {pct > 0 && (
+              <div
+                aria-hidden="true"
+                className="absolute inset-y-0 pointer-events-none"
+                style={{
+                  left: `calc(${pct}% - 4px)`,
+                  width: 8,
+                  background: "color-mix(in srgb, var(--color-gold-2) 60%, transparent)",
+                  filter: "blur(3px)",
+                }}
+              />
+            )}
           </div>
           <span className="font-display text-xs text-grey-1">
             {currentXp} / {totalXp} xp
@@ -336,7 +383,7 @@ function XpBar({ playerLevel, currentXp, totalXp, uid }: XpBarProps) {
         </div>
       </div>
 
-      {/* Bonus XP icon placeholder */}
+      {/* Bonus XP icon */}
       <svg
         aria-label="Bonus XP available"
         width="16"
@@ -369,7 +416,12 @@ interface ChapterViewProps {
   playerLevel: number;
   currentXp: number;
   totalXp: number;
-  onSelectCard?: (chapterIdx: number, cardIdx: number) => void;
+  /**
+   * Called when a reward card is clicked. Passes the card's levelRewardIndex
+   * (0-based index into levelRewards[]). Cards with levelRewardIndex === -1
+   * do not fire this callback.
+   */
+  onSelectLevelReward?: (levelRewardIndex: number) => void;
   uid: string;
 }
 
@@ -379,7 +431,7 @@ function ChapterView({
   playerLevel,
   currentXp,
   totalXp,
-  onSelectCard,
+  onSelectLevelReward,
   uid,
 }: ChapterViewProps) {
   const chapter = chapters[activeChapterIndex];
@@ -408,21 +460,25 @@ function ChapterView({
 
       {/* Zone 3 — Reward card grid, horizontally scrollable */}
       <div
-        className="flex flex-1 min-h-0 items-center"
+        className="flex flex-1 min-h-0 min-w-0 items-center"
         style={{ padding: "0 30px 0 240px" }}
       >
         <div
           role="list"
           aria-label={`${chapter.label} rewards`}
-          className="flex gap-4 overflow-x-auto"
+          className="flex min-w-0 gap-4 overflow-x-auto"
           style={{ paddingBottom: 8 }}
         >
-          {chapter.rewards.map((card, cardIdx) => (
+          {chapter.rewards.map((card) => (
             <div key={card.id} role="listitem">
               <RewardCard
                 card={card}
                 chapterLabel={chapter.label}
-                onSelect={() => onSelectCard?.(activeChapterIndex, cardIdx)}
+                onSelect={
+                  card.levelRewardIndex >= 0
+                    ? () => onSelectLevelReward?.(card.levelRewardIndex)
+                    : undefined
+                }
               />
             </div>
           ))}
@@ -430,12 +486,20 @@ function ChapterView({
       </div>
 
       {/* Zone 4 — XP progress bar */}
-      <XpBar
-        playerLevel={playerLevel}
-        currentXp={currentXp}
-        totalXp={totalXp}
-        uid={uid}
-      />
+      <div
+        className="flex shrink-0 items-center gap-3 px-4 py-3"
+        style={{
+          background: "color-mix(in srgb, var(--color-hextech-black) 90%, var(--color-gold-6) 10%)",
+          borderTop: "1px solid color-mix(in srgb, var(--color-gold-5) 40%, transparent)",
+        }}
+      >
+        <XpBar
+          playerLevel={playerLevel}
+          currentXp={currentXp}
+          totalXp={totalXp}
+          uid={uid}
+        />
+      </div>
     </>
   );
 }
@@ -514,32 +578,6 @@ function RewardStripItem({ reward, isSelected, onSelect }: RewardStripItemProps)
         {reward.lane}
       </span>
     </button>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// LockIcon — tiny padlock used on locked strip items
-// ---------------------------------------------------------------------------
-
-function LockIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg
-      aria-hidden="true"
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="text-grey-2"
-    >
-      <rect x="3" y="7" width="10" height="8" rx="1" fill="currentColor" opacity="0.9" />
-      <path
-        d="M5 7V5a3 3 0 0 1 6 0v2"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
   );
 }
 
@@ -635,7 +673,7 @@ interface LevelViewProps {
   playerLevel: number;
   currentXp: number;
   totalXp: number;
-  onSelectLevel?: (idx: number) => void;
+  onSelectLevel?: (idx: number | undefined) => void;
   onClaim?: () => void;
   onPurchasePass?: () => void;
   uid: string;
@@ -654,7 +692,7 @@ function LevelView({
   onPurchasePass,
   uid,
 }: LevelViewProps) {
-  const chapter = chapters[activeChapterIndex];
+  const stripRef = useRef<HTMLDivElement>(null);
   const selectedReward = levelRewards[selectedLevelIndex];
 
   const chapterInLevel = selectedReward
@@ -662,6 +700,12 @@ function LevelView({
     : `CHAPTER IN LEVEL ${playerLevel + 1}`;
 
   const rewardTitle = selectedReward?.label ?? "HEXTECH CHEST & KEY";
+
+  function scrollStrip(direction: "left" | "right") {
+    const el = stripRef.current;
+    if (!el) return;
+    el.scrollBy({ left: direction === "left" ? -192 : 192, behavior: "smooth" });
+  }
 
   return (
     <>
@@ -708,10 +752,11 @@ function LevelView({
         }}
         aria-label="Level rewards"
       >
-        {/* Left chevron */}
+        {/* Left scroll chevron */}
         <button
           type="button"
           aria-label="Scroll reward strip left"
+          onClick={() => scrollStrip("left")}
           className="flex shrink-0 h-8 w-8 items-center justify-center border border-grey-3 text-grey-2 hover:border-gold-4 hover:text-gold-1 transition-colors duration-150 cursor-pointer"
         >
           <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -721,9 +766,11 @@ function LevelView({
 
         {/* Scrollable strip */}
         <div
+          ref={stripRef}
           className="flex flex-1 gap-1.5 overflow-x-auto"
           role="list"
           aria-label="Reward levels"
+          style={{ scrollbarWidth: "none" }}
         >
           {levelRewards.map((reward, idx) => (
             <div key={reward.level} role="listitem">
@@ -736,10 +783,11 @@ function LevelView({
           ))}
         </div>
 
-        {/* Right chevron */}
+        {/* Right scroll chevron */}
         <button
           type="button"
           aria-label="Scroll reward strip right"
+          onClick={() => scrollStrip("right")}
           className="flex shrink-0 h-8 w-8 items-center justify-center border border-grey-3 text-grey-2 hover:border-gold-4 hover:text-gold-1 transition-colors duration-150 cursor-pointer"
         >
           <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -756,36 +804,13 @@ function LevelView({
           borderTop: "1px solid color-mix(in srgb, var(--color-gold-5) 40%, transparent)",
         }}
       >
-        {/* Left: level chip + xp bar */}
-        <div className="flex items-center gap-3">
-          <div
-            className="flex shrink-0 items-center justify-center border border-gold-3 bg-hextech-black font-display text-sm text-gold-2"
-            style={{ width: 32, height: 32 }}
-            aria-label={`Level ${playerLevel}`}
-          >
-            {playerLevel}
-          </div>
-          <div className="flex flex-col gap-1">
-            <div
-              role="progressbar"
-              aria-valuenow={currentXp}
-              aria-valuemin={0}
-              aria-valuemax={totalXp}
-              aria-label="Chapter XP"
-              className="relative h-1.5 bg-grey-4"
-              style={{ width: 160 }}
-            >
-              <div
-                aria-hidden="true"
-                className="absolute inset-y-0 left-0 bg-gold-3 transition-all duration-300"
-                style={{ width: `${totalXp > 0 ? Math.min(1, currentXp / totalXp) * 100 : 0}%` }}
-              />
-            </div>
-            <span className="font-display text-[10px] text-grey-2">
-              {currentXp} / {totalXp} xp
-            </span>
-          </div>
-        </div>
+        {/* Left: XpBar component (single source of truth) */}
+        <XpBar
+          playerLevel={playerLevel}
+          currentXp={currentXp}
+          totalXp={totalXp}
+          uid={uid}
+        />
 
         {/* Right: CLAIM + PURCHASE PASS buttons */}
         <div className="flex items-center gap-3">
@@ -830,11 +855,19 @@ function LevelView({
 // Reference: docs/reference/client-battle-pass-chapters.png (1322×797)
 //            docs/reference/client-battle-pass-levels.png (1320×796)
 //
+// View routing:
+//   Chapter overview  selectedLevelIndex === undefined  (default)
+//   Level detail      selectedLevelIndex is a number AND levelRewards.length > 0
+//
+// NOTE: if selectedLevelIndex is set but levelRewards is empty the component
+// falls back to ChapterView. A dev-time console.warn is emitted so the caller
+// can diagnose the misconfiguration without a silent broken state.
+//
 // Zone mapping:
-//   Zone 1  Breadcrumb bar    y≈0–32   full width
-//   Zone 2  Chapter heading   y≈170–270 (overview) / reward art (detail)
-//   Zone 3  Reward cards      y≈235–650 (overview) / reward strip (detail)
-//   Zone 4  XP progress bar   y≈748–790 (overview) / action bar (detail)
+//   Zone 1  Breadcrumb bar    y≈0–32   full width (chapter crumb is a back button in detail view)
+//   Zone 2  Chapter heading   y≈50–100 from content top (overview) / reward art (detail)
+//   Zone 3  Reward cards      fills remaining height (overview) / reward strip (detail)
+//   Zone 4  XP progress bar   bottom strip (overview) / action bar with XpBar (detail)
 // ---------------------------------------------------------------------------
 
 export function BattlePassScreen({
@@ -853,9 +886,23 @@ export function BattlePassScreen({
 }: BattlePassScreenProps) {
   const uid = useId();
 
-  const isLevelView = selectedLevelIndex !== undefined;
   const chapter = chapters[activeChapterIndex];
   const chapterLabel = chapter?.label;
+
+  // Validate coupling: selectedLevelIndex set but no levelRewards supplied.
+  const isLevelView =
+    selectedLevelIndex !== undefined && levelRewards.length > 0;
+
+  if (
+    selectedLevelIndex !== undefined &&
+    levelRewards.length === 0
+  ) {
+    // Dev-time guard: both props must be supplied together.
+    console.warn(
+      "[BattlePassScreen] selectedLevelIndex is set but levelRewards is empty — " +
+        "falling back to ChapterView. Provide levelRewards[] to render the level-detail view.",
+    );
+  }
 
   return (
     <div
@@ -882,13 +929,14 @@ export function BattlePassScreen({
           eventName={eventName}
           endsIn={endsIn}
           chapterLabel={isLevelView ? chapterLabel : undefined}
+          onBack={isLevelView ? () => onSelectLevel?.(undefined) : undefined}
           uid={uid}
         />
       </div>
 
-      {/* Zones 2–4 — content switches based on view mode */}
+      {/* Zones 2–4 — switches between chapter overview and level detail */}
       <div className="relative z-10 flex flex-1 min-h-0 flex-col">
-        {isLevelView && levelRewards.length > 0 ? (
+        {isLevelView ? (
           <LevelView
             chapters={chapters}
             activeChapterIndex={activeChapterIndex}
@@ -909,8 +957,10 @@ export function BattlePassScreen({
             playerLevel={playerLevel}
             currentXp={currentXp}
             totalXp={totalXp}
-            onSelectCard={(chIdx, cardIdx) =>
-              onSelectLevel?.(cardIdx)
+            onSelectLevelReward={
+              levelRewards.length > 0
+                ? (levelRewardIndex) => onSelectLevel?.(levelRewardIndex)
+                : undefined
             }
             uid={uid}
           />

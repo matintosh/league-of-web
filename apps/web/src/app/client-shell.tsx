@@ -974,7 +974,16 @@ function HomeView({ newsItems }: HomeViewProps) {
               aria-selected={isActive}
               aria-disabled={tab.disabled ? true : undefined}
               disabled={tab.disabled}
-              onClick={!tab.disabled ? () => setActiveTabId(tab.id) : undefined}
+              onClick={
+                !tab.disabled
+                  ? () => {
+                      setActiveTabId(tab.id);
+                      // Reset battle-pass level-detail on tab navigation so the
+                      // user never gets trapped in LevelView when re-entering.
+                      if (tab.id !== "battle-pass") setBattlePassLevelIdx(undefined);
+                    }
+                  : undefined
+              }
               className={[
                 "relative flex h-full shrink-0 items-center gap-1.5 px-4",
                 "font-display text-xs uppercase tracking-widest transition-colors duration-150",
@@ -1025,7 +1034,7 @@ function HomeView({ newsItems }: HomeViewProps) {
             playerLevel={30}
             selectedLevelIndex={battlePassLevelIdx}
             levelRewards={demoBattlePassLevelRewards}
-            onSelectLevel={(idx) => setBattlePassLevelIdx(idx)}
+            onSelectLevel={setBattlePassLevelIdx}
             onClaim={() => console.log("battle-pass: claim")}
             onPurchasePass={() => console.log("battle-pass: purchase pass")}
           />

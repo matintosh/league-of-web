@@ -32,7 +32,7 @@ export function BattlePassChapterOverviewDemo() {
 // ---------------------------------------------------------------------------
 
 export function BattlePassLevelDetailDemo() {
-  const [selectedIdx, setSelectedIdx] = useState(2);
+  const [selectedIdx, setSelectedIdx] = useState<number | undefined>(2);
 
   return (
     <div style={{ width: 1280, height: 720 }}>
