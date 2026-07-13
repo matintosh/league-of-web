@@ -18,7 +18,7 @@ export type { BattlePassScreenProps } from "./chrome/battle-pass-screen";
 export { ChatPanel } from "./chrome/chat-panel";
 export type { ChatPanelProps, ChatMessage } from "./chrome/chat-panel";
 export { ClashScreen } from "./chrome/clash-screen";
-export type { ClashScreenProps, ClashTournament, ClashTeam, ClashPlayer, ClashSubTab } from "./chrome/clash-screen";
+export type { ClashScreenProps, ClashTournament, ClashTeam, ClashPlayer, ClashSubTab, ClashScoutingTab, ClashScoutingPlayer } from "./chrome/clash-screen";
 export { ClubsEmptyState } from "./chrome/clubs-empty-state";
 export type { ClubsEmptyStateProps } from "./chrome/clubs-empty-state";
 export { CrestDivider } from "./chrome/crest-divider";

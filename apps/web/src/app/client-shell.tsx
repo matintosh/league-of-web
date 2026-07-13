@@ -27,19 +27,21 @@ import {
   TftHubScreen,
   ClashScreen,
 } from "@low/ui";
-import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, StoreTab } from "@low/ui";
+import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
   demoFriends,
   profileIconUrl,
   championSplashUrl,
+  championSquareUrl,
   loadingArtUrl,
   rpIconUrl,
   blueEssenceIconUrl,
   navIconUrl,
   gameModeMapUrl,
   positionIconUrl,
+  rankedEmblemUrl,
   demoBattlePassChapters,
   demoBattlePassLevelRewards,
   DEMO_STARTER_PACK,
@@ -48,6 +50,7 @@ import {
   DEMO_DAILY_PLAY_REWARDS,
   DEMO_LEVEL_REWARD_CARDS,
 } from "@low/fixtures";
+import type { ClashScoutingPlayer } from "@low/fixtures";
 import type { NewsArticle } from "@low/ui";
 import { CollectionScreen } from "./collection-screen";
 import { ModeSelectScreen } from "./mode-select-screen";
@@ -151,6 +154,68 @@ const CLASH_PLAYERS: ClashPlayer[] = [
     championIconSrc: profileIconUrl(24),
     roleIconSrc: positionIconUrl("utility"),
     status: "not-locked-in",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Clash scouting fixtures — 5 opponent columns (page-level) (#257)
+// ---------------------------------------------------------------------------
+
+const CLASH_OPPONENTS: ClashScoutingPlayer[] = [
+  {
+    summonerName: "whostolebaron",
+    rankLabel: "Gold IV",
+    rankEmblemSrc: rankedEmblemUrl("Gold"),
+    champions: [
+      { iconSrc: championSquareUrl("Vayne"),     winPct: 56, games: 167, kda: 3.7 },
+      { iconSrc: championSquareUrl("Jinx"),      winPct: 49, games: 127, kda: 6.7 },
+      { iconSrc: championSquareUrl("Caitlyn"),   winPct: 45, games: 89,  kda: 4.6 },
+      { iconSrc: championSquareUrl("Ashe"),      winPct: 56, games: 36,  kda: 4.9 },
+    ],
+  },
+  {
+    summonerName: "TwinkleToes",
+    rankLabel: "Silver IV",
+    rankEmblemSrc: rankedEmblemUrl("Silver"),
+    champions: [
+      { iconSrc: championSquareUrl("Ahri"),      winPct: 58, games: 131, kda: 5.2 },
+      { iconSrc: championSquareUrl("Lux"),       winPct: 60, games: 89,  kda: 7.0 },
+      { iconSrc: championSquareUrl("Orianna"),   winPct: 62, games: 43,  kda: 5.7 },
+      { iconSrc: championSquareUrl("Syndra"),    winPct: 69, games: 42,  kda: 5.4 },
+    ],
+  },
+  {
+    summonerName: "TankyBits",
+    rankLabel: "Silver I",
+    rankEmblemSrc: rankedEmblemUrl("Silver"),
+    champions: [
+      { iconSrc: championSquareUrl("Malphite"),  winPct: 45, games: 733, kda: 3.6 },
+      { iconSrc: championSquareUrl("Garen"),     winPct: 56, games: 91,  kda: 2.1 },
+      { iconSrc: championSquareUrl("Nasus"),     winPct: 29, games: 7,   kda: 1.1 },
+      { iconSrc: championSquareUrl("Sion"),      winPct: 14, games: 7,   kda: 1.7 },
+    ],
+  },
+  {
+    summonerName: "CaffeinatedGanks",
+    rankLabel: "Gold III",
+    rankEmblemSrc: rankedEmblemUrl("Gold"),
+    champions: [
+      { iconSrc: championSquareUrl("Khazix"),    winPct: 54, games: 174, kda: 2.7 },
+      { iconSrc: championSquareUrl("Elise"),     winPct: 50, games: 48,  kda: 3.1 },
+      { iconSrc: championSquareUrl("Rengar"),    winPct: 44, games: 36,  kda: 2.9 },
+      { iconSrc: championSquareUrl("Nidalee"),   winPct: 48, games: 33,  kda: 3.7 },
+    ],
+  },
+  {
+    summonerName: "ToasterMiner",
+    rankLabel: "Silver III",
+    rankEmblemSrc: rankedEmblemUrl("Silver"),
+    champions: [
+      { iconSrc: championSquareUrl("Thresh"),    winPct: 50, games: 120, kda: 3.1 },
+      { iconSrc: championSquareUrl("Leona"),     winPct: 56, games: 75,  kda: 2.3 },
+      { iconSrc: championSquareUrl("Blitzcrank"),winPct: 62, games: 66,  kda: 3.2 },
+      { iconSrc: championSquareUrl("Morgana"),   winPct: 57, games: 54,  kda: 4.7 },
+    ],
   },
 ];
 
@@ -311,6 +376,9 @@ export function ClientShell() {
   const [chosenChampionId, setChosenChampionId] = useState<string | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState("general");
+
+  // Clash scouting phase state (#257)
+  const [clashScoutingTab, setClashScoutingTab] = useState<ClashScoutingTab>("ranked");
 
   // Social rail state — expanded/collapsed, group collapse map.
   // Default EXPANDED per issue spec (real client keeps rail visible by default).
@@ -661,6 +729,10 @@ export function ClientShell() {
                   matchStartTime="7:07 pm"
                   onLockIn={() => console.log("clash: lock in")}
                   onLeaveTeam={() => console.log("clash: leave team")}
+                  scoutingPhase
+                  opponents={CLASH_OPPONENTS}
+                  scoutingTab={clashScoutingTab}
+                  onScoutingTabChange={setClashScoutingTab}
                 />
               ) : view === "tft" ? (
                 <TftHubScreen

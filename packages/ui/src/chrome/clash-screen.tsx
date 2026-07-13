@@ -1,6 +1,11 @@
 "use client";
 
 import { useId } from "react";
+import type { ClashScoutingPlayer } from "@low/fixtures";
+
+// Re-export so consumers can import the type from "@low/ui" without reaching
+// into @low/fixtures directly.
+export type { ClashScoutingPlayer };
 
 // ---------------------------------------------------------------------------
 // Types
@@ -57,6 +62,9 @@ export interface ClashPlayer {
 /** Active sub-tab in the left panel */
 export type ClashSubTab = "tournaments" | "team" | "bracket";
 
+/** Active view tab in the scouting panel header */
+export type ClashScoutingTab = "ranked" | "mastery" | "history";
+
 export interface ClashScreenProps {
   /** Tournament shown in the left panel card */
   tournament: ClashTournament;
@@ -80,6 +88,20 @@ export interface ClashScreenProps {
   onLockIn?: () => void;
   /** Called when user clicks the × leave button */
   onLeaveTeam?: () => void;
+  /**
+   * When true, the center area shows the scouting panel (5-column opponent
+   * stats grid) instead of the team registration roster.
+   */
+  scoutingPhase?: boolean;
+  /**
+   * Five opponent player columns for the scouting panel.
+   * Required when scoutingPhase is true.
+   */
+  opponents?: ClashScoutingPlayer[];
+  /** Active tab in the scouting panel header. Defaults to "ranked". */
+  scoutingTab?: ClashScoutingTab;
+  /** Called when the user switches scouting view tabs. */
+  onScoutingTabChange?: (tab: ClashScoutingTab) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -124,6 +146,10 @@ export function ClashScreen({
   onSubTabChange,
   onLockIn,
   onLeaveTeam,
+  scoutingPhase = false,
+  opponents = [],
+  scoutingTab = "ranked",
+  onScoutingTabChange,
 }: ClashScreenProps) {
   const gradId = useId();
 
@@ -143,19 +169,28 @@ export function ClashScreen({
       <div className="w-px shrink-0 bg-gold-5" aria-hidden="true" />
 
       {/* ------------------------------------------------------------------ */}
-      {/* CENTER PANEL — team header + roster + countdown + action bar        */}
+      {/* CENTER PANEL — registration roster OR scouting panel                */}
       {/* ------------------------------------------------------------------ */}
       <div className="flex flex-1 min-w-0 flex-col overflow-hidden">
-        <CenterPanel
-          team={team}
-          players={players}
-          countdownLabel={countdownLabel}
-          countdownSublabel={countdownSublabel}
-          scoutingTime={scoutingTime}
-          matchStartTime={matchStartTime}
-          onLockIn={onLockIn}
-          onLeaveTeam={onLeaveTeam}
-        />
+        {scoutingPhase ? (
+          <ScoutingPanel
+            team={team}
+            opponents={opponents}
+            activeTab={scoutingTab}
+            onTabChange={onScoutingTabChange}
+          />
+        ) : (
+          <CenterPanel
+            team={team}
+            players={players}
+            countdownLabel={countdownLabel}
+            countdownSublabel={countdownSublabel}
+            scoutingTime={scoutingTime}
+            matchStartTime={matchStartTime}
+            onLockIn={onLockIn}
+            onLeaveTeam={onLeaveTeam}
+          />
+        )}
       </div>
     </div>
   );
@@ -605,6 +640,298 @@ function PlayerRow({ player }: PlayerRowProps) {
       >
         {statusLabel}
       </span>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ScoutingPanel — 5-column opponent stats view (scouting phase)
+// Reference: docs/reference/client-clash-scouting.png
+// ---------------------------------------------------------------------------
+
+const SCOUTING_TABS: { id: ClashScoutingTab; label: string }[] = [
+  { id: "ranked",  label: "Ranked" },
+  { id: "mastery", label: "Mastery" },
+  { id: "history", label: "History" },
+];
+
+interface ScoutingPanelProps {
+  team: ClashTeam;
+  opponents: ClashScoutingPlayer[];
+  activeTab: ClashScoutingTab;
+  onTabChange?: (tab: ClashScoutingTab) => void;
+}
+
+function ScoutingPanel({ team, opponents, activeTab, onTabChange }: ScoutingPanelProps) {
+  const betaBadgeId = useId();
+
+  return (
+    <div className="flex flex-1 flex-col overflow-hidden">
+      {/* ---------------------------------------------------------------- */}
+      {/* Scouting header — team info left, BETA badge center, tabs right  */}
+      {/* ---------------------------------------------------------------- */}
+      <div
+        className="flex shrink-0 items-center gap-4 px-5"
+        style={{
+          height: 60,
+          background: `linear-gradient(to right, color-mix(in srgb, var(--color-riot-red) 35%, var(--color-hextech-black) 65%), var(--color-hextech-black))`,
+        }}
+      >
+        {/* Team logo */}
+        <div
+          className="flex shrink-0 items-center justify-center border border-gold-5 overflow-hidden"
+          style={{
+            width: 44,
+            height: 44,
+            background: "color-mix(in srgb, var(--color-riot-red) 20%, var(--color-hextech-black) 80%)",
+          }}
+        >
+          {team.logoSrc ? (
+            <img
+              src={team.logoSrc}
+              alt={`${team.tag} logo`}
+              width={36}
+              height={36}
+              className="object-contain"
+            />
+          ) : (
+            <svg
+              aria-hidden="true"
+              width="28"
+              height="28"
+              viewBox="0 0 36 36"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-gold-4"
+            >
+              <path
+                d="M18 3L4 9v10c0 8 6 14 14 17 8-3 14-9 14-17V9L18 3Z"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                fill="none"
+              />
+              <text
+                x="50%"
+                y="58%"
+                dominantBaseline="middle"
+                textAnchor="middle"
+                fontFamily="var(--font-display)"
+                fontSize="9"
+                fill="currentColor"
+                letterSpacing="1"
+              >
+                {team.tag}
+              </text>
+            </svg>
+          )}
+        </div>
+
+        {/* Team name + tier */}
+        <div className="flex flex-col gap-0.5">
+          <span className="font-display text-lg uppercase tracking-widest text-grey-1 leading-none">
+            {team.name}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <span
+              className="inline-flex items-center border border-gold-5 px-1.5 py-0.5 font-display text-[10px] uppercase tracking-wider text-grey-1"
+              style={{ background: "color-mix(in srgb, var(--color-riot-red) 12%, var(--color-hextech-black) 88%)" }}
+            >
+              Tier {team.tier}
+            </span>
+          </div>
+        </div>
+
+        {/* BETA chip — center */}
+        <div className="flex flex-1 items-center justify-center">
+          <span
+            id={betaBadgeId}
+            className="border border-gold-5 px-2 py-1 font-display text-xs uppercase tracking-widest text-gold-2"
+            style={{ background: "color-mix(in srgb, var(--color-gold-5) 20%, var(--color-hextech-black) 80%)" }}
+          >
+            Beta
+          </span>
+        </div>
+
+        {/* View tabs — right side */}
+        <div
+          role="tablist"
+          aria-label="Scouting views"
+          className="flex items-end self-stretch gap-1"
+        >
+          {SCOUTING_TABS.map((tab) => {
+            const isActive = tab.id === activeTab;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => onTabChange?.(tab.id)}
+                className={[
+                  "relative flex h-full items-center px-4 pb-1",
+                  "font-display text-xs uppercase tracking-widest transition-colors duration-150",
+                  "border-b-2",
+                  isActive
+                    ? "border-gold-4 text-gold-1"
+                    : "border-transparent text-gold-cream hover:text-gold-2 cursor-pointer",
+                  onTabChange ? "cursor-pointer" : "",
+                ].join(" ")}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="h-px shrink-0 bg-gold-5" aria-hidden="true" />
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Body — tabbed content                                             */}
+      {/* ---------------------------------------------------------------- */}
+      <div
+        className="flex flex-1 overflow-hidden"
+        style={{ background: "color-mix(in srgb, var(--color-hextech-black) 85%, var(--color-blue-7) 15%)" }}
+      >
+        {activeTab === "ranked" ? (
+          <ScoutingGridRanked opponents={opponents} />
+        ) : (
+          <div className="flex flex-1 items-center justify-center">
+            <span className="font-body text-sm text-grey-2 uppercase tracking-widest">
+              Coming Soon
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ScoutingGridRanked — the 5-column ranked stats view
+// ---------------------------------------------------------------------------
+
+interface ScoutingGridRankedProps {
+  opponents: ClashScoutingPlayer[];
+}
+
+function ScoutingGridRanked({ opponents }: ScoutingGridRankedProps) {
+  // Pad to 5 columns if fewer opponents are provided
+  const columns = Array.from({ length: 5 }, (_, i) => opponents[i] ?? null);
+
+  return (
+    <div className="flex flex-1 divide-x divide-gold-5 overflow-hidden">
+      {columns.map((player, colIdx) => (
+        <div
+          key={colIdx}
+          className="flex flex-1 min-w-0 flex-col overflow-hidden"
+          style={{
+            // Alternating column backgrounds per reference (darker / lighter)
+            background: colIdx % 2 === 0
+              ? "color-mix(in srgb, var(--color-blue-7) 60%, var(--color-hextech-black) 40%)"
+              : "color-mix(in srgb, var(--color-hextech-black) 85%, var(--color-blue-7) 15%)",
+          }}
+        >
+          {player ? (
+            <ScoutingColumn player={player} />
+          ) : (
+            <div className="flex flex-1 items-center justify-center">
+              <span className="font-body text-xs text-grey-3">—</span>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ScoutingColumn — one player's stats column
+// ---------------------------------------------------------------------------
+
+interface ScoutingColumnProps {
+  player: ClashScoutingPlayer;
+}
+
+function ScoutingColumn({ player }: ScoutingColumnProps) {
+  const { summonerName, rankLabel, rankEmblemSrc, champions } = player;
+  // Show at most 4 champion rows per reference
+  const topChamps = champions.slice(0, 4);
+
+  return (
+    <div className="flex flex-col items-center px-2 pt-3 pb-2 gap-2 overflow-hidden">
+      {/* Summoner name */}
+      <span className="w-full truncate text-center font-body text-xs text-grey-1 leading-tight">
+        {summonerName}
+      </span>
+
+      {/* Rank emblem */}
+      <div className="flex flex-col items-center gap-1">
+        <img
+          src={rankEmblemSrc}
+          alt={rankLabel}
+          width={56}
+          height={64}
+          className="object-contain"
+          style={{ imageRendering: "auto" }}
+        />
+        <span className="font-display text-[10px] uppercase tracking-wider text-gold-2 text-center leading-none">
+          {rankLabel}
+        </span>
+      </div>
+
+      {/* Champion strip — up to 4 rows */}
+      <div className="flex w-full flex-col gap-1 overflow-hidden">
+        {topChamps.map((champ, i) => (
+          <ScoutingChampRow key={i} champ={champ} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ScoutingChampRow — one champion row: icon + win% + KDA
+// ---------------------------------------------------------------------------
+
+interface ScoutingChampRowProps {
+  champ: {
+    iconSrc: string;
+    winPct: number;
+    games: number;
+    kda: number;
+  };
+}
+
+function ScoutingChampRow({ champ }: ScoutingChampRowProps) {
+  const { iconSrc, winPct, games, kda } = champ;
+
+  return (
+    <div className="flex items-center gap-1.5 min-w-0">
+      {/* Champion icon */}
+      <div
+        className="flex shrink-0 overflow-hidden border border-gold-5"
+        style={{ width: 32, height: 32 }}
+      >
+        <img
+          src={iconSrc}
+          alt=""
+          width={32}
+          height={32}
+          className="object-cover"
+        />
+      </div>
+
+      {/* Stats */}
+      <div className="flex flex-1 min-w-0 flex-col gap-0 overflow-hidden">
+        <span className="font-body text-[10px] text-gold-cream tabular-nums leading-tight truncate">
+          {winPct}% ({games})
+        </span>
+        <span className="font-body text-[10px] text-grey-1 tabular-nums leading-tight">
+          {kda.toFixed(1)} KDA
+        </span>
+      </div>
     </div>
   );
 }

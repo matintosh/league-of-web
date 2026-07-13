@@ -164,6 +164,46 @@ export interface LootCategory {
  */
 export type ForgeSlot = LootItem | null;
 
+// ---------------------------------------------------------------------------
+// Clash scouting (Screen — issue #257)
+// ---------------------------------------------------------------------------
+
+/**
+ * Per-champion entry shown in the scouting panel champion strip.
+ * Presentational: all URLs resolved by caller.
+ */
+export interface ClashScoutingChampion {
+  /** Champion square icon URL (e.g. `championSquareUrl("Ahri")`). */
+  iconSrc: string;
+  /** Win-rate percentage 0–100. */
+  winPct: number;
+  /** Total games played on this champion. */
+  games: number;
+  /** Average KDA ratio, e.g. 3.7. */
+  kda: number;
+}
+
+/**
+ * One opponent column in the Clash scouting panel.
+ * Matches the 5-column layout in docs/reference/client-clash-scouting.png.
+ */
+export interface ClashScoutingPlayer {
+  /** Summoner display name shown above the rank emblem. */
+  summonerName: string;
+  /** Rank tier label, e.g. "GOLD IV" or "SILVER I". */
+  rankLabel: string;
+  /**
+   * Ranked emblem shield art URL.
+   * Use `rankedEmblemUrl("Gold")` / `rankedEmblemUrl("Silver")` etc.
+   */
+  rankEmblemSrc: string;
+  /**
+   * Top played champions for this player (show up to 4 rows per the reference).
+   * Pass 4 entries to match the reference screenshot.
+   */
+  champions: ClashScoutingChampion[];
+}
+
 /** Bundle / set data used to populate StoreItemPurchaseModal. */
 export interface PurchaseBundle {
   /** Stable bundle id — must match the StoreItem id it originates from. */
