@@ -45,6 +45,7 @@ import {
   HextechSelect,
   ChatPanel,
   RoleSelector,
+  ChampSelectActionBar,
 } from "@low/ui";
 import type { ChatMessage, Role } from "@low/ui";
 import {
@@ -53,6 +54,7 @@ import {
   DEFAULT_PICK_CHAMPION_ID,
   championSquareUrl,
   positionIconUrl,
+  summonerSpellIconUrl,
 } from "@low/fixtures";
 import type { ChampionRole } from "@low/fixtures";
 
@@ -378,8 +380,16 @@ export function PickScreen({ onLockIn }: PickScreenProps) {
         {/* Divider */}
         <div className="w-px bg-gold-5 shrink-0" />
 
-        {/* Center spacer */}
-        <div className="flex-1" />
+        {/* Center: action bar — rune page, summoner spells, emote */}
+        <div className="flex flex-1 items-center min-w-0">
+          <ChampSelectActionBar
+            runePageName="Sorcery: The Calamity"
+            spellSrcs={[
+              summonerSpellIconUrl("summoner_flash"),
+              summonerSpellIconUrl("summoner_dot"),
+            ]}
+          />
+        </div>
 
         {/* 5V5 INTRO label — bottom-right */}
         <div className="flex items-end justify-end px-4 pb-3 shrink-0">
