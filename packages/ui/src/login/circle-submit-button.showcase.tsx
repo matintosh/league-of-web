@@ -13,6 +13,7 @@ export const circleSubmitButtonShowcase: ShowcaseEntry = {
   variants: [
     {
       name: "Disabled",
+      backgrounds: ["dark", "light"],
       notes:
         'Default grey state — white bg, login-placeholder arrow. data-shot="circle-submit-button"',
       render: () => (
@@ -23,6 +24,7 @@ export const circleSubmitButtonShowcase: ShowcaseEntry = {
     },
     {
       name: "Enabled (hover for red)",
+      backgrounds: ["dark", "light"],
       notes: "Enabled state — hover to see riot-red background with white arrow.",
       render: () => <CircleSubmitButtonEnabledDemo />,
     },
