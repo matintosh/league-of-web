@@ -268,7 +268,7 @@ function RevealedCard({
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(to top, rgba(0,17,26,0.95) 0%, rgba(0,17,26,0.5) 35%, rgba(0,17,26,0.0) 65%)",
+            "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 95%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 50%, transparent) 35%, transparent 65%)",
         }}
         aria-hidden="true"
       />
@@ -393,7 +393,7 @@ export function YourShopScreen({
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 70% 40% at 50% 60%, rgba(3,151,171,0.06) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 40% at 50% 60%, color-mix(in srgb, var(--color-blue-3) 6%, transparent) 0%, transparent 70%)",
         }}
         aria-hidden="true"
       />
@@ -456,7 +456,7 @@ export function YourShopScreen({
       {/* ------------------------------------------------------------------ */}
       <footer className="relative z-10 shrink-0 flex flex-col items-center px-8 py-4 gap-1">
         {/* Reveal All button — only shown when there are unrevealed cards */}
-        {onRevealAll && hasAnyUnrevealed && !allRevealed && (
+        {onRevealAll && hasAnyUnrevealed && (
           <button
             type="button"
             onClick={onRevealAll}

@@ -28,7 +28,7 @@ const BASE_CARDS: Omit<YourShopCard, "revealed" | "onReveal" | "onPurchase">[] =
   },
   {
     id: "offer-jinx-project",
-    artSrc: championSplashUrl("Jinx", 6),
+    artSrc: championSplashUrl("Jinx", 2),
     discountPct: 40,
     originalRpPrice: 1350,
     rpPrice: 810,
