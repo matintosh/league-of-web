@@ -98,10 +98,10 @@ export default function ShowcaseLanding() {
       <section className="border border-gold-5 bg-blue-6">
         <dl className="grid grid-cols-2 divide-x divide-y divide-gold-5 md:grid-cols-4 md:divide-y-0">
           {[
-            { value: `${componentCount}+`, label: "Components registered" },
+            { value: `${componentCount}`, label: "Components registered" },
             { value: `${areaCount}`, label: "Client areas" },
             { value: "56", label: "Hextech design tokens" },
-            { value: "36", label: "Merges in one sprint" },
+            { value: "35+", label: "Merges in one sprint" },
           ].map(({ value, label }) => (
             <div key={label} className="flex flex-col items-center py-8 text-center">
               <span className="font-display text-4xl text-gold-1">{value}</span>
@@ -192,7 +192,7 @@ export default function ShowcaseLanding() {
               <li className="flex gap-3">
                 <span className="shrink-0 font-display text-gold-3">04</span>
                 <p className="text-grey-1">
-                  <span className="text-gold-2">36 pull requests merged in a single day</span> at
+                  <span className="text-gold-2">35+ pull requests merged in a single day</span> at
                   peak throughput — a build rate no solo developer can match.
                 </p>
               </li>
