@@ -1,6 +1,7 @@
 "use client";
 
 import { HextechButton } from "../chrome/hextech-button";
+import { MapCrestImg } from "../chrome/map-crest-img";
 
 // ---------------------------------------------------------------------------
 // LobbyHeader
@@ -240,13 +241,11 @@ export function LobbyHeader({
 
         {/* Queue crest — only rendered when crestSrc is provided */}
         {crestSrc && (
-          <img
+          <MapCrestImg
             src={crestSrc}
-            alt=""
-            aria-hidden="true"
-            width={24}
-            height={24}
-            className="h-6 w-6 shrink-0 object-contain"
+            frame="active"
+            size={24}
+            className="shrink-0 rounded-sm"
           />
         )}
 

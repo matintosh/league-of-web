@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useId } from "react";
-import { GameModeCard, QueueTypeList, HextechButton, TabBar } from "@low/ui";
+import { GameModeCard, QueueTypeList, HextechButton, TabBar, MapCrestImg } from "@low/ui";
 import { gameModeMapUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -211,6 +211,14 @@ function TftCrest() {
 // `group`; this crest renders as a descendant, so group-hover applies).
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// CdragonMapCrest — mode-select active/inactive swap via stacked MapCrestImg.
+// The outer span is the 128×128 crop container. Two absolutely-positioned
+// wrappers each hold one MapCrestImg frame; opacity classes toggle on
+// selection/hover. The group-hover classes work because GameModeCard's root
+// carries `group` — descendant group-hover selectors apply normally.
+// ---------------------------------------------------------------------------
+
 function CdragonMapCrest({
   map,
   active,
@@ -218,35 +226,30 @@ function CdragonMapCrest({
   map: "sr" | "ha" | "tft" | "tt";
   active: boolean;
 }) {
-  const frameClass =
-    "absolute inset-x-0 h-[200%] w-full transition-opacity duration-150";
+  const src = gameModeMapUrl(map);
   return (
     <span
       aria-hidden="true"
-      className="relative block h-32 w-32 overflow-hidden"
+      className="relative block h-32 w-32"
     >
-      {/* Inactive (dark) frame — bottom half of the atlas */}
-      <img
-        src={gameModeMapUrl(map)}
-        alt=""
+      {/* Inactive (dark) frame */}
+      <span
         className={[
-          frameClass,
-          "bottom-0",
+          "absolute inset-0 transition-opacity duration-150",
           active ? "opacity-0" : "opacity-100 group-hover:opacity-0",
         ].join(" ")}
-        style={{ objectFit: "fill" }}
-      />
-      {/* Active (lit) frame — top half of the atlas */}
-      <img
-        src={gameModeMapUrl(map)}
-        alt=""
+      >
+        <MapCrestImg src={src} frame="inactive" size={128} />
+      </span>
+      {/* Active (lit) frame */}
+      <span
         className={[
-          frameClass,
-          "top-0",
+          "absolute inset-0 transition-opacity duration-150",
           active ? "opacity-100" : "opacity-0 group-hover:opacity-100",
         ].join(" ")}
-        style={{ objectFit: "fill" }}
-      />
+      >
+        <MapCrestImg src={src} frame="active" size={128} />
+      </span>
     </span>
   );
 }

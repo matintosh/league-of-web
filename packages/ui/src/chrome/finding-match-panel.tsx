@@ -1,5 +1,7 @@
 "use client";
 
+import { MapCrestImg } from "./map-crest-img";
+
 // ---------------------------------------------------------------------------
 // FindingMatchPanel — queue indicator rail widget (issue #173)
 //
@@ -124,17 +126,11 @@ export function FindingMatchPanel({
               transform: "translateY(-50%)",
               filter: "drop-shadow(0 0 4px var(--color-blue-2))",
               zIndex: 1,
+              borderRadius: 4,
+              overflow: "hidden",
             }}
           >
-            <img
-              src={crestSrc}
-              alt=""
-              aria-hidden="true"
-              width={36}
-              height={36}
-              className="block object-contain"
-              style={{ borderRadius: 4 }}
-            />
+            <MapCrestImg src={crestSrc} frame="active" size={36} />
           </div>
         )}
 
