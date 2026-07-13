@@ -90,6 +90,8 @@ export { EmoteWheel } from "./collection/emote-wheel";
 export type { EmoteWheelProps } from "./collection/emote-wheel";
 export { SkinCard } from "./collection/skin-card";
 export type { SkinCardProps } from "./collection/skin-card";
+export { ProfileRankedScreen } from "./collection/profile-ranked-screen";
+export type { ProfileRankedScreenProps, RankedFeatureColumn, RankedMilestone, RankedSplitProgress } from "./collection/profile-ranked-screen";
 export { StatMedallion } from "./collection/stat-medallion";
 export type { StatMedallionProps } from "./collection/stat-medallion";
 // login

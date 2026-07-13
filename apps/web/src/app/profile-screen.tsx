@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ProfileBanner, RankedQueuePanel, SearchInput, ClubsEmptyState } from "@low/ui";
-import type { ProfileBannerStat } from "@low/ui";
+import { ProfileBanner, RankedQueuePanel, SearchInput, ClubsEmptyState, ProfileRankedScreen } from "@low/ui";
+import type { ProfileBannerStat, RankedFeatureColumn, RankedSplitProgress } from "@low/ui";
 import {
   demoSummoner,
   profileIconUrl,
+  loadingArtUrl,
   rankedMiniCrestUrl,
   rankedEmblemUrl,
 } from "@low/fixtures";
@@ -23,7 +24,7 @@ interface ProfileTab {
 const PROFILE_TABS: ProfileTab[] = [
   { id: "overview",       label: "OVERVIEW" },
   { id: "match-history",  label: "MATCH HISTORY", disabled: true },
-  { id: "ranked",         label: "RANKED",         disabled: true },
+  { id: "ranked",         label: "RANKED" },
   { id: "clubs",          label: "CLUBS" },
   { id: "highlights",     label: "HIGHLIGHTS",     disabled: true },
   { id: "stats",          label: "STATS",          disabled: true },
@@ -55,6 +56,45 @@ function crestSrcFor(id: string): string {
   void id; // all unranked in demo
   return rankedMiniCrestUrl("unranked");
 }
+
+// ---------------------------------------------------------------------------
+// Ranked screen fixture data (page-level — component is fixture-value-free)
+// ---------------------------------------------------------------------------
+
+const RANKED_FEATURE_COLUMNS: RankedFeatureColumn[] = [
+  {
+    // Dark atmospheric game art — Summoner's Rift / team fight splash
+    imageUrl: loadingArtUrl("Jinx", 0),
+    title: "Conquer the Rift",
+    description:
+      "Dish out damage solo or tag-team combos with a friend as you face opponents in games that test individual skill.",
+  },
+  {
+    // Ranked climber art — Diamond/Plat aesthetic
+    imageUrl: loadingArtUrl("LeeSin", 0),
+    title: "Start Your Climb",
+    description:
+      "Play placement games to earn your rank. During placements, games have bonus LP gains and no LP losses. You'll unlock a provisional rank after your first placement game.",
+  },
+  {
+    // Victorious/reward art — Sivir Victorious skin
+    imageUrl: loadingArtUrl("Sivir", 0),
+    title: "Earn Rewards",
+    description:
+      "This season, unlock rewards across splits and at the end of the season. Finishing Gold or above in any ranked queue unlocks a Victorious skin.",
+  },
+];
+
+const RANKED_SPLIT_PROGRESS: RankedSplitProgress = {
+  splitLabel: "Split 2 of 2",
+  timeRemaining: "12D 4H 16M",
+  currentSP: 0,
+  milestones: [
+    { label: "0/150 SP", reached: false, iconSrc: rankedMiniCrestUrl("iron") },
+    { label: "250 SP",   reached: false, iconSrc: rankedMiniCrestUrl("bronze") },
+    { label: "500 SP",   reached: false, iconSrc: rankedMiniCrestUrl("silver") },
+  ],
+};
 
 // ---------------------------------------------------------------------------
 // Trophy shelf — 5 category columns (page-level markup)
@@ -297,6 +337,18 @@ export function ProfileScreen() {
             onCreateClub={() => {}}
             onLearnMore={() => {}}
             onSummonerSearch={() => {}}
+          />
+        </div>
+      ) : activeTab === "ranked" ? (
+        /* Ranked tab: full-width season overview with feature strip + QUEUE UP */
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          <ProfileRankedScreen
+            season="2019 Season"
+            queueType="Solo/Duo"
+            featureColumns={RANKED_FEATURE_COLUMNS}
+            splitProgress={RANKED_SPLIT_PROGRESS}
+            onQueueUp={() => {}}
+            onSearchSummoner={() => {}}
           />
         </div>
       ) : (
