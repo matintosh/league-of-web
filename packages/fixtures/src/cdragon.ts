@@ -201,7 +201,9 @@ export const rankedIntroUrl = (
   cdragonStaticUrl(`ranked-intro-${slug}.${slug === "earn-rank" ? "png" : "jpg"}`);
 
 /**
- * Mastery crest image from rcp-fe-lol-collections (mastery-header folder).
+ * FTUX-mock mastery crest from rcp-fe-lol-collections (mastery-header folder).
+ * Distinct from masteryCrestUrl() (real per-level game-asset crests) — this is
+ * the large promotional crest used by ChampionDetail's Mastery tab header.
  *
  * Level-specific crest PNGs (e.g. mastery-crest-level-11.png) do NOT exist
  * as static CDragon assets — the real client assembles the crest from layered
@@ -220,7 +222,7 @@ export const rankedIntroUrl = (
  * License: Riot fan-content policy (non-commercial fan use).
  * Assets confirmed HTTP 200 (2026-07, issue #246).
  */
-export const masteryCrestUrl = (level: number): string => {
+export const masteryFtuxCrestUrl = (level: number): string => {
   const BASE =
     "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-collections/global/default/images/mastery-header";
   return level >= 5

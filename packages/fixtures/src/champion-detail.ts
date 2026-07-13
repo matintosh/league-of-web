@@ -52,7 +52,7 @@ export interface ChampionMastery {
   points: number;
   /**
    * CommunityDragon mastery crest image URL — resolved by the caller using
-   * `masteryCrestUrl()` from `@low/fixtures`.
+   * `masteryFtuxCrestUrl()` from `@low/fixtures`.
    * If the URL fails to load, the component falls back to an inline SVG crest.
    */
   masteryCrestSrc: string;
@@ -200,7 +200,7 @@ export const warwickDetail: ChampionDetail = {
 // Warwick mastery fixture — used by MASTERY tab showcase variants
 // ---------------------------------------------------------------------------
 
-import { masteryCrestUrl } from "./cdragon";
+import { masteryFtuxCrestUrl } from "./cdragon";
 
 /**
  * Warwick mastery fixture — Level 11, 111 178 pts, Milestone III in progress.
@@ -209,7 +209,7 @@ import { masteryCrestUrl } from "./cdragon";
 export const warwickMastery: ChampionMastery = {
   level: 11,
   points: 111178,
-  masteryCrestSrc: masteryCrestUrl(11),
+  masteryCrestSrc: masteryFtuxCrestUrl(11),
   currentMilestone: "MILESTONE III",
   milestoneChecks: [
     { label: "8/1 Grading S- or higher", fulfilled: false },
