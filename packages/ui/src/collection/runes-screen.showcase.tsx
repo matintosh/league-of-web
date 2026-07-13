@@ -3,6 +3,9 @@ import {
   RunesScreenDefaultDemo,
   RunesScreenSelectedDemo,
   RunesScreenEmptyDemo,
+  RunesScreenPathFilterDemo,
+  RunesScreenHidePresetsDemo,
+  RunesScreenTrashEnabledDemo,
 } from "./runes-screen.demo";
 
 export const runesScreenShowcase: ShowcaseEntry = {
@@ -29,6 +32,24 @@ export const runesScreenShowcase: ShowcaseEntry = {
       notes:
         "No rune pages — only the CREATE NEW card is visible in the grid. Counter reads 00 / 03.",
       render: () => <RunesScreenEmptyDemo />,
+    },
+    {
+      name: "Active path filter",
+      notes:
+        "Domination path pre-selected (7200). Gold underline appears under Domination icon; other paths dimmed to opacity-55. Only Domination primary pages shown in grid.",
+      render: () => <RunesScreenPathFilterDemo />,
+    },
+    {
+      name: "Hide preset pages",
+      notes:
+        "Hide preset pages checkbox checked. All three demo pages are preset so the card grid shows only CREATE NEW with the 'no pages match this filter' message.",
+      render: () => <RunesScreenHidePresetsDemo />,
+    },
+    {
+      name: "Trash button enabled",
+      notes:
+        "Sorcery: The Calamity is pre-selected — trash button is active (full opacity, clickable border). Click to deselect then trash returns to disabled/dimmed state.",
+      render: () => <RunesScreenTrashEnabledDemo />,
     },
   ],
 };

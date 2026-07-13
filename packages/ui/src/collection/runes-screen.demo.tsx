@@ -72,3 +72,72 @@ export function RunesScreenEmptyDemo() {
     </div>
   );
 }
+
+/** Active path filter demo — Domination path pre-selected, others dimmed */
+export function RunesScreenPathFilterDemo() {
+  const [selectedPageId, setSelectedPageId] = useState<string | undefined>(undefined);
+  const [activePathFilter, setActivePathFilter] = useState<string | null>("7200"); // Domination
+  const pages: RunePage[] = demoRunePages;
+
+  return (
+    <div className="h-[500px] bg-hextech-black">
+      <RunesScreen
+        paths={Object.values(RUNE_PATHS)}
+        pages={pages}
+        maxPages={3}
+        selectedPageId={selectedPageId}
+        onSelectPage={setSelectedPageId}
+        onCreatePage={() => console.log("create page")}
+        onDeletePage={(id) => console.log("delete page", id)}
+        activePathFilter={activePathFilter}
+        onPathFilterChange={setActivePathFilter}
+      />
+    </div>
+  );
+}
+
+/** Hide presets demo — preset pages hidden from the card grid */
+export function RunesScreenHidePresetsDemo() {
+  const [selectedPageId, setSelectedPageId] = useState<string | undefined>(undefined);
+  const [hidePresets, setHidePresets] = useState(true);
+  const pages: RunePage[] = demoRunePages;
+
+  return (
+    <div className="h-[500px] bg-hextech-black">
+      <RunesScreen
+        paths={Object.values(RUNE_PATHS)}
+        pages={pages}
+        maxPages={3}
+        selectedPageId={selectedPageId}
+        onSelectPage={setSelectedPageId}
+        onCreatePage={() => console.log("create page")}
+        onDeletePage={(id) => console.log("delete page", id)}
+        hidePresets={hidePresets}
+        onHidePresetsChange={setHidePresets}
+      />
+    </div>
+  );
+}
+
+/** Trash button enabled demo — a page is selected so trash is active */
+export function RunesScreenTrashEnabledDemo() {
+  const [selectedPageId, setSelectedPageId] = useState<string | undefined>("preset-sorcery");
+  const pages: RunePage[] = demoRunePages;
+
+  return (
+    <div className="h-[500px] bg-hextech-black">
+      <RunesScreen
+        paths={Object.values(RUNE_PATHS)}
+        pages={pages}
+        maxPages={3}
+        selectedPageId={selectedPageId}
+        onSelectPage={setSelectedPageId}
+        onCreatePage={() => console.log("create page")}
+        onDeletePage={(id) => {
+          console.log("delete page", id);
+          setSelectedPageId(undefined);
+        }}
+      />
+    </div>
+  );
+}
