@@ -161,6 +161,8 @@ const CLASH_PLAYERS: ClashPlayer[] = [
 // Clash scouting fixtures — 5 opponent columns (page-level) (#257)
 // ---------------------------------------------------------------------------
 
+// NOTE: mirrors SCOUTING_OPPONENTS in clash-screen.demo.tsx (packages/ui demos
+// cannot share app-level fixture constants; keep the two in sync by hand).
 const CLASH_OPPONENTS: ClashScoutingPlayer[] = [
   {
     summonerName: "whostolebaron",
@@ -379,6 +381,8 @@ export function ClientShell() {
 
   // Clash scouting phase state (#257)
   const [clashScoutingTab, setClashScoutingTab] = useState<ClashScoutingTab>("ranked");
+  // Scouting phase entered via SCOUT OPPONENTS, exited via the header back button.
+  const [clashScouting, setClashScouting] = useState(false);
 
   // Social rail state — expanded/collapsed, group collapse map.
   // Default EXPANDED per issue spec (real client keeps rail visible by default).
@@ -729,7 +733,8 @@ export function ClientShell() {
                   matchStartTime="7:07 pm"
                   onLockIn={() => console.log("clash: lock in")}
                   onLeaveTeam={() => console.log("clash: leave team")}
-                  scoutingPhase
+                  scoutingPhase={clashScouting}
+                  onToggleScouting={() => setClashScouting((v) => !v)}
                   opponents={CLASH_OPPONENTS}
                   scoutingTab={clashScoutingTab}
                   onScoutingTabChange={setClashScoutingTab}

@@ -216,6 +216,7 @@ export function ClashScreenCountdownToMatchDemo() {
 // Matches docs/reference/client-clash-scouting.png (Trinity Fire vs 5 opponents)
 // ---------------------------------------------------------------------------
 
+// NOTE: mirrors CLASH_OPPONENTS in apps/web client-shell.tsx (see note there).
 const SCOUTING_OPPONENTS: ClashScoutingPlayer[] = [
   {
     summonerName: "whostolebaron",

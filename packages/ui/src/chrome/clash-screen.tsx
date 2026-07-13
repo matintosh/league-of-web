@@ -86,6 +86,12 @@ export interface ClashScreenProps {
   onSubTabChange?: (tab: ClashSubTab) => void;
   /** Called when user clicks LOCK IN */
   onLockIn?: () => void;
+  /**
+   * Called by the scouting affordances: the SCOUT button on the registration
+   * view and the BACK TO TEAM button on the scouting header. The shell flips
+   * `scoutingPhase` — the component never owns the phase.
+   */
+  onToggleScouting?: () => void;
   /** Called when user clicks the × leave button */
   onLeaveTeam?: () => void;
   /**
@@ -146,6 +152,7 @@ export function ClashScreen({
   onSubTabChange,
   onLockIn,
   onLeaveTeam,
+  onToggleScouting,
   scoutingPhase = false,
   opponents = [],
   scoutingTab = "ranked",
@@ -178,6 +185,7 @@ export function ClashScreen({
             opponents={opponents}
             activeTab={scoutingTab}
             onTabChange={onScoutingTabChange}
+            onBackToTeam={onToggleScouting}
           />
         ) : (
           <CenterPanel
@@ -189,6 +197,7 @@ export function ClashScreen({
             matchStartTime={matchStartTime}
             onLockIn={onLockIn}
             onLeaveTeam={onLeaveTeam}
+            onScout={onToggleScouting}
           />
         )}
       </div>
@@ -391,6 +400,8 @@ interface CenterPanelProps {
   matchStartTime?: string;
   onLockIn?: () => void;
   onLeaveTeam?: () => void;
+  /** Renders the SCOUT OPPONENTS affordance when provided. */
+  onScout?: () => void;
 }
 
 function CenterPanel({
@@ -402,6 +413,7 @@ function CenterPanel({
   matchStartTime,
   onLockIn,
   onLeaveTeam,
+  onScout,
 }: CenterPanelProps) {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -458,6 +470,19 @@ function CenterPanel({
                 </span>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Scouting entry affordance — demo gesture into the scouting phase */}
+        {onScout && (
+          <div className="flex justify-center pb-2">
+            <button
+              type="button"
+              onClick={onScout}
+              className="border border-gold-5 bg-transparent px-4 py-1 font-display text-[11px] uppercase tracking-widest text-gold-2 hover:border-gold-4 hover:text-gold-1 transition-colors duration-150 cursor-pointer"
+            >
+              Scout Opponents
+            </button>
           </div>
         )}
 
@@ -660,10 +685,11 @@ interface ScoutingPanelProps {
   opponents: ClashScoutingPlayer[];
   activeTab: ClashScoutingTab;
   onTabChange?: (tab: ClashScoutingTab) => void;
+  /** Returns to the registration/team view. */
+  onBackToTeam?: () => void;
 }
 
-function ScoutingPanel({ team, opponents, activeTab, onTabChange }: ScoutingPanelProps) {
-  const betaBadgeId = useId();
+function ScoutingPanel({ team, opponents, activeTab, onTabChange, onBackToTeam }: ScoutingPanelProps) {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -677,6 +703,18 @@ function ScoutingPanel({ team, opponents, activeTab, onTabChange }: ScoutingPane
           background: `linear-gradient(to right, color-mix(in srgb, var(--color-riot-red) 35%, var(--color-hextech-black) 65%), var(--color-hextech-black))`,
         }}
       >
+        {/* Back to registration */}
+        {onBackToTeam && (
+          <button
+            type="button"
+            aria-label="Back to team"
+            onClick={onBackToTeam}
+            className="flex h-8 w-8 shrink-0 items-center justify-center border border-gold-5 bg-transparent text-gold-2 hover:border-gold-4 hover:text-gold-1 transition-colors duration-150 cursor-pointer font-display"
+          >
+            ‹
+          </button>
+        )}
+
         {/* Team logo */}
         <div
           className="flex shrink-0 items-center justify-center border border-gold-5 overflow-hidden"
@@ -744,7 +782,6 @@ function ScoutingPanel({ team, opponents, activeTab, onTabChange }: ScoutingPane
         {/* BETA chip — center */}
         <div className="flex flex-1 items-center justify-center">
           <span
-            id={betaBadgeId}
             className="border border-gold-5 px-2 py-1 font-display text-xs uppercase tracking-widest text-gold-2"
             style={{ background: "color-mix(in srgb, var(--color-gold-5) 20%, var(--color-hextech-black) 80%)" }}
           >
