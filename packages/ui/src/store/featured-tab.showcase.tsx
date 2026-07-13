@@ -7,6 +7,8 @@ export const featuredTabShowcase: ShowcaseEntry = {
   area: "store",
   description:
     "The Store landing screen. Two-column layout: left column has a 460×300px hero carousel (with dot navigation) and a TOP SELLERS strip below; right column has a 2×2 featured bundle/pass grid.",
+  referenceImage: "client-store-featured.jpg",
+  referenceNote: "docs/reference/client-store-featured.jpg — live client Store → FEATURED tab",
   variants: [
     {
       name: "Full layout — fixture data",

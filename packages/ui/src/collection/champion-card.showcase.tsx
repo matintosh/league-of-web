@@ -11,6 +11,8 @@ export const championCardShowcase: ShowcaseEntry = {
   name: "Champion Card",
   area: "collection",
   description: "Grid card for a champion in the collection browser. Loading-art portrait with a name bar; art zooms on hover.",
+  referenceImage: "lol-champion-card.png",
+  referenceNote: "docs/reference/lol-champion-card.png — champion collection card from the live client",
   variants: [
     {
       name: "Default",

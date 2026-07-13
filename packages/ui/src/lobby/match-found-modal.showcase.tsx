@@ -14,6 +14,8 @@ export const matchFoundModalShowcase: ShowcaseEntry = {
   area: "lobby",
   description:
     "Full-screen circular takeover when a match is found: countdown arc (parent-driven), ACCEPT and DECLINE buttons. Not dismissible via backdrop. crestSrc renders the game-mode map crest (single lit frame) in a gold double-border frame; falls back to HexCrest placeholder when absent.",
+  referenceImage: "client-match-found-crest.png",
+  referenceNote: "docs/reference/client-match-found-crest.png — the full MATCH FOUND circular takeover (crest, title, mode line, ACCEPT/DECLINE)",
   variants: [
     {
       name: "Full countdown (arc full) + map crest",

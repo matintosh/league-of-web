@@ -16,6 +16,8 @@ export const roleSelectorShowcase: ShowcaseEntry = {
   area: "lobby",
   description:
     "Primary/secondary position picker from the lobby: five role icons (Top, Jungle, Mid, Bottom, Support). Supports real CommunityDragon position SVGs via iconSrcFor prop, or inline SVG glyph fallback.",
+  referenceImage: "client-role-picker.png",
+  referenceNote: "docs/reference/client-role-picker.png — live client lobby role/position picker",
   variants: [
     {
       name: "Interactive (glyph fallback)",

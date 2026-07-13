@@ -17,4 +17,12 @@ export interface ShowcaseEntry {
   area: Area;
   description: string;
   variants: ShowcaseVariant[];
+  /**
+   * Filename of the reference screenshot in /docs/reference/, e.g. "client-home-news.jpg".
+   * The file must also exist in apps/web/public/docs-ref/ to be served.
+   * When set, a toggleable reference image panel appears above the variants list.
+   */
+  referenceImage?: string;
+  /** Optional caption for the reference image — e.g. the source doc path or context note. */
+  referenceNote?: string;
 }
