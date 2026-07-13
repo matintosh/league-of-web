@@ -22,7 +22,7 @@ export const playerHovercardShowcase: ShowcaseEntry = {
   name: "Player Hovercard",
   area: "chrome",
   description:
-    "Compact summoner identity card showing profile icon, level badge, gameName#tagLine, and a colored availability dot — used in the navbar and friends list.",
+    "Compact summoner identity card showing profile icon, level badge, gameName#tagLine, and a colored availability dot. Standalone in the library since #211 — identity in the client is owned by the social rail's ProfileChip.",
   variants: [
     {
       name: "Online",

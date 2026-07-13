@@ -10,7 +10,6 @@ import {
   TopNavbar,
   PlayButton,
   CurrencyDisplay,
-  PlayerHovercard,
   ProfileChip,
   PartyStatusPanel,
   FindingMatchPanel,
@@ -504,11 +503,10 @@ export function ClientShell() {
               </div>
             }
             playerSlot={
+              /* Controls slot — social-rail toggle + settings gear.
+                 Identity is owned solely by the rail's ProfileChip header (#146).
+                 PlayerHovercard removed here to fix the duplication (#211). */
               <div className="flex items-center gap-2">
-                <PlayerHovercard
-                  summoner={demoSummoner}
-                  profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
-                />
                 {/* Social toggle button — collapses/expands the docked rail.
                     aria-expanded reflects current expanded state per ARIA spec. */}
                 <button
