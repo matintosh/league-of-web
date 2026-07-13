@@ -15,6 +15,7 @@ import {
   EmoteTile,
   EmoteWheel,
   RunesScreen,
+  SpellsTab,
 } from "@low/ui";
 import type { RunePage } from "@low/ui";
 import {
@@ -27,6 +28,7 @@ import {
   loadingArtUrl,
   warwickDetail,
   RUNE_PATHS,
+  SUMMONER_SPELLS,
 } from "@low/fixtures";
 import type { SelectOption } from "@low/ui";
 import type { SlotId } from "@low/fixtures";
@@ -43,7 +45,7 @@ const TABS = [
   { id: "skins",     label: "Skins",     live: true },
   { id: "emotes",    label: "Emotes",    live: true },
   { id: "runes",     label: "Runes",     live: true },
-  { id: "spells",    label: "Spells",    live: false },
+  { id: "spells",    label: "Spells",    live: true },
   { id: "items",     label: "Items",     live: false },
   { id: "icons",     label: "Icons",     live: false },
   { id: "wards",     label: "Wards",     live: false },
@@ -798,6 +800,9 @@ export function CollectionScreen() {
   const [runeHidePresets, setRuneHidePresets] = useState(false);
   const [runeActivePathFilter, setRuneActivePathFilter] = useState<string | null>(null);
 
+  // Spells tab state — hoisted so state survives tab switches
+  const [selectedSpellId, setSelectedSpellId] = useState("SummonerTeleport");
+
   // Emotes tab state — hoisted so state survives tab switches
   const [emoteSort, setEmoteSort] = useState("acquired");
   const [emoteShowUnowned, setEmoteShowUnowned] = useState(true);
@@ -1000,6 +1005,16 @@ export function CollectionScreen() {
           </div>
         )}
 
+        {activeTab === "spells" && (
+          <div className="h-full min-h-0 flex">
+            <SpellsTab
+              spells={SUMMONER_SPELLS}
+              selectedSpellId={selectedSpellId}
+              onSelectSpell={setSelectedSpellId}
+            />
+          </div>
+        )}
+
         {activeTab === "emotes" && (
           <div className="h-full min-h-0 flex">
             <EmotesTab
@@ -1024,7 +1039,8 @@ export function CollectionScreen() {
           activeTab !== "skins" &&
           activeTab !== "chromas" &&
           activeTab !== "emotes" &&
-          activeTab !== "runes" && (
+          activeTab !== "runes" &&
+          activeTab !== "spells" && (
             <div className="flex h-full items-center justify-center">
               <p className="font-body text-sm text-grey-2">Coming soon</p>
             </div>

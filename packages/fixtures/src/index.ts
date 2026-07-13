@@ -6,4 +6,5 @@ export * from "./champions";
 export * from "./champion-detail";
 export * from "./emotes";
 export * from "./runes";
+export * from "./spells";
 export * from "./store";
