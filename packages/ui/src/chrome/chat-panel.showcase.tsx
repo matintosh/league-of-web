@@ -24,6 +24,8 @@ export const chatPanelShowcase: ShowcaseEntry = {
   area: "chrome",
   description:
     "Scrollable lobby chat log (xs system + authored lines) with an Enter-to-send input.",
+  referenceImage: "client-social-sidebar.jpg",
+  referenceNote: "docs/reference/client-social-sidebar.jpg — live client social sidebar (chat panel is the bottom section)",
   variants: [
     {
       name: "System messages only",

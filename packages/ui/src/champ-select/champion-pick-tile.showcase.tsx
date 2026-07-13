@@ -13,6 +13,8 @@ export const championPickTileShowcase: ShowcaseEntry = {
   area: "champ-select",
   description:
     "Square champion icon cell used in the pick-phase champion grid. Shows name below; states: default, hover, selected (gold glow), disabled-taken (grayscale). Optional blue hex badge top-right.",
+  referenceImage: "client-champ-select-pick.jpg",
+  referenceNote: "docs/reference/client-champ-select-pick.jpg — live client champ-select pick phase",
   variants: [
     {
       name: "Default",

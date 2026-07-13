@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { registry } from "@low/ui/registry";
+import { ReferenceToggle } from "./reference-toggle.client";
 
 export function generateStaticParams() {
   return registry.map((e) => ({ slug: e.slug }));
@@ -22,16 +23,29 @@ export default async function ComponentPage({
       </h1>
       <p className="mt-3 max-w-xl text-grey-1">{entry.description}</p>
 
-      <div className="mt-10 flex flex-col gap-8">
+      {entry.referenceImage && (
+        <div className="mt-8">
+          <ReferenceToggle
+            referenceImage={entry.referenceImage}
+            referenceNote={entry.referenceNote}
+          />
+        </div>
+      )}
+
+      <div className="mt-4 flex flex-col gap-8">
         {entry.variants.map((variant) => (
           <section key={variant.name}>
-            <h2 className="mb-3 text-sm uppercase tracking-widest text-gold-2">
+            <h2 className="mb-3 border-b border-gold-5 pb-2 text-sm uppercase tracking-widest text-gold-2">
               {variant.name}
             </h2>
             <div className="overflow-x-auto rounded-sm border border-grey-4 bg-blue-7 p-10">
               {variant.render()}
             </div>
-            {variant.notes && <p className="mt-2 text-sm text-grey-2">{variant.notes}</p>}
+            {variant.notes && (
+              <div className="mt-2 border-l-2 border-gold-4 bg-blue-6 px-3 py-2 text-sm text-grey-1">
+                {variant.notes}
+              </div>
+            )}
           </section>
         ))}
       </div>

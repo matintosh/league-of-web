@@ -10,6 +10,8 @@ export const heroCarouselShowcase: ShowcaseEntry = {
   area: "store",
   description:
     "Large cinematic hero panel for the Store FEATURED tab. Full-bleed splash art with a bottom-left overlay (eyebrow label, skin-line name, subtitle, RP price) and bottom-right dot navigation. Presentational — parent owns activeIndex and drives auto-advance if desired. Fixed at 460×300px.",
+  referenceImage: "client-store-featured.jpg",
+  referenceNote: "docs/reference/client-store-featured.jpg — hero carousel is the left panel of the Store FEATURED tab",
   variants: [
     {
       name: "Multi-slide — 5 slides, dot navigation",

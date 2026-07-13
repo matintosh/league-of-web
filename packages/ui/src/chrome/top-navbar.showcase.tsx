@@ -12,6 +12,8 @@ export const topNavbarShowcase: ShowcaseEntry = {
   area: "chrome",
   description:
     "The slim top navigation bar — play CTA on the left, nav items in the center, currency and controls (social toggle, settings) on the right. Player identity lives in the social rail ProfileChip, not here.",
+  referenceImage: "client-main-menu.jpg",
+  referenceNote: "docs/reference/client-main-menu.jpg — full client home view; navbar is the top strip",
   variants: [
     {
       name: "Default",
