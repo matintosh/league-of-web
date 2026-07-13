@@ -49,7 +49,7 @@ export const lobbyHeaderShowcase: ShowcaseEntry = {
     {
       name: "Segmented title + Change Mode + (30) chip",
       notes:
-        "segments prop: ['Intro', 'Blind', \"Summoner's Rift 5v5\"] renders with ◆ diamond separators. (30) chip + ward glyph dead decorations. Change Mode secondary button to right of title.",
+        "segments prop: ['Intro', 'Blind', \"Summoner's Rift 5v5\"] renders with ◆ diamond separators. (30) chip + SR wings badge dead decorations. Change Mode secondary button to right of title.",
       render: () => <LobbyHeaderSegmentedDemo />,
     },
     {
