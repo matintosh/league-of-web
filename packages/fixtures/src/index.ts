@@ -11,4 +11,5 @@ export * from "./runes";
 export * from "./spells";
 export * from "./store";
 export * from "./loot";
+export * from "./challenges";
 export * from "./mythic-shop";
