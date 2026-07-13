@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import type { ReactNode } from "react";
 import { GameModeCard } from "./game-mode-card";
+import { MapCrestImg } from "../chrome/map-crest-img";
 import { gameModeMapUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -265,16 +266,13 @@ const REAL_MODES: Array<{
   { key: "tft", countLabel: "FFA", name: "Teamfight Tactics", cdMap: "tft" },
 ];
 
-/** Real map crest img for use in GameModeCard icon slot. */
-function RealMapCrest({ map }: { map: "sr" | "ha" | "tft" | "tt" | "rgm" }) {
+/** Real map crest for use in GameModeCard icon slot — cropped to one atlas frame. */
+function RealMapCrest({ map, active }: { map: "sr" | "ha" | "tft" | "tt" | "rgm"; active: boolean }) {
   return (
-    <img
+    <MapCrestImg
       src={gameModeMapUrl(map)}
-      alt=""
-      aria-hidden="true"
-      width={128}
-      height={128}
-      style={{ objectFit: "contain" }}
+      frame={active ? "active" : "inactive"}
+      size={128}
     />
   );
 }
@@ -292,7 +290,7 @@ export function GameModeCardRowRealCrests() {
       {REAL_MODES.map((mode) => (
         <GameModeCard
           key={mode.key}
-          icon={<RealMapCrest map={mode.cdMap} />}
+          icon={<RealMapCrest map={mode.cdMap} active={selected === mode.key} />}
           countLabel={mode.countLabel}
           name={mode.name}
           selected={selected === mode.key}

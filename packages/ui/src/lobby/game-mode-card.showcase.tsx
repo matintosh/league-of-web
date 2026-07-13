@@ -6,6 +6,7 @@ import {
   GameModeCardRowDemo,
   GameModeCardRowRealCrests,
 } from "./game-mode-card.demo";
+import { MapCrestImg } from "../chrome/map-crest-img";
 import { gameModeMapUrl } from "@low/fixtures";
 
 export const gameModeCardShowcase: ShowcaseEntry = {
@@ -54,11 +55,11 @@ export const gameModeCardShowcase: ShowcaseEntry = {
     {
       name: "Real Crest — SR Selected",
       notes:
-        "Single card with real CommunityDragon map crest (map_sr.png from parties plugin). Selected state.",
+        "Single card with real CommunityDragon map crest (map_sr.png from parties plugin), cropped to the active (lit) frame via MapCrestImg. Selected state.",
       render: () => (
         <div className="flex justify-center bg-hextech-black p-10">
           <GameModeCard
-            icon={<img src={gameModeMapUrl("sr")} alt="" aria-hidden="true" width={128} height={128} style={{ objectFit: "contain" }} />}
+            icon={<MapCrestImg src={gameModeMapUrl("sr")} frame="active" size={128} />}
             countLabel="5v5"
             name="Summoner's Rift"
             selected

@@ -1,5 +1,7 @@
 "use client";
 
+import { MapCrestImg } from "./map-crest-img";
+
 // ---------------------------------------------------------------------------
 // PartyStatusPanel — Open Party rail indicator (issue #163)
 //
@@ -228,16 +230,11 @@ export function PartyStatusPanel({
               transform: "translateY(-50%)",
               filter: "drop-shadow(0 0 4px var(--color-status-online))",
               zIndex: 1,
+              borderRadius: 4,
+              overflow: "hidden",
             }}
           >
-            <img
-              src={crestSrc}
-              alt={queueLabel}
-              width={36}
-              height={36}
-              className="block object-contain"
-              style={{ borderRadius: 4 }}
-            />
+            <MapCrestImg src={crestSrc} frame="active" size={36} />
           </div>
         )}
 
