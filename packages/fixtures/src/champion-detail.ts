@@ -38,6 +38,42 @@ export interface ChampionDetailSkin {
 }
 
 /**
+ * Mastery data for a single champion. Passed as an optional prop to
+ * `ChampionDetail`; when absent the MASTERY tab renders a "not yet ranked"
+ * placeholder state.
+ */
+export interface ChampionMastery {
+  /**
+   * Mastery level 1–11+. The component accepts any positive integer so it is
+   * era-neutral — callers may pass 7 (pre-2023 max) or 11 (modern max).
+   */
+  level: number;
+  /** Total mastery points accumulated for this champion. */
+  points: number;
+  /**
+   * CommunityDragon mastery crest image URL — resolved by the caller using
+   * `masteryCrestUrl()` from `@low/fixtures`.
+   * If the URL fails to load, the component falls back to an inline SVG crest.
+   */
+  masteryCrestSrc: string;
+  /**
+   * Current milestone label shown in the right sidebar (e.g. "MILESTONE III").
+   * Optional — defaults to "MILESTONE I" when omitted.
+   */
+  currentMilestone?: string;
+  /**
+   * Checklist rows inside the milestone sidebar. Each entry has a label string
+   * and a fulfilled boolean.
+   */
+  milestoneChecks?: Array<{ label: string; fulfilled: boolean }>;
+  /**
+   * Reward names listed under "NEXT MILESTONE REWARDS" in the sidebar.
+   * E.g. ["Mastery Chair", "x2 Marks of Mastery"].
+   */
+  nextMilestoneRewards?: string[];
+}
+
+/**
  * Data shape consumed by `ChampionDetail`.
  * All fields are presentational — no fetching happens in the component.
  */
@@ -159,3 +195,28 @@ export const warwickDetail: ChampionDetail = {
     { name: "Hyena Warwick", skinIndex: 7, owned: false },
   ],
 };
+
+// ---------------------------------------------------------------------------
+// Warwick mastery fixture — used by MASTERY tab showcase variants
+// ---------------------------------------------------------------------------
+
+import { masteryCrestUrl } from "./cdragon";
+
+/**
+ * Warwick mastery fixture — Level 11, 111 178 pts, Milestone III in progress.
+ * Matches the reference screenshot (client-champion-mastery-tab.png).
+ */
+export const warwickMastery: ChampionMastery = {
+  level: 11,
+  points: 111178,
+  masteryCrestSrc: masteryCrestUrl(11),
+  currentMilestone: "MILESTONE III",
+  milestoneChecks: [
+    { label: "8/1 Grading S- or higher", fulfilled: false },
+    { label: "0/4 Grading C- or higher", fulfilled: false },
+  ],
+  nextMilestoneRewards: ["Mastery Chair", "x2 Marks of Mastery"],
+};
+
+/** Warwick mastery fixture — unranked / no mastery data state. */
+export const warwickMasteryUnranked: ChampionMastery | undefined = undefined;
