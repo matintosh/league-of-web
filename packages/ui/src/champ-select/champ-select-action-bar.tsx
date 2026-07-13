@@ -36,8 +36,8 @@ export interface ChampSelectActionBarProps {
 // ---------------------------------------------------------------------------
 // Bar background: #0c1a1d (measured) → closest token is grey-cool (#1e282d).
 //   We use bg-grey-cool as the nearest dark teal-grey token.
-// Rune dropdown border: #672725 (measured) → token composition (delta≤7):
-//   riot-red 27% + gold-5 19% + grey-cool 54% (nested mix) ≈ rgb(103,39,43).
+// Rune dropdown border: #672725 (measured) → token composition (delta=6):
+//   riot-red 25% + (gold-5 72% / grey-cool 28% inner) ≈ rgb(103,39,31).
 // Rune dropdown bg: #252324 (measured) → nearest token is hextech-black (#010a13)
 //   or grey-4 (#1e2328). We use bg-grey-4 as the closest available surface.
 // Divider/separator lines: gold-5 (confirmed token match).
@@ -104,7 +104,7 @@ export function ChampSelectActionBar({
           borderWidth: 1,
           borderStyle: "solid",
           borderColor:
-            "color-mix(in srgb, var(--color-riot-red) 27%, color-mix(in srgb, var(--color-gold-5) 26%, var(--color-grey-cool) 74%))",
+            "color-mix(in srgb, var(--color-riot-red) 25%, color-mix(in srgb, var(--color-gold-5) 72%, var(--color-grey-cool) 28%))",
           borderRadius: 6,
         }}
       >
