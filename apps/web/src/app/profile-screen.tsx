@@ -276,9 +276,22 @@ function GearIcon() {
  * All fixture values are supplied at this page level; components remain
  * fixture-value-free per the component contract.
  */
-export function ProfileScreen() {
+export interface ProfileScreenProps {
+  /**
+   * Whether the season-intro modal has been dismissed this session.
+   * Owned by the shell (not this screen) so it survives main-nav
+   * switches — ProfileScreen unmounts when the user leaves Profile.
+   */
+  seasonModalDismissed: boolean;
+  /** Called when the user dismisses the season-intro modal via its CTA. */
+  onSeasonModalDismiss: () => void;
+}
+
+export function ProfileScreen({
+  seasonModalDismissed,
+  onSeasonModalDismiss,
+}: ProfileScreenProps) {
   const [activeTab, setActiveTab] = useState<string>("overview");
-  const [seasonModalDismissed, setSeasonModalDismissed] = useState(false);
 
   const summoner = demoSummoner;
   const profileIconSrc = profileIconUrl(summoner.profileIconId);
@@ -390,7 +403,7 @@ export function ProfileScreen() {
           <WelcomeToSeasonModal
             open={activeTab === "stats" && !seasonModalDismissed}
             season="2019"
-            onStart={() => setSeasonModalDismissed(true)}
+            onStart={onSeasonModalDismiss}
           />
         </div>
       ) : (

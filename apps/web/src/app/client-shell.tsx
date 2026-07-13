@@ -230,6 +230,10 @@ const DOCK_BUTTONS: DockButton[] = [
 export function ClientShell() {
   const router = useRouter();
   const [view, setView] = useState<View>("home");
+  // Season-intro modal dismissal lives here (not in ProfileScreen): the
+  // profile screen unmounts on main-nav switches, and "once per session"
+  // must survive that (#227 review finding).
+  const [seasonModalDismissed, setSeasonModalDismissed] = useState(false);
   const [activeNavId, setActiveNavId] = useState("home");
   /** DDragon champion id chosen in the pick phase; passed to LoadoutScreen. */
   const [chosenChampionId, setChosenChampionId] = useState<string | undefined>(undefined);
@@ -587,7 +591,10 @@ export function ClientShell() {
               ) : view === "store" ? (
                 <StoreScreen />
               ) : view === "profile" ? (
-                <ProfileScreen />
+                <ProfileScreen
+                  seasonModalDismissed={seasonModalDismissed}
+                  onSeasonModalDismiss={() => setSeasonModalDismissed(true)}
+                />
               ) : view === "collection" ? (
                 <CollectionScreen />
               ) : view === "loadout" ? (
