@@ -1,6 +1,5 @@
 "use client";
 
-import { useId } from "react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -178,7 +177,6 @@ function OrbOfEnlightenmentPanel({
   onPlay,
   onClaim,
 }: OrbOfEnlightenmentPanelProps) {
-  const trackId = useId();
   const fillPct = Math.max(0, Math.min(1, progress)) * 100;
 
   return (
@@ -220,7 +218,6 @@ function OrbOfEnlightenmentPanel({
           aria-valuemax={100}
           aria-label="Orb progress"
           className="relative h-1.5 w-full bg-grey-4"
-          id={trackId}
         >
           <div
             className="absolute inset-y-0 left-0 bg-gold-4"
