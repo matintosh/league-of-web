@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ProfileBanner, RankedQueuePanel, SearchInput, ClubsEmptyState, ProfileRankedScreen, StatsTab, WelcomeToSeasonModal } from "@low/ui";
+import { ProfileBanner, RankedQueuePanel, MasteryEternalsPanel, SearchInput, ClubsEmptyState, ProfileRankedScreen, StatsTab, WelcomeToSeasonModal } from "@low/ui";
 import type { ProfileBannerStat, RankedFeatureColumn, RankedSplitProgress, PlayStyleStat, SeasonStats } from "@low/ui";
 import {
   demoSummoner,
+  demoMasteryEntries,
+  demoEternalEntries,
   profileIconUrl,
   rankedIntroUrl,
   rankedEmblemUrl,
@@ -426,6 +428,12 @@ export function ProfileScreen({
             <RankedQueuePanel
               queues={RANKED_QUEUES}
               crestSrcFor={crestSrcFor}
+            />
+
+            {/* Highest Champion Mastery + Highest Eternals dual-column panel */}
+            <MasteryEternalsPanel
+              masteryEntries={demoMasteryEntries}
+              eternalEntries={demoEternalEntries}
             />
 
             {/* Trophy shelf */}
