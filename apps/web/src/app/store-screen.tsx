@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { StoreSubNavBar, FeaturedTab, StoreItemPurchaseModal } from "@low/ui";
+import { StoreSubNavBar, FeaturedTab, StoreItemPurchaseModal, LootTab } from "@low/ui";
 import type { StoreTab } from "@low/ui";
 import {
   demoHeroSlides,
@@ -9,31 +9,47 @@ import {
   demoTopSellers,
   demoPurchaseBundles,
   rpIconUrl,
+  demoLootCategories,
+  demoForgeSlots,
+  demoLootResources,
 } from "@low/fixtures";
-import type { StoreItem } from "@low/fixtures";
+import type { StoreItem, ForgeSlot } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // StoreScreen
 // ---------------------------------------------------------------------------
+
+export interface StoreScreenProps {
+  /** Which tab to open when the screen first mounts. Defaults to "featured". */
+  initialTab?: StoreTab;
+}
 
 /**
  * StoreScreen renders the Store section of the client.
  *
  * Structure:
  * - StoreSubNavBar — horizontal tab strip (FEATURED through ESPORTS) + PURCHASE RP button
- * - Tab content panel — currently only FEATURED is live; other tabs are placeholder
+ * - Tab content panel — FEATURED and LOOT are live; other tabs show a placeholder
  * - StoreItemPurchaseModal — overlay opened when an item card is clicked
  *
  * All state is local (fixtures only, no data fetching).
  */
-export function StoreScreen() {
-  const [activeTab, setActiveTab] = useState<StoreTab>("featured");
+export function StoreScreen({ initialTab = "featured" }: StoreScreenProps) {
+  const [activeTab, setActiveTab] = useState<StoreTab>(initialTab);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [featuredItems, setFeaturedItems] = useState<StoreItem[]>(demoFeaturedItems);
   const [topSellers, setTopSellers] = useState<StoreItem[]>(demoTopSellers);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [forgeSlots, setForgeSlots] = useState<[ForgeSlot, ForgeSlot, ForgeSlot]>(demoForgeSlots);
 
   const rpIcon = rpIconUrl();
+
+  const handleClearSlot = (idx: number) =>
+    setForgeSlots((prev) => {
+      const next = [...prev] as [ForgeSlot, ForgeSlot, ForgeSlot];
+      next[idx] = null;
+      return next;
+    });
 
   const handleWishlist = (id: string) => {
     const toggle = (prev: StoreItem[]) =>
@@ -71,6 +87,17 @@ export function StoreScreen() {
             onItemClick={(id) => setSelectedItemId(id)}
             onWishlist={handleWishlist}
             rpIconSrc={rpIcon}
+          />
+        ) : activeTab === "loot" ? (
+          <LootTab
+            lootItems={demoLootCategories}
+            forgeSlots={forgeSlots}
+            keyFragments={demoLootResources.keyFragments}
+            keys={demoLootResources.keys}
+            lootBags={demoLootResources.lootBags}
+            onSearch={(q) => console.log("loot search:", q)}
+            onCraft={() => console.log("craft")}
+            onClearSlot={handleClearSlot}
           />
         ) : (
           /* Placeholder for unimplemented tabs */

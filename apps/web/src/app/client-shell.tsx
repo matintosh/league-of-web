@@ -294,6 +294,8 @@ export function ClientShell() {
   // must survive that (#227 review finding).
   const [seasonModalDismissed, setSeasonModalDismissed] = useState(false);
   const [activeNavId, setActiveNavId] = useState("home");
+  /** Which store sub-tab to open — set by the loot nav-bar icon. Resets on next store open. */
+  const [storeInitialTab, setStoreInitialTab] = useState<"featured" | "loot">("featured");
   /** DDragon champion id chosen in the pick phase; passed to LoadoutScreen. */
   const [chosenChampionId, setChosenChampionId] = useState<string | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -518,7 +520,7 @@ export function ClientShell() {
               setActiveNavId(id);
               if (id === "collection") setView("collection");
               else if (id === "profile") setView("profile");
-              else if (id === "store") setView("store");
+              else if (id === "store") { setStoreInitialTab("featured"); setView("store"); }
               else if (id === "tft") setView("tft");
               else if (id === "competitive") setView("competitive");
               else if (id === "home") setView("home");
@@ -534,7 +536,11 @@ export function ClientShell() {
                     type="button"
                     aria-label="Loot"
                     className="flex h-7 w-7 cursor-default items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
-                    onClick={() => console.log("loot")}
+                    onClick={() => {
+                      setStoreInitialTab("loot");
+                      setView("store");
+                      setActiveNavId("store");
+                    }}
                   >
                     {/* Real nav-icon-loot.svg — hardcoded gold fills, no filter needed */}
                     <img src={navIconUrl("loot")} alt="" aria-hidden="true" width={22} height={22} />
@@ -661,7 +667,7 @@ export function ClientShell() {
                   }}
                 />
               ) : view === "store" ? (
-                <StoreScreen />
+                <StoreScreen initialTab={storeInitialTab} />
               ) : view === "profile" ? (
                 <ProfileScreen
                   seasonModalDismissed={seasonModalDismissed}
