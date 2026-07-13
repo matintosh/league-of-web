@@ -51,6 +51,7 @@ import { skinCardShowcase } from "./collection/skin-card.showcase";
 import { skinPreviewShowcase } from "./collection/skin-preview.showcase";
 import { spellsTabShowcase } from "./collection/spells-tab.showcase";
 import { statMedallionShowcase } from "./collection/stat-medallion.showcase";
+import { statsTabShowcase } from "./collection/stats-tab.showcase";
 import { gameModeCardShowcase } from "./lobby/game-mode-card.showcase";
 import { lobbyHeaderShowcase } from "./lobby/lobby-header.showcase";
 import { lobbyPlayerCardShowcase } from "./lobby/lobby-player-card.showcase";
@@ -124,7 +125,7 @@ export const registry: ShowcaseEntry[] = [
   loginCheckboxShowcase,
   loginTextInputShowcase,
   socialLoginButtonsShowcase,
-  // collection — alphabetical: ChampionCard < ChampionDetail < EmoteTile < EmoteWheel < ProfileRankedScreen < RunesScreen < SkinCard < SkinPreview < SpellsTab < StatMedallion
+  // collection — alphabetical: ChampionCard < ChampionDetail < EmoteTile < EmoteWheel < ProfileRankedScreen < RunesScreen < SkinCard < SkinPreview < SpellsTab < StatMedallion < StatsTab
   championCardShowcase,
   championDetailShowcase,
   emoteTileShowcase,
@@ -135,6 +136,7 @@ export const registry: ShowcaseEntry[] = [
   skinPreviewShowcase,
   spellsTabShowcase,
   statMedallionShowcase,
+  statsTabShowcase,
   // lobby — alphabetical: GameModeCard < LobbyHeader < LobbyPlayerCard < MatchFoundModal < PlayerBanner < QueueStatus < QueueTypeList < RolePickerPopover < RoleSelector < RoleSlotRow
   gameModeCardShowcase,
   lobbyHeaderShowcase,

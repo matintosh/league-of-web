@@ -104,6 +104,8 @@ export { SpellsTab } from "./collection/spells-tab";
 export type { SpellsTabProps } from "./collection/spells-tab";
 export { StatMedallion } from "./collection/stat-medallion";
 export type { StatMedallionProps } from "./collection/stat-medallion";
+export { StatsTab } from "./collection/stats-tab";
+export type { StatsTabProps, PlayStyleStat, SeasonStats } from "./collection/stats-tab";
 // login
 export { CircleSubmitButton } from "./login/circle-submit-button";
 export type { CircleSubmitButtonProps } from "./login/circle-submit-button";

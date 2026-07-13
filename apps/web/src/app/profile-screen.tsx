@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ProfileBanner, RankedQueuePanel, SearchInput, ClubsEmptyState, ProfileRankedScreen } from "@low/ui";
-import type { ProfileBannerStat, RankedFeatureColumn, RankedSplitProgress } from "@low/ui";
+import { ProfileBanner, RankedQueuePanel, SearchInput, ClubsEmptyState, ProfileRankedScreen, StatsTab } from "@low/ui";
+import type { ProfileBannerStat, RankedFeatureColumn, RankedSplitProgress, PlayStyleStat, SeasonStats } from "@low/ui";
 import {
   demoSummoner,
   profileIconUrl,
@@ -28,7 +28,7 @@ const PROFILE_TABS: ProfileTab[] = [
   { id: "ranked",         label: "RANKED" },
   { id: "clubs",          label: "CLUBS" },
   { id: "highlights",     label: "HIGHLIGHTS",     disabled: true },
-  { id: "stats",          label: "STATS",          disabled: true },
+  { id: "stats",          label: "STATS" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -99,6 +99,24 @@ const RANKED_SPLIT_PROGRESS: RankedSplitProgress = {
     { label: "250 SP",   reached: false, iconSrc: rankedMiniCrestUrl("bronze") },
     { label: "500 SP",   reached: false, iconSrc: rankedMiniCrestUrl("silver") },
   ],
+};
+
+// ---------------------------------------------------------------------------
+// Stats tab fixture data (page-level — component is fixture-value-free)
+// ---------------------------------------------------------------------------
+
+const STATS_PLAYSTYLE: PlayStyleStat[] = [
+  { role: "Fighter",  value: 0.15 },
+  { role: "Mage",     value: 0.15 },
+  { role: "Assassin", value: 0.15 },
+  { role: "Support",  value: 0.15 },
+  { role: "Tank",     value: 0.15 },
+];
+
+const STATS_SEASON: SeasonStats = {
+  gamesPlayed: null,
+  timePlayed:  null,
+  kdaRatio:    null,
 };
 
 // ---------------------------------------------------------------------------
@@ -354,6 +372,19 @@ export function ProfileScreen() {
             splitProgress={RANKED_SPLIT_PROGRESS}
             onQueueUp={() => {}}
             onSearchSummoner={() => {}}
+          />
+        </div>
+      ) : activeTab === "stats" ? (
+        /* Stats tab: play-style radar + season stats + empty state */
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          <StatsTab
+            playstyle={STATS_PLAYSTYLE}
+            seasonLabel="Season 2019"
+            seasonStats={STATS_SEASON}
+            searchValue=""
+            onSearchChange={() => {}}
+            championFilter=""
+            onChampionFilterChange={() => {}}
           />
         </div>
       ) : (
