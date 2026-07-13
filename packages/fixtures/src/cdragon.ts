@@ -163,6 +163,24 @@ export const rankedUnrankedEmblemUrl = (): string =>
 export const tftUpArrowUrl = (): string =>
   `${CDRAGON_TFT}/images/tft_up_arrow.svg`;
 
+/**
+ * Ranked intro promotional art — the three feature-tile images shown on the
+ * ProfileRankedScreen when the player has no rank yet (or is viewing ranked info).
+ *
+ * Slugs:
+ *   "squad-up"  → ranked-intro-squad-up.jpg  — blue "MATCH FOUND" modal screenshot (276×157)
+ *   "earn-rank" → ranked-intro-earn-rank.png  — Challenger/Diamond wings rank emblem (276×157)
+ *   "epic-loot" → ranked-intro-epic-loot.jpg  — Sivir victorious skin face close-up (276×157)
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · ranked-intro-{slug}.{ext}
+ * License: Riot fan-content policy (non-commercial fan use).
+ * Assets confirmed 200 + correct dimensions (2026-07, issue #234).
+ */
+export const rankedIntroUrl = (
+  slug: "squad-up" | "earn-rank" | "epic-loot",
+): string =>
+  cdragonStaticUrl(`ranked-intro-${slug}.${slug === "earn-rank" ? "png" : "jpg"}`);
+
 /*
  * MODE-SELECT BACKGROUND — CDragon asset search result (2026-07, issue #218).
  *
