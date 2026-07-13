@@ -48,7 +48,13 @@ export type { HextechTooltipProps, HextechTooltipPosition } from "./chrome/hexte
 export { HomeNewsScreen } from "./chrome/home-news-screen";
 export type { HomeNewsScreenProps, NewsArticle } from "./chrome/home-news-screen";
 export { JourneyTab, LevelUpRewardsDetail } from "./chrome/journey-tab";
-export type { JourneyTabProps, LevelUpRewardsDetailProps } from "./chrome/journey-tab";
+export type {
+  JourneyTabProps,
+  LevelUpRewardsDetailProps,
+  StarterPackProps,
+  AwakeningMissionsProps,
+  ProgressPanelProps,
+} from "./chrome/journey-tab";
 export { MapCrestImg } from "./chrome/map-crest-img";
 export type { MapCrestImgProps } from "./chrome/map-crest-img";
 export { MasteryEternalsPanel } from "./chrome/mastery-eternals-panel";

@@ -10,13 +10,13 @@ import {
 } from "@low/fixtures";
 import { JourneyTab, LevelUpRewardsDetail } from "./journey-tab";
 
-/** Demo: Journey tab overview (two-column layout). */
+/** Demo: Journey tab overview (two-column layout). Clicking VIEW REWARDS navigates to the detail. */
 export function JourneyTabOverviewDemo() {
-  const [activeView, setActiveView] = useState<"overview" | "level-rewards">("overview");
+  const [showDetail, setShowDetail] = useState(false);
 
-  if (activeView === "level-rewards") {
+  if (showDetail) {
     return (
-      <LevelUpRewardsDetailDemo onBack={() => setActiveView("overview")} />
+      <LevelUpRewardsDetailDemo onBack={() => setShowDetail(false)} />
     );
   }
 
@@ -27,8 +27,7 @@ export function JourneyTabOverviewDemo() {
         awakeningMissions={DEMO_AWAKENING_MISSIONS}
         levelUpRewards={DEMO_LEVEL_UP_REWARDS}
         dailyPlayRewards={DEMO_DAILY_PLAY_REWARDS}
-        activeView="overview"
-        onSelectView={setActiveView}
+        onViewLevelRewards={() => setShowDetail(true)}
       />
     </div>
   );
@@ -59,7 +58,6 @@ export function JourneyTabZeroProgressDemo() {
         awakeningMissions={{ ...DEMO_AWAKENING_MISSIONS, completedCount: 0 }}
         levelUpRewards={{ ...DEMO_LEVEL_UP_REWARDS, current: 1 }}
         dailyPlayRewards={{ ...DEMO_DAILY_PLAY_REWARDS, current: 0 }}
-        activeView="overview"
       />
     </div>
   );
@@ -74,7 +72,6 @@ export function JourneyTabCompletedDemo() {
         awakeningMissions={{ ...DEMO_AWAKENING_MISSIONS, completedCount: 8 }}
         levelUpRewards={{ ...DEMO_LEVEL_UP_REWARDS, current: 10, total: 10 }}
         dailyPlayRewards={{ ...DEMO_DAILY_PLAY_REWARDS, current: 7, total: 7 }}
-        activeView="overview"
       />
     </div>
   );

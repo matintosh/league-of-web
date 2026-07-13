@@ -4,15 +4,18 @@
  * Era: 2021 NPE redesign (V11.8, April 2021). Reference:
  *   docs/reference/client-home-journey-npe.jpg
  *   docs/reference/client-home-journey-level-rewards.jpg
+ *
+ * Prop-interface types (StarterPackProps, AwakeningMissionsProps, ProgressPanelProps,
+ * JourneyTabProps, LevelUpRewardsDetailProps) live in @low/ui/chrome/journey-tab.
+ * This file owns only the data-shape types and fixture values.
  */
 
-import { championSquareUrl } from "./ddragon";
-import { DDRAGON_VERSION } from "./ddragon";
+import { championSquareUrl, DDRAGON_VERSION } from "./ddragon";
 
 const DDRAGON_SPELL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/spell`;
 
 // ---------------------------------------------------------------------------
-// Types
+// Data-shape types (pure data, no UI callbacks)
 // ---------------------------------------------------------------------------
 
 /** One champion entry in the Starter Pack icon strip. */
@@ -23,64 +26,6 @@ export interface ChampionIconEntry {
   name: string;
   /** Square icon URL (120×120). */
   iconSrc: string;
-}
-
-/** Props for the Champion Starter Pack card (Zone L1). */
-export interface StarterPackProps {
-  /** Pack display name, e.g. "Bot Lane Pack". */
-  label: string;
-  /** Champion icons to display in the horizontal strip. */
-  champions: ChampionIconEntry[];
-  /** Short sub-copy, e.g. "3 Champions + Skins and more!" */
-  subCopy: string;
-  /** Original (crossed-out) price in BE. */
-  originalPrice: number;
-  /** Discount percentage, e.g. 89. */
-  discountPct: number;
-  /** Final (discounted) price in BE. */
-  discountedPrice: number;
-  /** Called when the buy button is clicked. */
-  onPurchase?: () => void;
-}
-
-/** Props for the Awakening Missions chain card (Zone L2). */
-export interface AwakeningMissionsProps {
-  /** Completed missions count. */
-  completedCount: number;
-  /** Total missions in the chain. */
-  totalCount: number;
-  /** Reward description copy. */
-  rewardCopy: string;
-  /** Called when VIEW MISSIONS is clicked. */
-  onViewMissions?: () => void;
-}
-
-/** One level reward in the Level Up Rewards progress panels (Zones R1 / R2). */
-export interface ProgressPanelProps {
-  /** Panel heading, e.g. "Level Up Rewards". */
-  heading: string;
-  /** Sub-copy line. */
-  subCopy: string;
-  /** Short reward labels shown in the right column, e.g. ["6 Summoner Spells", "Blue Essence"]. */
-  rewardLines: string[];
-  /** Progress numerator, e.g. 9. */
-  current: number;
-  /** Progress denominator, e.g. 10. */
-  total: number;
-  /** Unit label rendered after the counts, e.g. "LEVELS" or "DAYS". */
-  unitLabel: string;
-  /** Square icon URL for the circular icon cluster (~64px). */
-  iconSrc: string;
-  /** Optional second icon URL for a 2×2 grid cluster. */
-  iconSrc2?: string;
-  /** Optional third icon URL. */
-  iconSrc3?: string;
-  /** Optional fourth icon URL. */
-  iconSrc4?: string;
-  /** Background atmospheric art URL (blurred, dark forest). */
-  bgSrc?: string;
-  /** Called when VIEW REWARDS is clicked. */
-  onViewRewards?: () => void;
 }
 
 /** One level reward card in the LevelUpRewardsDetail 5×2 grid. */
@@ -103,69 +48,35 @@ export interface LevelRewardCard {
   detailArtSrcs: string[];
 }
 
-/** Props for the full JourneyTab screen. */
-export interface JourneyTabProps {
-  /** Left column Zone L1: Champion Starter Pack card. */
-  starterPack: StarterPackProps;
-  /** Left column Zone L2: Awakening Missions chain card. */
-  awakeningMissions: AwakeningMissionsProps;
-  /** Right column Zone R1: Level Up Rewards progress panel. */
-  levelUpRewards: ProgressPanelProps;
-  /** Right column Zone R2: Daily Play Rewards progress panel. */
-  dailyPlayRewards: ProgressPanelProps;
-  /**
-   * Active sub-view. "overview" renders the two-column layout.
-   * "level-rewards" renders LevelUpRewardsDetail.
-   * Shell owns this state — passed down as prop.
-   */
-  activeView: "overview" | "level-rewards";
-  /**
-   * Called when the user requests a sub-view change (e.g. VIEW REWARDS click
-   * or back navigation from detail).
-   */
-  onSelectView?: (view: "overview" | "level-rewards") => void;
-}
-
-/** Props for the Level Up Rewards detail view. */
-export interface LevelUpRewardsDetailProps {
-  /** All 10 level reward cards. */
-  levels: LevelRewardCard[];
-  /** Currently selected level (1-based). */
-  selectedLevel: number;
-  /** Called when a level card is clicked. */
-  onSelectLevel?: (level: number) => void;
-  /** Called when the back chevron / breadcrumb is clicked. */
-  onBack?: () => void;
-}
-
 // ---------------------------------------------------------------------------
-// Fixture values
+// Fixture values — types inferred; structural compatibility enforced at the
+// call site (client-shell.tsx) against the JourneyTab/LevelUpRewardsDetail props.
 // ---------------------------------------------------------------------------
 
-/** Starter Pack champion icons (Bot Lane Pack — Ashe, MissFortune, Jhin + 2 bonus icons). */
+/** Starter Pack champion icons (Bot Lane Pack — Ashe, MissFortune, Jhin). */
 export const STARTER_PACK_CHAMPIONS: ChampionIconEntry[] = [
   { id: "Ashe", name: "Ashe", iconSrc: championSquareUrl("Ashe") },
   { id: "MissFortune", name: "Miss Fortune", iconSrc: championSquareUrl("MissFortune") },
   { id: "Jhin", name: "Jhin", iconSrc: championSquareUrl("Jhin") },
 ];
 
-export const DEMO_STARTER_PACK: StarterPackProps = {
+export const DEMO_STARTER_PACK = {
   label: "Bot Lane Pack",
   champions: STARTER_PACK_CHAMPIONS,
   subCopy: "3 Champions + Skins and more!",
   originalPrice: 5670,
   discountPct: 89,
   discountedPrice: 650,
-};
+} as const;
 
-export const DEMO_AWAKENING_MISSIONS: AwakeningMissionsProps = {
+export const DEMO_AWAKENING_MISSIONS = {
   completedCount: 0,
   totalCount: 8,
   rewardCopy:
     "Complete the mission chain to get a Masterwork Chest & Key, plus XP and BE along the way.",
-};
+} as const;
 
-export const DEMO_LEVEL_UP_REWARDS: ProgressPanelProps = {
+export const DEMO_LEVEL_UP_REWARDS = {
   heading: "Level Up Rewards",
   subCopy: "Unlock new maps, spells, and other rewards each time you level up.",
   rewardLines: ["6 Summoner Spells", "Blue Essence"],
@@ -177,7 +88,7 @@ export const DEMO_LEVEL_UP_REWARDS: ProgressPanelProps = {
   bgSrc: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ashe_0.jpg",
 };
 
-export const DEMO_DAILY_PLAY_REWARDS: ProgressPanelProps = {
+export const DEMO_DAILY_PLAY_REWARDS = {
   heading: "Daily Play Rewards",
   subCopy: "Unlock a new champion and other rewards when you play each day.",
   rewardLines: ["Marksman Champion", "Hextech Chest"],

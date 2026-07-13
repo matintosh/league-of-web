@@ -1,19 +1,117 @@
 "use client";
 
 import { useId } from "react";
-import type {
-  JourneyTabProps,
-  LevelUpRewardsDetailProps,
-  StarterPackProps,
-  AwakeningMissionsProps,
-  ProgressPanelProps,
-  LevelRewardCard,
-} from "@low/fixtures";
+import type { ChampionIconEntry, LevelRewardCard } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
-// Re-export types for consumers
+// Prop-interface types — live here, not in @low/fixtures.
+// Fixtures own data shapes (ChampionIconEntry, LevelRewardCard); components
+// own their prop contracts.
 // ---------------------------------------------------------------------------
-export type { JourneyTabProps, LevelUpRewardsDetailProps };
+
+/** Props for the Champion Starter Pack card (Zone L1). */
+export interface StarterPackProps {
+  /** Pack display name, e.g. "Bot Lane Pack". */
+  label: string;
+  /** Champion icons to display in the horizontal strip. */
+  champions: ChampionIconEntry[];
+  /** Short sub-copy, e.g. "3 Champions + Skins and more!" */
+  subCopy: string;
+  /** Original (crossed-out) price in BE. */
+  originalPrice: number;
+  /** Discount percentage, e.g. 89. */
+  discountPct: number;
+  /** Final (discounted) price in BE. */
+  discountedPrice: number;
+  /** Called when the buy button is clicked. */
+  onPurchase?: () => void;
+}
+
+/** Props for the Awakening Missions chain card (Zone L2). */
+export interface AwakeningMissionsProps {
+  /** Completed missions count. */
+  completedCount: number;
+  /** Total missions in the chain. */
+  totalCount: number;
+  /** Reward description copy. */
+  rewardCopy: string;
+  /** Called when VIEW MISSIONS is clicked. */
+  onViewMissions?: () => void;
+}
+
+/**
+ * Props for a Level Up / Daily Play progress panel (Zones R1 and R2).
+ * `onViewRewards` is omitted from the Daily Play panel (no detail screen in scope
+ * for the 2021 NPE era). Pass `undefined` to disable the button and log a
+ * console note; pass a handler to wire up a future detail route.
+ */
+export interface ProgressPanelProps {
+  /** Panel heading, e.g. "Level Up Rewards". */
+  heading: string;
+  /** Sub-copy line. */
+  subCopy: string;
+  /** Short reward labels, e.g. ["6 Summoner Spells", "Blue Essence"]. */
+  rewardLines: string[];
+  /** Progress numerator, e.g. 9. */
+  current: number;
+  /** Progress denominator, e.g. 10. */
+  total: number;
+  /** Unit label rendered after the counts, e.g. "LEVELS" or "DAYS". */
+  unitLabel: string;
+  /** Primary icon URL for the circular icon cluster (~64px). */
+  iconSrc: string;
+  /** Optional second icon URL for a 2×2 grid cluster. */
+  iconSrc2?: string;
+  /** Optional third icon URL. */
+  iconSrc3?: string;
+  /** Optional fourth icon URL. */
+  iconSrc4?: string;
+  /** Background atmospheric art URL (blurred, dark). */
+  bgSrc?: string;
+  /**
+   * Called when VIEW REWARDS is clicked. When undefined the button is rendered
+   * as a no-op (cursor-default, tooltip-free) — used for Daily Play which has
+   * no detail screen in the 2021 NPE era scope.
+   */
+  onViewRewards?: () => void;
+}
+
+/**
+ * Props for the JourneyTab screen.
+ *
+ * The shell always renders JourneyTab with `activeView="overview"` — the
+ * "level-rewards" branch is handled by rendering LevelUpRewardsDetail directly
+ * in the shell. The `activeView` prop is retained only so the shell can pass
+ * the current conceptual state through; JourneyTab never renders the detail
+ * view itself.
+ */
+export interface JourneyTabProps {
+  /** Left column Zone L1: Champion Starter Pack card. */
+  starterPack: StarterPackProps;
+  /** Left column Zone L2: Awakening Missions chain card. */
+  awakeningMissions: AwakeningMissionsProps;
+  /** Right column Zone R1: Level Up Rewards progress panel. */
+  levelUpRewards: ProgressPanelProps;
+  /** Right column Zone R2: Daily Play Rewards progress panel. */
+  dailyPlayRewards: ProgressPanelProps;
+  /**
+   * Called when VIEW REWARDS (Level Up) is clicked, requesting a view change.
+   * The shell owns the actual routing; this is the callback contract.
+   */
+  onViewLevelRewards?: () => void;
+}
+
+/** Props for the Level Up Rewards detail view. */
+export interface LevelUpRewardsDetailProps {
+  /** All 10 level reward cards. */
+  levels: LevelRewardCard[];
+  /** Currently selected level (1-based). */
+  selectedLevel: number;
+  /** Called when a level card is clicked. */
+  onSelectLevel?: (level: number) => void;
+  /** Called when the back chevron / breadcrumb is clicked. */
+  onBack?: () => void;
+}
 
 // ---------------------------------------------------------------------------
 // Private SVG helpers
@@ -153,7 +251,13 @@ function CompletedBadge() {
   );
 }
 
-/** Padlock icon — locked level overlay. */
+/**
+ * Padlock icon — locked level overlay.
+ * NOTE: LockBadge is duplicated across 4 components in the codebase (journey-tab,
+ * battle-pass-screen, etc.). A shared <LockIcon> in @low/ui/chrome would be the
+ * right extraction — tracked for a future cleanup PR, not done here to keep this
+ * PR scoped.
+ */
 function LockBadge() {
   return (
     <div
@@ -342,20 +446,10 @@ function AwakenMissionsCard({ missions }: { missions: AwakeningMissionsProps }) 
 // ProgressBar — teal segmented bar used in progress panels
 // ---------------------------------------------------------------------------
 
-function ProgressBar({
-  current,
-  total,
-  uid,
-}: {
-  current: number;
-  total: number;
-  uid: string;
-}) {
-  const barId = `${uid}-pbar`;
-  // Segmented: one segment per unit. Total ≤ 10.
+function ProgressBar({ current, total }: { current: number; total: number }) {
+  // Total ≤ 10 segments.
   return (
     <div
-      id={barId}
       role="progressbar"
       aria-valuenow={current}
       aria-valuemin={0}
@@ -369,10 +463,7 @@ function ProgressBar({
           className="h-2"
           style={{
             flex: 1,
-            background:
-              i < current
-                ? "var(--color-blue-3)"
-                : "var(--color-grey-4)",
+            background: i < current ? "var(--color-blue-3)" : "var(--color-grey-4)",
             opacity: i < current ? 1 : 0.6,
           }}
         />
@@ -385,13 +476,7 @@ function ProgressBar({
 // ProgressPanel — Zones R1 and R2
 // ---------------------------------------------------------------------------
 
-function ProgressPanel({
-  panel,
-  uid,
-}: {
-  panel: ProgressPanelProps;
-  uid: string;
-}) {
+function ProgressPanel({ panel }: { panel: ProgressPanelProps }) {
   const hasMultiIcon = Boolean(panel.iconSrc2);
 
   return (
@@ -491,16 +576,25 @@ function ProgressPanel({
               of {panel.total} {panel.unitLabel}
             </span>
           </div>
-          <ProgressBar current={panel.current} total={panel.total} uid={uid} />
+          <ProgressBar current={panel.current} total={panel.total} />
         </div>
       </div>
 
-      {/* VIEW REWARDS button — bottom-right */}
+      {/* VIEW REWARDS button — bottom-right.
+          When onViewRewards is undefined (Daily Play has no detail screen in the
+          2021 NPE era), the button renders as decorative/no-op per the reference
+          screenshot where the button visually exists but is not in scope. */}
       <div className="relative z-10 flex justify-end border-t border-gold-5 px-4 py-2">
         <button
           type="button"
-          onClick={panel.onViewRewards}
-          className="border border-gold-4 px-5 py-2 font-display text-xs uppercase tracking-widest text-gold-2 transition-colors duration-150 hover:border-gold-2 hover:text-gold-1 cursor-pointer"
+          onClick={panel.onViewRewards ?? undefined}
+          disabled={!panel.onViewRewards}
+          className={[
+            "border border-gold-4 px-5 py-2 font-display text-xs uppercase tracking-widest text-gold-2 transition-colors duration-150",
+            panel.onViewRewards
+              ? "hover:border-gold-2 hover:text-gold-1 cursor-pointer"
+              : "cursor-default opacity-60",
+          ].join(" ")}
         >
           View Rewards
         </button>
@@ -519,8 +613,6 @@ interface JourneyOverviewProps {
   levelUpRewards: ProgressPanelProps;
   dailyPlayRewards: ProgressPanelProps;
   onViewLevelRewards?: () => void;
-  onViewDailyRewards?: () => void;
-  uid: string;
 }
 
 function JourneyOverview({
@@ -529,8 +621,6 @@ function JourneyOverview({
   levelUpRewards,
   dailyPlayRewards,
   onViewLevelRewards,
-  onViewDailyRewards,
-  uid,
 }: JourneyOverviewProps) {
   return (
     <div className="flex h-full gap-6 px-5 py-4">
@@ -562,15 +652,14 @@ function JourneyOverview({
 
       {/* Right column — Level Up Rewards + Daily Play Rewards */}
       <div className="flex flex-1 min-w-0 flex-col gap-4">
-        {/* Zone R1 */}
+        {/* Zone R1 — Level Up Rewards: VIEW REWARDS routes to level detail. */}
         <ProgressPanel
           panel={{ ...levelUpRewards, onViewRewards: onViewLevelRewards }}
-          uid={`${uid}-r1`}
         />
-        {/* Zone R2 */}
+        {/* Zone R2 — Daily Play Rewards: no detail screen in 2021 NPE era scope.
+            Button renders as disabled no-op per the reference design. */}
         <ProgressPanel
-          panel={{ ...dailyPlayRewards, onViewRewards: onViewDailyRewards }}
-          uid={`${uid}-r2`}
+          panel={{ ...dailyPlayRewards, onViewRewards: undefined }}
         />
       </div>
     </div>
@@ -662,7 +751,7 @@ function LevelCardGridItem({ card, isSelected, onSelect }: LevelCardGridItemProp
 // LevelDetailPanel — right side of Level Up Rewards detail view
 // ---------------------------------------------------------------------------
 
-function LevelDetailPanel({ card, uid }: { card: LevelRewardCard; uid: string }) {
+function LevelDetailPanel({ card }: { card: LevelRewardCard }) {
   return (
     <div
       className="flex flex-col border border-gold-4"
@@ -735,7 +824,6 @@ export function LevelUpRewardsDetail({
   onSelectLevel,
   onBack,
 }: LevelUpRewardsDetailProps) {
-  const uid = useId();
   const selectedCard = levels.find((l) => l.level === selectedLevel) ?? levels[0];
 
   // Split into two rows of 5
@@ -782,7 +870,7 @@ export function LevelUpRewardsDetail({
             fontSize: 32,
             color: "var(--color-gold-1)",
             textShadow:
-              "0 0 40px color-mix(in srgb, var(--color-gold-3) 40%, transparent), 0 2px 6px rgba(0,0,0,0.8)",
+              "0 0 40px color-mix(in srgb, var(--color-gold-3) 40%, transparent), 0 2px 6px color-mix(in srgb, var(--color-hextech-black) 80%, transparent)",
           }}
         >
           Level Up Rewards
@@ -830,7 +918,7 @@ export function LevelUpRewardsDetail({
         {/* Detail panel — flex-1 so it fills the remaining width */}
         {selectedCard && (
           <div className="flex-1 min-w-0">
-            <LevelDetailPanel card={selectedCard} uid={uid} />
+            <LevelDetailPanel card={selectedCard} />
           </div>
         )}
       </div>
@@ -858,11 +946,9 @@ export function LevelUpRewardsDetail({
 // Reference: docs/reference/client-home-journey-npe.jpg (overview)
 //            docs/reference/client-home-journey-level-rewards.jpg (level detail)
 //
-// View routing:
-//   "overview"       activeView === "overview" (default)
-//   "level-rewards"  activeView === "level-rewards" — delegates to LevelUpRewardsDetail
-//
-// The shell (client-shell.tsx) owns `activeView` state and level selection state.
+// The shell renders JourneyTab only when activeTabId === "journey" AND the shell's
+// journeyView === "overview". When journeyView === "level-rewards" the shell renders
+// LevelUpRewardsDetail directly. JourneyTab never renders the detail view itself.
 // ---------------------------------------------------------------------------
 
 export function JourneyTab({
@@ -870,42 +956,8 @@ export function JourneyTab({
   awakeningMissions,
   levelUpRewards,
   dailyPlayRewards,
-  activeView,
-  onSelectView,
+  onViewLevelRewards,
 }: JourneyTabProps) {
-  const uid = useId();
-
-  // Placeholder level data for the level rewards detail view.
-  // In the shell this would be passed as a separate prop (or sourced from fixtures).
-  // JourneyTab does not import fixture *values* — it receives all data via props.
-  // The LevelUpRewardsDetail is intentionally separated into its own exported component
-  // so callers can supply fixture values while keeping this file fixture-value-free.
-
-  if (activeView === "level-rewards") {
-    // The detail view is surfaced by the shell which also owns selectedLevel state.
-    // When rendered inside JourneyTab the shell passes onSelectView("overview") for back nav.
-    // The level fixtures + selected level are supplied by the shell via LevelUpRewardsDetail props —
-    // but since JourneyTabProps doesn't carry them (shell owns that state tree),
-    // we render a placeholder that signals back navigation is wired.
-    // Real usage: shell renders LevelUpRewardsDetail directly alongside JourneyTab switching.
-    return (
-      <div
-        className="flex h-full items-center justify-center"
-        style={{ background: "var(--color-hextech-black)" }}
-      >
-        {/* This branch is reached when activeView="level-rewards" is managed externally. */}
-        {/* The shell renders LevelUpRewardsDetail directly and never calls JourneyTab with this view. */}
-        <button
-          type="button"
-          onClick={() => onSelectView?.("overview")}
-          className="font-display text-xs uppercase tracking-widest text-gold-2 hover:text-gold-1 transition-colors duration-150 cursor-pointer"
-        >
-          ← Back to Journey
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div
       className="h-full w-full overflow-hidden"
@@ -924,7 +976,7 @@ export function JourneyTab({
           className="font-display text-2xl uppercase tracking-wider leading-tight"
           style={{
             color: "var(--color-gold-1)",
-            textShadow: "0 2px 8px rgba(0,0,0,0.8)",
+            textShadow: "0 2px 8px color-mix(in srgb, var(--color-hextech-black) 80%, transparent)",
           }}
         >
           Start Your Legend
@@ -937,9 +989,7 @@ export function JourneyTab({
         awakeningMissions={awakeningMissions}
         levelUpRewards={levelUpRewards}
         dailyPlayRewards={dailyPlayRewards}
-        onViewLevelRewards={() => onSelectView?.("level-rewards")}
-        onViewDailyRewards={() => onSelectView?.("level-rewards")}
-        uid={uid}
+        onViewLevelRewards={onViewLevelRewards}
       />
     </div>
   );

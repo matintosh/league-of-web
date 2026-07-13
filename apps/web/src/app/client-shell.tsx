@@ -1002,8 +1002,10 @@ function HomeView({ newsItems }: HomeViewProps) {
                       // Reset battle-pass level-detail on tab navigation so the
                       // user never gets trapped in LevelView when re-entering.
                       if (tab.id !== "battle-pass") setBattlePassLevelIdx(undefined);
-                      // Reset journey sub-view on tab navigation.
-                      if (tab.id !== "journey") setJourneyView("overview");
+                      // Reset journey sub-view and level selection on any tab click,
+                      // including a re-click of JOURNEY itself (re-click = return to overview).
+                      setJourneyView("overview");
+                      setJourneySelectedLevel(1);
                     }
                   : undefined
               }
@@ -1074,14 +1076,9 @@ function HomeView({ newsItems }: HomeViewProps) {
             awakeningMissions={DEMO_AWAKENING_MISSIONS}
             levelUpRewards={DEMO_LEVEL_UP_REWARDS}
             dailyPlayRewards={DEMO_DAILY_PLAY_REWARDS}
-            activeView="overview"
-            onSelectView={(view) => {
-              if (view === "level-rewards") {
-                setJourneySelectedLevel(1);
-                setJourneyView("level-rewards");
-              } else {
-                setJourneyView(view);
-              }
+            onViewLevelRewards={() => {
+              setJourneySelectedLevel(1);
+              setJourneyView("level-rewards");
             }}
           />
         ) : activeTabId === "news" ? (
