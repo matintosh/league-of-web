@@ -9,9 +9,21 @@
  *   Clarity=SummonerMana, Mark=SummonerSnowball, Smite=SummonerSmite
  *   (others are named as expected: SummonerFlash, SummonerTeleport, etc.)
  */
-import { DDRAGON_VERSION } from "./ddragon";
+import { DDRAGON_VERSION, summonerRiftMapUrl } from "./ddragon";
 
 const DDRAGON_SPELL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/spell`;
+
+/**
+ * Shared SR map art used as `previewSrc` for all summoner spells.
+ *
+ * Known divergence: the real client shows per-spell in-game action renders
+ * (overhead screenshots of the spell being cast on SR terrain). No per-spell
+ * art is available from public CDNs. We use the DDragon overhead minimap
+ * (512×512, olive-green terrain + teal rivers) as the closest available SR
+ * atmospheric asset. It blurs into the correct green/teal palette at
+ * filter: blur(4px) brightness(0.45) object-cover.
+ */
+const SPELL_PREVIEW_SRC = summonerRiftMapUrl();
 
 export interface SummonerSpell {
   /** DDragon spell id, e.g. "SummonerFlash" */
@@ -46,6 +58,7 @@ export const SUMMONER_SPELLS: SummonerSpell[] = [
     unlockLabel: "SUMMONER LEVEL 1",
     modes: "Classic, Tutorial, ARAM",
     cooldownSeconds: 210,
+    previewSrc: SPELL_PREVIEW_SRC,
   },
   {
     id: "SummonerHeal",
@@ -56,6 +69,7 @@ export const SUMMONER_SPELLS: SummonerSpell[] = [
     unlockLabel: "SUMMONER LEVEL 1",
     modes: "Classic, Tutorial, ARAM",
     cooldownSeconds: 240,
+    previewSrc: SPELL_PREVIEW_SRC,
   },
   {
     id: "SummonerBarrier",
@@ -65,6 +79,7 @@ export const SUMMONER_SPELLS: SummonerSpell[] = [
     unlockLabel: "SUMMONER LEVEL 4",
     modes: "Classic, Tutorial, ARAM",
     cooldownSeconds: 180,
+    previewSrc: SPELL_PREVIEW_SRC,
   },
   {
     id: "SummonerExhaust",
@@ -75,6 +90,7 @@ export const SUMMONER_SPELLS: SummonerSpell[] = [
     unlockLabel: "SUMMONER LEVEL 4",
     modes: "Classic, Tutorial",
     cooldownSeconds: 210,
+    previewSrc: SPELL_PREVIEW_SRC,
   },
   {
     id: "SummonerMana",
@@ -85,6 +101,7 @@ export const SUMMONER_SPELLS: SummonerSpell[] = [
     unlockLabel: "SUMMONER LEVEL 1",
     modes: "Classic, Tutorial, ARAM",
     cooldownSeconds: 240,
+    previewSrc: SPELL_PREVIEW_SRC,
   },
   {
     id: "SummonerSnowball",
@@ -95,6 +112,7 @@ export const SUMMONER_SPELLS: SummonerSpell[] = [
     unlockLabel: "SUMMONER LEVEL 1",
     modes: "ARAM",
     cooldownSeconds: 80,
+    previewSrc: SPELL_PREVIEW_SRC,
   },
   {
     id: "SummonerFlash",
@@ -105,6 +123,7 @@ export const SUMMONER_SPELLS: SummonerSpell[] = [
     unlockLabel: "SUMMONER LEVEL 8",
     modes: "Classic, Tutorial, ARAM",
     cooldownSeconds: 300,
+    previewSrc: SPELL_PREVIEW_SRC,
   },
   {
     id: "SummonerTeleport",
@@ -115,6 +134,7 @@ export const SUMMONER_SPELLS: SummonerSpell[] = [
     unlockLabel: "SUMMONER LEVEL 7",
     modes: "Classic, Tutorial",
     cooldownSeconds: 360,
+    previewSrc: SPELL_PREVIEW_SRC,
   },
   {
     id: "SummonerBoost",
@@ -125,6 +145,7 @@ export const SUMMONER_SPELLS: SummonerSpell[] = [
     unlockLabel: "SUMMONER LEVEL 7",
     modes: "Classic, Tutorial, ARAM",
     cooldownSeconds: 210,
+    previewSrc: SPELL_PREVIEW_SRC,
   },
   {
     id: "SummonerDot",
@@ -135,6 +156,7 @@ export const SUMMONER_SPELLS: SummonerSpell[] = [
     unlockLabel: "SUMMONER LEVEL 1",
     modes: "Classic, Tutorial, ARAM",
     cooldownSeconds: 210,
+    previewSrc: SPELL_PREVIEW_SRC,
   },
   {
     id: "SummonerSmite",
@@ -145,5 +167,6 @@ export const SUMMONER_SPELLS: SummonerSpell[] = [
     unlockLabel: "SUMMONER LEVEL 10",
     modes: "Classic, Tutorial",
     cooldownSeconds: 15,
+    previewSrc: SPELL_PREVIEW_SRC,
   },
 ];
