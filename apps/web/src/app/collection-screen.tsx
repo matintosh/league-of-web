@@ -241,6 +241,7 @@ function SkinsTab({
                       name={skin.name}
                       imageSrc={loadingArtUrl(id, skin.skinIndex)}
                       owned={skin.owned}
+                      tierLabel={skin.tier}
                       onSelect={
                         onSkinSelect
                           ? () => onSkinSelect(id, skin.skinIndex)

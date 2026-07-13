@@ -4,7 +4,7 @@
 // Props
 // ---------------------------------------------------------------------------
 export interface SkinCardProps {
-  /** Skin name used for alt text and aria-label. */
+  /** Skin name used for alt text, aria-label, and hover tooltip. */
   name: string;
   /** Loading-art portrait URL, e.g. from loadingArtUrl(id, skinNum). */
   imageSrc: string;
@@ -12,6 +12,12 @@ export interface SkinCardProps {
   owned?: boolean;
   /** Called when card is clicked. When provided, root renders as <button>. */
   onSelect?: () => void;
+  /**
+   * Skin tier label shown in the hover tooltip badge, e.g. "Legacy", "Epic".
+   * When provided, a small tier badge row appears below the skin name in the tooltip.
+   * Typically supplied for unowned skins only.
+   */
+  tierLabel?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -74,6 +80,40 @@ function LockBadge() {
   );
 }
 
+/**
+ * Hover tooltip overlay — appears at the bottom of the card on group-hover.
+ * Shows the skin name in display font and an optional tier badge row.
+ * pointer-events-none so it never blocks clicks on the card beneath.
+ */
+function HoverTooltip({ name, tierLabel }: { name: string; tierLabel?: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={[
+        "pointer-events-none",
+        "absolute inset-x-0 bottom-0",
+        "bg-blue-7/90",
+        "px-3 py-2",
+        "opacity-0 group-hover:opacity-100 transition-opacity duration-150",
+        "flex flex-col gap-1",
+      ].join(" ")}
+    >
+      <span className="font-display text-xs uppercase tracking-wider text-gold-cream leading-tight line-clamp-2">
+        {name}
+      </span>
+      {tierLabel && (
+        <div className="flex items-center gap-1">
+          {/* Small diamond dot acting as tier icon */}
+          <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true" className="shrink-0 text-gold-3">
+            <rect x="1" y="1" width="6" height="6" fill="currentColor" transform="rotate(45, 4, 4)" />
+          </svg>
+          <span className="font-body text-[10px] text-gold-2 leading-none">{tierLabel}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // SkinCard
 // ---------------------------------------------------------------------------
@@ -85,9 +125,12 @@ function LockBadge() {
  * Unowned: brightness-50 art, no gold border, diamond lock badge at bottom-center.
  * NOTE: Hover brightens art only — no zoom. Reference shows brighten, not zoom.
  *
+ * On hover, a dark panel tooltip appears at the card bottom showing the skin name
+ * and optional tier badge. `tierLabel` drives the badge row; omit for owned skins.
+ *
  * Presentational only — props in, callbacks out. No data fetching.
  */
-export function SkinCard({ name, imageSrc, owned = true, onSelect }: SkinCardProps) {
+export function SkinCard({ name, imageSrc, owned = true, onSelect, tierLabel }: SkinCardProps) {
   const rootStyle = { width: CARD_W, height: CARD_H };
 
   const content = (
@@ -113,6 +156,7 @@ export function SkinCard({ name, imageSrc, owned = true, onSelect }: SkinCardPro
         </>
       )}
       {!owned && <LockBadge />}
+      <HoverTooltip name={name} tierLabel={tierLabel} />
     </>
   );
 
