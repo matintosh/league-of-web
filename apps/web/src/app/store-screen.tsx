@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { StoreSubNavBar, FeaturedTab, StoreItemPurchaseModal, LootTab } from "@low/ui";
-import type { StoreTab } from "@low/ui";
+import type { StoreTab, LootSubTab } from "@low/ui";
 import {
   demoHeroSlides,
   demoFeaturedItems,
@@ -12,16 +12,21 @@ import {
   demoLootCategories,
   demoForgeSlots,
   demoLootResources,
+  LOOT_SIDEBAR_ICON_URLS,
+  LOOT_BAR_ICON_URLS,
 } from "@low/fixtures";
-import type { StoreItem, ForgeSlot } from "@low/fixtures";
+import type { StoreItem, ForgeSlot, LootItem } from "@low/fixtures";
+import { clearForgeSlot } from "./store-utils";
 
 // ---------------------------------------------------------------------------
 // StoreScreen
 // ---------------------------------------------------------------------------
 
 export interface StoreScreenProps {
-  /** Which tab to open when the screen first mounts. Defaults to "featured". */
-  initialTab?: StoreTab;
+  /** Currently active tab — controlled by the parent (ClientShell). */
+  activeTab: StoreTab;
+  /** Called when the user clicks a sub-nav tab. */
+  onTabChange: (tab: StoreTab) => void;
 }
 
 /**
@@ -32,11 +37,15 @@ export interface StoreScreenProps {
  * - Tab content panel — FEATURED and LOOT are live; other tabs show a placeholder
  * - StoreItemPurchaseModal — overlay opened when an item card is clicked
  *
- * All state is local (fixtures only, no data fetching).
+ * `activeTab` and `onTabChange` are fully controlled by ClientShell so that the
+ * loot nav-bar icon (and any future deep-links) can switch tabs even when the
+ * store screen is already mounted.
+ *
+ * All other state (forge slots, wishlist, modal) is local (fixtures only, no fetching).
  */
-export function StoreScreen({ initialTab = "featured" }: StoreScreenProps) {
-  const [activeTab, setActiveTab] = useState<StoreTab>(initialTab);
+export function StoreScreen({ activeTab, onTabChange }: StoreScreenProps) {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [activeSubTab, setActiveSubTab] = useState<LootSubTab>("crafting");
   const [featuredItems, setFeaturedItems] = useState<StoreItem[]>(demoFeaturedItems);
   const [topSellers, setTopSellers] = useState<StoreItem[]>(demoTopSellers);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
@@ -45,9 +54,15 @@ export function StoreScreen({ initialTab = "featured" }: StoreScreenProps) {
   const rpIcon = rpIconUrl();
 
   const handleClearSlot = (idx: number) =>
+    setForgeSlots((prev) => clearForgeSlot(prev, idx));
+
+  /** Add a clicked inventory item to the first empty forge slot. */
+  const handleItemClick = (item: LootItem) =>
     setForgeSlots((prev) => {
+      const emptyIdx = prev.findIndex((s) => s === null);
+      if (emptyIdx === -1) return prev; // all slots full — no-op
       const next = [...prev] as [ForgeSlot, ForgeSlot, ForgeSlot];
-      next[idx] = null;
+      next[emptyIdx] = item;
       return next;
     });
 
@@ -70,7 +85,7 @@ export function StoreScreen({ initialTab = "featured" }: StoreScreenProps) {
       {/* Sub-nav bar */}
       <StoreSubNavBar
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={onTabChange}
         onPurchaseRP={() => console.log("purchase RP")}
         rpIconSrc={rpIcon}
       />
@@ -90,12 +105,17 @@ export function StoreScreen({ initialTab = "featured" }: StoreScreenProps) {
           />
         ) : activeTab === "loot" ? (
           <LootTab
+            activeSubTab={activeSubTab}
+            onSubTabChange={setActiveSubTab}
             lootItems={demoLootCategories}
             forgeSlots={forgeSlots}
             keyFragments={demoLootResources.keyFragments}
             keys={demoLootResources.keys}
             lootBags={demoLootResources.lootBags}
+            sidebarIcons={LOOT_SIDEBAR_ICON_URLS}
+            barIcons={LOOT_BAR_ICON_URLS}
             onSearch={(q) => console.log("loot search:", q)}
+            onItemClick={handleItemClick}
             onCraft={() => console.log("craft")}
             onClearSlot={handleClearSlot}
           />

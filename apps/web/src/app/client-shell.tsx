@@ -25,7 +25,7 @@ import {
   TftHubScreen,
   ClashScreen,
 } from "@low/ui";
-import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer } from "@low/ui";
+import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, StoreTab } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -294,8 +294,12 @@ export function ClientShell() {
   // must survive that (#227 review finding).
   const [seasonModalDismissed, setSeasonModalDismissed] = useState(false);
   const [activeNavId, setActiveNavId] = useState("home");
-  /** Which store sub-tab to open — set by the loot nav-bar icon. Resets on next store open. */
-  const [storeInitialTab, setStoreInitialTab] = useState<"featured" | "loot">("featured");
+  /**
+   * Active Store sub-tab — lifted here so loot nav-bar icon click can switch
+   * it even when the Store screen is already mounted (fixes the stale-useState
+   * initialTab bug where `useState(initialTab)` only reads the prop once).
+   */
+  const [activeStoreTab, setActiveStoreTab] = useState<StoreTab>("featured");
   /** DDragon champion id chosen in the pick phase; passed to LoadoutScreen. */
   const [chosenChampionId, setChosenChampionId] = useState<string | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -520,7 +524,7 @@ export function ClientShell() {
               setActiveNavId(id);
               if (id === "collection") setView("collection");
               else if (id === "profile") setView("profile");
-              else if (id === "store") { setStoreInitialTab("featured"); setView("store"); }
+              else if (id === "store") { setActiveStoreTab("featured"); setView("store"); }
               else if (id === "tft") setView("tft");
               else if (id === "competitive") setView("competitive");
               else if (id === "home") setView("home");
@@ -537,7 +541,7 @@ export function ClientShell() {
                     aria-label="Loot"
                     className="flex h-7 w-7 cursor-default items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
                     onClick={() => {
-                      setStoreInitialTab("loot");
+                      setActiveStoreTab("loot");
                       setView("store");
                       setActiveNavId("store");
                     }}
@@ -667,7 +671,7 @@ export function ClientShell() {
                   }}
                 />
               ) : view === "store" ? (
-                <StoreScreen initialTab={storeInitialTab} />
+                <StoreScreen activeTab={activeStoreTab} onTabChange={setActiveStoreTab} />
               ) : view === "profile" ? (
                 <ProfileScreen
                   seasonModalDismissed={seasonModalDismissed}

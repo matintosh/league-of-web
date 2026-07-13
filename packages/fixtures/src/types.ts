@@ -133,7 +133,7 @@ export interface LootItem {
    * Loot category — governs which group header this item appears under
    * and which sidebar filter icon is active.
    */
-  category: "material" | "champion" | "skin" | "tactician" | "eternal";
+  category: "material" | "champion" | "skin" | "tactician" | "eternals";
   /**
    * Quantity owned. Shown as a badge in the tile bottom-right.
    * 0 = not owned (shown with a dimmed tile and "0" badge).
@@ -151,7 +151,7 @@ export interface LootItem {
  */
 export interface LootCategory {
   /** Internal category key. */
-  id: "material" | "champion" | "skin" | "tactician" | "eternal";
+  id: "material" | "champion" | "skin" | "tactician" | "eternals";
   /** Display label in uppercase, e.g. "MATERIALS". */
   label: string;
   /** Items in this category. Empty categories show the header but no tiles. */

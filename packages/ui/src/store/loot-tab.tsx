@@ -2,7 +2,6 @@
 
 import { useId } from "react";
 import type { LootCategory, LootItem, ForgeSlot } from "@low/fixtures";
-import { lootCategoryIconUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -10,6 +9,32 @@ import { lootCategoryIconUrl } from "@low/fixtures";
 
 /** Sub-navigation tabs within the Loot screen (2024+ era). */
 export type LootSubTab = "sanctum" | "mythic-shop" | "crafting";
+
+/**
+ * Icon URL bundle for the inventory sidebar category filters.
+ * All six URLs are resolved by the caller (page/showcase) using
+ * `lootCategoryIconUrl` from `@low/fixtures`, then passed here so
+ * the component never imports fixture values.
+ */
+export interface LootSidebarIcons {
+  all: string;
+  champion: string;
+  skin: string;
+  chest: string;
+  emote: string;
+  eternals: string;
+}
+
+/**
+ * Icon URL bundle for the bottom resource bar.
+ * Resolved by the caller with `lootItemIconUrl` from `@low/fixtures`.
+ */
+export interface LootBarIcons {
+  chest: string;
+  keyFragment: string;
+  key: string;
+  bag: string;
+}
 
 export interface LootTabProps {
   /**
@@ -35,8 +60,23 @@ export interface LootTabProps {
   keys: number;
   /** Loot bag count shown in the bottom bar. */
   lootBags: number;
+  /**
+   * Sidebar category-filter icon URLs — pass `LOOT_SIDEBAR_ICON_URLS` from
+   * `@low/fixtures` on the page/showcase side.
+   */
+  sidebarIcons: LootSidebarIcons;
+  /**
+   * Bottom-bar icon URLs — pass `LOOT_BAR_ICON_URLS` from `@low/fixtures`
+   * on the page/showcase side.
+   */
+  barIcons: LootBarIcons;
   /** Called when the search field changes. */
   onSearch?: (q: string) => void;
+  /**
+   * Called when an inventory tile is clicked.
+   * Typically used by the parent to add the item to the first empty forge slot.
+   */
+  onItemClick?: (item: LootItem) => void;
   /** Called when the CRAFT button is clicked. */
   onCraft?: () => void;
   /** Called when a forge slot's × close button is clicked. */
@@ -91,30 +131,30 @@ function LootSubNav({
 // Sidebar category filter icons
 // ---------------------------------------------------------------------------
 
-const SIDEBAR_FILTERS: {
-  name: "all" | "champion" | "skin" | "emote" | "eternals" | "chest";
+const SIDEBAR_FILTER_KEYS: {
+  key: keyof LootSidebarIcons;
   label: string;
 }[] = [
-  { name: "all",       label: "All" },
-  { name: "champion",  label: "Champions" },
-  { name: "skin",      label: "Skins" },
-  { name: "chest",     label: "Chests" },
-  { name: "emote",     label: "Emotes" },
-  { name: "eternals",  label: "Eternals" },
+  { key: "all",       label: "All" },
+  { key: "champion",  label: "Champions" },
+  { key: "skin",      label: "Skins" },
+  { key: "chest",     label: "Chests" },
+  { key: "emote",     label: "Emotes" },
+  { key: "eternals",  label: "Eternals" },
 ];
 
-function InventorySidebar() {
+function InventorySidebar({ icons }: { icons: LootSidebarIcons }) {
   return (
     <div className="flex w-7 flex-shrink-0 flex-col items-center gap-1 border-r border-gold-5 bg-blue-8 py-2">
-      {SIDEBAR_FILTERS.map((f) => (
+      {SIDEBAR_FILTER_KEYS.map((f) => (
         <button
-          key={f.name}
+          key={f.key}
           type="button"
           aria-label={f.label}
           className="flex h-7 w-7 items-center justify-center opacity-60 transition-opacity duration-150 hover:opacity-100"
         >
           <img
-            src={lootCategoryIconUrl(f.name)}
+            src={icons[f.key]}
             alt=""
             aria-hidden="true"
             width={20}
@@ -173,10 +213,23 @@ function InventorySearchBar({ onSearch }: { onSearch?: (q: string) => void }) {
 // Loot item tile
 // ---------------------------------------------------------------------------
 
-function LootItemTile({ item }: { item: LootItem }) {
+function LootItemTile({
+  item,
+  onClick,
+}: {
+  item: LootItem;
+  onClick?: (item: LootItem) => void;
+}) {
   const isEmpty = item.count === 0;
   return (
-    <div className="group relative flex-shrink-0 w-14 cursor-pointer select-none">
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={`${item.name} — ${item.count} owned`}
+      onClick={() => onClick?.(item)}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick?.(item); }}
+      className="group relative flex-shrink-0 w-14 select-none cursor-pointer"
+    >
       {/* Item art */}
       <div
         className={[
@@ -223,16 +276,24 @@ function LootItemTile({ item }: { item: LootItem }) {
 
 function LootInventoryPanel({
   lootItems,
+  activeSubTab,
+  onSubTabChange,
+  sidebarIcons,
   onSearch,
+  onItemClick,
 }: {
   lootItems: LootCategory[];
+  activeSubTab: LootSubTab;
+  onSubTabChange?: (tab: LootSubTab) => void;
+  sidebarIcons: LootSidebarIcons;
   onSearch?: (q: string) => void;
+  onItemClick?: (item: LootItem) => void;
 }) {
   return (
     <div className="flex h-full flex-col border-r border-gold-5 bg-blue-8" style={{ width: "37%" }}>
-      <LootSubNav active="crafting" />
+      <LootSubNav active={activeSubTab} onChange={onSubTabChange} />
       <div className="flex flex-1 min-h-0">
-        <InventorySidebar />
+        <InventorySidebar icons={sidebarIcons} />
         <div className="flex flex-1 min-h-0 flex-col">
           <InventorySearchBar onSearch={onSearch} />
           {/* Category groups */}
@@ -247,7 +308,7 @@ function LootInventoryPanel({
                 {cat.items.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {cat.items.map((item) => (
-                      <LootItemTile key={item.id} item={item} />
+                      <LootItemTile key={item.id} item={item} onClick={onItemClick} />
                     ))}
                   </div>
                 )}
@@ -269,12 +330,10 @@ function LootInventoryPanel({
  *
  * The reference shows a large circular forge with gold concentric rings,
  * three gold spokes at 120° intervals, and a blue energy glow in the center.
- * This SVG approximates the geometry using token colors only — no inline hex.
- * The blue glow uses a radial gradient with CSS-var stops via @low/tokens.
+ * This SVG approximates the geometry using token CSS vars only — no inline hex.
+ * The blue glow uses radial-gradient stops referencing @low/tokens variables.
  */
-function ForgeWheel({ id }: { id: string }) {
-  const gradId = `${id}-glow`;
-  const outerRingId = `${id}-outer`;
+function ForgeWheel({ gradId, outerRingId }: { gradId: string; outerRingId: string }) {
   return (
     <svg
       viewBox="0 0 280 280"
@@ -405,21 +464,25 @@ function ForgeSlotTile({
 
 function CraftingForge({
   forgeSlots,
+  wheelGradId,
+  wheelOuterId,
   onCraft,
   onClearSlot,
 }: {
   forgeSlots: [ForgeSlot, ForgeSlot, ForgeSlot];
+  wheelGradId: string;
+  wheelOuterId: string;
   onCraft?: () => void;
   onClearSlot?: (idx: number) => void;
 }) {
-  const wheelId = useId().replace(/:/g, "loot");
-  const canCraft = forgeSlots.some((s) => s !== null);
+  // CRAFT is only enabled when at least one slot contains an item with count > 0
+  const canCraft = forgeSlots.some((s) => s !== null && s.count > 0);
 
   return (
     <div className="relative flex flex-1 flex-col items-center justify-between bg-blue-7 pb-4 pt-6 overflow-hidden">
       {/* Forge wheel — centered in upper portion */}
       <div className="relative h-[280px] w-[280px] flex-shrink-0">
-        <ForgeWheel id={wheelId} />
+        <ForgeWheel gradId={wheelGradId} outerRingId={wheelOuterId} />
       </div>
 
       {/* Slot tray — bottom area */}
@@ -482,10 +545,12 @@ function LootBottomBar({
   keyFragments,
   keys,
   lootBags,
+  barIcons,
 }: {
   keyFragments: number;
   keys: number;
   lootBags: number;
+  barIcons: LootBarIcons;
 }) {
   return (
     <div className="flex h-10 flex-shrink-0 items-center gap-5 border-t border-gold-5 bg-grey-4 px-4">
@@ -496,24 +561,12 @@ function LootBottomBar({
         className="flex items-center gap-1 border border-gold-5 bg-blue-8 px-2 py-0.5 transition-colors duration-150 hover:border-gold-3"
       >
         <span className="font-display text-xs text-gold-2">+</span>
-        <img
-          src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-loot/global/default/assets/loot_item_icons/chest.png"
-          alt="Chest"
-          width={16}
-          height={16}
-          className="object-contain"
-        />
+        <img src={barIcons.chest} alt="Chest" width={16} height={16} className="object-contain" />
       </button>
 
       {/* Key fragment count */}
       <div className="flex items-center gap-1.5">
-        <img
-          src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-loot/global/default/assets/loot_item_icons/material_key_fragment.png"
-          alt="Key Fragment"
-          width={18}
-          height={18}
-          className="object-contain"
-        />
+        <img src={barIcons.keyFragment} alt="Key Fragment" width={18} height={18} className="object-contain" />
         <span className="font-display text-xs text-gold-1">
           {keyFragments.toLocaleString("en-US")}
         </span>
@@ -521,13 +574,7 @@ function LootBottomBar({
 
       {/* Key count */}
       <div className="flex items-center gap-1.5">
-        <img
-          src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-loot/global/default/assets/loot_item_icons/material_key.png"
-          alt="Key"
-          width={18}
-          height={18}
-          className="object-contain"
-        />
+        <img src={barIcons.key} alt="Key" width={18} height={18} className="object-contain" />
         <span className="font-display text-xs text-gold-1">
           {keys.toLocaleString("en-US")}
         </span>
@@ -535,13 +582,7 @@ function LootBottomBar({
 
       {/* Loot bag count */}
       <div className="flex items-center gap-1.5">
-        <img
-          src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-loot/global/default/assets/loot_item_icons/chest_key_bundle.png"
-          alt="Loot Bag"
-          width={18}
-          height={18}
-          className="object-contain"
-        />
+        <img src={barIcons.bag} alt="Loot Bag" width={18} height={18} className="object-contain" />
         <span className="font-display text-xs text-gold-1">
           {lootBags.toLocaleString("en-US")}
         </span>
@@ -562,7 +603,7 @@ function LootBottomBar({
  *   ┌──────────────────────────────────────────────┐
  *   │  Left panel (37%): Loot inventory            │
  *   │  - Sub-nav: THE SANCTUM | MYTHIC SHOP | CRAFTING │
- *   │  - Sidebar filter icons (category icons)     │
+ *   │  - Sidebar filter icons (caller-supplied URLs)│
  *   │  - Search + Alphabetical sort                │
  *   │  - Category groups: MATERIALS / CHAMPIONS /  │
  *   │    SKINS / TACTICIANS / ETERNALS             │
@@ -570,13 +611,19 @@ function LootBottomBar({
  *   │  Right panel (63%): Crafting forge           │
  *   │  - Hextech three-spoke wheel SVG             │
  *   │  - Item slot tray (3 slots) + help/?/×       │
- *   │  - CRAFT button                              │
+ *   │  - CRAFT button (enabled only when a slot    │
+ *   │    holds an item with count > 0)             │
  *   ├──────────────────────────────────────────────┤
- *   │  Bottom bar: + chest | key-fragments | keys | bags │
+ *   │  Bottom bar: + chest | key-fragments | keys  │
  *   └──────────────────────────────────────────────┘
  *
- * Presentational. No data fetching; all state owned by the parent.
+ * Fully controlled. No data fetching; all state owned by the parent.
  * Era: 2024+ (V14.24+ "THE SANCTUM" sub-nav introduced).
+ *
+ * Icon URLs are accepted as props (`sidebarIcons`, `barIcons`) rather than
+ * imported directly — Rule 3 compliance: types only from @low/fixtures.
+ * The caller should pass `LOOT_SIDEBAR_ICON_URLS` and `LOOT_BAR_ICON_URLS`
+ * from `@low/fixtures`.
  */
 export function LootTab({
   activeSubTab = "crafting",
@@ -586,20 +633,37 @@ export function LootTab({
   keyFragments,
   keys,
   lootBags,
+  sidebarIcons,
+  barIcons,
   onSearch,
+  onItemClick,
   onCraft,
   onClearSlot,
 }: LootTabProps) {
+  // useId() returns a string like ":r0:" — strip colons for SVG id safety
+  const uid = useId().replace(/:/g, "");
+  const wheelGradId = `${uid}fg`;
+  const wheelOuterId = `${uid}fo`;
+
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
       {/* Main content — inventory panel + forge */}
       <div className="flex flex-1 min-h-0">
         {/* Left: inventory */}
-        <LootInventoryPanel lootItems={lootItems} onSearch={onSearch} />
+        <LootInventoryPanel
+          lootItems={lootItems}
+          activeSubTab={activeSubTab}
+          onSubTabChange={onSubTabChange}
+          sidebarIcons={sidebarIcons}
+          onSearch={onSearch}
+          onItemClick={onItemClick}
+        />
 
         {/* Right: forge */}
         <CraftingForge
           forgeSlots={forgeSlots}
+          wheelGradId={wheelGradId}
+          wheelOuterId={wheelOuterId}
           onCraft={onCraft}
           onClearSlot={onClearSlot}
         />
@@ -610,6 +674,7 @@ export function LootTab({
         keyFragments={keyFragments}
         keys={keys}
         lootBags={lootBags}
+        barIcons={barIcons}
       />
     </div>
   );

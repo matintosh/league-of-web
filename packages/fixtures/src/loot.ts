@@ -3,7 +3,7 @@
  * 2024+ era: CRAFTING sub-tab inventory + forge UI.
  *
  * All icon URLs use CDragon rcp-fe-lol-loot plugin (verified 200 on 2026-07-13).
- * Champion art uses DDragon loading art (public CDN, no API key).
+ * Champion art uses DDragon square art (public CDN, no API key).
  *
  * Fixture values only — never import in @low/ui components.
  */
@@ -17,7 +17,7 @@ const LOOT_CAT_ICONS =
   "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-loot/global/default/assets/category_icons";
 
 // ---------------------------------------------------------------------------
-// CDragon loot icon helpers
+// CDragon loot icon helpers (fixture-layer; used by pages/showcase, not @low/ui)
 // ---------------------------------------------------------------------------
 
 /** Loot item icon URL (CDragon rcp-fe-lol-loot · loot_item_icons). */
@@ -30,10 +30,32 @@ export const lootCategoryIconUrl = (
 ): string => `${LOOT_CAT_ICONS}/${name}.png`;
 
 // ---------------------------------------------------------------------------
+// Pre-built sidebar icon URLs (resolved at module init; passed as props)
+// ---------------------------------------------------------------------------
+
+/** All six loot sidebar category icon URLs, keyed by filter name. */
+export const LOOT_SIDEBAR_ICON_URLS = {
+  all:      lootCategoryIconUrl("all"),
+  champion: lootCategoryIconUrl("champion"),
+  skin:     lootCategoryIconUrl("skin"),
+  chest:    lootCategoryIconUrl("chest"),
+  emote:    lootCategoryIconUrl("emote"),
+  eternals: lootCategoryIconUrl("eternals"),
+} as const;
+
+/** Bottom-bar icon URLs (chest, key-fragment, key, bag). */
+export const LOOT_BAR_ICON_URLS = {
+  chest:          lootItemIconUrl("chest.png"),
+  keyFragment:    lootItemIconUrl("material_key_fragment.png"),
+  key:            lootItemIconUrl("material_key.png"),
+  bag:            lootItemIconUrl("chest_key_bundle.png"),
+} as const;
+
+// ---------------------------------------------------------------------------
 // Demo inventory items
 // ---------------------------------------------------------------------------
 
-/** Hextech Chest — material; count: 0 */
+/** Hextech Chest — material; count: 0 (intentionally zero to show empty-badge) */
 const demoHextechChest: LootItem = {
   id: "material-chest-hextech",
   name: "Hextech Chest",
@@ -61,7 +83,7 @@ const demoBelvethShard: LootItem = {
 };
 
 /** Syndra champion shard — used in the forge slot */
-const demaSyndraShard: LootItem = {
+const demoSyndraShard: LootItem = {
   id: "champion-shard-syndra",
   name: "Syndra",
   category: "champion",
@@ -105,7 +127,7 @@ export const demoLootCategories: LootCategory[] = [
     items: [],
   },
   {
-    id: "eternal",
+    id: "eternals",
     label: "ETERNALS",
     items: [],
   },
@@ -117,7 +139,7 @@ export const emptyLootCategories: LootCategory[] = [
   { id: "champion",   label: "CHAMPIONS",  items: [] },
   { id: "skin",       label: "SKINS",      items: [] },
   { id: "tactician",  label: "TACTICIANS", items: [] },
-  { id: "eternal",    label: "ETERNALS",   items: [] },
+  { id: "eternals",   label: "ETERNALS",   items: [] },
 ];
 
 // ---------------------------------------------------------------------------
@@ -129,16 +151,19 @@ export const emptyLootCategories: LootCategory[] = [
  * slot 0 → Syndra shard (filled, 1/1), slots 1–2 → empty (0/1).
  */
 export const demoForgeSlots: [ForgeSlot, ForgeSlot, ForgeSlot] = [
-  demaSyndraShard,
+  demoSyndraShard,
   null,
   null,
 ];
 
-/** All three slots filled — for showcase variant. */
+/**
+ * All three slots filled — for showcase variant.
+ * Uses items with count > 0 so the CRAFT button is enabled.
+ */
 export const filledForgeSlots: [ForgeSlot, ForgeSlot, ForgeSlot] = [
-  demaSyndraShard,
+  demoSyndraShard,
   demoHextechKey,
-  demoHextechChest,
+  demoBelvethShard,
 ];
 
 /** All slots empty — for showcase variant. */
