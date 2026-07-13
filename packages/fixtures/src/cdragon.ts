@@ -30,8 +30,8 @@ const CDRAGON_GAME_DATA =
  * that matches the in-client spell slot icons exactly.
  *
  * Examples confirmed HTTP 200 (2026-07):
- *   summonerSpellIconUrl("summoner_flash")  → Flash icon
- *   summonerSpellIconUrl("summonerignite")  → Ignite icon
+ *   summonerSpellIconUrl("summoner_flash")   → Flash icon
+ *   summonerSpellIconUrl("summonerignite")   → Ignite icon (NOT "summoner_dot" — 404)
  *
  * Source: CommunityDragon rcp-be-lol-game-data · data/spells/icons2d/
  * License: Riot fan-content policy (non-commercial fan use).
