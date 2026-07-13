@@ -19,8 +19,8 @@ export interface SkinEntry {
   skinIndex: number;
   /** Whether this skin is owned in the demo fixture. */
   owned: boolean;
-  /** Optional skin tier label for tooltip display, e.g. "Legacy", "Epic". */
-  tier?: string;
+  /** Optional skin tier label for tooltip display — union of known Riot tier names. */
+  tier?: "Legacy" | "Epic" | "Ultimate" | "Mythic" | "Prestige";
 }
 
 /**

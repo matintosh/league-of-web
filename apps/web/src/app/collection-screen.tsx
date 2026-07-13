@@ -235,13 +235,14 @@ function SkinsTab({
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-4">
-                  {skins.map((skin) => (
+                  {skins.map((skin, idx) => (
                     <SkinCard
                       key={skin.skinIndex}
                       name={skin.name}
                       imageSrc={loadingArtUrl(id, skin.skinIndex)}
                       owned={skin.owned}
                       tierLabel={skin.tier}
+                      tooltipSide={idx % 4 === 3 ? "left" : "right"}
                       onSelect={
                         onSkinSelect
                           ? () => onSkinSelect(id, skin.skinIndex)
