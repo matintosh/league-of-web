@@ -80,8 +80,6 @@ export interface ClashScreenProps {
   onLockIn?: () => void;
   /** Called when user clicks the × leave button */
   onLeaveTeam?: () => void;
-  /** Called when scouting is clicked */
-  onScouting?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -126,7 +124,6 @@ export function ClashScreen({
   onSubTabChange,
   onLockIn,
   onLeaveTeam,
-  onScouting,
 }: ClashScreenProps) {
   const gradId = useId();
 
@@ -158,7 +155,6 @@ export function ClashScreen({
           matchStartTime={matchStartTime}
           onLockIn={onLockIn}
           onLeaveTeam={onLeaveTeam}
-          onScouting={onScouting}
         />
       </div>
     </div>
@@ -360,7 +356,6 @@ interface CenterPanelProps {
   matchStartTime?: string;
   onLockIn?: () => void;
   onLeaveTeam?: () => void;
-  onScouting?: () => void;
 }
 
 function CenterPanel({
@@ -517,7 +512,7 @@ function TeamHeader({ team }: TeamHeaderProps) {
           {/* Tier badge — dark red bg, white numeral */}
           <span
             className="inline-flex items-center border border-gold-5 px-2 py-0.5 font-display text-xs uppercase tracking-wider text-grey-1"
-            style={{ background: "color-mix(in srgb, var(--color-blue-7) 40%, #1a0005 60%)" }}
+            style={{ background: "color-mix(in srgb, var(--color-riot-red) 12%, var(--color-hextech-black) 88%)" }}
           >
             Tier {team.tier}
           </span>
@@ -550,7 +545,7 @@ function PlayerRow({ player }: PlayerRowProps) {
   const statusColor =
     status === "locked-in"       ? "text-gold-2"  :
     status === "not-locked-in"   ? "text-grey-2"  :
-    status === "ticket-required" ? "text-blue-3"  :
+    status === "ticket-required" ? "text-gold-3"  :
     "text-grey-2";
 
   return (

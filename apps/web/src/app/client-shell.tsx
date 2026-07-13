@@ -641,7 +641,6 @@ export function ClientShell() {
                   matchStartTime="7:07 pm"
                   onLockIn={() => console.log("clash: lock in")}
                   onLeaveTeam={() => console.log("clash: leave team")}
-                  onScouting={() => console.log("clash: scouting")}
                 />
               ) : view === "tft" ? (
                 <TftHubScreen

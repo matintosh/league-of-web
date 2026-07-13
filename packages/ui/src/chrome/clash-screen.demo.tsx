@@ -143,7 +143,6 @@ export function ClashScreenPreLockInDemo() {
         onSubTabChange={setActiveSubTab}
         onLockIn={() => console.log("clash: lock in")}
         onLeaveTeam={() => console.log("clash: leave team")}
-        onScouting={() => console.log("clash: scouting")}
       />
     </div>
   );
