@@ -43,6 +43,10 @@ export interface BadgeSlot {
    * Use var(--color-*) references to stay token-safe.
    * Defaults to gold-4 when omitted.
    */
+  /**
+   * TOKEN-ONLY: must be a `var(--color-*)` reference (CLAUDE.md rule 1 —
+   * raw hex/rgb strings are a review-blocking violation at any call site).
+   */
   ringColor?: string;
 }
 
@@ -368,7 +372,7 @@ function AvatarCrest({
 
   // Gem size: ~20% of the ring diameter, clamped for legibility.
   // Self ring outer diameter = 2 * outerR ≈ size - 4. At size=56 → gemSize≈12, size=44 → gemSize≈10.
-  const gemSize = isSelf ? 13 : 10;
+  const gemSize = isSelf ? 16 : 14;
 
   return (
     // Outer wrapper is slightly taller than `size` to leave vertical room for the gem above.
@@ -704,13 +708,6 @@ export function PlayerBanner({
             </span>
           )}
 
-          {/* Children slot */}
-          {children && (
-            <div className="flex w-full items-center justify-center px-1 mt-2">
-              {children}
-            </div>
-          )}
-
           {/* Badge slots — three circular slots from the reference V11 layout.
                Empty entries (undefined) render as dark circles with a muted ring.
                Filled entries show an icon image inside a colored ring. */}
@@ -754,6 +751,14 @@ export function PlayerBanner({
               )}
             </div>
           )}
+
+          {/* Children slot */}
+          {children && (
+            <div className="flex w-full items-center justify-center px-1 mt-2">
+              {children}
+            </div>
+          )}
+
 
           {/* Footer: autofill chip + foot glyph + optional queue asterisk on self */}
           <div className="flex flex-col items-center gap-1 mt-auto">
