@@ -52,6 +52,8 @@ const SKIN_TIER_BREAKDOWN: TierEntry[][] = [
   [
     { label: "Legendary", count: 0, iconSrc: `${CDRAGON_GEMS}/legendary.png` },
     { label: "Epic",      count: 0, iconSrc: `${CDRAGON_GEMS}/epic.png` },
+    // rare.png renders as a green sphere in the current CDragon build; the
+    // reference screenshot shows pink — CDragon patch divergence, asset is authentic.
     { label: "Rare",      count: 0, iconSrc: `${CDRAGON_GEMS_COLS}/rare.png` },
     { label: "Mythic",    count: 0, iconSrc: `${CDRAGON_GEMS}/mythic.png` },
   ],

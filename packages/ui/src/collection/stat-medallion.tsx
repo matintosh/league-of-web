@@ -125,7 +125,7 @@ export function StatMedallion({ value, caption, tierBreakdown }: StatMedallionPr
       {tierBreakdown && tierBreakdown.length > 0 && (
         <div className="flex flex-col items-center gap-3 w-full">
           {tierBreakdown.map((row, rowIdx) => (
-            <div key={rowIdx} className="flex items-end justify-center gap-4">
+            <div key={rowIdx} className="flex items-center justify-center gap-4">
               {row.map((entry) => (
                 <div
                   key={entry.label}
