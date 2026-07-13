@@ -232,11 +232,21 @@ function PoroIcon() {
 }
 
 // ---------------------------------------------------------------------------
-// Pentagon radar chart
+// Radar chart — circular ring redesign
+//
+// Reference: docs/reference/client-profile-stats.jpg
+//
+// Color mapping (reference hex → nearest token):
+//   #494641  outer ring stroke  → var(--color-grey-3)  (#3c3c41, Δ≈7)
+//   warm gold polygon stroke   → var(--color-gold-cream) (#cdbe91)
+//   dark polygon fill          → color-mix(in srgb, var(--color-grey-4) 70%, transparent)
+//   spoke lines                → var(--color-grey-3) (#3c3c41)
+//   diamond ticks              → var(--color-grey-1) (#a09b8c)
+//   role icons                 → var(--color-grey-1)
 // ---------------------------------------------------------------------------
 
-/** Compute (x, y) for a pentagon vertex at a given axis index (0–4). */
-function pentagonPoint(
+/** Compute (x, y) for a point on a circle at a given axis index (0–N). */
+function circlePoint(
   cx: number,
   cy: number,
   r: number,
@@ -254,38 +264,42 @@ function pointsStr(pts: [number, number][]): string {
 
 interface RadarChartProps {
   playstyle: PlayStyleStat[];
-  /** Overall radius of the outer pentagon. Default 80. */
+  /** Radius of the outer ring (not including icon clearance). Default 68. */
   size?: number;
 }
 
 function RadarChart({ playstyle, size = 68 }: RadarChartProps) {
+  // svgSize keeps the same 184×184 footprint that was review-verified against spec.
+  // cx/cy = 92, ring radius = 68, leaving 24px margin on each side for icons.
   const cx = size + 24;
   const cy = size + 24;
-  const svgSize = (size + 24) * 2;
+  const svgSize = (size + 24) * 2; // 184 at default size=68
   const TOTAL = 5;
 
-  // Outer pentagon (full outline)
-  const outerPts = Array.from({ length: TOTAL }, (_, i) =>
-    pentagonPoint(cx, cy, size, i, TOTAL),
+  // Diamond tick half-size (rotated square at each axis position)
+  const TICK = 5;
+
+  // Points where each axis meets the outer ring
+  const ringPts = Array.from({ length: TOTAL }, (_, i) =>
+    circlePoint(cx, cy, size, i, TOTAL),
   );
 
-  // Inner "guide" pentagon at 50%
-  const innerPts = Array.from({ length: TOTAL }, (_, i) =>
-    pentagonPoint(cx, cy, size * 0.5, i, TOTAL),
-  );
-
-  // Center dot pentagon (convergence lines)
-  const axisPts = outerPts;
-
-  // Filled polygon from playstyle values
+  // Filled polygon from playstyle values — clamped to [0.05, 1] so the shape
+  // is always visible even in the empty/flat state.
   const fillPts = playstyle.slice(0, TOTAL).map((stat, i) =>
-    pentagonPoint(cx, cy, size * Math.max(0, Math.min(1, stat.value)), i, TOTAL),
+    circlePoint(
+      cx,
+      cy,
+      size * Math.max(0.05, Math.min(1, stat.value)),
+      i,
+      TOTAL,
+    ),
   );
 
-  // Icon positions — slightly outside the outer pentagon
+  // Icon positions — slightly outside the ring
   const iconRadius = size + 14;
   const iconPts = Array.from({ length: TOTAL }, (_, i) =>
-    pentagonPoint(cx, cy, iconRadius, i, TOTAL),
+    circlePoint(cx, cy, iconRadius, i, TOTAL),
   );
 
   return (
@@ -298,65 +312,54 @@ function RadarChart({ playstyle, size = 68 }: RadarChartProps) {
       xmlns="http://www.w3.org/2000/svg"
       className="shrink-0"
     >
-      {/* Axis lines from center to each vertex */}
-      {axisPts.map(([x, y], i) => (
+      {/* Radial spoke lines — solid, center → ring edge */}
+      {ringPts.map(([x, y], i) => (
         <line
-          key={`axis-${i}`}
+          key={`spoke-${i}`}
           x1={cx}
           y1={cy}
           x2={x}
           y2={y}
           stroke="var(--color-grey-3)"
           strokeWidth="0.8"
-          strokeDasharray="3 3"
         />
       ))}
 
-      {/* Inner guide pentagon */}
-      <polygon
-        points={pointsStr(innerPts)}
+      {/* Outer circular ring */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={size}
         stroke="var(--color-grey-3)"
-        strokeWidth="0.8"
-        fill="none"
-        strokeDasharray="3 3"
-      />
-
-      {/* Outer pentagon outline — teal/blue glow */}
-      <polygon
-        points={pointsStr(outerPts)}
-        stroke="var(--color-blue-3)"
         strokeWidth="1.5"
         fill="none"
-        style={{
-          filter: "drop-shadow(0 0 4px var(--color-blue-3))",
-        }}
       />
 
-      {/* Filled inner polygon from data */}
+      {/* Filled data polygon — dark fill + warm-gold stroke */}
       <polygon
         points={pointsStr(fillPts)}
-        fill="color-mix(in srgb, var(--color-blue-4) 40%, transparent)"
-        stroke="var(--color-blue-2)"
+        fill="color-mix(in srgb, var(--color-grey-4) 70%, transparent)"
+        stroke="var(--color-gold-cream)"
         strokeWidth="1.2"
-        style={{
-          filter: "drop-shadow(0 0 3px var(--color-blue-2))",
-        }}
+        strokeLinejoin="round"
       />
 
-      {/* Vertex dots on outer pentagon */}
-      {outerPts.map(([x, y], i) => (
-        <circle
-          key={`dot-${i}`}
-          cx={x}
-          cy={y}
-          r="3"
-          fill="var(--color-blue-3)"
-          stroke="var(--color-blue-1)"
+      {/* Diamond tick marks at each axis position on the ring */}
+      {ringPts.map(([x, y], i) => (
+        <rect
+          key={`tick-${i}`}
+          x={x - TICK / 2}
+          y={y - TICK / 2}
+          width={TICK}
+          height={TICK}
+          transform={`rotate(45 ${x} ${y})`}
+          fill="var(--color-grey-3)"
+          stroke="var(--color-grey-1)"
           strokeWidth="0.8"
         />
       ))}
 
-      {/* Role icons at each vertex */}
+      {/* Role icons outside the ring at each axis */}
       {iconPts.map(([x, y], i) => {
         const Icon = ROLE_ICONS[i % ROLE_ICONS.length] ?? SwordIcon;
         return (
@@ -367,7 +370,7 @@ function RadarChart({ playstyle, size = 68 }: RadarChartProps) {
             width="16"
             height="16"
           >
-            <Icon className="text-grey-2" />
+            <Icon className="text-grey-1" />
           </foreignObject>
         );
       })}
