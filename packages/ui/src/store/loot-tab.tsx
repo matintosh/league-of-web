@@ -1,7 +1,8 @@
 "use client";
 
 import { useId } from "react";
-import type { LootCategory, LootItem, ForgeSlot } from "@low/fixtures";
+import type { LootCategory, LootItem, ForgeSlot, MythicShopSkin } from "@low/fixtures";
+import { MythicShopPanel } from "./mythic-shop-panel";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -81,6 +82,23 @@ export interface LootTabProps {
   onCraft?: () => void;
   /** Called when a forge slot's × close button is clicked. */
   onClearSlot?: (idx: number) => void;
+  /**
+   * Prestige skin entries for the MYTHIC SHOP sub-tab grid.
+   * Pass SAMPLE_MYTHIC_SHOP_ITEMS from @low/fixtures.
+   * Defaults to an empty array (shows "no items" placeholder).
+   */
+  mythicShopSkins?: MythicShopSkin[];
+  /**
+   * Mythic Essence icon URL for the MYTHIC SHOP sub-tab ME price chips.
+   * Pass mythicEssenceIconUrl() from @low/fixtures.
+   * Defaults to empty string (no icon shown).
+   */
+  meIconSrc?: string;
+  /**
+   * Called when a skin card in the MYTHIC SHOP sub-tab is clicked.
+   * The full MythicShopSkin entry is passed as the argument.
+   */
+  onMythicShopSkinClick?: (skin: MythicShopSkin) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -596,7 +614,7 @@ function LootBottomBar({
 // ---------------------------------------------------------------------------
 
 /**
- * LootTab — Store → LOOT sub-tab (2024+ era, CRAFTING sub-view).
+ * LootTab — Store → LOOT sub-tab (2024+ era).
  *
  * Layout (1010×614 reference, see docs/reference/client-loot-crafting-tab.png):
  *
@@ -608,11 +626,12 @@ function LootBottomBar({
  *   │  - Category groups: MATERIALS / CHAMPIONS /  │
  *   │    SKINS / TACTICIANS / ETERNALS             │
  *   ├──────────────────────────────────────────────┤
- *   │  Right panel (63%): Crafting forge           │
- *   │  - Hextech three-spoke wheel SVG             │
- *   │  - Item slot tray (3 slots) + help/?/×       │
- *   │  - CRAFT button (enabled only when a slot    │
- *   │    holds an item with count > 0)             │
+ *   │  Right panel (63%): switches on activeSubTab │
+ *   │  - "crafting" → Hextech three-spoke forge    │
+ *   │  - "mythic-shop" → MythicShopPanel (prestige │
+ *   │    skin 4-col grid + ME price chips)         │
+ *   │  - "sanctum" → COMING SOON stub              │
+ *   │    (gacha UI assets unavailable — follow-up) │
  *   ├──────────────────────────────────────────────┤
  *   │  Bottom bar: + chest | key-fragments | keys  │
  *   └──────────────────────────────────────────────┘
@@ -639,6 +658,9 @@ export function LootTab({
   onItemClick,
   onCraft,
   onClearSlot,
+  mythicShopSkins = [],
+  meIconSrc = "",
+  onMythicShopSkinClick,
 }: LootTabProps) {
   // useId() returns a string like ":r0:" — strip colons for SVG id safety
   const uid = useId().replace(/:/g, "");
@@ -647,7 +669,7 @@ export function LootTab({
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      {/* Main content — inventory panel + forge */}
+      {/* Main content — inventory panel + right-panel that switches on sub-tab */}
       <div className="flex flex-1 min-h-0">
         {/* Left: inventory */}
         <LootInventoryPanel
@@ -659,14 +681,33 @@ export function LootTab({
           onItemClick={onItemClick}
         />
 
-        {/* Right: forge */}
-        <CraftingForge
-          forgeSlots={forgeSlots}
-          wheelGradId={wheelGradId}
-          wheelOuterId={wheelOuterId}
-          onCraft={onCraft}
-          onClearSlot={onClearSlot}
-        />
+        {/* Right: content switches on activeSubTab */}
+        {activeSubTab === "mythic-shop" ? (
+          <MythicShopPanel
+            skins={mythicShopSkins}
+            meIconSrc={meIconSrc}
+            onSkinClick={onMythicShopSkinClick}
+          />
+        ) : activeSubTab === "sanctum" ? (
+          /* THE SANCTUM — gacha system; no CDragon assets available (follow-up scope). */
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-blue-7">
+            <p className="font-display text-base uppercase tracking-widest text-gold-4">
+              COMING SOON
+            </p>
+            <p className="font-body text-xs text-grey-2">
+              The Sanctum gacha UI is not yet available.
+            </p>
+          </div>
+        ) : (
+          /* activeSubTab === "crafting" (default) */
+          <CraftingForge
+            forgeSlots={forgeSlots}
+            wheelGradId={wheelGradId}
+            wheelOuterId={wheelOuterId}
+            onCraft={onCraft}
+            onClearSlot={onClearSlot}
+          />
+        )}
       </div>
 
       {/* Bottom resource bar */}
