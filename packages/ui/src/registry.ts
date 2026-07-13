@@ -23,6 +23,7 @@ import { hextechSelectShowcase } from "./chrome/hextech-select.showcase";
 import { hextechToggleShowcase } from "./chrome/hextech-toggle.showcase";
 import { hextechTooltipShowcase } from "./chrome/hextech-tooltip.showcase";
 import { homeNewsScreenShowcase } from "./chrome/home-news-screen.showcase";
+import { journeyTabShowcase } from "./chrome/journey-tab.showcase";
 import { mapCrestImgShowcase } from "./chrome/map-crest-img.showcase";
 import { masteryEternalsPanelShowcase } from "./chrome/mastery-eternals-panel.showcase";
 import { modalFrameShowcase } from "./chrome/modal-frame.showcase";
@@ -109,6 +110,7 @@ export const registry: ShowcaseEntry[] = [
   hextechToggleShowcase,
   hextechTooltipShowcase,
   homeNewsScreenShowcase,
+  journeyTabShowcase,
   mapCrestImgShowcase,
   masteryEternalsPanelShowcase,
   modalFrameShowcase,

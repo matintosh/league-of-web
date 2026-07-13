@@ -22,6 +22,8 @@ import {
   SocialDock,
   ArcadeEventTab,
   BattlePassScreen,
+  JourneyTab,
+  LevelUpRewardsDetail,
   TftHubScreen,
   ClashScreen,
 } from "@low/ui";
@@ -40,6 +42,11 @@ import {
   positionIconUrl,
   demoBattlePassChapters,
   demoBattlePassLevelRewards,
+  DEMO_STARTER_PACK,
+  DEMO_AWAKENING_MISSIONS,
+  DEMO_LEVEL_UP_REWARDS,
+  DEMO_DAILY_PLAY_REWARDS,
+  DEMO_LEVEL_REWARD_CARDS,
 } from "@low/fixtures";
 import type { NewsArticle } from "@low/ui";
 import { CollectionScreen } from "./collection-screen";
@@ -816,6 +823,7 @@ const HOME_TABS: HomeTab[] = [
   { id: "overview",     label: "OVERVIEW" },
   { id: "arcade",       label: "ARCADE 2019", dot: true },
   { id: "battle-pass",  label: "BATTLE PASS", dot: true },
+  { id: "journey",      label: "JOURNEY" },
   { id: "news",         label: "NEWS" },
   { id: "patch-notes",  label: "PATCH NOTES", disabled: true },
 ];
@@ -960,6 +968,9 @@ function HomeView({ newsItems }: HomeViewProps) {
   const [selectedSkinId, setSelectedSkinId] = useState<string>("battle-boss-yasuo");
   // Battle Pass: selected level index (undefined = chapter overview view)
   const [battlePassLevelIdx, setBattlePassLevelIdx] = useState<number | undefined>(undefined);
+  // Journey: active sub-view ("overview" | "level-rewards") and selected level (1-based)
+  const [journeyView, setJourneyView] = useState<"overview" | "level-rewards">("overview");
+  const [journeySelectedLevel, setJourneySelectedLevel] = useState<number>(1);
 
   return (
     <div className="flex h-full flex-col">
@@ -991,6 +1002,10 @@ function HomeView({ newsItems }: HomeViewProps) {
                       // Reset battle-pass level-detail on tab navigation so the
                       // user never gets trapped in LevelView when re-entering.
                       if (tab.id !== "battle-pass") setBattlePassLevelIdx(undefined);
+                      // Reset journey sub-view and level selection on any tab click,
+                      // including a re-click of JOURNEY itself (re-click = return to overview).
+                      setJourneyView("overview");
+                      setJourneySelectedLevel(1);
                     }
                   : undefined
               }
@@ -1047,6 +1062,24 @@ function HomeView({ newsItems }: HomeViewProps) {
             onSelectLevel={setBattlePassLevelIdx}
             onClaim={() => console.log("battle-pass: claim")}
             onPurchasePass={() => console.log("battle-pass: purchase pass")}
+          />
+        ) : activeTabId === "journey" && journeyView === "level-rewards" ? (
+          <LevelUpRewardsDetail
+            levels={DEMO_LEVEL_REWARD_CARDS}
+            selectedLevel={journeySelectedLevel}
+            onSelectLevel={setJourneySelectedLevel}
+            onBack={() => setJourneyView("overview")}
+          />
+        ) : activeTabId === "journey" ? (
+          <JourneyTab
+            starterPack={DEMO_STARTER_PACK}
+            awakeningMissions={DEMO_AWAKENING_MISSIONS}
+            levelUpRewards={DEMO_LEVEL_UP_REWARDS}
+            dailyPlayRewards={DEMO_DAILY_PLAY_REWARDS}
+            onViewLevelRewards={() => {
+              setJourneySelectedLevel(1);
+              setJourneyView("level-rewards");
+            }}
           />
         ) : activeTabId === "news" ? (
           <HomeNewsScreen
