@@ -7,7 +7,6 @@ import {
   demoSummoner,
   profileIconUrl,
   rankedIntroUrl,
-  rankedMiniCrestUrl,
   rankedEmblemUrl,
   rankedUnrankedEmblemUrl,
 } from "@low/fixtures";
@@ -94,10 +93,11 @@ const RANKED_SPLIT_PROGRESS: RankedSplitProgress = {
   splitLabel: "Split 2 of 2",
   timeRemaining: "12D 4H 16M",
   currentSP: 0,
+  // iconSrc omitted — MilestoneNode renders the fixed hexagonal SP checkpoint SVG
   milestones: [
-    { label: "0/150 SP", reached: false, iconSrc: rankedMiniCrestUrl("iron") },
-    { label: "250 SP",   reached: false, iconSrc: rankedMiniCrestUrl("bronze") },
-    { label: "500 SP",   reached: false, iconSrc: rankedMiniCrestUrl("silver") },
+    { label: "0/150 SP", reached: false },
+    { label: "250 SP",   reached: false },
+    { label: "500 SP",   reached: false },
   ],
 };
 
