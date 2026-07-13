@@ -32,8 +32,35 @@ import {
   RUNE_PATHS,
   SUMMONER_SPELLS,
 } from "@low/fixtures";
-import type { SelectOption } from "@low/ui";
+import type { SelectOption, TierEntry } from "@low/ui";
 import type { SlotId } from "@low/fixtures";
+
+// ---------------------------------------------------------------------------
+// Skin-tier breakdown fixture data — CDragon assets, counts fixed at zero
+// (placeholder; a real client would derive from the player's skin inventory).
+// ---------------------------------------------------------------------------
+
+const CDRAGON_GEMS =
+  "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/rarity-gem-icons";
+const CDRAGON_SKINS_VIEWER =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-collections/global/default/images/skins-viewer";
+const CDRAGON_GEMS_COLS =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-collections/global/default/images/gems";
+
+const SKIN_TIER_BREAKDOWN: TierEntry[][] = [
+  // Row A — 4 gem icons (Legendary, Epic, Rare/Legacy, Mythic)
+  [
+    { label: "Legendary", count: 0, iconSrc: `${CDRAGON_GEMS}/legendary.png` },
+    { label: "Epic",      count: 0, iconSrc: `${CDRAGON_GEMS}/epic.png` },
+    { label: "Rare",      count: 0, iconSrc: `${CDRAGON_GEMS_COLS}/rare.png` },
+    { label: "Mythic",    count: 0, iconSrc: `${CDRAGON_GEMS}/mythic.png` },
+  ],
+  // Row B — 2 special-currency icons (ward skin token, chroma token)
+  [
+    { label: "Ward Skins",    count: 2, iconSrc: `${CDRAGON_SKINS_VIEWER}/icon-legacy.png` },
+    { label: "Chroma Tokens", count: 0, iconSrc: `${CDRAGON_SKINS_VIEWER}/icon-chroma.png` },
+  ],
+];
 
 // ---------------------------------------------------------------------------
 // Sub-nav tab definitions.
@@ -148,7 +175,11 @@ function SkinsTab({
   return (
     <div className="flex h-full min-h-0">
       <aside className="flex w-[220px] shrink-0 flex-col items-center gap-4 border-r border-grey-3 bg-hextech-black px-4 py-6">
-        <StatMedallion value={totalOwned} caption="Total skins owned" />
+        <StatMedallion
+          value={totalOwned}
+          caption="Total skins owned"
+          tierBreakdown={SKIN_TIER_BREAKDOWN}
+        />
         <div className="w-full">
           <SearchInput
             ariaLabel="Search skins"
