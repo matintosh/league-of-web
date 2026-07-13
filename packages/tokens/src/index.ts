@@ -1,4 +1,4 @@
-// Keep in sync with packages/tokens/src/theme.css — same 54 hex values.
+// Keep in sync with packages/tokens/src/theme.css — same 55 hex values.
 /** Hextech palette as TS constants — for the rare case CSS classes can't be used (e.g. canvas). */
 export const palette = {
   gold1: "#f0e6d2",
@@ -19,6 +19,9 @@ export const palette = {
   blue5: "#0a323c",
   blue6: "#091428",
   blue7: "#0a1428",
+  /** Darkest Hextech navy — pixel-sampled from the TFT hub dark frame (#0b0f18); used in
+   *  SpellsTab right-panel fallback, StatsTab inputs, and TFT hub panels (issue #231). */
+  blue8: "#0b0f18",
   grey1: "#a09b8c",
   grey2: "#5b5a56",
   grey3: "#3c3c41",

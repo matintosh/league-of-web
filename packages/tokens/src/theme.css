@@ -9,7 +9,7 @@
  *   tokens used only in inline `style={{}}` props or SVG attributes are
  *   always present — regardless of Tailwind's class-usage scan.
  *
- * Keep ALL THREE in sync (same 54 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
+ * Keep ALL THREE in sync (same 55 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
  */
 
 @theme {
@@ -35,6 +35,10 @@
   --color-blue-5: #0a323c;
   --color-blue-6: #091428;
   --color-blue-7: #0a1428;
+  /* blue-8: darkest Hextech navy — pixel-sampled from the TFT hub dark frame (#0b0f18);
+     used in 17 places across SpellsTab right-panel fallback, StatsTab inputs, and TFT hub panels.
+     Sits one step darker than blue-7 (#0a1428), matching the near-black frame behind Hextech art. */
+  --color-blue-8: #0b0f18;
 
   /* Grey — surfaces, disabled, body text */
   --color-grey-1: #a09b8c;
@@ -135,6 +139,8 @@
     --color-blue-5: #0a323c;
     --color-blue-6: #091428;
     --color-blue-7: #0a1428;
+    /* blue-8: darkest Hextech navy — pixel-sampled from TFT hub dark frame (issue #231) */
+    --color-blue-8: #0b0f18;
 
     /* Grey */
     --color-grey-1: #a09b8c;
