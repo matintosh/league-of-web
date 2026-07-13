@@ -38,6 +38,7 @@ import { socialHeaderShowcase } from "./chrome/social-header.showcase";
 import { socialPanelShowcase } from "./chrome/social-panel.showcase";
 import { storyCardShowcase } from "./chrome/story-card.showcase";
 import { tabBarShowcase } from "./chrome/tab-bar.showcase";
+import { tftHubScreenShowcase } from "./chrome/tft-hub-screen.showcase";
 import { topNavbarShowcase } from "./chrome/top-navbar.showcase";
 import { windowFrameShowcase } from "./chrome/window-frame.showcase";
 import { championCardShowcase } from "./collection/champion-card.showcase";
@@ -113,6 +114,7 @@ export const registry: ShowcaseEntry[] = [
   socialPanelShowcase,
   storyCardShowcase,
   tabBarShowcase,
+  tftHubScreenShowcase,
   topNavbarShowcase,
   windowFrameShowcase,
   // login

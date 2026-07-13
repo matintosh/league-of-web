@@ -77,6 +77,8 @@ export { StoryCard } from "./chrome/story-card";
 export type { StoryCardProps } from "./chrome/story-card";
 export { TabBar } from "./chrome/tab-bar";
 export type { TabBarProps, Tab } from "./chrome/tab-bar";
+export { TftHubScreen } from "./chrome/tft-hub-screen";
+export type { TftHubScreenProps, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, MissionCounter, RewardItem } from "./chrome/tft-hub-screen";
 export { TopNavbar } from "./chrome/top-navbar";
 export type { TopNavbarProps, NavItem } from "./chrome/top-navbar";
 export { WindowFrame } from "./chrome/window-frame";
