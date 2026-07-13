@@ -78,6 +78,7 @@ import { lootTabShowcase } from "./store/loot-tab.showcase";
 import { storeItemPurchaseModalShowcase } from "./store/store-item-purchase-modal.showcase";
 import { storeItemTileShowcase } from "./store/store-item-tile.showcase";
 import { storeSubNavBarShowcase } from "./store/store-sub-nav-bar.showcase";
+import { yourShopScreenShowcase } from "./store/your-shop-screen.showcase";
 
 /**
  * Every component registers its showcase entry here.
@@ -162,11 +163,12 @@ export const registry: ShowcaseEntry[] = [
   rolePickerPopoverShowcase,
   roleSelectorShowcase,
   roleSlotRowShowcase,
-  // store — alphabetical: FeaturedTab < HeroCarousel < LootTab < StoreItemPurchaseModal < StoreItemTile < StoreSubNavBar
+  // store — alphabetical: FeaturedTab < HeroCarousel < LootTab < StoreItemPurchaseModal < StoreItemTile < StoreSubNavBar < YourShopScreen
   featuredTabShowcase,
   heroCarouselShowcase,
   lootTabShowcase,
   storeItemPurchaseModalShowcase,
   storeItemTileShowcase,
   storeSubNavBarShowcase,
+  yourShopScreenShowcase,
 ];
