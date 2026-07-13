@@ -25,3 +25,23 @@ export function loadingArtUrl(id: string, skin = 0): string {
 /** Summoner profile icon. */
 export const profileIconUrl = (id: number): string =>
   `${BASE}/cdn/${DDRAGON_VERSION}/img/profileicon/${id}.png`;
+
+/**
+ * DDragon map thumbnail for Summoner's Rift (map id 11).
+ * Returns a 512×512 px overhead illustrated minimap image
+ * (olive-green terrain, teal river paths, grey stone structures).
+ *
+ * Used as the shared `previewSrc` background in `SpellsTab`.
+ *
+ * Known divergence (confirmed 2026-07, issue #224): the real client shows
+ * per-spell action renders (e.g. Teleport being cast on the lane from above).
+ * No per-spell art or high-res SR terrain screenshot is available from any
+ * public Riot CDN (DDragon/CDragon). This overhead minimap is the closest
+ * public SR-themed asset; it reads as Summoner's Rift atmosphere at full-bleed
+ * blur(4px) brightness(0.45) object-cover.
+ *
+ * Source: Data Dragon versioned img/map directory (public, no API key required).
+ * License: Riot Games Fan Content Policy (non-commercial fan use).
+ */
+export const summonerRiftMapUrl = (): string =>
+  `${BASE}/cdn/${DDRAGON_VERSION}/img/map/map11.png`;
