@@ -21,6 +21,7 @@ import {
   SocialPanel,
   SocialDock,
   ArcadeEventTab,
+  BattlePassScreen,
   TftHubScreen,
   ClashScreen,
 } from "@low/ui";
@@ -37,6 +38,8 @@ import {
   navIconUrl,
   gameModeMapUrl,
   positionIconUrl,
+  demoBattlePassChapters,
+  demoBattlePassLevelRewards,
 } from "@low/fixtures";
 import type { NewsArticle } from "@low/ui";
 import { CollectionScreen } from "./collection-screen";
@@ -800,10 +803,11 @@ interface HomeTab {
 }
 
 const HOME_TABS: HomeTab[] = [
-  { id: "overview",    label: "OVERVIEW" },
-  { id: "arcade",      label: "ARCADE 2019", dot: true },
-  { id: "news",        label: "NEWS" },
-  { id: "patch-notes", label: "PATCH NOTES", disabled: true },
+  { id: "overview",     label: "OVERVIEW" },
+  { id: "arcade",       label: "ARCADE 2019", dot: true },
+  { id: "battle-pass",  label: "BATTLE PASS", dot: true },
+  { id: "news",         label: "NEWS" },
+  { id: "patch-notes",  label: "PATCH NOTES", disabled: true },
 ];
 
 // ---------------------------------------------------------------------------
@@ -944,6 +948,8 @@ function HomeView({ newsItems }: HomeViewProps) {
   const [activeTabId, setActiveTabId] = useState<string>("overview");
   // Arcade skin selection state — lifted here so it persists across tab switches.
   const [selectedSkinId, setSelectedSkinId] = useState<string>("battle-boss-yasuo");
+  // Battle Pass: selected level index (undefined = chapter overview view)
+  const [battlePassLevelIdx, setBattlePassLevelIdx] = useState<number | undefined>(undefined);
 
   return (
     <div className="flex h-full flex-col">
@@ -968,7 +974,16 @@ function HomeView({ newsItems }: HomeViewProps) {
               aria-selected={isActive}
               aria-disabled={tab.disabled ? true : undefined}
               disabled={tab.disabled}
-              onClick={!tab.disabled ? () => setActiveTabId(tab.id) : undefined}
+              onClick={
+                !tab.disabled
+                  ? () => {
+                      setActiveTabId(tab.id);
+                      // Reset battle-pass level-detail on tab navigation so the
+                      // user never gets trapped in LevelView when re-entering.
+                      if (tab.id !== "battle-pass") setBattlePassLevelIdx(undefined);
+                    }
+                  : undefined
+              }
               className={[
                 "relative flex h-full shrink-0 items-center gap-1.5 px-4",
                 "font-display text-xs uppercase tracking-widest transition-colors duration-150",
@@ -1007,6 +1022,21 @@ function HomeView({ newsItems }: HomeViewProps) {
             onTrailerClick={() => console.log("arcade: trailer")}
             onNewChampionClick={() => console.log("arcade: new champion")}
             newChampionSplashUrl={championSplashUrl("Qiyana")}
+          />
+        ) : activeTabId === "battle-pass" ? (
+          <BattlePassScreen
+            eventName="Welcome to Noxus: Act 2"
+            endsIn="Ends in 6 weeks"
+            chapters={demoBattlePassChapters}
+            activeChapterIndex={3}
+            currentXp={400}
+            totalXp={500}
+            playerLevel={30}
+            selectedLevelIndex={battlePassLevelIdx}
+            levelRewards={demoBattlePassLevelRewards}
+            onSelectLevel={setBattlePassLevelIdx}
+            onClaim={() => console.log("battle-pass: claim")}
+            onPurchasePass={() => console.log("battle-pass: purchase pass")}
           />
         ) : activeTabId === "news" ? (
           <HomeNewsScreen
