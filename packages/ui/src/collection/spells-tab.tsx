@@ -1,32 +1,11 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId } from "react";
+import type { SummonerSpell } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-
-export interface SummonerSpell {
-  /** DDragon spell id, e.g. "SummonerFlash" */
-  id: string;
-  /** Display name shown in the grid and detail panel, e.g. "Flash" */
-  name: string;
-  /** Icon URL — DDragon with required "Summoner" prefix */
-  iconSrc: string;
-  /** Full description text */
-  description: string;
-  /** e.g. "SUMMONER LEVEL 8" */
-  unlockLabel: string;
-  /** e.g. "Classic, Tutorial, ARAM" */
-  modes: string;
-  /** Cooldown in seconds */
-  cooldownSeconds: number;
-  /**
-   * Optional splash preview art URL. When absent the right column falls
-   * back to bg-blue-8 + centered icon at 96px.
-   */
-  previewSrc?: string;
-}
 
 export interface SpellsTabProps {
   /** Full list of summoner spells to display in the 4-column grid. */
@@ -103,7 +82,7 @@ export function SpellsTab({ spells, selectedSpellId, onSelectSpell }: SpellsTabP
   const selected = spells.find((s) => s.id === selectedSpellId) ?? spells[0];
 
   return (
-    <div className="flex h-full min-h-0">
+    <div className="flex h-full min-h-0 w-full">
       {/* ------------------------------------------------------------------ */}
       {/* Left column — grid + detail panel (~300px)                          */}
       {/* ------------------------------------------------------------------ */}
