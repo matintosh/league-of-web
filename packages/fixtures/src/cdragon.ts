@@ -149,6 +149,25 @@ export const rankedUnrankedEmblemUrl = (): string =>
   `https://cdn.jsdelivr.net/gh/magisteriis/lol-icons-and-emblems@main/ranked-emblems/Emblem_Iron.png`;
 
 /**
+ * Champion mastery crest PNG from the CommunityDragon game-assets UX mirror.
+ *
+ * Level range: 0 (no mastery), 4–10. The modern client (post-2023) uses the
+ * "legendarychampionmastery" set. Level 1–3 are shown as level 0 in the client.
+ *
+ * Returns the full-size crest (24–27 KiB PNG, 256×256 px) by default.
+ * Pass `mini: true` to get the strip-sprite mini version (~2–3 KiB).
+ *
+ * Source: CommunityDragon game/assets/ux/mastery/legendarychampionmastery/
+ * License: Riot fan-content policy (non-commercial fan use).
+ * Assets confirmed 200 OK (2026-07, issue #245).
+ */
+export const masteryCrestUrl = (
+  level: 0 | 4 | 5 | 6 | 7 | 8 | 9 | 10,
+  mini = false,
+): string =>
+  `https://raw.communitydragon.org/latest/game/assets/ux/mastery/legendarychampionmastery/masterycrest_level${level}${mini ? "_minis" : ""}.png`;
+
+/**
  * TFT rank-up arrow SVG — two stacked upward chevrons (the TFT tier improvement emblem).
  * viewBox 0 0 40 40, native fill #c8aa6e (Hextech gold).
  *

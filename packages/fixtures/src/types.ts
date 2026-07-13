@@ -62,6 +62,48 @@ export interface StoreItem {
 // Purchase modal
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Champion Mastery + Eternals (Profile Overview panel — issue #245)
+// ---------------------------------------------------------------------------
+
+/**
+ * One champion mastery entry (left panel of MasteryEternalsPanel).
+ * Presentational: all image URLs are resolved by the caller.
+ */
+export interface ChampionMasteryEntry {
+  /** DDragon champion id, e.g. "Blitzcrank". Used for alt text. */
+  championId: string;
+  /** Display name shown under the crest, e.g. "BLITZCRANK". */
+  championName: string;
+  /** Square champion portrait URL (e.g. `championSquareUrl("Blitzcrank")`). */
+  championIconSrc: string;
+  /** Mastery crest art URL (e.g. `masteryCrestUrl(7)`). */
+  masteryCrestSrc: string;
+  /** Mastery level (0 = none, 4–10 for modern mastery tiers). */
+  masteryLevel: 0 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+  /** Mastery point total, e.g. 412105. */
+  points: number;
+  /** Best grade achieved, e.g. "S+", "S-", "A". */
+  bestGrade: string;
+}
+
+/**
+ * One eternals stat entry (right panel of MasteryEternalsPanel).
+ * Presentational: all image URLs resolved by the caller.
+ */
+export interface EternalEntry {
+  /** Stat label, e.g. "Structures Destroyed". */
+  name: string;
+  /** Numeric stat value, e.g. 117. */
+  value: number;
+  /** Eternals 3D-render icon URL (CDragon or placeholder). */
+  iconSrc: string;
+  /** Small (~24px) champion portrait URL below the stat value. */
+  championIconSrc: string;
+  /** Champion id for alt text, e.g. "Blitzcrank". */
+  championId: string;
+}
+
 /** A single item shown in the 2×2 preview grid of the purchase modal. */
 export interface PurchaseItem {
   /** Stable item id. */
