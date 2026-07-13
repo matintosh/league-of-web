@@ -125,3 +125,22 @@ export const rankedEmblemUrl = (
     | "Challenger",
 ): string =>
   `https://cdn.jsdelivr.net/gh/magisteriis/lol-icons-and-emblems@main/ranked-emblems/Emblem_${tier}.png`;
+
+/**
+ * Unranked queue crest URL — the emblem-family asset used when a summoner
+ * has no rank yet (as opposed to `rankedMiniCrestUrl("unranked")` which is a
+ * 16px SVG ring suitable only for small badge indicators).
+ *
+ * Asset decision: no "Unranked" entry exists in either the magisteriis set or
+ * CommunityDragon ranked-emblem/ directory (confirmed 2026-07 via API listing).
+ * The reference screenshot shows a desaturated grey metallic shield — visually
+ * indistinguishable from a grayscale Iron emblem. We therefore use Emblem_Iron
+ * from the magisteriis set (512×585px) and rely on the component's
+ * `opacity-25 grayscale` CSS treatment to render it as the reference's
+ * "no rank yet" dimmed shield.
+ *
+ * Source: magisteriis/lol-icons-and-emblems (jsDelivr CDN) — same set as rankedEmblemUrl.
+ * License: Unlicense (public domain) — https://github.com/magisteriis/lol-icons-and-emblems
+ */
+export const rankedUnrankedEmblemUrl = (): string =>
+  `https://cdn.jsdelivr.net/gh/magisteriis/lol-icons-and-emblems@main/ranked-emblems/Emblem_Iron.png`;

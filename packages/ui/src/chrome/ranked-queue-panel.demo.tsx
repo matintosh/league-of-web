@@ -1,7 +1,7 @@
 "use client";
 
 import { RankedQueuePanel } from "./ranked-queue-panel";
-import { rankedMiniCrestUrl, rankedEmblemUrl } from "@low/fixtures";
+import { rankedMiniCrestUrl, rankedEmblemUrl, rankedUnrankedEmblemUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // All unranked — reference state (demo summoner has no rank)
@@ -17,7 +17,7 @@ export function RankedQueuePanelAllUnrankedDemo() {
           { id: "flex5v5",    label: "FLEX 5V5" },
           { id: "lastSeason", label: "LAST SEASON'S RANK" },
         ]}
-        crestSrcFor={() => rankedMiniCrestUrl("unranked")}
+        crestSrcFor={() => rankedUnrankedEmblemUrl()}
       />
     </div>
   );
@@ -41,7 +41,7 @@ export function RankedQueuePanelMixedDemo() {
           if (id === "flex3v3")    return rankedMiniCrestUrl("silver");
           if (id === "soloduo")    return rankedMiniCrestUrl("gold");
           if (id === "lastSeason") return rankedEmblemUrl("Gold");
-          return rankedMiniCrestUrl("unranked");
+          return rankedUnrankedEmblemUrl();
         }}
       />
     </div>
@@ -64,7 +64,7 @@ export function RankedQueuePanelThreeQueuesDemo() {
         crestSrcFor={(id) =>
           id === "soloduo"
             ? rankedMiniCrestUrl("platinum")
-            : rankedMiniCrestUrl("unranked")
+            : rankedUnrankedEmblemUrl()
         }
       />
     </div>
