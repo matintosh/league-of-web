@@ -200,6 +200,36 @@ export const rankedIntroUrl = (
 ): string =>
   cdragonStaticUrl(`ranked-intro-${slug}.${slug === "earn-rank" ? "png" : "jpg"}`);
 
+/**
+ * FTUX-mock mastery crest from rcp-fe-lol-collections (mastery-header folder).
+ * Distinct from masteryCrestUrl() (real per-level game-asset crests) — this is
+ * the large promotional crest used by ChampionDetail's Mastery tab header.
+ *
+ * Level-specific crest PNGs (e.g. mastery-crest-level-11.png) do NOT exist
+ * as static CDragon assets — the real client assembles the crest from layered
+ * SVG/CSS composites keyed by JSON config, which are not individually
+ * extractable. The available static images are:
+ *
+ *   ftux-mock-crest-level-10.png  — promotional screenshot of a level-10 crest (~2× quality)
+ *   mastery-crest-mini-gray.png   — 16px grayscale mini crest used in cards
+ *
+ * Decision: for levels ≥ 5, return the `ftux-mock-crest-level-10.png` preview
+ * art (the reference shows level 11 which looks identical in form). For lower
+ * levels, fall back to the mini-gray (the component supplements with an inline
+ * SVG ring). Callers should also display the level number overtop the image.
+ *
+ * Source: CommunityDragon rcp-fe-lol-collections/global/default/images/mastery-header/
+ * License: Riot fan-content policy (non-commercial fan use).
+ * Assets confirmed HTTP 200 (2026-07, issue #246).
+ */
+export const masteryFtuxCrestUrl = (level: number): string => {
+  const BASE =
+    "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-collections/global/default/images/mastery-header";
+  return level >= 5
+    ? `${BASE}/ftux-mock-crest-level-10.png`
+    : `${BASE}/mastery-crest-mini-gray.png`;
+};
+
 /*
  * MODE-SELECT BACKGROUND — CDragon asset search result (2026-07, issue #218).
  *

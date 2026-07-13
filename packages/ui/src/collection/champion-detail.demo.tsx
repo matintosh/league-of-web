@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { warwickDetail } from "@low/fixtures";
+import { warwickDetail, warwickMastery } from "@low/fixtures";
 import { ChampionDetail } from "./champion-detail";
 
 // Shared wrapper gives the overlay a fixed height matching the content area.
@@ -34,6 +34,47 @@ export function ChampionDetailAbilitiesDemo() {
         champion={warwickDetail}
         onClose={() => undefined}
         initialTab="abilities"
+      />
+    </OverlayWrapper>
+  );
+}
+
+/** Mastery tab — has mastery data (Level 11, 111 178 pts, Milestone III). */
+export function ChampionDetailMasteryDemo() {
+  return (
+    <OverlayWrapper>
+      <ChampionDetail
+        champion={warwickDetail}
+        onClose={() => undefined}
+        initialTab="mastery"
+        mastery={warwickMastery}
+      />
+    </OverlayWrapper>
+  );
+}
+
+/** Mastery tab — no mastery data; renders "Not Yet Ranked" placeholder state. */
+export function ChampionDetailMasteryUnrankedDemo() {
+  return (
+    <OverlayWrapper>
+      <ChampionDetail
+        champion={warwickDetail}
+        onClose={() => undefined}
+        initialTab="mastery"
+        /* mastery prop intentionally omitted — triggers unranked placeholder */
+      />
+    </OverlayWrapper>
+  );
+}
+
+/** Eternals tab — empty state ("No Eternals Earned"). */
+export function ChampionDetailEternalsDemo() {
+  return (
+    <OverlayWrapper>
+      <ChampionDetail
+        champion={warwickDetail}
+        onClose={() => undefined}
+        initialTab="eternals"
       />
     </OverlayWrapper>
   );
@@ -75,7 +116,11 @@ export function ChampionDetailInteractiveDemo() {
 
   return (
     <OverlayWrapper>
-      <ChampionDetail champion={warwickDetail} onClose={() => setOpen(false)} />
+      <ChampionDetail
+        champion={warwickDetail}
+        mastery={warwickMastery}
+        onClose={() => setOpen(false)}
+      />
     </OverlayWrapper>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import type { ChampionDetail, AbilityEntry } from "@low/fixtures";
+import type { ChampionDetail, AbilityEntry, ChampionMastery } from "@low/fixtures";
 import { championSplashUrl, loadingArtUrl } from "@low/fixtures";
 import { SkinCard } from "./skin-card";
 
@@ -9,16 +9,18 @@ import { SkinCard } from "./skin-card";
 // Tab union + tab definitions
 // ---------------------------------------------------------------------------
 
-export type DetailTab = "overview" | "abilities" | "skins";
+export type DetailTab = "overview" | "abilities" | "mastery" | "eternals" | "skins";
 
 /** Exhaustive Record mapping — TypeScript will error if a tab is missing. */
 const TAB_LABELS: Record<DetailTab, string> = {
   overview: "Overview",
   abilities: "Abilities",
+  mastery: "Mastery",
+  eternals: "Eternals",
   skins: "Skins",
 };
 
-const TABS: DetailTab[] = ["overview", "abilities", "skins"];
+const TABS: DetailTab[] = ["overview", "abilities", "mastery", "eternals", "skins"];
 
 // ---------------------------------------------------------------------------
 // Props
@@ -50,6 +52,11 @@ export interface ChampionDetailProps {
    * Documented here as the deliberate exception to the FilterTabs precedent.
    */
   initialTab?: DetailTab;
+  /**
+   * Mastery data for the MASTERY tab. When absent, the tab renders a
+   * "Not yet ranked" placeholder state.
+   */
+  mastery?: ChampionMastery;
 }
 
 // ---------------------------------------------------------------------------
@@ -371,6 +378,314 @@ function AbilitiesTab({ abilities, champId }: AbilitiesTabProps) {
 }
 
 // ---------------------------------------------------------------------------
+// Mastery tab
+// ---------------------------------------------------------------------------
+
+interface MasteryTabProps {
+  mastery?: ChampionMastery;
+  champId: string;
+}
+
+/**
+ * Fallback SVG crest ring — used when no image loads or level < 5.
+ * Renders a stylised gold hexagonal crest with a center gem shape.
+ */
+function MasteryCrestSvg({ level }: { level: number }) {
+  const id = useId();
+  return (
+    <svg
+      width={200}
+      height={200}
+      viewBox="0 0 200 200"
+      aria-hidden="true"
+      role="img"
+    >
+      <defs>
+        <radialGradient id={`${id}-gem`} cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stopColor="var(--color-blue-2)" stopOpacity="0.9" />
+          <stop offset="60%" stopColor="var(--color-blue-4)" stopOpacity="0.7" />
+          <stop offset="100%" stopColor="var(--color-hextech-black)" stopOpacity="1" />
+        </radialGradient>
+      </defs>
+      {/* Outer gold ring */}
+      <circle cx="100" cy="100" r="92" fill="none" stroke="var(--color-gold-2)" strokeWidth="3" />
+      {/* Inner thin ring */}
+      <circle cx="100" cy="100" r="82" fill="none" stroke="var(--color-gold-4)" strokeWidth="1" />
+      {/* Hexagonal frame */}
+      <polygon
+        points="100,20 172,62 172,138 100,180 28,138 28,62"
+        fill="none"
+        stroke="var(--color-gold-3)"
+        strokeWidth="2"
+      />
+      {/* Center gem */}
+      <polygon
+        points="100,55 140,78 140,122 100,145 60,122 60,78"
+        fill={`url(#${id}-gem)`}
+        stroke="var(--color-gold-2)"
+        strokeWidth="1.5"
+      />
+      {/* Level number */}
+      <text
+        x="100"
+        y="108"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="36"
+        fontFamily="var(--font-display)"
+        fill="var(--color-gold-1)"
+        fontWeight="bold"
+      >
+        {level}
+      </text>
+    </svg>
+  );
+}
+
+function MasteryTab({ mastery, champId }: MasteryTabProps) {
+  const hasMastery = mastery != null;
+
+  return (
+    <div className="relative flex h-full min-h-0 overflow-hidden bg-blue-7">
+      {/* Subtle splash background scrim — same as abilities tab but darker */}
+      <img
+        src={championSplashUrl(champId, 0)}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover object-top"
+        aria-hidden="true"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{ background: "color-mix(in srgb, var(--color-hextech-black) 88%, transparent)" }}
+      />
+
+      {/* Main content area */}
+      <div className="relative z-10 flex h-full w-full min-h-0">
+        {/* Center zone */}
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 px-8 py-6 min-w-0">
+          {hasMastery ? (
+            <>
+              {/* Mastery crest image with SVG fallback */}
+              <div className="relative flex items-center justify-center" style={{ width: 200, height: 200 }}>
+                <img
+                  src={mastery.masteryCrestSrc}
+                  alt={`Mastery level ${mastery.level} crest`}
+                  width={200}
+                  height={200}
+                  className="h-full w-full object-contain"
+                  onError={(e) => {
+                    // Hide broken image; the SVG fallback below takes over
+                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
+                />
+                {/* Always-present SVG overlay — renders ABOVE the crest img (level ring + number); img is the photographic base beneath */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <MasteryCrestSvg level={mastery.level} />
+                </div>
+              </div>
+
+              {/* Level label */}
+              <div className="text-center">
+                <p className="font-display text-xl uppercase tracking-widest text-gold-1">
+                  Level {mastery.level} Mastery
+                </p>
+                <p className="font-body text-sm text-grey-1 mt-1">
+                  {mastery.points.toLocaleString()} pts
+                </p>
+              </div>
+
+              {/* Action icon row — Wishlist / Share */}
+              <div className="flex items-center gap-4 mt-1">
+                <button
+                  type="button"
+                  aria-label="Add to wishlist"
+                  className="flex h-8 w-8 items-center justify-center border border-gold-4 text-gold-2 hover:border-gold-2 hover:text-gold-1 transition-colors duration-150 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3"
+                >
+                  {/* Heart icon */}
+                  <svg width={14} height={14} viewBox="0 0 14 14" aria-hidden="true" fill="none">
+                    <path
+                      d="M7 12S1 8.5 1 4.5C1 2.57 2.57 1 4.5 1c1 0 1.93.5 2.5 1.3C7.57 1.5 8.5 1 9.5 1 11.43 1 13 2.57 13 4.5 13 8.5 7 12 7 12z"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  aria-label="Share"
+                  className="flex h-8 w-8 items-center justify-center border border-gold-4 text-gold-2 hover:border-gold-2 hover:text-gold-1 transition-colors duration-150 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3"
+                >
+                  {/* Share/link icon */}
+                  <svg width={14} height={14} viewBox="0 0 14 14" aria-hidden="true" fill="none">
+                    <circle cx="11" cy="3" r="1.5" stroke="currentColor" strokeWidth="1.2" />
+                    <circle cx="11" cy="11" r="1.5" stroke="currentColor" strokeWidth="1.2" />
+                    <circle cx="3" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.2" />
+                    <line x1="4.4" y1="6.3" x2="9.6" y2="3.7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+                    <line x1="4.4" y1="7.7" x2="9.6" y2="10.3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Bottom reward strip */}
+              <div className="mt-auto w-full border-t border-gold-5 pt-3">
+                <div className="flex items-center gap-3">
+                  {/* Split selector */}
+                  <div className="flex items-center gap-2 border border-grey-3 bg-grey-cool px-3 py-1.5">
+                    <span className="font-display text-xs uppercase tracking-widest text-grey-1">
+                      Start
+                    </span>
+                    <span className="font-body text-xs text-grey-2">|</span>
+                    <span className="font-display text-xs uppercase tracking-widest text-gold-2">
+                      Split 2
+                    </span>
+                    <svg width={10} height={10} viewBox="0 0 10 10" aria-hidden="true" className="text-grey-1">
+                      <path d="M2 4l3 3 3-3" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                  {/* Reward icon slots */}
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <div
+                        key={i}
+                        className="h-10 w-10 border border-gold-5 bg-blue-8 flex items-center justify-center"
+                        aria-label={`Reward slot ${i}`}
+                      >
+                        <svg width={18} height={18} viewBox="0 0 18 18" aria-hidden="true" className="text-gold-4">
+                          <polygon
+                            points="9,2 16,6 16,12 9,16 2,12 2,6"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1"
+                          />
+                          <circle cx="9" cy="9" r="2" fill="currentColor" opacity="0.5" />
+                        </svg>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            /* No mastery data — placeholder state */
+            <div className="flex flex-col items-center gap-4 text-center">
+              <MasteryCrestSvg level={0} />
+              <p className="font-display text-lg uppercase tracking-widest text-grey-2">
+                Not Yet Ranked
+              </p>
+              <p className="font-body text-sm text-grey-2 max-w-xs">
+                Play games with this champion to earn mastery points and unlock rewards.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Right sidebar — Milestone panel (only shown when mastery data present) */}
+        {hasMastery && (
+          <div
+            className="shrink-0 flex flex-col gap-3 border-l border-gold-5 px-5 py-6"
+            style={{ width: 220, background: "color-mix(in srgb, var(--color-blue-8) 80%, transparent)" }}
+          >
+            {/* Milestone header */}
+            <p className="font-display text-xs uppercase tracking-widest text-gold-2">
+              {mastery.currentMilestone ?? "Milestone I"}
+            </p>
+            <div className="h-px bg-gold-5" />
+
+            {/* Checklist */}
+            {(mastery.milestoneChecks ?? []).map((check, i) => (
+              <div key={i} className="flex items-start gap-2">
+                {/* Checkbox mark */}
+                <div
+                  className={[
+                    "mt-0.5 shrink-0 h-3.5 w-3.5 border",
+                    check.fulfilled ? "border-gold-2 bg-gold-4" : "border-grey-3",
+                  ].join(" ")}
+                >
+                  {check.fulfilled && (
+                    <svg viewBox="0 0 14 14" className="h-full w-full text-gold-1" aria-hidden="true">
+                      <path d="M2 7l3.5 3.5L12 3" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                    </svg>
+                  )}
+                </div>
+                <span className="font-body text-xs text-grey-1 leading-snug">{check.label}</span>
+              </div>
+            ))}
+
+            {/* Next milestone rewards */}
+            {(mastery.nextMilestoneRewards ?? []).length > 0 && (
+              <>
+                <div className="h-px bg-gold-5 mt-2" />
+                <p className="font-display text-xs uppercase tracking-widest text-gold-3">
+                  Next Milestone Rewards
+                </p>
+                <ul className="flex flex-col gap-1">
+                  {mastery.nextMilestoneRewards!.map((reward, i) => (
+                    <li key={i} className="font-body text-xs text-grey-1 flex items-center gap-1.5">
+                      <span className="text-gold-3">•</span>
+                      {reward}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Eternals tab
+// ---------------------------------------------------------------------------
+
+function EternalsTab() {
+  return (
+    <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 bg-hextech-black px-8 py-10">
+      {/* Eternals orb icon — inline SVG approximation of the Eternals gem */}
+      <svg
+        width={80}
+        height={80}
+        viewBox="0 0 80 80"
+        aria-hidden="true"
+      >
+        <circle cx="40" cy="40" r="36" fill="none" stroke="var(--color-gold-4)" strokeWidth="1" />
+        <circle cx="40" cy="40" r="28" fill="none" stroke="var(--color-gold-5)" strokeWidth="1" opacity="0.5" />
+        {/* Gem facets */}
+        <polygon
+          points="40,12 62,30 62,50 40,68 18,50 18,30"
+          fill="none"
+          stroke="var(--color-gold-3)"
+          strokeWidth="1"
+          opacity="0.6"
+        />
+        <polygon
+          points="40,22 54,32 54,48 40,58 26,48 26,32"
+          fill="var(--color-blue-7)"
+          stroke="var(--color-gold-4)"
+          strokeWidth="1"
+          opacity="0.8"
+        />
+        {/* Sparkle cross */}
+        <line x1="40" y1="28" x2="40" y2="52" stroke="var(--color-blue-2)" strokeWidth="1" opacity="0.5" />
+        <line x1="28" y1="40" x2="52" y2="40" stroke="var(--color-blue-2)" strokeWidth="1" opacity="0.5" />
+      </svg>
+
+      <p className="font-display text-lg uppercase tracking-widest text-grey-2">
+        No Eternals Earned
+      </p>
+      <p className="font-body text-sm text-grey-2 max-w-xs text-center leading-relaxed">
+        Eternals track and showcase your champion mastery milestones. Unlock Eternals
+        in the store to begin tracking your legacy.
+      </p>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Skins tab
 // ---------------------------------------------------------------------------
 
@@ -411,7 +726,7 @@ function SkinsTab({ champion }: SkinsTabProps) {
  *
  * Presentational only — props in, callbacks out. No data fetching.
  */
-export function ChampionDetail({ champion, onClose, initialTab = "overview" }: ChampionDetailProps) {
+export function ChampionDetail({ champion, onClose, initialTab = "overview", mastery }: ChampionDetailProps) {
   const [activeTab, setActiveTab] = useState<DetailTab>(initialTab);
   const headingId = useId();
 
@@ -492,6 +807,10 @@ export function ChampionDetail({ champion, onClose, initialTab = "overview" }: C
         {activeTab === "abilities" && (
           <AbilitiesTab abilities={champion.abilities} champId={champion.id} />
         )}
+        {activeTab === "mastery" && (
+          <MasteryTab mastery={mastery} champId={champion.id} />
+        )}
+        {activeTab === "eternals" && <EternalsTab />}
         {activeTab === "skins" && <SkinsTab champion={champion} />}
       </div>
     </div>
