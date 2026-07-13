@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import { MatchFoundModal } from "./match-found-modal";
 import { HextechButton } from "../chrome/hextech-button";
-import { championSplashUrl } from "@low/fixtures";
+import { championSplashUrl, gameModeMapUrl } from "@low/fixtures";
+
+const SR_CREST = gameModeMapUrl("sr");
 
 const TOTAL = 10;
 
@@ -11,34 +13,43 @@ const TOTAL = 10;
 // Static showcase wrappers
 // ---------------------------------------------------------------------------
 
-/** Static: full countdown, no keyart */
+/** Static: full countdown, with map crest */
 export function MatchFoundModalFullCountdownDemo() {
   return (
     <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
-      <MatchFoundModal open={true} secondsRemaining={10} totalSeconds={10} onAccept={() => {}} onDecline={() => {}} />
+      <MatchFoundModal open={true} secondsRemaining={10} totalSeconds={10} crestSrc={SR_CREST} onAccept={() => {}} onDecline={() => {}} />
     </div>
   );
 }
 
-/** Static: halfway (arc at 50%), no keyart */
+/** Static: halfway (arc at 50%), with map crest */
 export function MatchFoundModalHalfwayDemo() {
   return (
     <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
-      <MatchFoundModal open={true} secondsRemaining={5} totalSeconds={10} onAccept={() => {}} onDecline={() => {}} />
+      <MatchFoundModal open={true} secondsRemaining={5} totalSeconds={10} crestSrc={SR_CREST} onAccept={() => {}} onDecline={() => {}} />
     </div>
   );
 }
 
-/** Static: nearly expired (<=2s, countdown text gold-3), no keyart */
+/** Static: nearly expired (<=2s, countdown text gold-3), with map crest */
 export function MatchFoundModalNearlyExpiredDemo() {
   return (
     <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
-      <MatchFoundModal open={true} secondsRemaining={2} totalSeconds={10} onAccept={() => {}} onDecline={() => {}} />
+      <MatchFoundModal open={true} secondsRemaining={2} totalSeconds={10} crestSrc={SR_CREST} onAccept={() => {}} onDecline={() => {}} />
     </div>
   );
 }
 
-/** Static: with champion keyart (Ahri splash) */
+/** Static: no crestSrc — renders the HexCrest fallback placeholder */
+export function MatchFoundModalNoCrestDemo() {
+  return (
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
+      <MatchFoundModal open={true} secondsRemaining={7} totalSeconds={10} onAccept={() => {}} onDecline={() => {}} />
+    </div>
+  );
+}
+
+/** Static: with champion keyart (Ahri splash) + map crest */
 export function MatchFoundModalWithKeyartDemo() {
   return (
     <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
@@ -47,6 +58,7 @@ export function MatchFoundModalWithKeyartDemo() {
         secondsRemaining={8}
         totalSeconds={10}
         keyartSrc={championSplashUrl("Ahri")}
+        crestSrc={SR_CREST}
         subtitle="Summoner's Rift • Ranked • 5v5"
         onAccept={() => {}}
         onDecline={() => {}}
@@ -97,6 +109,7 @@ export function MatchFoundModalDemo() {
         secondsRemaining={seconds}
         totalSeconds={TOTAL}
         keyartSrc={championSplashUrl("Ahri")}
+        crestSrc={SR_CREST}
         subtitle="Summoner's Rift • Ranked • 5v5"
         onAccept={() => { setOpen(false); setSeconds(TOTAL); }}
         onDecline={() => { setOpen(false); setSeconds(TOTAL); }}

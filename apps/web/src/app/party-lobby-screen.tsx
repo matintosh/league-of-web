@@ -981,6 +981,7 @@ export function PartyLobbyScreen({
         onDecline={handleDeclineMatch}
         subtitle="Summoner's Rift • Normal • 5v5"
         keyartSrc={DEMO_KEYART_SRC}
+        crestSrc={gameModeMapUrl("sr")}
       />
     </div>
   );

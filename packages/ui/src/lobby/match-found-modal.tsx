@@ -2,6 +2,7 @@
 
 import { useId } from "react";
 import { HextechButton } from "../chrome/hextech-button";
+import { MapCrestImg } from "../chrome/map-crest-img";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -22,10 +23,16 @@ export interface MatchFoundModalProps {
   subtitle?: string;
   /** Circular keyart image URL; falls back to bg-linear-to-b from-blue-6 to-blue-7 disc when absent */
   keyartSrc?: string;
+  /**
+   * URL for the game-mode/map crest displayed in the modal center (from gameModeMapUrl).
+   * Renders as the lit (active) atlas frame inside a gold ornamental double-border square.
+   * Falls back to the generic HexCrest placeholder when absent.
+   */
+  crestSrc?: string;
 }
 
 // ---------------------------------------------------------------------------
-// HexCrest — local, not exported
+// HexCrest — fallback placeholder when crestSrc is absent, not exported
 // ---------------------------------------------------------------------------
 
 function HexCrest({ gradientId }: { gradientId: string }) {
@@ -44,6 +51,38 @@ function HexCrest({ gradientId }: { gradientId: string }) {
         strokeWidth="1"
       />
     </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// MapCrestFrame — crestSrc wrapped in gold ornamental double-border square.
+// Matches the reference (client-match-found-crest.png): thin outer gold-4
+// border + thin inner gold-3 border with a 2px gap between them, 4px inset
+// from the outer edge. Image fills the inner content area.
+// ---------------------------------------------------------------------------
+
+function MapCrestFrame({ src }: { src: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="relative flex items-center justify-center"
+      style={{
+        // Outer border — gold-4
+        border: "1px solid var(--color-gold-4)",
+        padding: 3,
+        background: "transparent",
+      }}
+    >
+      {/* Inner border — gold-3 */}
+      <div
+        style={{
+          border: "1px solid var(--color-gold-3)",
+          padding: 2,
+        }}
+      >
+        <MapCrestImg src={src} frame="active" size={48} />
+      </div>
+    </div>
   );
 }
 
@@ -68,6 +107,7 @@ export function MatchFoundModal({
   onDecline,
   subtitle,
   keyartSrc,
+  crestSrc,
 }: MatchFoundModalProps) {
   const uid = useId();
   const titleId = `${uid}-title`;
@@ -143,7 +183,11 @@ export function MatchFoundModal({
 
         {/* 6. Content stack */}
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-8">
-          <HexCrest gradientId={crestGradId} />
+          {crestSrc ? (
+            <MapCrestFrame src={crestSrc} />
+          ) : (
+            <HexCrest gradientId={crestGradId} />
+          )}
           <h2 id={titleId} className="font-display text-2xl uppercase tracking-widest text-gold-1 text-center">
             MATCH FOUND
           </h2>
