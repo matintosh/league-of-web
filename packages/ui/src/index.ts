@@ -136,11 +136,13 @@ export { RoleSelector } from "./lobby/role-selector";
 export type { RoleSelectorProps, Role } from "./lobby/role-selector";
 export { RoleSlotRow } from "./lobby/role-slot-row";
 export type { RoleSlotRowProps, RoleSlot } from "./lobby/role-slot-row";
-// store — alphabetical: FeaturedTab < HeroCarousel < StoreItemTile < StoreSubNavBar
+// store — alphabetical: FeaturedTab < HeroCarousel < StoreItemPurchaseModal < StoreItemTile < StoreSubNavBar
 export { FeaturedTab } from "./store/featured-tab";
 export type { FeaturedTabProps } from "./store/featured-tab";
 export { HeroCarousel } from "./store/hero-carousel";
 export type { HeroCarouselProps } from "./store/hero-carousel";
+export { StoreItemPurchaseModal } from "./store/store-item-purchase-modal";
+export type { StoreItemPurchaseModalProps, PurchaseItem } from "./store/store-item-purchase-modal";
 export { StoreItemTile } from "./store/store-item-tile";
 export type { StoreItemTileProps } from "./store/store-item-tile";
 export { StoreSubNavBar } from "./store/store-sub-nav-bar";

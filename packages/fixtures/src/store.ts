@@ -4,7 +4,7 @@
  * Fixture values only; never import in @low/ui components.
  */
 import { championSplashUrl } from "./ddragon";
-import type { StoreItem, HeroSlide } from "./types";
+import type { StoreItem, HeroSlide, PurchaseBundle } from "./types";
 
 // ---------------------------------------------------------------------------
 // Hero carousel slides
@@ -136,3 +136,112 @@ export const demoTopSellers: StoreItem[] = [
     isWishlisted: false,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Purchase bundle fixtures (for StoreItemPurchaseModal)
+// ---------------------------------------------------------------------------
+
+/**
+ * Map from StoreItem.id → PurchaseBundle for the purchase modal.
+ * The page resolves item details by looking up the clicked item id here.
+ */
+export const demoPurchaseBundles: Record<string, PurchaseBundle> = {
+  "arcade-2019-pass": {
+    id: "arcade-2019-pass",
+    setName: "Arcade Caitlyn Border Set",
+    setArtUrl: championSplashUrl("Caitlyn", 6),
+    breakdown: ["1 Champion", "1 Skin", "1 Ward Skin", "1 Icon"],
+    originalPrice: 3420,
+    discountPct: 22,
+    finalPrice: 2660,
+    items: [
+      {
+        id: "caitlyn-champ",
+        name: "Caitlyn",
+        category: "Champion",
+        artUrl: championSplashUrl("Caitlyn", 0),
+      },
+      {
+        id: "arcade-caitlyn-skin",
+        name: "Arcade Caitlyn",
+        category: "Skin",
+        artUrl: championSplashUrl("Caitlyn", 6),
+      },
+      {
+        id: "arcade-2019-ward-skin",
+        name: "Arcade 2019 Ward Skin",
+        category: "Ward Skin",
+        artUrl: championSplashUrl("Lulu", 3),
+      },
+      {
+        id: "arcade-caitlyn-icon",
+        name: "Arcade Caitlyn Icon",
+        category: "Icon",
+        artUrl: championSplashUrl("Caitlyn", 5),
+      },
+    ],
+  },
+  "little-legends-series-1-rare-10": {
+    id: "little-legends-series-1-rare-10",
+    setName: "10 + 1 Little Legends Series 1 Rare Eggs",
+    setArtUrl: championSplashUrl("Lulu", 3),
+    breakdown: ["10 Little Legends Series 1 Rare Eggs", "1 Bonus Rare Egg"],
+    originalPrice: null,
+    discountPct: null,
+    finalPrice: 4900,
+    items: [
+      {
+        id: "ll-s1-egg",
+        name: "Series 1 Rare Egg",
+        category: "Bundle",
+        artUrl: championSplashUrl("Lulu", 3),
+      },
+    ],
+  },
+  "arcade-orbs-25": {
+    id: "arcade-orbs-25",
+    setName: "25 Arcade Orbs + Jackpot + 400 Tokens",
+    setArtUrl: championSplashUrl("MissFortune", 7),
+    breakdown: ["25 Arcade Orbs", "1 Arcade Jackpot Orb", "400 Arcade Tokens"],
+    originalPrice: null,
+    discountPct: null,
+    finalPrice: 2000,
+    items: [
+      {
+        id: "arcade-orb",
+        name: "Arcade Orb",
+        category: "Bundle",
+        artUrl: championSplashUrl("MissFortune", 7),
+      },
+      {
+        id: "arcade-jackpot",
+        name: "Arcade Jackpot",
+        category: "Bundle",
+        artUrl: championSplashUrl("MissFortune", 4),
+      },
+      {
+        id: "arcade-tokens",
+        name: "Arcade Tokens",
+        category: "Bundle",
+        artUrl: championSplashUrl("Lulu", 6),
+      },
+    ],
+  },
+  "little-legends-series-2-rare-10": {
+    id: "little-legends-series-2-rare-10",
+    setName: "10 + 1 Little Legends Series 2 Rare Eggs",
+    setArtUrl: championSplashUrl("Lulu", 5),
+    breakdown: ["10 Little Legends Series 2 Rare Eggs", "1 Bonus Rare Egg"],
+    originalPrice: null,
+    discountPct: null,
+    finalPrice: 4900,
+    items: [
+      {
+        id: "ll-s2-egg",
+        name: "Series 2 Rare Egg",
+        category: "Bundle",
+        artUrl: championSplashUrl("Lulu", 5),
+      },
+    ],
+  },
+};
