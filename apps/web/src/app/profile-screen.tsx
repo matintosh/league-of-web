@@ -6,7 +6,7 @@ import type { ProfileBannerStat, RankedFeatureColumn, RankedSplitProgress, PlayS
 import {
   demoSummoner,
   profileIconUrl,
-  loadingArtUrl,
+  rankedIntroUrl,
   rankedMiniCrestUrl,
   rankedEmblemUrl,
   rankedUnrankedEmblemUrl,
@@ -68,22 +68,22 @@ function crestSrcFor(id: string): string {
 
 const RANKED_FEATURE_COLUMNS: RankedFeatureColumn[] = [
   {
-    // Dark atmospheric game art — Summoner's Rift / team fight splash
-    imageUrl: loadingArtUrl("Jinx", 0),
+    // CDragon ranked-intro: blue "MATCH FOUND" modal screenshot (276×157)
+    imageUrl: rankedIntroUrl("squad-up"),
     title: "Conquer the Rift",
     description:
       "Dish out damage solo or tag-team combos with a friend as you face opponents in games that test individual skill.",
   },
   {
-    // Ranked climber art — Diamond/Plat aesthetic
-    imageUrl: loadingArtUrl("LeeSin", 0),
+    // CDragon ranked-intro: Challenger/Diamond wings rank emblem with electric-blue glow (276×157)
+    imageUrl: rankedIntroUrl("earn-rank"),
     title: "Start Your Climb",
     description:
       "Play placement games to earn your rank. During placements, games have bonus LP gains and no LP losses. You'll unlock a provisional rank after your first placement game.",
   },
   {
-    // Victorious/reward art — Sivir Victorious skin
-    imageUrl: loadingArtUrl("Sivir", 0),
+    // CDragon ranked-intro: Sivir victorious skin face close-up in silver helmet (276×157)
+    imageUrl: rankedIntroUrl("epic-loot"),
     title: "Earn Rewards",
     description:
       "This season, unlock rewards across splits and at the end of the season. Finishing Gold or above in any ranked queue unlocks a Victorious skin.",
