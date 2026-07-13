@@ -40,8 +40,8 @@ export default async function ComponentPage({
               {variant.name}
             </h2>
             <VariantCanvas backgrounds={variant.backgrounds ?? ["dark"]}>
-                {variant.render()}
-              </VariantCanvas>
+              {variant.render()}
+            </VariantCanvas>
             {variant.notes && (
               <div className="mt-2 border-l-2 border-gold-4 bg-blue-6 px-3 py-2 text-sm text-grey-1">
                 {variant.notes}
