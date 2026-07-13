@@ -11,7 +11,7 @@ import {
   MatchFoundModal,
   formatQueueTime,
 } from "@low/ui";
-import type { ChatMessage, RoleSlot, WingTier, Role, PickableRole } from "@low/ui";
+import type { ChatMessage, RoleSlot, WingTier, TierGem, BadgeSlot, Role, PickableRole } from "@low/ui";
 import {
   demoSummoner,
   demoFriends,
@@ -189,11 +189,21 @@ interface DemoPartyMember {
   wingTier: WingTier;
   primaryRole: Role;
   secondaryRole: Role;
+  tierGem?: TierGem;
+  badges?: [BadgeSlot?, BadgeSlot?, BadgeSlot?];
 }
 
 // demoFriends has 8 members and pickTeam has 5 — both verified in fixtures/src/summoner.ts
 // and fixtures/src/champions.ts. Non-null assertions are safe; the arrays are compile-time
 // constants with fixed lengths and the fixture file is the source of truth.
+//
+// Badge iconSrc values use the same CDragon ranked-mini-crests assets as the tier gems,
+// repurposed as placeholder badge art. In the real client these would be Challenge icons
+// (rcp-be-lol-game-data/global/default/v1/challenges/challenge-id/icons/).
+// Using mini-crests here as closest available public CDragon art for demo purposes.
+const CDRAGON_MINI =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests";
+
 const DEMO_PARTY: [DemoPartyMember, DemoPartyMember, DemoPartyMember, DemoPartyMember] = [
   {
     name:          pickTeam[0]!.summonerName,
@@ -201,6 +211,13 @@ const DEMO_PARTY: [DemoPartyMember, DemoPartyMember, DemoPartyMember, DemoPartyM
     wingTier:      "bronze",
     primaryRole:   "jungle",
     secondaryRole: "top",
+    tierGem:       "bronze",
+    // Two filled badges, one empty
+    badges: [
+      { iconSrc: `${CDRAGON_MINI}/gold.png`, ringColor: "var(--color-gold-3)" },
+      { iconSrc: `${CDRAGON_MINI}/silver.png`, ringColor: "var(--color-grey-1)" },
+      undefined,
+    ],
   },
   {
     name:          pickTeam[1]!.summonerName,
@@ -208,6 +225,13 @@ const DEMO_PARTY: [DemoPartyMember, DemoPartyMember, DemoPartyMember, DemoPartyM
     wingTier:      "teal",
     primaryRole:   "bottom",
     secondaryRole: "mid",
+    tierGem:       "platinum",
+    // One filled, two empty
+    badges: [
+      { iconSrc: `${CDRAGON_MINI}/platinum.png`, ringColor: "var(--color-teal-ring)" },
+      undefined,
+      undefined,
+    ],
   },
   {
     name:          pickTeam[3]!.summonerName,
@@ -215,6 +239,13 @@ const DEMO_PARTY: [DemoPartyMember, DemoPartyMember, DemoPartyMember, DemoPartyM
     wingTier:      "green",
     primaryRole:   "mid",
     secondaryRole: "support",
+    tierGem:       "diamond",
+    // All three filled
+    badges: [
+      { iconSrc: `${CDRAGON_MINI}/diamond.png`, ringColor: "var(--color-blue-2)" },
+      { iconSrc: `${CDRAGON_MINI}/gold.png`, ringColor: "var(--color-gold-3)" },
+      { iconSrc: `${CDRAGON_MINI}/silver.png`, ringColor: "var(--color-grey-1)" },
+    ],
   },
   {
     name:          pickTeam[4]!.summonerName,
@@ -222,6 +253,9 @@ const DEMO_PARTY: [DemoPartyMember, DemoPartyMember, DemoPartyMember, DemoPartyM
     wingTier:      "blue",
     primaryRole:   "support",
     secondaryRole: "mid",
+    tierGem:       "gold",
+    // All empty — shows the empty slot styling
+    badges: [undefined, undefined, undefined],
   },
 ];
 
@@ -648,6 +682,8 @@ export function PartyLobbyScreen({
               name={member.name}
               avatarSrc={member.avatarSrc}
               wingTier={member.wingTier}
+              tierGem={member.tierGem}
+              badges={member.badges}
             >
               <RoleSlotRow
                 size="sm"
@@ -669,6 +705,12 @@ export function PartyLobbyScreen({
           level={demoSummoner.level}
           autofillProtected
           queueing={isQueueing}
+          tierGem="gold"
+          badges={[
+            { iconSrc: "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests/gold.png", ringColor: "var(--color-gold-3)" },
+            { iconSrc: "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests/challenger.png", ringColor: "var(--color-gold-2)" },
+            undefined,
+          ]}
         >
           <RoleSlotRow
             size="md"
@@ -688,6 +730,8 @@ export function PartyLobbyScreen({
               name={member.name}
               avatarSrc={member.avatarSrc}
               wingTier={member.wingTier}
+              tierGem={member.tierGem}
+              badges={member.badges}
             >
               <RoleSlotRow
                 size="sm"

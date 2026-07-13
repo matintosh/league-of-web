@@ -149,7 +149,7 @@ export type { LobbyPlayerCardProps } from "./lobby/lobby-player-card";
 export { MatchFoundModal } from "./lobby/match-found-modal";
 export type { MatchFoundModalProps } from "./lobby/match-found-modal";
 export { PlayerBanner } from "./lobby/player-banner";
-export type { PlayerBannerProps, WingTier } from "./lobby/player-banner";
+export type { PlayerBannerProps, WingTier, TierGem, BadgeSlot } from "./lobby/player-banner";
 export { QueueStatus, formatQueueTime } from "./lobby/queue-status";
 export type { QueueStatusProps, QueueStatusLayout } from "./lobby/queue-status";
 export { QueueTypeList } from "./lobby/queue-type-list";
