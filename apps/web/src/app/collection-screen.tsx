@@ -14,12 +14,15 @@ import {
   SkinCard,
   EmoteTile,
   EmoteWheel,
+  RunesScreen,
 } from "@low/ui";
+import type { RunePage } from "@low/ui";
 import {
   demoChampions,
   demoSkins,
   demoChromas,
   demoEmotes,
+  demoRunePages,
   defaultEmoteSlots,
   loadingArtUrl,
   warwickDetail,
@@ -38,7 +41,7 @@ const TABS = [
   { id: "champions", label: "Champions", live: true },
   { id: "skins",     label: "Skins",     live: true },
   { id: "emotes",    label: "Emotes",    live: true },
-  { id: "runes",     label: "Runes",     live: false },
+  { id: "runes",     label: "Runes",     live: true },
   { id: "spells",    label: "Spells",    live: false },
   { id: "items",     label: "Items",     live: false },
   { id: "icons",     label: "Icons",     live: false },
@@ -787,6 +790,13 @@ export function CollectionScreen() {
   const [chromaChampionFilter, setChromaChampionFilter] = useState("");
   const [chromaSort, setChromaSort] = useState("");
 
+  // Runes tab state — hoisted so state survives tab switches
+  const runePages: RunePage[] = demoRunePages;
+  const [runeSelectedPageId, setRuneSelectedPageId] = useState<string | undefined>(undefined);
+  const [runeSearchQuery, setRuneSearchQuery] = useState("");
+  const [runeHidePresets, setRuneHidePresets] = useState(false);
+  const [runeActivePathFilter, setRuneActivePathFilter] = useState<string | null>(null);
+
   // Emotes tab state — hoisted so state survives tab switches
   const [emoteSort, setEmoteSort] = useState("acquired");
   const [emoteShowUnowned, setEmoteShowUnowned] = useState(true);
@@ -966,6 +976,28 @@ export function CollectionScreen() {
           </div>
         )}
 
+        {activeTab === "runes" && (
+          <div className="h-full min-h-0 flex flex-col">
+            <RunesScreen
+              pages={runePages}
+              maxPages={3}
+              selectedPageId={runeSelectedPageId}
+              onSelectPage={setRuneSelectedPageId}
+              onCreatePage={() => console.log("create rune page")}
+              onDeletePage={(id) => {
+                console.log("delete rune page", id);
+                if (runeSelectedPageId === id) setRuneSelectedPageId(undefined);
+              }}
+              searchQuery={runeSearchQuery}
+              onSearchChange={setRuneSearchQuery}
+              hidePresets={runeHidePresets}
+              onHidePresetsChange={setRuneHidePresets}
+              activePathFilter={runeActivePathFilter}
+              onPathFilterChange={setRuneActivePathFilter}
+            />
+          </div>
+        )}
+
         {activeTab === "emotes" && (
           <div className="h-full min-h-0 flex">
             <EmotesTab
@@ -989,7 +1021,8 @@ export function CollectionScreen() {
         {activeTab !== "champions" &&
           activeTab !== "skins" &&
           activeTab !== "chromas" &&
-          activeTab !== "emotes" && (
+          activeTab !== "emotes" &&
+          activeTab !== "runes" && (
             <div className="flex h-full items-center justify-center">
               <p className="font-body text-sm text-grey-2">Coming soon</p>
             </div>
