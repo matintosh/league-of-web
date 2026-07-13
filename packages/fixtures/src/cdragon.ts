@@ -144,3 +144,23 @@ export const rankedEmblemUrl = (
  */
 export const rankedUnrankedEmblemUrl = (): string =>
   `https://cdn.jsdelivr.net/gh/magisteriis/lol-icons-and-emblems@main/ranked-emblems/Emblem_Iron.png`;
+
+/*
+ * MODE-SELECT BACKGROUND — CDragon asset search result (2026-07, issue #218).
+ *
+ * The Twisted Treeline forest art shown on the PvP mode-select screen (bare
+ * tree silhouettes, purple-grey sky, misty center glow) is NOT available via
+ * CommunityDragon. Paths searched:
+ *   rcp-fe-lol-parties/global/default/           — map crest PNGs + lottie/webm only
+ *   rcp-fe-lol-static-assets/global/default/backgrounds/ — role-swapping, sanctum, roll-vignette
+ *   rcp-fe-lol-static-assets/global/default/     — teal/blue magical smoke assets only
+ *   rcp-fe-lol-navigation/global/default/images/ — nav/header UI assets only
+ *   rcp-fe-lol-game-select/                      — plugin returns 404
+ *   game/data/menu/                              — no static bg listed
+ *
+ * The background is baked into the client shell. The screen uses a layered
+ * CSS gradient fallback (see apps/web/src/app/mode-select-screen.tsx).
+ * If a future CDragon mirror surfaces the asset, add a `modeSelectBgUrl()`
+ * helper here following the pattern of cdragonStaticUrl(), and swap in an
+ * <img> tag in the screen file.
+ */
