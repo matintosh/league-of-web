@@ -11,7 +11,7 @@ export const topNavbarShowcase: ShowcaseEntry = {
   name: "Top Navbar",
   area: "chrome",
   description:
-    "The slim top navigation bar — play CTA on the left, nav items in the center, currency and player identity on the right.",
+    "The slim top navigation bar — play CTA on the left, nav items in the center, currency and controls (social toggle, settings) on the right. Player identity lives in the social rail ProfileChip, not here.",
   variants: [
     {
       name: "Default",

@@ -24,7 +24,11 @@ export interface TopNavbarProps {
   onNavigate: (id: string) => void;
   /** Top-right currency display slot, e.g. <CurrencyDisplay /> */
   currencySlot: ReactNode;
-  /** Top-right player identity slot, e.g. <PlayerHovercard /> */
+  /**
+   * Top-right controls slot — social-rail toggle, settings, and similar
+   * glyph buttons. Player identity is NOT placed here when the social rail
+   * is always-on (the rail's ProfileChip header owns identity per #146).
+   */
   playerSlot: ReactNode;
 }
 
