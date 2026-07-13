@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ProfileBanner, RankedQueuePanel, SearchInput, ClubsEmptyState, ProfileRankedScreen, StatsTab } from "@low/ui";
+import { ProfileBanner, RankedQueuePanel, SearchInput, ClubsEmptyState, ProfileRankedScreen, StatsTab, WelcomeToSeasonModal } from "@low/ui";
 import type { ProfileBannerStat, RankedFeatureColumn, RankedSplitProgress, PlayStyleStat, SeasonStats } from "@low/ui";
 import {
   demoSummoner,
@@ -278,6 +278,7 @@ function GearIcon() {
  */
 export function ProfileScreen() {
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const [seasonModalDismissed, setSeasonModalDismissed] = useState(false);
 
   const summoner = demoSummoner;
   const profileIconSrc = profileIconUrl(summoner.profileIconId);
@@ -375,8 +376,8 @@ export function ProfileScreen() {
           />
         </div>
       ) : activeTab === "stats" ? (
-        /* Stats tab: play-style radar + season stats + empty state */
-        <div className="flex flex-1 min-h-0 overflow-hidden">
+        /* Stats tab: play-style radar + season stats + season intro modal on first visit */
+        <div className="relative flex flex-1 min-h-0 overflow-hidden">
           <StatsTab
             playstyle={STATS_PLAYSTYLE}
             seasonLabel="Season 2019"
@@ -385,6 +386,11 @@ export function ProfileScreen() {
             onSearchChange={() => {}}
             championFilter=""
             onChampionFilterChange={() => {}}
+          />
+          <WelcomeToSeasonModal
+            open={activeTab === "stats" && !seasonModalDismissed}
+            season="2019"
+            onStart={() => setSeasonModalDismissed(true)}
           />
         </div>
       ) : (
