@@ -161,24 +161,32 @@ function DiamondSep() {
   );
 }
 
-/** Ward / eye glyph — dead decoration, aria-hidden. 16×16. */
-function WardGlyph() {
+/**
+ * Summoner's Rift wings badge — flat double-chevron wings shape, ~22×18px.
+ * Two stacked outward-sweeping chevron tiers, aria-hidden decoration.
+ * Matches the ranked wings insignia shown after the queue-count chip in the
+ * reference client (docs/reference/client-lobby-subbar.jpg).
+ */
+function SRWingsGlyph() {
   return (
     <svg
       aria-hidden="true"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
+      width="22"
+      height="18"
+      viewBox="0 0 22 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      {/* Upper wing tier — two chevrons sweeping outward and upward */}
       <path
-        d="M8 3C4 3 1.5 8 1.5 8s2.5 5 6.5 5 6.5-5 6.5-5-2.5-5-6.5-5Z"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinejoin="round"
+        d="M11 4 L3 1 L1 3 L11 7 L21 3 L19 1 Z"
+        fill="currentColor"
       />
-      <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.2" />
+      {/* Lower wing tier — slightly wider, angled more outward */}
+      <path
+        d="M11 10 L2 6.5 L0.5 8.5 L11 13 L21.5 8.5 L20 6.5 Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }
@@ -266,9 +274,9 @@ export function LobbyHeader({
                 {queueCount}
               </span>
             )}
-            {/* Ward glyph — dead decoration */}
-            <span aria-hidden="true" className="shrink-0 text-grey-3 ml-0.5 opacity-60">
-              <WardGlyph />
+            {/* SR wings badge — dead decoration */}
+            <span aria-hidden="true" className="shrink-0 text-grey-1 ml-0.5">
+              <SRWingsGlyph />
             </span>
           </span>
         ) : (
