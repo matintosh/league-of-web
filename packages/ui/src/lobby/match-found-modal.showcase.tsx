@@ -13,7 +13,7 @@ export const matchFoundModalShowcase: ShowcaseEntry = {
   name: "Match Found Modal",
   area: "lobby",
   description:
-    "Full-screen circular takeover when a match is found: countdown arc (parent-driven), ACCEPT and DECLINE buttons. Not dismissible via backdrop. crestSrc renders the game-mode map crest (single lit frame) in a gold double-border frame; falls back to HexCrest placeholder when absent.",
+    "Full-screen circular takeover when a match is found: countdown arc (parent-driven, arc is sole visual timer), ACCEPT trapezoid inside the circle bottom, DECLINE rectangle below the circle. Not dismissible via backdrop. crestSrc renders the game-mode map crest (single lit frame) in a gold double-border frame; falls back to HexCrest placeholder when absent.",
   referenceImage: "client-match-found-crest.png",
   referenceNote: "docs/reference/client-match-found-crest.png — the full MATCH FOUND circular takeover (crest, title, mode line, ACCEPT/DECLINE)",
   variants: [
@@ -30,7 +30,7 @@ export const matchFoundModalShowcase: ShowcaseEntry = {
     },
     {
       name: "Nearly expired (≤2s) + map crest",
-      notes: "secondsRemaining=2 — arc almost gone, countdown text turns text-gold-3 urgency colour.",
+      notes: "secondsRemaining=2 — arc almost gone. Countdown is sr-only (arc is sole visual timer); urgency read only from arc depletion.",
       render: () => <MatchFoundModalNearlyExpiredDemo />,
     },
     {

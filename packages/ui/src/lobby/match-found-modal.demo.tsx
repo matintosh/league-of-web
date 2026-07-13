@@ -16,7 +16,7 @@ const TOTAL = 10;
 /** Static: full countdown, with map crest */
 export function MatchFoundModalFullCountdownDemo() {
   return (
-    <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-[560px] w-[520px]">
       <MatchFoundModal open={true} secondsRemaining={10} totalSeconds={10} crestSrc={SR_CREST} onAccept={() => {}} onDecline={() => {}} />
     </div>
   );
@@ -25,7 +25,7 @@ export function MatchFoundModalFullCountdownDemo() {
 /** Static: halfway (arc at 50%), with map crest */
 export function MatchFoundModalHalfwayDemo() {
   return (
-    <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-[560px] w-[520px]">
       <MatchFoundModal open={true} secondsRemaining={5} totalSeconds={10} crestSrc={SR_CREST} onAccept={() => {}} onDecline={() => {}} />
     </div>
   );
@@ -34,7 +34,7 @@ export function MatchFoundModalHalfwayDemo() {
 /** Static: nearly expired (<=2s, countdown text gold-3), with map crest */
 export function MatchFoundModalNearlyExpiredDemo() {
   return (
-    <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-[560px] w-[520px]">
       <MatchFoundModal open={true} secondsRemaining={2} totalSeconds={10} crestSrc={SR_CREST} onAccept={() => {}} onDecline={() => {}} />
     </div>
   );
@@ -43,7 +43,7 @@ export function MatchFoundModalNearlyExpiredDemo() {
 /** Static: no crestSrc — renders the HexCrest fallback placeholder */
 export function MatchFoundModalNoCrestDemo() {
   return (
-    <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-[560px] w-[520px]">
       <MatchFoundModal open={true} secondsRemaining={7} totalSeconds={10} onAccept={() => {}} onDecline={() => {}} />
     </div>
   );
@@ -52,7 +52,7 @@ export function MatchFoundModalNoCrestDemo() {
 /** Static: with champion keyart (Ahri splash) + map crest */
 export function MatchFoundModalWithKeyartDemo() {
   return (
-    <div className="relative overflow-hidden [transform:translateZ(0)] h-[520px] w-[520px]">
+    <div className="relative overflow-hidden [transform:translateZ(0)] h-[560px] w-[520px]">
       <MatchFoundModal
         open={true}
         secondsRemaining={8}
