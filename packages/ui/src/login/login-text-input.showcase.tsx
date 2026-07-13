@@ -15,6 +15,7 @@ export const loginTextInputShowcase: ShowcaseEntry = {
   variants: [
     {
       name: "Default (empty)",
+      backgrounds: ["dark", "light"],
       notes:
         'Label sits as uppercase placeholder in the centre of the box. data-shot="login-text-input"',
       render: () => (
@@ -25,16 +26,19 @@ export const loginTextInputShowcase: ShowcaseEntry = {
     },
     {
       name: "Filled",
+      backgrounds: ["dark", "light"],
       notes: "Label floats to the top-left when the field has a value.",
       render: () => <LoginTextInputFilledDemo />,
     },
     {
       name: "Password",
+      backgrounds: ["dark", "light"],
       notes: "type='password' masks the text; label floats when filled.",
       render: () => <LoginTextInputPasswordDemo />,
     },
     {
       name: "Disabled",
+      backgrounds: ["dark", "light"],
       notes: "Non-interactive, visually dimmed.",
       render: () => <LoginTextInputDisabledDemo />,
     },

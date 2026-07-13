@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { registry } from "@low/ui/registry";
 import { ReferenceToggle } from "./reference-toggle.client";
+import { VariantCanvas } from "./variant-canvas.client";
 
 export function generateStaticParams() {
   return registry.map((e) => ({ slug: e.slug }));
@@ -38,9 +39,9 @@ export default async function ComponentPage({
             <h2 className="mb-3 border-b border-gold-5 pb-2 text-sm uppercase tracking-widest text-gold-2">
               {variant.name}
             </h2>
-            <div className="overflow-x-auto rounded-sm border border-grey-4 bg-blue-7 p-10">
+            <VariantCanvas backgrounds={variant.backgrounds ?? ["dark"]}>
               {variant.render()}
-            </div>
+            </VariantCanvas>
             {variant.notes && (
               <div className="mt-2 border-l-2 border-gold-4 bg-blue-6 px-3 py-2 text-sm text-grey-1">
                 {variant.notes}

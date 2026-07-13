@@ -11,6 +11,7 @@ export const socialLoginButtonsShowcase: ShowcaseEntry = {
   variants: [
     {
       name: "Default row",
+      backgrounds: ["dark", "light"],
       notes: "Static row on the white login canvas — no callback wired.",
       render: () => (
         <div
@@ -23,6 +24,7 @@ export const socialLoginButtonsShowcase: ShowcaseEntry = {
     },
     {
       name: "Interactive demo",
+      backgrounds: ["dark", "light"],
       notes:
         "Clicking a button logs the provider key below the row.",
       render: () => (

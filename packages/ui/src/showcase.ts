@@ -6,6 +6,12 @@ export interface ShowcaseVariant {
   name: string;
   /** Short note rendered under the variant — props used, state shown, gotchas. */
   notes?: string;
+  /**
+   * Background options for the canvas. Defaults to ["dark"].
+   * "dark" = bg-blue-7, "mid" = bg-blue-5, "light" = bg-grey-3.
+   * When multiple are specified a toggle button group appears on the variant card.
+   */
+  backgrounds?: ("dark" | "mid" | "light")[];
   render: () => ReactNode;
 }
 

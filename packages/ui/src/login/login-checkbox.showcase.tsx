@@ -14,6 +14,7 @@ export const loginCheckboxShowcase: ShowcaseEntry = {
   variants: [
     {
       name: "Unchecked",
+      backgrounds: ["dark", "light"],
       notes:
         'Default unchecked state, toggleable. data-shot="login-checkbox"',
       render: () => (
@@ -24,11 +25,13 @@ export const loginCheckboxShowcase: ShowcaseEntry = {
     },
     {
       name: "Checked",
+      backgrounds: ["dark", "light"],
       notes: "Starts checked; riot-red fill with white checkmark.",
       render: () => <LoginCheckboxCheckedDemo />,
     },
     {
       name: "Disabled",
+      backgrounds: ["dark", "light"],
       notes: "Non-interactive, visually dimmed.",
       render: () => <LoginCheckboxDisabledDemo />,
     },
