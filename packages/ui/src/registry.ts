@@ -20,6 +20,7 @@ import { hextechCheckboxShowcase } from "./chrome/hextech-checkbox.showcase";
 import { hextechSelectShowcase } from "./chrome/hextech-select.showcase";
 import { hextechToggleShowcase } from "./chrome/hextech-toggle.showcase";
 import { hextechTooltipShowcase } from "./chrome/hextech-tooltip.showcase";
+import { homeNewsScreenShowcase } from "./chrome/home-news-screen.showcase";
 import { modalFrameShowcase } from "./chrome/modal-frame.showcase";
 import { newsCardShowcase } from "./chrome/news-card.showcase";
 import { partyStatusPanelShowcase } from "./chrome/party-status-panel.showcase";
@@ -92,6 +93,7 @@ export const registry: ShowcaseEntry[] = [
   hextechSelectShowcase,
   hextechToggleShowcase,
   hextechTooltipShowcase,
+  homeNewsScreenShowcase,
   modalFrameShowcase,
   newsCardShowcase,
   partyStatusPanelShowcase,
