@@ -565,7 +565,7 @@ export function PlayButton({
               ? "cursor-not-allowed text-grey-2"
               : queueing
               ? "text-grey-3 cursor-default"
-              : "text-gold-1 group-hover/pb:text-gold-1 active:text-gold-3",
+              : "text-white group-hover/pb:text-white active:text-gold-3",
             "focus-visible:outline-none",
             "transition-colors duration-150",
           ].join(" ")}

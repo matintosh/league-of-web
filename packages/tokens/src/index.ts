@@ -54,8 +54,9 @@ export const palette = {
   pbOuterBorder: "#34291e",
   /** PlayButton v4 hover fill top stop — XAML #1D3B4A */
   pbHoverFill: "#1d3b4a",
-  /** PlayButton v4 GreenLine inner border — XAML #09343D */
-  pbInnerBorder: "#09343d",
+  /** PlayButton v6 GreenLine inner border — measured from play-button-hifi-closeup.png:
+   *  reference RGB(40–47, 150–168, 170–185) ≈ #2a96b3 (issue #291, supersedes #09343d) */
+  pbInnerBorder: "#2a96b3",
   statusOnline: "#00c853",
   /** Dark forest green band background for the OPEN PARTY rail block (issue #163).
    *  Pixel-sampled from docs/reference/client-lobby-solo.jpg — distinct from

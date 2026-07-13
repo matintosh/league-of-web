@@ -78,7 +78,12 @@
   --color-pb-outer-border: #34291e;
   /* PlayButton v4 inner-frame colors — XAML hover fill top stop + GreenLine inner border */
   --color-pb-hover-fill: #1d3b4a;
-  --color-pb-inner-border: #09343d;
+  /* GreenLine border v6: measured from play-button-hifi-closeup.png (12× scale,
+     y=388–422 x=630–700). Reference RGB(40–47, 150–168, 170–185) ≈ #2a96b3.
+     blue-3 (#0397ab = RGB 3,151,171) is 39R short of target; #2a96b3 = RGB(42,150,179)
+     is the pixel-accurate midpoint — used directly rather than color-mix since
+     no clean two-token composition reaches R≈42 with blue-3 as base. */
+  --color-pb-inner-border: #2a96b3;
 
   /* Status — availability indicators */
   --color-status-online: #00c853;
@@ -193,7 +198,8 @@
     --color-pb-outer-border: #34291e;
     /* PlayButton v4 inner-frame colors — XAML hover fill top stop + GreenLine inner border */
     --color-pb-hover-fill: #1d3b4a;
-    --color-pb-inner-border: #09343d;
+    /* GreenLine border v6: #2a96b3 — see @theme block comment above for provenance */
+    --color-pb-inner-border: #2a96b3;
 
     /* Status */
     --color-status-online: #00c853;
