@@ -36,21 +36,28 @@ export interface ChallengeItem {
   scoreContribution: number;
   tier: ChallengeTier;
   category: ChallengeCategory;
-  /** Hexagonal token icon URL — supply via CDragon or a placeholder. */
-  tokenIconSrc: string;
+  /**
+   * Hexagonal token icon URL — supply via CDragon when available.
+   * Omit to render the inline SVG placeholder (no network request).
+   */
+  tokenIconSrc?: string;
   nextRewardLabel: string;
   nextRewardIconSrc?: string;
   /** 0–100 percentage of players who have this challenge completed. */
   playerPercentage?: number;
+  /**
+   * Progress toward the current tier threshold.
+   * When current >= total the card/tooltip show a "Completed" state.
+   */
   progress?: { current: number; total: number };
 }
 
 // ---------------------------------------------------------------------------
 // Sample challenges — names sourced from the 2022 reference screenshot.
+// tokenIconSrc omitted throughout: no verified CDragon challenge-token
+// URLs exist in the current plugin set, so all cards show the inline
+// SVG placeholder instead of making 10 dead network requests.
 // ---------------------------------------------------------------------------
-
-const PLACEHOLDER_TOKEN =
-  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/challenges/tokens/challenge-token-placeholder.png";
 
 export const SAMPLE_CHALLENGES: ChallengeItem[] = [
   {
@@ -60,7 +67,6 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 15,
     tier: "gold",
     category: "imagination",
-    tokenIconSrc: PLACEHOLDER_TOKEN,
     nextRewardLabel: "30 Achievement Points",
     playerPercentage: 12.4,
     progress: { current: 3, total: 5 },
@@ -72,9 +78,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 100,
     tier: "diamond",
     category: "imagination",
-    tokenIconSrc: PLACEHOLDER_TOKEN,
     nextRewardLabel: "Slayer Title",
-    nextRewardIconSrc: undefined,
     playerPercentage: 3.5,
     progress: { current: 200, total: 300 },
   },
@@ -85,7 +89,6 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 30,
     tier: "silver",
     category: "teamwork-strategy",
-    tokenIconSrc: PLACEHOLDER_TOKEN,
     nextRewardLabel: "40 Achievement Points",
     playerPercentage: 18.2,
     progress: { current: 1, total: 3 },
@@ -97,7 +100,6 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 30,
     tier: "silver",
     category: "teamwork-strategy",
-    tokenIconSrc: PLACEHOLDER_TOKEN,
     nextRewardLabel: "50 Achievement Points",
     playerPercentage: 7.8,
     progress: { current: 0, total: 4 },
@@ -109,7 +111,6 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 30,
     tier: "silver",
     category: "veterancy",
-    tokenIconSrc: PLACEHOLDER_TOKEN,
     nextRewardLabel: "Dragon Hunter Icon",
     playerPercentage: 22.1,
     progress: { current: 2, total: 3 },
@@ -121,7 +122,6 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 30,
     tier: "master",
     category: "veterancy",
-    tokenIconSrc: PLACEHOLDER_TOKEN,
     nextRewardLabel: "Elder Dragon Badge",
     playerPercentage: 1.1,
     progress: { current: 0, total: 2 },
@@ -133,7 +133,6 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 15,
     tier: "gold",
     category: "expertise",
-    tokenIconSrc: PLACEHOLDER_TOKEN,
     nextRewardLabel: "Smite-A-Lot Emote",
     playerPercentage: 34.6,
     progress: { current: 7, total: 10 },
@@ -145,7 +144,6 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 15,
     tier: "bronze",
     category: "expertise",
-    tokenIconSrc: PLACEHOLDER_TOKEN,
     nextRewardLabel: "20 Achievement Points",
     playerPercentage: 41.3,
     progress: { current: 0, total: 1 },
@@ -157,7 +155,6 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 40,
     tier: "silver",
     category: "collection",
-    tokenIconSrc: PLACEHOLDER_TOKEN,
     nextRewardLabel: "Collector's Edge Icon",
     playerPercentage: 9.7,
     progress: { current: 12, total: 50 },
@@ -165,13 +162,15 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
   {
     id: "veteran-summoner",
     name: "Veteran Summoner",
+    // Level 200 is the GOLD tier threshold — demoSummoner.level = 247 exceeds
+    // it, so this challenge is completed. progress.current capped at total to
+    // render the "Completed" state in the card and tooltip.
     criteria: "Reach Summoner Level 200",
     scoreContribution: 20,
     tier: "gold",
     category: "legacy",
-    tokenIconSrc: PLACEHOLDER_TOKEN,
     nextRewardLabel: "Veteran Icon",
     playerPercentage: 15.3,
-    progress: { current: 247, total: 200 },
+    progress: { current: 200, total: 200 },
   },
 ];

@@ -36,6 +36,15 @@ const PROFILE_TABS: ProfileTab[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Challenges fixture data (page-level — component is fixture-value-free)
+// ---------------------------------------------------------------------------
+
+/** Total challenge score displayed in the sidebar crystal. */
+const CHALLENGES_TOTAL_SCORE = 4725;
+/** Overall tier for the challenge crystal and sidebar label. */
+const CHALLENGES_SCORE_TIER = "silver" as const;
+
+// ---------------------------------------------------------------------------
 // Ranked queues fixture (page-level — component is fixture-value-free)
 // ---------------------------------------------------------------------------
 
@@ -403,8 +412,8 @@ export function ProfileScreen({
         /* Challenges tab: score sidebar + 5-column card grid (era: 2022+) */
         <div className="flex flex-1 min-h-0 overflow-hidden">
           <ChallengesScreen
-            totalScore={4725}
-            scoreTier="silver"
+            totalScore={CHALLENGES_TOTAL_SCORE}
+            scoreTier={CHALLENGES_SCORE_TIER}
             activeCategory={challengeCategory}
             onCategoryChange={setChallengeCategory}
             challenges={filteredChallenges}
