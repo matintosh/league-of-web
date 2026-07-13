@@ -1,6 +1,5 @@
 'use client';
 
-import { useId } from "react";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -40,7 +39,7 @@ export interface SkinPreviewProps {
 // ---------------------------------------------------------------------------
 
 /** Ornate circular close button — gold-bordered frame, top-right. */
-function CloseButton({ onClick, titleId }: { onClick: () => void; titleId: string }) {
+function CloseButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       type="button"
@@ -69,7 +68,6 @@ function CloseButton({ onClick, titleId }: { onClick: () => void; titleId: strin
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <title id={titleId}>Close</title>
         <path
           d="M2 2L12 12M12 2L2 12"
           stroke="currentColor"
@@ -200,8 +198,6 @@ export function SkinPreview({
   onInspect,
   onLore,
 }: SkinPreviewProps) {
-  const closeTitleId = useId();
-
   return (
     <div className="relative w-full h-full overflow-hidden bg-hextech-black">
       {/* ---------------------------------------------------------------- */}
@@ -252,7 +248,7 @@ export function SkinPreview({
       {/* Top-right — close button                                         */}
       {/* ---------------------------------------------------------------- */}
       <div className="absolute top-5 right-5">
-        <CloseButton onClick={onClose} titleId={closeTitleId} />
+        <CloseButton onClick={onClose} />
       </div>
 
       {/* ---------------------------------------------------------------- */}
@@ -292,7 +288,7 @@ export function SkinPreview({
             const isSelected = i === selectedIndex;
             return (
               <button
-                key={thumb.name}
+                key={i}
                 type="button"
                 onClick={() => onThumbnailSelect(i)}
                 aria-label={thumb.name}
