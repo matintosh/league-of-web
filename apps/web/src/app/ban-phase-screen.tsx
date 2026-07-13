@@ -46,6 +46,7 @@ import {
   DEFAULT_PICK_CHAMPION_ID,
   championSquareUrl,
   positionIconUrl,
+  summonerSpellIconUrl,
 } from "@low/fixtures";
 import type { ChampionRole } from "@low/fixtures";
 
@@ -82,6 +83,18 @@ const INITIAL_MESSAGES: ChatMessage[] = [
   { id: "m3", text: "qlxHarlan joined the lobby" },
   { id: "m4", text: "HowarqLqUq joined the lobby" },
 ];
+
+// ---------------------------------------------------------------------------
+// Fixture spell assignments — same combos as pick/loadout screens.
+// ---------------------------------------------------------------------------
+
+const PLAYER_SPELLS: Record<string, [string, string]> = {
+  qlxHarlan:        [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summoner_haste")],
+  Oppeohtelar:      [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summoner_exhaust")],
+  cherwood:         [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summonerignite")],
+  HowarqLqUq:       [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summonerbarrier")],
+  CallMeCallMeStar: [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summonermana")],
+};
 
 // ---------------------------------------------------------------------------
 // Sort options
@@ -251,6 +264,7 @@ export function BanPhaseScreen({ onBanComplete }: BanPhaseScreenProps) {
               state="picking"
               summonerName={member.summonerName}
               isSelf={member.isSelf}
+              spellSrcs={PLAYER_SPELLS[member.summonerName]}
             />
           ))}
 

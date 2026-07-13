@@ -87,6 +87,19 @@ function pickRoleIconSrc(role: Role, isSelected: boolean): string {
 }
 
 // ---------------------------------------------------------------------------
+// Fixture spell assignments — one Flash+X combo per summoner (matches reference).
+// Flash+Ghost · Flash+Exhaust · Flash+Ignite (self) · Flash+Barrier · Flash+Clarity
+// ---------------------------------------------------------------------------
+
+const PLAYER_SPELLS: Record<string, [string, string]> = {
+  qlxHarlan:        [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summoner_haste")],
+  Oppeohtelar:      [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summoner_exhaust")],
+  cherwood:         [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summonerignite")],
+  HowarqLqUq:       [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summonerbarrier")],
+  CallMeCallMeStar: [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summonermana")],
+};
+
+// ---------------------------------------------------------------------------
 // Fixture chat messages
 // ---------------------------------------------------------------------------
 const INITIAL_MESSAGES: ChatMessage[] = [
@@ -257,6 +270,7 @@ export function PickScreen({ onLockIn }: PickScreenProps) {
               state="picking"
               summonerName={member.summonerName}
               isSelf={member.isSelf}
+              spellSrcs={PLAYER_SPELLS[member.summonerName]}
             />
           ))}
 
