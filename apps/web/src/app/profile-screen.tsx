@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ProfileBanner, RankedQueuePanel, SearchInput, ClubsEmptyState, ProfileRankedScreen, StatsTab } from "@low/ui";
+import { ProfileBanner, RankedQueuePanel, SearchInput, ClubsEmptyState, ProfileRankedScreen, StatsTab, WelcomeToSeasonModal } from "@low/ui";
 import type { ProfileBannerStat, RankedFeatureColumn, RankedSplitProgress, PlayStyleStat, SeasonStats } from "@low/ui";
 import {
   demoSummoner,
@@ -276,7 +276,21 @@ function GearIcon() {
  * All fixture values are supplied at this page level; components remain
  * fixture-value-free per the component contract.
  */
-export function ProfileScreen() {
+export interface ProfileScreenProps {
+  /**
+   * Whether the season-intro modal has been dismissed this session.
+   * Owned by the shell (not this screen) so it survives main-nav
+   * switches — ProfileScreen unmounts when the user leaves Profile.
+   */
+  seasonModalDismissed: boolean;
+  /** Called when the user dismisses the season-intro modal via its CTA. */
+  onSeasonModalDismiss: () => void;
+}
+
+export function ProfileScreen({
+  seasonModalDismissed,
+  onSeasonModalDismiss,
+}: ProfileScreenProps) {
   const [activeTab, setActiveTab] = useState<string>("overview");
 
   const summoner = demoSummoner;
@@ -375,8 +389,8 @@ export function ProfileScreen() {
           />
         </div>
       ) : activeTab === "stats" ? (
-        /* Stats tab: play-style radar + season stats + empty state */
-        <div className="flex flex-1 min-h-0 overflow-hidden">
+        /* Stats tab: play-style radar + season stats + season intro modal on first visit */
+        <div className="relative flex flex-1 min-h-0 overflow-hidden">
           <StatsTab
             playstyle={STATS_PLAYSTYLE}
             seasonLabel="Season 2019"
@@ -385,6 +399,11 @@ export function ProfileScreen() {
             onSearchChange={() => {}}
             championFilter=""
             onChampionFilterChange={() => {}}
+          />
+          <WelcomeToSeasonModal
+            open={activeTab === "stats" && !seasonModalDismissed}
+            season="2019"
+            onStart={onSeasonModalDismiss}
           />
         </div>
       ) : (
