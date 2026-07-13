@@ -335,8 +335,59 @@ export function ModeSelectScreen({ onConfirm, onBack }: ModeSelectScreenProps) {
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-hextech-black">
+      {/*
+       * Atmospheric background — Twisted Treeline / mode-select dark forest art.
+       *
+       * CDragon asset search result (2026-07): no standalone mode-select
+       * background is exposed in rcp-fe-lol-parties, rcp-fe-lol-static-assets,
+       * rcp-fe-lol-navigation, or rcp-fe-lol-game-select. The reference art
+       * (bare tree silhouettes against a moonlit purple sky) appears to be baked
+       * into the client shell and is not mirrored by CommunityDragon.
+       *
+       * Fallback: layered CSS gradient approximation, sampled from
+       * docs/reference/client-pvp-mode-select.jpg. No raw hex values — all stops
+       * use var(--color-*) references to @low/tokens custom properties.
+       *
+       * Tone map (reference sample → nearest token):
+       *   Upper sky       #070711 → arcade-bg-dark  (#0d0520, deep purple)
+       *   Mid-sky mist    #12101e → color-mix(arcade-bg-dark + blue-7, 50%)
+       *   Tree silhouette #1d1c18 → grey-4           (#1e2328)
+       *   Lower corners   #010a13 → hextech-black    (#010a13)
+       *   Center glow     #1a1530 → color-mix(arcade-bg-dark + grey-4, 40%)
+       */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background: [
+            /* Base: deep purple-dark sky (arcade-bg-dark = #0d0520, the purple tone in the reference) */
+            `radial-gradient(ellipse 80% 60% at 50% 35%, color-mix(in srgb, var(--color-arcade-bg-dark) 60%, var(--color-blue-7) 40%) 0%, var(--color-arcade-bg-dark) 55%, var(--color-hextech-black) 100%)`,
+            /* Mid-tone atmospheric fog band — faint warm-purple glow at center horizon */
+            `radial-gradient(ellipse 50% 30% at 50% 55%, color-mix(in srgb, var(--color-arcade-bg-dark) 40%, var(--color-grey-4) 60%) 0%, transparent 70%)`,
+            /* Corner darkening vignette — pulls corners to near-black */
+            `radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, color-mix(in srgb, var(--color-hextech-black) 90%, transparent 10%) 100%)`,
+          ].join(", "),
+        }}
+      />
+      {/* Top-edge dark gradient — ensures header/tabbar text stays legible */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-24"
+        style={{
+          background: `linear-gradient(to bottom, var(--color-hextech-black), transparent)`,
+        }}
+      />
+      {/* Bottom-edge dark gradient — ensures CONFIRM strip text stays legible */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-32"
+        style={{
+          background: `linear-gradient(to top, var(--color-hextech-black), transparent)`,
+        }}
+      />
+
       {/* Back arrow header — above TabBar */}
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-gold-5 bg-blue-7 px-4">
+      <header className="relative z-10 flex h-12 shrink-0 items-center gap-3 border-b border-gold-5 bg-blue-7/80 px-4">
         <button
           type="button"
           aria-label="Back"
@@ -371,18 +422,20 @@ export function ModeSelectScreen({ onConfirm, onBack }: ModeSelectScreenProps) {
       </header>
 
       {/* TabBar — full width, category navigation */}
-      <TabBar
-        tabs={TABS}
-        activeId={activeTab}
-        onSelect={() => {
-          // CO-OP VS AI and TRAINING are coming soon — no-op
-          console.log("Coming soon");
-        }}
-        label="Game category"
-      />
+      <div className="relative z-10">
+        <TabBar
+          tabs={TABS}
+          activeId={activeTab}
+          onSelect={() => {
+            // CO-OP VS AI and TRAINING are coming soon — no-op
+            console.log("Coming soon");
+          }}
+          label="Game category"
+        />
+      </div>
 
       {/* Main content — flex-1, centered */}
-      <div className="relative flex flex-1 flex-col items-center justify-center px-8">
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-8">
         {/* 4 GameModeCards row */}
         <div
           role="radiogroup"
@@ -419,7 +472,7 @@ export function ModeSelectScreen({ onConfirm, onBack }: ModeSelectScreenProps) {
       </div>
 
       {/* Bottom CONFIRM strip */}
-      <div className="flex h-20 shrink-0 items-center justify-center border-t border-gold-5">
+      <div className="relative z-10 flex h-20 shrink-0 items-center justify-center border-t border-gold-5">
         <HextechButton
           variant="primary"
           size="large"
