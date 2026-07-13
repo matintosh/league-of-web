@@ -126,6 +126,36 @@ try {
 }
 await page.waitForTimeout(1500);
 
+// 4b. Navigate through ban phase (#278): verify ban screen, click a champion, click BAN
+console.log("Step 4b: Ban phase — verify, select champion, ban …");
+const onBan = await page.getByText("Ban a Champion!", { exact: false }).count();
+if (onBan === 0) {
+  console.error("ERROR: Could not reach ban phase screen ('Ban a Champion!' not found).");
+  await browser.close();
+  process.exit(1);
+}
+console.log("✓ Ban phase screen reached.");
+try {
+  await page.locator("[role='listbox'] > *").first().waitFor({ state: "visible", timeout: 5000 });
+  await page.locator("[role='listbox'] > *").first().click();
+  await page.waitForTimeout(300);
+} catch (e) {
+  console.error("ERROR: Could not click champion tile in ban grid:", e.message);
+  await browser.close();
+  process.exit(1);
+}
+// Click the BAN button (LockInButton with label "Ban")
+try {
+  const banBtn = page.locator("main button").filter({ hasText: /^ban$/i });
+  await banBtn.waitFor({ state: "visible", timeout: 3000 });
+  await banBtn.click();
+} catch (e) {
+  console.error("ERROR: Could not click BAN button:", e.message);
+  await browser.close();
+  process.exit(1);
+}
+await page.waitForTimeout(1000);
+
 // Verify we reached the pick screen
 const onPick = await page.getByText("Choose Your Champion!", { exact: false }).count();
 if (onPick === 0) {

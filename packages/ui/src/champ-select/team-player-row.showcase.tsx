@@ -1,4 +1,4 @@
-import { championSquareUrl } from "@low/fixtures";
+import { championSquareUrl, summonerSpellIconUrl } from "@low/fixtures";
 import type { ShowcaseEntry } from "../showcase";
 import { TeamPlayerRow } from "./team-player-row";
 
@@ -9,10 +9,11 @@ const WARWICK_SRC = championSquareUrl("Warwick");
 const KINDRED_SRC = championSquareUrl("Kindred");
 const LUX_SRC = championSquareUrl("Lux");
 
-// Placeholder 1×1 transparent gif reused for spell squares in the showcase.
-// Real usage would pass actual summoner-spell CDN URLs.
-const SPELL_PLACEHOLDER = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-const SPELL_PAIR: [string, string] = [SPELL_PLACEHOLDER, SPELL_PLACEHOLDER];
+// Real CDragon summoner-spell icon URLs — Flash + Ignite (self row) and Flash + Ghost.
+const FLASH_SRC = summonerSpellIconUrl("summoner_flash");
+const IGNITE_SRC = summonerSpellIconUrl("summonerignite");
+const GHOST_SRC = summonerSpellIconUrl("summoner_haste");
+const SPELL_PAIR: [string, string] = [FLASH_SRC, IGNITE_SRC];
 
 export const teamPlayerRowShowcase: ShowcaseEntry = {
   slug: "team-player-row",
@@ -129,6 +130,27 @@ export const teamPlayerRowShowcase: ShowcaseEntry = {
             summonerName="SupportMain"
             championName="Lux"
             portraitSrc={LUX_SRC}
+          />
+        </div>
+      ),
+    },
+    {
+      name: "With CDragon spell icons",
+      notes: "Real Flash+Ignite icons from CDragon icons2d — picking state shows spell art even before champion is locked.",
+      render: () => (
+        <div className="bg-blue-7 p-4 w-64 flex flex-col divide-y divide-grey-3">
+          <TeamPlayerRow
+            state="picking"
+            summonerName="qlxHarlan"
+            spellSrcs={[FLASH_SRC, GHOST_SRC]}
+          />
+          <TeamPlayerRow
+            state="locked"
+            summonerName="cherwood"
+            championName="Warwick"
+            portraitSrc={WARWICK_SRC}
+            isSelf
+            spellSrcs={SPELL_PAIR}
           />
         </div>
       ),

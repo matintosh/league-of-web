@@ -83,6 +83,18 @@ const WARWICK_SKINS: SkinOption[] = warwickLoadoutSkins.map((s) => ({
 const DEFAULT_SKIN_INDEX = 2;
 
 // ---------------------------------------------------------------------------
+// Fixture spell assignments — one Flash+X combo per summoner (matches reference).
+// ---------------------------------------------------------------------------
+
+const PLAYER_SPELLS: Record<string, [string, string]> = {
+  qlxHarlan:        [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summoner_haste")],
+  Oppeohtelar:      [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summoner_exhaust")],
+  cherwood:         [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summonerignite")],
+  HowarqLqUq:       [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summonerbarrier")],
+  CallMeCallMeStar: [summonerSpellIconUrl("summoner_flash"), summonerSpellIconUrl("summonermana")],
+};
+
+// ---------------------------------------------------------------------------
 // Fixture chat messages
 // ---------------------------------------------------------------------------
 const INITIAL_MESSAGES: ChatMessage[] = [
@@ -226,14 +238,15 @@ export function LoadoutScreen({ onComplete, chosenChampionId }: LoadoutScreenPro
             championName: champName,
             championId: champId,
             isSelf: member.isSelf,
+            spellSrcs: PLAYER_SPELLS[member.summonerName],
           };
         })
       : [
-          { summonerName: "qlxHarlan", state: "picking" as const, championId: undefined, championName: undefined, isSelf: undefined },
-          { summonerName: "Oppeohtelar", state: "locked" as const, championName: "Ashe", championId: "Ashe", isSelf: undefined },
-          { summonerName: "cherwood", state: "locked" as const, championName: "Warwick", championId: "Warwick", isSelf: true },
-          { summonerName: "HowarqLqUq", state: "picking" as const, championId: undefined, championName: undefined, isSelf: undefined },
-          { summonerName: "CallMeCallMeStar", state: "locked" as const, championName: "Kindred", championId: "Kindred", isSelf: undefined },
+          { summonerName: "qlxHarlan", state: "picking" as const, championId: undefined, championName: undefined, isSelf: undefined, spellSrcs: PLAYER_SPELLS["qlxHarlan"] },
+          { summonerName: "Oppeohtelar", state: "locked" as const, championName: "Ashe", championId: "Ashe", isSelf: undefined, spellSrcs: PLAYER_SPELLS["Oppeohtelar"] },
+          { summonerName: "cherwood", state: "locked" as const, championName: "Warwick", championId: "Warwick", isSelf: true, spellSrcs: PLAYER_SPELLS["cherwood"] },
+          { summonerName: "HowarqLqUq", state: "picking" as const, championId: undefined, championName: undefined, isSelf: undefined, spellSrcs: PLAYER_SPELLS["HowarqLqUq"] },
+          { summonerName: "CallMeCallMeStar", state: "locked" as const, championName: "Kindred", championId: "Kindred", isSelf: undefined, spellSrcs: PLAYER_SPELLS["CallMeCallMeStar"] },
         ];
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -298,14 +311,7 @@ export function LoadoutScreen({ onComplete, chosenChampionId }: LoadoutScreenPro
               portraitSrc={
                 member.championId ? championSquareUrl(member.championId) : undefined
               }
-              spellSrcs={
-                member.championId
-                  ? [
-                      championSquareUrl(member.championId),
-                      championSquareUrl(member.championId),
-                    ]
-                  : undefined
-              }
+              spellSrcs={member.spellSrcs}
               isSelf={member.isSelf}
             />
           ))}
