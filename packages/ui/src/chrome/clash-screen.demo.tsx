@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { ClashScreen } from "./clash-screen";
-import type { ClashPlayer, ClashTeam, ClashTournament, ClashSubTab } from "./clash-screen";
-import { profileIconUrl, positionIconUrl } from "@low/fixtures";
+import type { ClashPlayer, ClashTeam, ClashTournament, ClashSubTab, ClashScoutingTab } from "./clash-screen";
+import { profileIconUrl, positionIconUrl, championSquareUrl, rankedEmblemUrl } from "@low/fixtures";
+import type { ClashScoutingPlayer } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Shared fixture data
@@ -205,6 +206,101 @@ export function ClashScreenCountdownToMatchDemo() {
         onSubTabChange={setActiveSubTab}
         onLockIn={() => console.log("clash: lock in")}
         onLeaveTeam={() => console.log("clash: leave team")}
+      />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Scouting phase fixture data
+// Matches docs/reference/client-clash-scouting.png (Trinity Fire vs 5 opponents)
+// ---------------------------------------------------------------------------
+
+// NOTE: mirrors CLASH_OPPONENTS in apps/web client-shell.tsx (see note there).
+const SCOUTING_OPPONENTS: ClashScoutingPlayer[] = [
+  {
+    summonerName: "whostolebaron",
+    rankLabel: "Gold IV",
+    rankEmblemSrc: rankedEmblemUrl("Gold"),
+    champions: [
+      { iconSrc: championSquareUrl("Vayne"),     winPct: 56, games: 167, kda: 3.7 },
+      { iconSrc: championSquareUrl("Jinx"),      winPct: 49, games: 127, kda: 6.7 },
+      { iconSrc: championSquareUrl("Caitlyn"),   winPct: 45, games: 89,  kda: 4.6 },
+      { iconSrc: championSquareUrl("Ashe"),      winPct: 56, games: 36,  kda: 4.9 },
+    ],
+  },
+  {
+    summonerName: "TwinkleToes",
+    rankLabel: "Silver IV",
+    rankEmblemSrc: rankedEmblemUrl("Silver"),
+    champions: [
+      { iconSrc: championSquareUrl("Ahri"),      winPct: 58, games: 131, kda: 5.2 },
+      { iconSrc: championSquareUrl("Lux"),       winPct: 60, games: 89,  kda: 7.0 },
+      { iconSrc: championSquareUrl("Orianna"),   winPct: 62, games: 43,  kda: 5.7 },
+      { iconSrc: championSquareUrl("Syndra"),    winPct: 69, games: 42,  kda: 5.4 },
+    ],
+  },
+  {
+    summonerName: "TankyBits",
+    rankLabel: "Silver I",
+    rankEmblemSrc: rankedEmblemUrl("Silver"),
+    champions: [
+      { iconSrc: championSquareUrl("Malphite"),  winPct: 45, games: 733, kda: 3.6 },
+      { iconSrc: championSquareUrl("Garen"),     winPct: 56, games: 91,  kda: 2.1 },
+      { iconSrc: championSquareUrl("Nasus"),     winPct: 29, games: 7,   kda: 1.1 },
+      { iconSrc: championSquareUrl("Sion"),      winPct: 14, games: 7,   kda: 1.7 },
+    ],
+  },
+  {
+    summonerName: "CaffeinatedGanks",
+    rankLabel: "Gold III",
+    rankEmblemSrc: rankedEmblemUrl("Gold"),
+    champions: [
+      { iconSrc: championSquareUrl("Khazix"),    winPct: 54, games: 174, kda: 2.7 },
+      { iconSrc: championSquareUrl("Elise"),     winPct: 50, games: 48,  kda: 3.1 },
+      { iconSrc: championSquareUrl("Rengar"),    winPct: 44, games: 36,  kda: 2.9 },
+      { iconSrc: championSquareUrl("Nidalee"),   winPct: 48, games: 33,  kda: 3.7 },
+    ],
+  },
+  {
+    summonerName: "ToasterMiner",
+    rankLabel: "Silver III",
+    rankEmblemSrc: rankedEmblemUrl("Silver"),
+    champions: [
+      { iconSrc: championSquareUrl("Thresh"),    winPct: 50, games: 120, kda: 3.1 },
+      { iconSrc: championSquareUrl("Leona"),     winPct: 56, games: 75,  kda: 2.3 },
+      { iconSrc: championSquareUrl("Blitzcrank"),winPct: 62, games: 66,  kda: 3.2 },
+      { iconSrc: championSquareUrl("Morgana"),   winPct: 57, games: 54,  kda: 4.7 },
+    ],
+  },
+];
+
+const SCOUTING_TEAM: ClashTeam = {
+  tag:     "TTF",
+  name:    "Trinity Fire",
+  tier:    "IV",
+  logoSrc: "",
+};
+
+export function ClashScreenScoutingDemo() {
+  const [activeSubTab, setActiveSubTab] = useState<ClashSubTab>("tournaments");
+  const [scoutingTab, setScoutingTab] = useState<ClashScoutingTab>("ranked");
+  return (
+    <div style={{ height: 665 }}>
+      <ClashScreen
+        tournament={{ ...DEMO_TOURNAMENT, name: "Noxian Wars" }}
+        team={SCOUTING_TEAM}
+        players={PLAYERS_ALL_LOCKEDIN}
+        countdownLabel="0m 00s"
+        countdownSublabel="Scouting Phase"
+        activeSubTab={activeSubTab}
+        onSubTabChange={setActiveSubTab}
+        onLockIn={() => console.log("clash: lock in")}
+        onLeaveTeam={() => console.log("clash: leave team")}
+        scoutingPhase
+        opponents={SCOUTING_OPPONENTS}
+        scoutingTab={scoutingTab}
+        onScoutingTabChange={setScoutingTab}
       />
     </div>
   );
