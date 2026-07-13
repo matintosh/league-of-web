@@ -4,6 +4,7 @@ import {
   TabBarSkinsActiveDemo,
   TabBarManyTabsDemo,
   TabBarEmptyDemo,
+  TabBarModeSelectDemo,
 } from "./tab-bar.demo";
 
 export const tabBarShowcase: ShowcaseEntry = {
@@ -34,6 +35,12 @@ export const tabBarShowcase: ShowcaseEntry = {
       name: "Empty",
       notes: "No tabs provided — renders the bar shell with an empty tablist.",
       render: () => <TabBarEmptyDemo />,
+    },
+    {
+      name: "ModeSelect layout (divider + disabled + trailing trophy)",
+      notes:
+        "5 tabs as seen on ModeSelectScreen: PVP active, CO-OP VS AI / TRAINING / CREATE CUSTOM / JOIN CUSTOM disabled (text-grey-2, no click), thin divider before CREATE CUSTOM, trophy icon button in the trailing slot with a border and divider separator.",
+      render: () => <TabBarModeSelectDemo />,
     },
   ],
 };

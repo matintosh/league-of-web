@@ -281,8 +281,10 @@ const QUEUE_OPTIONS = [
 
 const TABS = [
   { id: "pvp", label: "PVP" },
-  { id: "coop", label: "CO-OP VS AI" },
-  { id: "training", label: "TRAINING" },
+  { id: "coop", label: "CO-OP VS AI", disabled: true },
+  { id: "training", label: "TRAINING", disabled: true },
+  { id: "create", label: "CREATE CUSTOM", disabled: true, dividerBefore: true },
+  { id: "join", label: "JOIN CUSTOM", disabled: true },
 ];
 
 // ---------------------------------------------------------------------------
@@ -427,10 +429,69 @@ export function ModeSelectScreen({ onConfirm, onBack }: ModeSelectScreenProps) {
           tabs={TABS}
           activeId={activeTab}
           onSelect={() => {
-            // CO-OP VS AI and TRAINING are coming soon — no-op
+            // Non-PVP tabs are coming soon — no-op (disabled tabs suppress onSelect anyway)
             console.log("Coming soon");
           }}
           label="Game category"
+          trailing={
+            <button
+              type="button"
+              aria-label="Ranked history"
+              className="flex h-7 w-7 items-center justify-center border border-gold-5 text-grey-2 transition-colors duration-150 hover:text-gold-2 hover:border-gold-3"
+            >
+              {/* Trophy cup icon — approximate of the real client ranked history glyph */}
+              <svg
+                aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* Cup body */}
+                <path
+                  d="M4 2h8v5a4 4 0 0 1-8 0V2Z"
+                  stroke="currentColor"
+                  strokeWidth="1.25"
+                  strokeLinejoin="round"
+                />
+                {/* Left handle */}
+                <path
+                  d="M4 3.5H2.5A1.5 1.5 0 0 0 2.5 6.5H4"
+                  stroke="currentColor"
+                  strokeWidth="1.25"
+                  strokeLinecap="round"
+                />
+                {/* Right handle */}
+                <path
+                  d="M12 3.5h1.5a1.5 1.5 0 0 1 0 3H12"
+                  stroke="currentColor"
+                  strokeWidth="1.25"
+                  strokeLinecap="round"
+                />
+                {/* Stem */}
+                <line
+                  x1="8"
+                  y1="11"
+                  x2="8"
+                  y2="13"
+                  stroke="currentColor"
+                  strokeWidth="1.25"
+                  strokeLinecap="round"
+                />
+                {/* Base */}
+                <line
+                  x1="5.5"
+                  y1="13"
+                  x2="10.5"
+                  y2="13"
+                  stroke="currentColor"
+                  strokeWidth="1.25"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+          }
         />
       </div>
 
