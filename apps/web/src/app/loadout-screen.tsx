@@ -7,6 +7,7 @@ import {
   SkinCarousel,
   SkinThumbStrip,
   ChatPanel,
+  ChampSelectActionBar,
 } from "@low/ui";
 import type { ChatMessage, SkinOption } from "@low/ui";
 import {
@@ -18,6 +19,7 @@ import {
   loadingArtUrl,
   championSquareUrl,
   DEFAULT_PICK_CHAMPION_ID,
+  summonerSpellIconUrl,
 } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -321,7 +323,7 @@ export function LoadoutScreen({ onComplete, chosenChampionId }: LoadoutScreenPro
         </main>
       </div>
 
-      {/* Bottom strip: ChatPanel left | thumb strip center | 5V5 label right */}
+      {/* Bottom strip: ChatPanel left | action bar + thumb strip center | 5V5 label right */}
       <div
         className="relative flex shrink-0 items-stretch border-t border-gold-5"
         style={{ height: 130 }}
@@ -338,13 +340,28 @@ export function LoadoutScreen({ onComplete, chosenChampionId }: LoadoutScreenPro
         {/* Divider */}
         <div className="w-px bg-gold-5 shrink-0" />
 
-        {/* Center: thumb strip */}
-        <div className="flex flex-1 items-center justify-center min-w-0">
-          <SkinThumbStrip
-            skins={champSkins}
-            selectedIndex={selectedSkinIndex}
-            onSelect={setSelectedSkinIndex}
-          />
+        {/* Center: action bar (top) + skin thumb strip (bottom) */}
+        <div className="flex flex-1 flex-col min-w-0">
+          {/* Action bar row — ~52px */}
+          <div className="flex items-center" style={{ height: 52 }}>
+            <ChampSelectActionBar
+              runePageName="Sorcery: The Calamity"
+              spellSrcs={[
+                summonerSpellIconUrl("summoner_flash"),
+                summonerSpellIconUrl("summoner_dot"),
+              ]}
+            />
+          </div>
+          {/* Horizontal separator */}
+          <div className="h-px w-full bg-gold-5 shrink-0" />
+          {/* Skin thumb strip row — remaining height */}
+          <div className="flex flex-1 items-center justify-center min-w-0">
+            <SkinThumbStrip
+              skins={champSkins}
+              selectedIndex={selectedSkinIndex}
+              onSelect={setSelectedSkinIndex}
+            />
+          </div>
         </div>
 
         {/* 5V5 INTRO label */}

@@ -16,6 +16,29 @@ const CDRAGON_PARTIES =
 const CDRAGON_TFT =
   "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-tft/global/default";
 
+const CDRAGON_GAME_DATA =
+  "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default";
+
+/**
+ * Summoner spell icon URL via CDragon game data.
+ *
+ * `iconBaseName` is the lowercased filename from CDragon v1/summoner-spells.json
+ * `iconPath` field (e.g. "summoner_flash", "summoner_dot").
+ *
+ * These icons are distinct from DDragon's `SummonerFlash.png` naming convention —
+ * CDragon paths are all-lowercase with underscores and resolve to ~40×40 PNG art
+ * that matches the in-client spell slot icons exactly.
+ *
+ * Examples confirmed HTTP 200 (2026-07):
+ *   summonerSpellIconUrl("summoner_flash")  → Flash icon
+ *   summonerSpellIconUrl("summoner_dot")    → Ignite icon
+ *
+ * Source: CommunityDragon rcp-be-lol-game-data · data/spells/icons2d/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const summonerSpellIconUrl = (iconBaseName: string): string =>
+  `${CDRAGON_GAME_DATA}/data/spells/icons2d/${iconBaseName.toLowerCase()}.png`;
+
 /**
  * Base URL builder for rcp-fe-lol-static-assets (generic escape hatch).
  * Source: CommunityDragon rcp-fe-lol-static-assets plugin mirror.
