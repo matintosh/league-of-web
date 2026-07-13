@@ -47,6 +47,7 @@ import { tftHubScreenShowcase } from "./chrome/tft-hub-screen.showcase";
 import { topNavbarShowcase } from "./chrome/top-navbar.showcase";
 import { welcomeToSeasonModalShowcase } from "./chrome/welcome-to-season-modal.showcase";
 import { windowFrameShowcase } from "./chrome/window-frame.showcase";
+import { challengesScreenShowcase } from "./collection/challenges-screen.showcase";
 import { championCardShowcase } from "./collection/champion-card.showcase";
 import { championDetailShowcase } from "./collection/champion-detail.showcase";
 import { emoteTileShowcase } from "./collection/emote-tile.showcase";
@@ -141,7 +142,8 @@ export const registry: ShowcaseEntry[] = [
   loginCheckboxShowcase,
   loginTextInputShowcase,
   socialLoginButtonsShowcase,
-  // collection — alphabetical: ChampionCard < ChampionDetail < EmoteTile < EmoteWheel < ProfileRankedScreen < RunesScreen < SkinCard < SkinPreview < SpellsTab < StatMedallion < StatsTab
+  // collection — alphabetical: ChallengesScreen < ChampionCard < ChampionDetail < EmoteTile < EmoteWheel < ProfileRankedScreen < RunesScreen < SkinCard < SkinPreview < SpellsTab < StatMedallion < StatsTab
+  challengesScreenShowcase,
   championCardShowcase,
   championDetailShowcase,
   emoteTileShowcase,

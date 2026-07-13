@@ -102,6 +102,8 @@ export type { WelcomeToSeasonModalProps } from "./chrome/welcome-to-season-modal
 export { WindowFrame } from "./chrome/window-frame";
 export type { WindowFrameProps } from "./chrome/window-frame";
 // collection
+export { ChallengesScreen } from "./collection/challenges-screen";
+export type { ChallengesScreenProps, ChallengeCategory as ChallengeFilterCategory, ChallengeItem, ChallengeTier } from "./collection/challenges-screen";
 export { ChampionCard } from "./collection/champion-card";
 export type { ChampionCardProps, ChampionCardSize } from "./collection/champion-card";
 export { ChampionDetail } from "./collection/champion-detail";

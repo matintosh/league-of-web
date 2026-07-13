@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ProfileBanner, RankedQueuePanel, MasteryEternalsPanel, SearchInput, ClubsEmptyState, ProfileRankedScreen, StatsTab, WelcomeToSeasonModal } from "@low/ui";
+import { ProfileBanner, RankedQueuePanel, MasteryEternalsPanel, SearchInput, ClubsEmptyState, ProfileRankedScreen, StatsTab, WelcomeToSeasonModal, ChallengesScreen } from "@low/ui";
 import type { ProfileBannerStat, RankedFeatureColumn, RankedSplitProgress, PlayStyleStat, SeasonStats } from "@low/ui";
 import {
   demoSummoner,
@@ -11,7 +11,9 @@ import {
   rankedIntroUrl,
   rankedEmblemUrl,
   rankedUnrankedEmblemUrl,
+  SAMPLE_CHALLENGES,
 } from "@low/fixtures";
+import type { ChallengeCategory } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Profile sub-tab strip data
@@ -24,12 +26,13 @@ interface ProfileTab {
 }
 
 const PROFILE_TABS: ProfileTab[] = [
-  { id: "overview",       label: "OVERVIEW" },
-  { id: "match-history",  label: "MATCH HISTORY", disabled: true },
-  { id: "ranked",         label: "RANKED" },
-  { id: "clubs",          label: "CLUBS" },
-  { id: "highlights",     label: "HIGHLIGHTS",     disabled: true },
-  { id: "stats",          label: "STATS" },
+  { id: "overview",    label: "OVERVIEW" },
+  { id: "challenges",  label: "CHALLENGES" },
+  { id: "match-history", label: "MATCH HISTORY", disabled: true },
+  { id: "ranked",      label: "RANKED" },
+  { id: "clubs",       label: "CLUBS" },
+  { id: "highlights",  label: "HIGHLIGHTS", disabled: true },
+  { id: "stats",       label: "STATS" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -294,6 +297,12 @@ export function ProfileScreen({
   onSeasonModalDismiss,
 }: ProfileScreenProps) {
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const [challengeCategory, setChallengeCategory] = useState<ChallengeCategory>("all");
+
+  const filteredChallenges =
+    challengeCategory === "all"
+      ? SAMPLE_CHALLENGES
+      : SAMPLE_CHALLENGES.filter((c) => c.category === challengeCategory);
 
   const summoner = demoSummoner;
   const profileIconSrc = profileIconUrl(summoner.profileIconId);
@@ -388,6 +397,17 @@ export function ProfileScreen({
             splitProgress={RANKED_SPLIT_PROGRESS}
             onQueueUp={() => {}}
             onSearchSummoner={() => {}}
+          />
+        </div>
+      ) : activeTab === "challenges" ? (
+        /* Challenges tab: score sidebar + 5-column card grid (era: 2022+) */
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          <ChallengesScreen
+            totalScore={4725}
+            scoreTier="silver"
+            activeCategory={challengeCategory}
+            onCategoryChange={setChallengeCategory}
+            challenges={filteredChallenges}
           />
         </div>
       ) : activeTab === "stats" ? (
