@@ -9,3 +9,4 @@ export * from "./emotes";
 export * from "./runes";
 export * from "./spells";
 export * from "./store";
+export * from "./loot";

@@ -116,6 +116,54 @@ export interface PurchaseItem {
   artUrl: string;
 }
 
+// ---------------------------------------------------------------------------
+// Loot (Store → LOOT tab — issue #251)
+// ---------------------------------------------------------------------------
+
+/**
+ * A single item in the loot inventory.
+ * 2024+ era: matches the CRAFTING sub-tab inventory tile design.
+ */
+export interface LootItem {
+  /** Unique stable loot id, e.g. "chest-hextech", "champion-shard-jinx". */
+  id: string;
+  /** Display name shown below the tile. */
+  name: string;
+  /**
+   * Loot category — governs which group header this item appears under
+   * and which sidebar filter icon is active.
+   */
+  category: "material" | "champion" | "skin" | "tactician" | "eternals";
+  /**
+   * Quantity owned. Shown as a badge in the tile bottom-right.
+   * 0 = not owned (shown with a dimmed tile and "0" badge).
+   */
+  count: number;
+  /** Item icon URL (CDragon loot_item_icons or category_icons). */
+  iconSrc: string;
+  /** Optional tier/rarity label, e.g. "Legendary", "Mythic". */
+  tier?: string;
+}
+
+/**
+ * A category group in the loot inventory panel (e.g. "MATERIALS").
+ * Groups are rendered with a label header then a horizontal tile row.
+ */
+export interface LootCategory {
+  /** Internal category key. */
+  id: "material" | "champion" | "skin" | "tactician" | "eternals";
+  /** Display label in uppercase, e.g. "MATERIALS". */
+  label: string;
+  /** Items in this category. Empty categories show the header but no tiles. */
+  items: LootItem[];
+}
+
+/**
+ * One slot in the crafting forge (3 total).
+ * null = empty slot with placeholder helmet icon + "0/1" label.
+ */
+export type ForgeSlot = LootItem | null;
+
 /** Bundle / set data used to populate StoreItemPurchaseModal. */
 export interface PurchaseBundle {
   /** Stable bundle id — must match the StoreItem id it originates from. */

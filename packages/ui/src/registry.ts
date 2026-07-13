@@ -73,6 +73,7 @@ import { loginTextInputShowcase } from "./login/login-text-input.showcase";
 import { socialLoginButtonsShowcase } from "./login/social-login-buttons.showcase";
 import { featuredTabShowcase } from "./store/featured-tab.showcase";
 import { heroCarouselShowcase } from "./store/hero-carousel.showcase";
+import { lootTabShowcase } from "./store/loot-tab.showcase";
 import { storeItemPurchaseModalShowcase } from "./store/store-item-purchase-modal.showcase";
 import { storeItemTileShowcase } from "./store/store-item-tile.showcase";
 import { storeSubNavBarShowcase } from "./store/store-sub-nav-bar.showcase";
@@ -159,9 +160,10 @@ export const registry: ShowcaseEntry[] = [
   rolePickerPopoverShowcase,
   roleSelectorShowcase,
   roleSlotRowShowcase,
-  // store — alphabetical: FeaturedTab < HeroCarousel < StoreItemPurchaseModal < StoreItemTile < StoreSubNavBar
+  // store — alphabetical: FeaturedTab < HeroCarousel < LootTab < StoreItemPurchaseModal < StoreItemTile < StoreSubNavBar
   featuredTabShowcase,
   heroCarouselShowcase,
+  lootTabShowcase,
   storeItemPurchaseModalShowcase,
   storeItemTileShowcase,
   storeSubNavBarShowcase,
