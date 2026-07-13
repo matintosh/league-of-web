@@ -55,7 +55,7 @@ function MythicShopCard({
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") onClick?.(skin);
       }}
-      className="group relative flex aspect-[308/560] w-full cursor-pointer select-none flex-col overflow-hidden border border-gold-5 transition-colors duration-150 hover:border-gold-3"
+      className={`group relative flex aspect-[308/560] w-full ${onClick ? "cursor-pointer" : "cursor-default"} select-none flex-col overflow-hidden border border-gold-5 transition-colors duration-150 hover:border-gold-3`}
     >
       {/* Splash art — fills card */}
       <img
