@@ -4,6 +4,7 @@ import {
   LevelUpRewardsDetailDemo,
   JourneyTabZeroProgressDemo,
   JourneyTabCompletedDemo,
+  JourneyTabMultiPageCarouselDemo,
 } from "./journey-tab.demo";
 
 export const journeyTabShowcase: ShowcaseEntry = {
@@ -32,6 +33,12 @@ export const journeyTabShowcase: ShowcaseEntry = {
       name: "Overview — all complete (8/8 missions, 10/10 levels, 7/7 days)",
       notes: "All progress bars filled",
       render: () => <JourneyTabCompletedDemo />,
+    },
+    {
+      name: "Starter Pack carousel — 6 champions, 2 pages (prev/next + dots)",
+      notes:
+        "DEMO_STARTER_PACK_MULTI_PAGE: 6 champions, pageSize=3. Clicking the right chevron advances to page 2 (Garen, Annie, Jinx); the active dot updates. Left chevron is disabled on page 1; right chevron is disabled on page 2. Bonus icons (BE + mastery) are always visible and not paginated.",
+      render: () => <JourneyTabMultiPageCarouselDemo />,
     },
   ],
 };
