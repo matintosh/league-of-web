@@ -2,11 +2,20 @@
 
 import { LockInButton } from "./lock-in-button";
 
-/** Enabled — bright cyan gradient fill, dark text. */
+/** Enabled lock variant — bright cyan gradient fill, dark text. */
 export function LockInButtonEnabledDemo() {
   return (
     <div style={{ width: 300 }}>
       <LockInButton onLockIn={() => console.log("locked in")} />
+    </div>
+  );
+}
+
+/** Enabled ban variant — red gradient fill, white text, red glow. */
+export function LockInButtonBanVariantDemo() {
+  return (
+    <div style={{ width: 300 }}>
+      <LockInButton variant="ban" label="Ban" onLockIn={() => console.log("ban")} />
     </div>
   );
 }
@@ -38,7 +47,8 @@ export function LockInButtonCustomLabelDemo() {
   );
 }
 
-/** Full width at 480px — shows trapezoid geometry at wider container. */
+/** Full width at 480px — shows trapezoid+arc geometry at wider container.
+    Arc sagitta scales with container via objectBoundingBox clipPath. */
 export function LockInButtonFullWidthDemo() {
   return (
     <div style={{ width: 480 }}>
