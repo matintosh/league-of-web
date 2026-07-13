@@ -277,7 +277,7 @@ export default function ClientMapPage() {
 
       {/* Footer note */}
       <p className="mt-10 font-body text-xs text-grey-2 border-t border-gold-5 pt-4">
-        Node count: 47 total — 28 live, 8 stub, 4 disabled, 1 showcase-only. Last verified 2026-07-13.
+        Statuses verified against the client-shell source, 2026-07-13.
       </p>
     </div>
   );
