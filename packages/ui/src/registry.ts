@@ -6,8 +6,9 @@ import { skinCarouselShowcase } from "./champ-select/skin-carousel.showcase";
 import { skinThumbStripShowcase } from "./champ-select/skin-thumb-strip.showcase";
 import { teamPlayerRowShowcase } from "./champ-select/team-player-row.showcase";
 import { arcadeEventTabShowcase } from "./chrome/arcade-event-tab.showcase";
-import { clubsEmptyStateShowcase } from "./chrome/clubs-empty-state.showcase";
 import { chatPanelShowcase } from "./chrome/chat-panel.showcase";
+import { clashScreenShowcase } from "./chrome/clash-screen.showcase";
+import { clubsEmptyStateShowcase } from "./chrome/clubs-empty-state.showcase";
 import { crestDividerShowcase } from "./chrome/crest-divider.showcase";
 import { currencyDisplayShowcase } from "./chrome/currency-display.showcase";
 import { filterTabsShowcase } from "./chrome/filter-tabs.showcase";
@@ -86,9 +87,10 @@ export const registry: ShowcaseEntry[] = [
   skinCarouselShowcase,
   skinThumbStripShowcase,
   teamPlayerRowShowcase,
-  // chrome — alphabetical: ArcadeEventTab < ChatPanel < ClubsEmptyState < ...
+  // chrome — alphabetical: ArcadeEventTab < ChatPanel < ClashScreen < ClubsEmptyState < ...
   arcadeEventTabShowcase,
   chatPanelShowcase,
+  clashScreenShowcase,
   clubsEmptyStateShowcase,
   crestDividerShowcase,
   currencyDisplayShowcase,

@@ -22,8 +22,9 @@ import {
   SocialDock,
   ArcadeEventTab,
   TftHubScreen,
+  ClashScreen,
 } from "@low/ui";
-import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem } from "@low/ui";
+import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -35,6 +36,7 @@ import {
   blueEssenceIconUrl,
   navIconUrl,
   gameModeMapUrl,
+  positionIconUrl,
 } from "@low/fixtures";
 import type { NewsArticle } from "@low/ui";
 import { CollectionScreen } from "./collection-screen";
@@ -47,16 +49,17 @@ import { StoreScreen } from "./store-screen";
 
 // "matchmaking" view has been retired (issue #174): queue state now lives
 // inside PartyLobbyScreen; the shell no longer has a separate queue route.
-type View = "home" | "mode-select" | "party-lobby" | "collection" | "pick" | "loadout" | "profile" | "store" | "tft";
+type View = "home" | "mode-select" | "party-lobby" | "collection" | "pick" | "loadout" | "profile" | "store" | "tft" | "competitive";
 
-// Nav set matches the reference left→right: Home (live), Profile (live),
-// Collection (live), Store (live — #171), Teamfight Tactics (live — #196).
+// Nav set matches the reference left→right: Home, Profile, Collection,
+// Competitive (Clash — #244), Store, Teamfight Tactics.
 const NAV_ITEMS: NavItem[] = [
-  { id: "home",       label: "Home" },
-  { id: "profile",    label: "Profile" },
-  { id: "collection", label: "Collection" },
-  { id: "store",      label: "Store" },
-  { id: "tft",        label: "Teamfight Tactics" },
+  { id: "home",        label: "Home" },
+  { id: "profile",     label: "Profile" },
+  { id: "collection",  label: "Collection" },
+  { id: "competitive", label: "Competitive" },
+  { id: "store",       label: "Store" },
+  { id: "tft",         label: "Teamfight Tactics" },
 ];
 
 const KEYART_CHAMPION = "Jinx";
@@ -86,6 +89,59 @@ const TFT_PASS_ITEMS: RewardItem[] = [
   { id: "4", position: 4, locked: true },
   { id: "5", position: 5, locked: true },
   { id: "6", position: 6, locked: true },
+];
+
+// ---------------------------------------------------------------------------
+// Clash fixtures — page-level values (no fetching in @low/ui) (#244)
+// ---------------------------------------------------------------------------
+
+const CLASH_TOURNAMENT: ClashTournament = {
+  name: "Demacian Cup",
+  week: 1,
+  day: 2,
+  ticketCount: 47,
+  bracketSize: 8,
+  rewardMultiplier: 5,
+  rewardLabel: "Team Member",
+};
+
+const CLASH_TEAM: ClashTeam = {
+  tag: "TTM",
+  name: "Team Taco Meat",
+  tier: "III",
+  logoSrc: "",
+};
+
+const CLASH_PLAYERS: ClashPlayer[] = [
+  {
+    summonerName: demoSummoner.gameName,
+    championIconSrc: profileIconUrl(demoSummoner.profileIconId),
+    roleIconSrc: positionIconUrl("top"),
+    status: "locked-in",
+    isLocalPlayer: true,
+  },
+  {
+    summonerName: "AlphaJungler",
+    championIconSrc: profileIconUrl(1),
+    roleIconSrc: positionIconUrl("jungle"),
+    status: "not-locked-in",
+  },
+  {
+    summonerName: "MidOrFeed99",
+    roleIconSrc: positionIconUrl("middle"),
+    status: "ticket-required",
+  },
+  {
+    summonerName: "BotCarry",
+    roleIconSrc: positionIconUrl("bottom"),
+    status: "pending",
+  },
+  {
+    summonerName: "SupportGod",
+    championIconSrc: profileIconUrl(24),
+    roleIconSrc: positionIconUrl("utility"),
+    status: "not-locked-in",
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -461,6 +517,7 @@ export function ClientShell() {
               else if (id === "profile") setView("profile");
               else if (id === "store") setView("store");
               else if (id === "tft") setView("tft");
+              else if (id === "competitive") setView("competitive");
               else if (id === "home") setView("home");
             }}
             currencySlot={
@@ -573,7 +630,20 @@ export function ClientShell() {
           <div className="flex flex-1 overflow-hidden">
             {/* Screen content — fills all available width (minus rail when present) */}
             <div className="relative flex-1 min-w-0 overflow-hidden">
-              {view === "tft" ? (
+              {view === "competitive" ? (
+                <ClashScreen
+                  tournament={CLASH_TOURNAMENT}
+                  team={CLASH_TEAM}
+                  players={CLASH_PLAYERS}
+                  countdownLabel="15m 38s"
+                  countdownSublabel="Until Scouting Starts"
+                  scoutingTime="7:00 pm"
+                  matchStartTime="7:07 pm"
+                  onLockIn={() => console.log("clash: lock in")}
+                  onLeaveTeam={() => console.log("clash: leave team")}
+                  onScouting={() => console.log("clash: scouting")}
+                />
+              ) : view === "tft" ? (
                 <TftHubScreen
                   orb={TFT_ORB}
                   rank={{
