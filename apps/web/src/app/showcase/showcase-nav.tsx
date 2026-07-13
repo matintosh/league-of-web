@@ -7,14 +7,27 @@
  * - Desktop (≥md): static visible sidebar (no hamburger, no overlay).
  * - Mobile (<md): hamburger button toggles a full-height overlay drawer + backdrop.
  *
- * State is drawer open/close only. CSS breakpoints (md:hidden / hidden md:block)
+ * State: drawer open/close + search query. CSS breakpoints (md:hidden / hidden md:block)
  * handle visibility — no JS media queries.
  *
- * Out of scope: Escape-key close and focus trap (future enhancement).
+ * Search features (#267):
+ * - Controlled text input at top of sidebar, placeholder "Search components…"
+ * - Case-insensitive substring match on entry.name
+ * - Area headers show total component counts in parentheses: e.g. "Chrome (42)"
+ * - While filtering: areas with zero matches are hidden; results shown flat (no area header)
+ * - Escape clears the search and returns to normal grouped view
+ * - Cmd+K / Ctrl+K global shortcut focuses the input; listener cleaned up on unmount
+ *
+ * Active highlight (#269):
+ * - usePathname() drives per-link active state
+ * - Active: bg-blue-5 text-gold-1 border-l-2 border-gold-3 pl-1
+ * - Inactive: text-grey-1 hover:bg-grey-cool hover:text-gold-1 pl-[6px]
+ * - Area group header turns text-gold-2 when its area contains the active component
  */
 
-import { useState } from "react";
+import { useState, useRef, useEffect, RefObject } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { registry } from "@low/ui/registry";
 import type { Area } from "@low/ui";
 
@@ -31,6 +44,23 @@ const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "st
 
 const AREAS = AREA_ORDER.filter((a) => registry.some((e) => e.area === a));
 
+/** Total component count per area — computed once at module level. */
+const AREA_COUNTS: Record<Area, number> = AREA_ORDER.reduce(
+  (acc, area) => {
+    acc[area] = registry.filter((e) => e.area === area).length;
+    return acc;
+  },
+  {} as Record<Area, number>,
+);
+
+interface NavContentProps {
+  onNavigate?: () => void;
+  query: string;
+  onQueryChange: (q: string) => void;
+  searchInputRef: RefObject<HTMLInputElement | null>;
+  pathname: string;
+}
+
 /**
  * Shared nav content — used inside both the desktop aside and the mobile
  * drawer. Module-level so its component identity is stable across renders
@@ -38,7 +68,21 @@ const AREAS = AREA_ORDER.filter((a) => registry.some((e) => e.area === a));
  * change). Links stay <Link> in both contexts to keep Next.js prefetching;
  * the mobile drawer passes onNavigate to close itself on tap.
  */
-function NavContent({ onNavigate }: { onNavigate?: () => void }) {
+function NavContent({ onNavigate, query, onQueryChange, searchInputRef, pathname }: NavContentProps) {
+  const trimmed = query.trim();
+  const lowerQuery = trimmed.toLowerCase();
+  const isFiltering = trimmed.length > 0;
+
+  /** Entries matching the current query (all areas). */
+  const matchingEntries = isFiltering
+    ? registry.filter((e) => e.name.toLowerCase().includes(lowerQuery))
+    : [];
+
+  /** Active area is derived from the current pathname. */
+  const activeSlug = pathname.startsWith("/showcase/") ? pathname.slice("/showcase/".length) : null;
+  const activeEntry = activeSlug ? registry.find((e) => e.slug === activeSlug) : null;
+  const activeArea = activeEntry?.area ?? null;
+
   return (
     <>
       <Link
@@ -48,32 +92,119 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
       >
         Showcase
       </Link>
-      <nav className="mt-8 flex flex-col gap-6">
-        {AREAS.length === 0 && (
-          <p className="text-sm text-grey-2">No components yet.</p>
+
+      {/* Search input */}
+      <div className="relative mt-4">
+        <input
+          ref={searchInputRef}
+          type="text"
+          value={query}
+          onChange={(e) => onQueryChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              onQueryChange("");
+              e.currentTarget.blur();
+            }
+          }}
+          placeholder="Search components…"
+          aria-label="Search components"
+          className="w-full rounded-sm border border-gold-5 bg-blue-6 px-3 py-1.5 text-sm text-grey-1 placeholder:text-grey-2 focus:border-gold-3 focus:outline-none"
+        />
+        {query.length > 0 && (
+          <button
+            type="button"
+            aria-label="Clear search"
+            onClick={() => {
+              onQueryChange("");
+              searchInputRef.current?.focus();
+            }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-grey-2 hover:text-grey-1"
+          >
+            ×
+          </button>
         )}
-        {AREAS.map((area) => (
-          <div key={area}>
-            <h2 className="mb-2 text-xs uppercase tracking-widest text-gold-4">
-              {AREA_LABELS[area]}
-            </h2>
-            <ul className="flex flex-col gap-1">
-              {registry
-                .filter((e) => e.area === area)
-                .map((e) => (
-                  <li key={e.slug}>
-                    <Link
-                      href={`/showcase/${e.slug}`}
-                      onClick={onNavigate}
-                      className="block px-2 py-1 text-sm text-grey-1 transition-colors hover:bg-grey-cool hover:text-gold-1"
-                    >
-                      {e.name}
-                    </Link>
-                  </li>
-                ))}
-            </ul>
-          </div>
-        ))}
+      </div>
+
+      <nav className="mt-6 flex flex-col gap-6">
+        {/* Flat search results — rendered when query is active */}
+        {isFiltering && (
+          <>
+            {matchingEntries.length === 0 && (
+              <p className="text-sm text-grey-2">No components found.</p>
+            )}
+            {matchingEntries.length > 0 && (
+              <ul className="flex flex-col gap-1">
+                {matchingEntries.map((e) => {
+                  const isActive = pathname === `/showcase/${e.slug}`;
+                  return (
+                    <li key={e.slug}>
+                      <Link
+                        href={`/showcase/${e.slug}`}
+                        onClick={onNavigate}
+                        className={
+                          isActive
+                            ? "block border-l-2 border-gold-3 bg-blue-5 pl-1 py-1 text-sm text-gold-1"
+                            : "block pl-[6px] py-1 text-sm text-grey-1 transition-colors hover:bg-grey-cool hover:text-gold-1"
+                        }
+                      >
+                        {e.name}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </>
+        )}
+
+        {/* Grouped area view — rendered when no query is active */}
+        {!isFiltering && (
+          <>
+            {AREAS.length === 0 && (
+              <p className="text-sm text-grey-2">No components yet.</p>
+            )}
+            {AREAS.map((area) => {
+              const isActiveArea = activeArea === area;
+              return (
+                <div key={area}>
+                  <h2
+                    className={[
+                      "mb-2 text-xs uppercase tracking-widest",
+                      isActiveArea ? "text-gold-2" : "text-gold-4",
+                    ].join(" ")}
+                  >
+                    {AREA_LABELS[area]}{" "}
+                    <span className="text-gold-4 text-xs">
+                      ({AREA_COUNTS[area]})
+                    </span>
+                  </h2>
+                  <ul className="flex flex-col gap-1">
+                    {registry
+                      .filter((e) => e.area === area)
+                      .map((e) => {
+                        const isActive = pathname === `/showcase/${e.slug}`;
+                        return (
+                          <li key={e.slug}>
+                            <Link
+                              href={`/showcase/${e.slug}`}
+                              onClick={onNavigate}
+                              className={
+                                isActive
+                                  ? "block border-l-2 border-gold-3 bg-blue-5 pl-1 py-1 text-sm text-gold-1"
+                                  : "block pl-[6px] py-1 text-sm text-grey-1 transition-colors hover:bg-grey-cool hover:text-gold-1"
+                              }
+                            >
+                              {e.name}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                  </ul>
+                </div>
+              );
+            })}
+          </>
+        )}
       </nav>
     </>
   );
@@ -81,16 +212,47 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
 
 export function ShowcaseNav() {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const pathname = usePathname();
 
   function close() {
     setOpen(false);
   }
 
+  /** Cmd+K / Ctrl+K global shortcut — focuses the visible search input.
+   * Two NavContent instances share searchInputRef; the last one mounted wins
+   * (the mobile drawer, which is display:none). Instead, query the visible
+   * aside directly so focus always lands on the rendered input.
+   */
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        const visibleInput = document.querySelector<HTMLInputElement>(
+          "aside:not([aria-hidden='true']) input[type='text']",
+        );
+        visibleInput?.focus();
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const navProps: NavContentProps = {
+    query,
+    onQueryChange: setQuery,
+    searchInputRef,
+    pathname,
+  };
+
   return (
     <>
       {/* Desktop sidebar — hidden below md */}
       <aside className="hidden w-64 shrink-0 border-r border-gold-5 bg-blue-7 p-6 md:block">
-        <NavContent />
+        <NavContent {...navProps} />
       </aside>
 
       {/* Mobile: hamburger button — visible only below md */}
@@ -133,7 +295,7 @@ export function ShowcaseNav() {
         ].join(" ")}
         aria-hidden={!open}
       >
-        <NavContent onNavigate={close} />
+        <NavContent {...navProps} onNavigate={close} />
       </aside>
     </>
   );
