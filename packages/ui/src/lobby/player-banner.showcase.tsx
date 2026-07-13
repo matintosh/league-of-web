@@ -9,6 +9,8 @@ import {
   PlayerBannerHeraldShapeDemo,
   PlayerBannerLevelBadgeDemo,
   PlayerBannerQueueingDemo,
+  PlayerBannerTierGemDemo,
+  PlayerBannerBadgeSlotsDemo,
 } from "./player-banner.demo";
 
 export const playerBannerShowcase: ShowcaseEntry = {
@@ -16,7 +18,7 @@ export const playerBannerShowcase: ShowcaseEntry = {
   name: "Player Banner",
   area: "lobby",
   description:
-    "Vertical heraldic banner card for the pre-game lobby. Pointed double-V bottom with gold trim via clip-path shell technique. Crown+name above the shape. Self: larger scale, gold wings, level badge (level prop, defaults 15), autofill chip. Medallion proportions sampled from party reference: 56px/120px=46.7% (self), 44px/96px=45.8% (teammate). Empty: large grey + circle (~90px). Queue treatment (queueing=true): empty slots show dark circle with blue glow ring; self banner shows asterisk foot glyph. Wing art from CommunityDragon ranked-emblem PNGs.",
+    "Vertical heraldic banner card for the pre-game lobby. Pointed double-V bottom with gold trim via clip-path shell technique. Crown+name above the shape. Self: larger scale, gold wings, level badge (level prop, defaults 15), autofill chip. Medallion proportions sampled from party reference: 56px/120px=46.7% (self), 44px/96px=45.8% (teammate). Empty: large grey + circle (~90px). Queue treatment (queueing=true): empty slots show dark circle with blue glow ring; self banner shows asterisk foot glyph. Wing art from CommunityDragon ranked-emblem PNGs. V11 additions: tierGem prop adds a ranked-mini-crest PNG at 12 o'clock on the portrait ring; badges tuple adds 3 circular badge slots below the role row.",
   variants: [
     {
       name: "Heraldic shape — self + teammate + empty circle",
@@ -71,6 +73,18 @@ export const playerBannerShowcase: ShowcaseEntry = {
       notes:
         "queueing=true: empty slots render as dark circles with glowing blue rings (replacing the + placeholder). Self banner shows an asterisk glyph at the foot marking the queued player. Matches the queue-in-lobby reference (issue #174).",
       render: () => <PlayerBannerQueueingDemo />,
+    },
+    {
+      name: "Tier gem — all TierGem values at 12 o'clock of portrait ring",
+      notes:
+        "tierGem prop: all 10 tiers (iron, bronze, silver, gold, platinum, diamond, master, grandmaster, challenger, unranked) plus self/gold variant. Gem rendered from CommunityDragon ranked-mini-crests PNGs at 12 o'clock of the medallion ring. No gem when tierGem is omitted.",
+      render: () => <PlayerBannerTierGemDemo />,
+    },
+    {
+      name: "Badge slots — filled + empty combinations",
+      notes:
+        "badges tuple (3 optional BadgeSlot entries): filled slots show icon art with a colored ring; empty slots render as dark circles with a muted ring. Shows all-filled, two-filled, one-filled, all-empty, and no-badges-prop (legacy) states.",
+      render: () => <PlayerBannerBadgeSlotsDemo />,
     },
   ],
 };

@@ -14,6 +14,38 @@ import type { ReactNode } from "react";
  */
 export type WingTier = "default" | "bronze" | "gold" | "teal" | "green" | "blue";
 
+/**
+ * Ranked tier for the 12-o'clock gem on the portrait ring.
+ * Maps to real CommunityDragon ranked-mini-crests/ PNGs.
+ * "unranked" shows the unranked mini crest (dark/empty).
+ */
+export type TierGem =
+  | "iron"
+  | "bronze"
+  | "silver"
+  | "gold"
+  | "platinum"
+  | "diamond"
+  | "master"
+  | "grandmaster"
+  | "challenger"
+  | "unranked";
+
+/**
+ * A single badge slot in the three-badge row at the bottom of each banner.
+ * Empty slots (undefined in the badges tuple) render as dark circles.
+ */
+export interface BadgeSlot {
+  /** Icon image URL — shown inside the circular slot. */
+  iconSrc: string;
+  /**
+   * CSS color string for the outer ring of this badge slot.
+   * Use var(--color-*) references to stay token-safe.
+   * Defaults to gold-4 when omitted.
+   */
+  ringColor?: string;
+}
+
 export interface PlayerBannerProps {
   /** Summoner display name. Gold-cream, uppercase, truncated. */
   name: string;
@@ -64,6 +96,20 @@ export interface PlayerBannerProps {
    * Has no visual effect on filled teammate banners.
    */
   queueing?: boolean;
+  /**
+   * Ranked tier for the small circular gem placed at the 12-o'clock position of
+   * the portrait ring. Omit to show no gem (unranked/casual players).
+   * Maps to CommunityDragon ranked-mini-crests/ PNG assets.
+   */
+  tierGem?: TierGem;
+  /**
+   * Three circular badge slots rendered below the children zone at the banner foot.
+   * Each entry is either a filled BadgeSlot (iconSrc + optional ringColor) or
+   * undefined (renders as an empty dark circle with a subtle ring).
+   * Tuple of exactly three optional entries — pass undefined for empty slots.
+   * Example: [{ iconSrc: "..." }, undefined, { iconSrc: "...", ringColor: "var(--color-blue-2)" }]
+   */
+  badges?: [BadgeSlot?, BadgeSlot?, BadgeSlot?];
 }
 
 // ---------------------------------------------------------------------------
@@ -97,6 +143,35 @@ const WING_SRC: Record<WingTier, string> = {
   teal:    `${CDRAGON_WINGS}/wings_platinum.png`,
   green:   `${CDRAGON_WINGS}/wings_emerald.png`,
   blue:    `${CDRAGON_WINGS}/wings_diamond.png`,
+};
+
+// ---------------------------------------------------------------------------
+// Tier gem asset map — CommunityDragon ranked-mini-crests/
+//
+// Exploration findings (2026-07):
+//   rcp-fe-lol-static-assets/global/default/ranked-mini-crests/ → REAL mini
+//   crest PNGs confirmed (iron, bronze, silver, gold, platinum, diamond,
+//   master, grandmaster, challenger, unranked). All return HTTP 200.
+//   These small circular gems (approx 20×20px at native size) are the
+//   standard indicator used in the V11 party lobby portrait ring at 12 o'clock.
+//
+// TierGem values map 1:1 to the filename slugs in that directory.
+// ---------------------------------------------------------------------------
+
+const CDRAGON_MINI_CRESTS =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests";
+
+const TIER_GEM_SRC: Record<TierGem, string> = {
+  unranked:     `${CDRAGON_MINI_CRESTS}/unranked.png`,
+  iron:         `${CDRAGON_MINI_CRESTS}/iron.png`,
+  bronze:       `${CDRAGON_MINI_CRESTS}/bronze.png`,
+  silver:       `${CDRAGON_MINI_CRESTS}/silver.png`,  // silver.png returns 200 per directory listing
+  gold:         `${CDRAGON_MINI_CRESTS}/gold.png`,
+  platinum:     `${CDRAGON_MINI_CRESTS}/platinum.png`,
+  diamond:      `${CDRAGON_MINI_CRESTS}/diamond.png`,
+  master:       `${CDRAGON_MINI_CRESTS}/master.png`,
+  grandmaster:  `${CDRAGON_MINI_CRESTS}/grandmaster.png`,
+  challenger:   `${CDRAGON_MINI_CRESTS}/challenger.png`,
 };
 
 // ---------------------------------------------------------------------------
@@ -223,6 +298,7 @@ function FootGlyph() {
 
 // ---------------------------------------------------------------------------
 // AvatarCrest — circular avatar with ornate double-gold ring (scales w/ isSelf)
+// Optionally renders a tier gem at the 12-o'clock position of the ring.
 // ---------------------------------------------------------------------------
 
 function AvatarCrest({
@@ -230,11 +306,14 @@ function AvatarCrest({
   name,
   isSelf,
   uid,
+  tierGemSrc,
 }: {
   avatarSrc: string;
   name: string;
   isSelf: boolean;
   uid: string;
+  /** Resolved URL to the ranked-mini-crests PNG, or undefined for no gem. */
+  tierGemSrc?: string;
 }) {
   // Medallion proportions sampled from party reference (client-lobby-party.png):
   // banner_width: ~178px in screenshot (scale 0.625) → 285px real
@@ -287,26 +366,60 @@ function AvatarCrest({
     return `M ${start.x} ${start.y} A ${arcR} ${arcR} 0 0 1 ${end.x} ${end.y}`;
   });
 
+  // Gem size: ~20% of the ring diameter, clamped for legibility.
+  // Self ring outer diameter = 2 * outerR ≈ size - 4. At size=56 → gemSize≈12, size=44 → gemSize≈10.
+  const gemSize = isSelf ? 13 : 10;
+
   return (
-    <div className="relative" style={{ width: size, height: size }}>
-      {/* Avatar image — circular clip */}
+    // Outer wrapper is slightly taller than `size` to leave vertical room for the gem above.
+    <div className="relative" style={{ width: size, height: size + gemSize / 2 + 1 }}>
+      {/* Tier gem — positioned at 12 o'clock, centred horizontally, overlapping the ring top */}
+      {tierGemSrc && (
+        <img
+          src={tierGemSrc}
+          alt=""
+          aria-hidden="true"
+          width={gemSize}
+          height={gemSize}
+          className="pointer-events-none absolute select-none"
+          style={{
+            width: gemSize,
+            height: gemSize,
+            top: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 2,
+            // Subtle drop shadow to lift the gem from the ring
+            filter: "drop-shadow(0 0 2px var(--color-gold-4))",
+          }}
+        />
+      )}
+
+      {/* Avatar image — circular clip, offset down by gem overlap */}
       <img
         src={avatarSrc}
         alt={name}
         width={size}
         height={size}
-        className="absolute inset-0 h-full w-full object-cover"
-        style={{ borderRadius: "50%", clipPath: `circle(${Math.round(clipR)}px at center)` }}
+        className="absolute h-full w-full object-cover"
+        style={{
+          width: size,
+          height: size,
+          top: gemSize / 2 + 1,
+          left: 0,
+          borderRadius: "50%",
+          clipPath: `circle(${Math.round(clipR)}px at center)`,
+        }}
       />
 
-      {/* Ornate gold ring overlay */}
+      {/* Ornate gold ring overlay — same offset as the avatar */}
       <svg
         width={size}
         height={size}
         viewBox={`0 0 ${size} ${size}`}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{ zIndex: 1 }}
+        className="pointer-events-none absolute"
+        style={{ top: gemSize / 2 + 1, left: 0, zIndex: 1 }}
       >
         <defs>
           <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
@@ -395,9 +508,12 @@ export function PlayerBanner({
   empty = false,
   level,
   queueing = false,
+  tierGem,
+  badges,
 }: PlayerBannerProps) {
   const uid = useId();
   const showCrown = crownChip ?? isSelf;
+  const tierGemSrc = tierGem ? TIER_GEM_SRC[tierGem] : undefined;
 
   // Width: self is wider (120px), teammates are narrower (96px)
   const wClass = isSelf ? "w-[120px]" : "w-[96px]";
@@ -561,6 +677,7 @@ export function PlayerBanner({
                 name={name}
                 isSelf={isSelf}
                 uid={uid}
+                tierGemSrc={tierGemSrc}
               />
               {/* Level badge — overlaps bottom of medallion ring.
                    minWidth grows to accommodate 3-digit levels. */}
@@ -591,6 +708,50 @@ export function PlayerBanner({
           {children && (
             <div className="flex w-full items-center justify-center px-1 mt-2">
               {children}
+            </div>
+          )}
+
+          {/* Badge slots — three circular slots from the reference V11 layout.
+               Empty entries (undefined) render as dark circles with a muted ring.
+               Filled entries show an icon image inside a colored ring. */}
+          {badges && (
+            <div className="flex items-center justify-center gap-1.5 mt-1.5">
+              {(badges as (BadgeSlot | undefined)[]).map((badge, i) =>
+                badge ? (
+                  <div
+                    key={i}
+                    className="relative flex items-center justify-center rounded-full bg-grey-4"
+                    style={{
+                      width: isSelf ? 22 : 18,
+                      height: isSelf ? 22 : 18,
+                      border: `1.5px solid ${badge.ringColor ?? "var(--color-gold-4)"}`,
+                      boxShadow: badge.ringColor
+                        ? `0 0 4px 0 ${badge.ringColor}`
+                        : undefined,
+                    }}
+                  >
+                    <img
+                      src={badge.iconSrc}
+                      alt=""
+                      aria-hidden="true"
+                      width={isSelf ? 14 : 11}
+                      height={isSelf ? 14 : 11}
+                      className="object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    key={i}
+                    className="rounded-full bg-grey-4"
+                    aria-hidden="true"
+                    style={{
+                      width: isSelf ? 22 : 18,
+                      height: isSelf ? 22 : 18,
+                      border: "1px solid var(--color-grey-3)",
+                    }}
+                  />
+                ),
+              )}
             </div>
           )}
 

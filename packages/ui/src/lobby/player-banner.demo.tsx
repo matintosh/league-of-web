@@ -12,6 +12,7 @@ const AVATAR_3 = profileIconUrl(550);
 
 // CommunityDragon role slug mapping (mirror role-selector.demo.tsx)
 import type { Role } from "./role-selector";
+import type { TierGem } from "./player-banner";
 import { positionIconUrl } from "@low/fixtures";
 
 const ROLE_TO_CDRAGON: Record<Role, "top" | "jungle" | "middle" | "bottom" | "utility"> = {
@@ -51,10 +52,12 @@ export function PlayerBannerSelfDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// Full party — all five banners (self center + 4 teammates)
+// Full party — all five banners (self center + 4 teammates) with tier gems + badges
 // ---------------------------------------------------------------------------
 
 export function PlayerBannerFullPartyDemo() {
+  const CDRAGON_MINI =
+    "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests";
   return (
     <div className="flex items-center justify-center gap-2 p-8 bg-blue-6">
       <PlayerBanner
@@ -62,6 +65,12 @@ export function PlayerBannerFullPartyDemo() {
         title="The Loose Cannon"
         avatarSrc={AVATAR_3}
         wingTier="teal"
+        tierGem="platinum"
+        badges={[
+          { iconSrc: `${CDRAGON_MINI}/platinum.png`, ringColor: "var(--color-teal-ring)" },
+          { iconSrc: `${CDRAGON_MINI}/gold.png`, ringColor: "var(--color-gold-3)" },
+          undefined,
+        ]}
       >
         <RoleSlotRow slots={[{ role: "top" }, { role: "jungle" }]} iconSrcFor={roleIconSrc} />
       </PlayerBanner>
@@ -71,6 +80,12 @@ export function PlayerBannerFullPartyDemo() {
         title="Tempest"
         avatarSrc={AVATAR_2}
         wingTier="green"
+        tierGem="diamond"
+        badges={[
+          { iconSrc: `${CDRAGON_MINI}/diamond.png`, ringColor: "var(--color-blue-2)" },
+          { iconSrc: `${CDRAGON_MINI}/gold.png`, ringColor: "var(--color-gold-3)" },
+          { iconSrc: `${CDRAGON_MINI}/silver.png`, ringColor: "var(--color-grey-1)" },
+        ]}
       >
         <RoleSlotRow slots={[{ role: "jungle" }, { role: "mid" }]} iconSrcFor={roleIconSrc} />
       </PlayerBanner>
@@ -82,6 +97,12 @@ export function PlayerBannerFullPartyDemo() {
         wingTier="gold"
         isSelf
         autofillProtected
+        tierGem="gold"
+        badges={[
+          { iconSrc: `${CDRAGON_MINI}/gold.png`, ringColor: "var(--color-gold-3)" },
+          { iconSrc: `${CDRAGON_MINI}/challenger.png`, ringColor: "var(--color-gold-2)" },
+          undefined,
+        ]}
       >
         <RoleSlotRow slots={[{ role: "mid" }, { role: "support" }]} iconSrcFor={roleIconSrc} />
       </PlayerBanner>
@@ -91,6 +112,8 @@ export function PlayerBannerFullPartyDemo() {
         title="Fire Dancer"
         avatarSrc={AVATAR_2}
         wingTier="blue"
+        tierGem="gold"
+        badges={[undefined, undefined, undefined]}
       >
         <RoleSlotRow slots={[{ role: "bottom" }, { role: "support" }]} iconSrcFor={roleIconSrc} />
       </PlayerBanner>
@@ -100,6 +123,12 @@ export function PlayerBannerFullPartyDemo() {
         title=""
         avatarSrc={AVATAR_3}
         wingTier="bronze"
+        tierGem="bronze"
+        badges={[
+          { iconSrc: `${CDRAGON_MINI}/bronze.png`, ringColor: "var(--color-gold-4)" },
+          undefined,
+          undefined,
+        ]}
       >
         <RoleSlotRow slots={[{ role: "support" }, {}]} iconSrcFor={roleIconSrc} />
       </PlayerBanner>
@@ -248,6 +277,108 @@ export function PlayerBannerAutofillDemo() {
         avatarSrc={AVATAR_1}
         wingTier="default"
         autofillProtected
+      />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Tier gem — all TierGem values on teammate banners
+// ---------------------------------------------------------------------------
+
+export function PlayerBannerTierGemDemo() {
+  const CDRAGON_MINI =
+    "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests";
+  const tiers: TierGem[] = [
+    "iron", "bronze", "silver", "gold",
+    "platinum", "diamond", "master", "grandmaster", "challenger", "unranked",
+  ];
+  return (
+    <div className="flex flex-wrap items-end justify-center gap-3 p-8 bg-blue-6">
+      {tiers.map((tier) => (
+        <PlayerBanner
+          key={tier}
+          name={tier.toUpperCase()}
+          avatarSrc={AVATAR_1}
+          wingTier="default"
+          tierGem={tier}
+        />
+      ))}
+      {/* Self variant with gold gem */}
+      <PlayerBanner
+        name="Self (Gold)"
+        avatarSrc={AVATAR_1}
+        wingTier="gold"
+        isSelf
+        tierGem="gold"
+      />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Badge slots — filled + empty combinations
+// ---------------------------------------------------------------------------
+
+export function PlayerBannerBadgeSlotsDemo() {
+  const CDRAGON_MINI =
+    "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests";
+  return (
+    <div className="flex flex-wrap items-end justify-center gap-4 p-8 bg-blue-6">
+      {/* All three filled */}
+      <PlayerBanner
+        name="AllFilled"
+        title="Three badges"
+        avatarSrc={AVATAR_1}
+        wingTier="gold"
+        isSelf
+        tierGem="gold"
+        badges={[
+          { iconSrc: `${CDRAGON_MINI}/gold.png`, ringColor: "var(--color-gold-3)" },
+          { iconSrc: `${CDRAGON_MINI}/diamond.png`, ringColor: "var(--color-blue-2)" },
+          { iconSrc: `${CDRAGON_MINI}/challenger.png`, ringColor: "var(--color-gold-2)" },
+        ]}
+      />
+      {/* Two filled, one empty */}
+      <PlayerBanner
+        name="TwoFilled"
+        title="Two filled"
+        avatarSrc={AVATAR_2}
+        wingTier="teal"
+        tierGem="platinum"
+        badges={[
+          { iconSrc: `${CDRAGON_MINI}/platinum.png`, ringColor: "var(--color-teal-ring)" },
+          { iconSrc: `${CDRAGON_MINI}/gold.png`, ringColor: "var(--color-gold-3)" },
+          undefined,
+        ]}
+      />
+      {/* One filled, two empty */}
+      <PlayerBanner
+        name="OneFilled"
+        title="One filled"
+        avatarSrc={AVATAR_3}
+        wingTier="green"
+        tierGem="bronze"
+        badges={[
+          { iconSrc: `${CDRAGON_MINI}/bronze.png`, ringColor: "var(--color-gold-4)" },
+          undefined,
+          undefined,
+        ]}
+      />
+      {/* All empty */}
+      <PlayerBanner
+        name="NoBadges"
+        title="All empty"
+        avatarSrc={AVATAR_1}
+        wingTier="default"
+        badges={[undefined, undefined, undefined]}
+      />
+      {/* No badges prop at all — legacy */}
+      <PlayerBanner
+        name="Legacy"
+        title="No badges prop"
+        avatarSrc={AVATAR_2}
+        wingTier="blue"
       />
     </div>
   );
