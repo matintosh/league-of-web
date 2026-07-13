@@ -154,7 +154,7 @@ export const rankedUnrankedEmblemUrl = (): string =>
  * Level range: 0 (no mastery), 4–10. The modern client (post-2023) uses the
  * "legendarychampionmastery" set. Level 1–3 are shown as level 0 in the client.
  *
- * Returns the full-size crest (24–27 KiB PNG, ~200×200 px) by default.
+ * Returns the full-size crest (24–27 KiB PNG, 256×256 px) by default.
  * Pass `mini: true` to get the strip-sprite mini version (~2–3 KiB).
  *
  * Source: CommunityDragon game/assets/ux/mastery/legendarychampionmastery/
