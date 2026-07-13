@@ -9,6 +9,7 @@ import {
   loadingArtUrl,
   rankedMiniCrestUrl,
   rankedEmblemUrl,
+  rankedUnrankedEmblemUrl,
 } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -42,19 +43,23 @@ const RANKED_QUEUES = [
 ];
 
 /**
- * Resolves the mini-crest image URL for each queue cell.
- * All queues are unranked (demo profile) → `rankedMiniCrestUrl("unranked")`.
- * The last-season cell uses the same unranked mini-crest.
+ * Resolves the crest image URL for each queue cell.
+ * All queues are unranked (demo profile) → `rankedUnrankedEmblemUrl()`.
  *
- * When the profile is ranked the page would supply the correct tier string;
- * this resolver is the single callsite to update.
+ * `rankedUnrankedEmblemUrl` returns the Iron shield emblem (512×585px) from
+ * the magisteriis set — the same shield family shown in the reference
+ * screenshot. The component applies `opacity-25 grayscale` for unranked queues,
+ * producing the dimmed grey metallic shield the reference shows.
+ *
+ * When the profile is ranked the page would supply the correct tier string via
+ * `rankedMiniCrestUrl(tier)` for live queues and `rankedEmblemUrl(tier)` for
+ * the last-season cell; this resolver is the single callsite to update.
  */
 function crestSrcFor(id: string): string {
-  // Demo summoner is fully unranked. All cells get the greyed unranked crest.
-  // The "lastSeason" cell has its own visual treatment (background tint)
-  // per RankedQueuePanel's isLast flag.
-  void id; // all unranked in demo
-  return rankedMiniCrestUrl("unranked");
+  // Demo summoner is fully unranked. All cells use the emblem-family shield
+  // (Iron grayscale) rather than the 16px ring SVG from ranked-mini-crests.
+  void id;
+  return rankedUnrankedEmblemUrl();
 }
 
 // ---------------------------------------------------------------------------
