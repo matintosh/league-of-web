@@ -83,6 +83,12 @@ export interface RunesScreenProps {
   /** Whether preset pages are hidden */
   hidePresets?: boolean;
   onHidePresetsChange?: (v: boolean) => void;
+  /**
+   * Full path set for the filter row (all five paths always visible, per the
+   * reference). When omitted, falls back to paths derived from the pages list
+   * (back-compat).
+   */
+  paths?: RunePath[];
   /** Active path filter (string-form of numeric id), or null = all paths */
   activePathFilter?: string | null;
   onPathFilterChange?: (pathId: string | null) => void;
@@ -227,15 +233,14 @@ function RunePageCard({ page, selected, onSelect }: RunePageCardProps) {
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(1,10,19,0.25) 0%, rgba(1,10,19,0.5) 55%, rgba(1,10,19,0.92) 100%)",
+            "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 25%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 50%, transparent) 55%, color-mix(in srgb, var(--color-hextech-black) 92%, transparent) 100%)",
         }}
       />
 
       {/* Hover overlay — rune name list, appears on pointer-over */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 flex flex-col justify-start px-3 pt-3 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
-        style={{ background: "rgba(1,10,19,0.76)" }}
+        className="absolute inset-0 flex flex-col justify-start bg-hextech-black/75 px-3 pt-3 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
       >
         <span className="mb-1 font-display text-[10px] uppercase tracking-widest text-gold-cream">
           {page.primaryPath.name}
@@ -410,14 +415,16 @@ export function RunesScreen({
   onSearchChange,
   hidePresets = false,
   onHidePresetsChange,
+  paths,
   activePathFilter = null,
   onPathFilterChange,
 }: RunesScreenProps) {
   const searchId = useId();
   const hidePresetsId = useId();
 
-  // Unique paths derived from pages list — drives path filter buttons
-  const allPaths: RunePath[] = (() => {
+  // Path filter buttons: prefer the injected full set (reference shows all
+  // five paths regardless of page usage); derive from pages as fallback.
+  const allPaths: RunePath[] = paths ?? (() => {
     const seen = new Set<number>();
     const result: RunePath[] = [];
     for (const page of pages) {
@@ -440,7 +447,9 @@ export function RunesScreen({
     return true;
   });
 
-  const paddedCount = String(pages.length).padStart(2, "0");
+  // Reference semantics: the counter tracks CUSTOM pages used vs max slots —
+  // preset pages don't consume a slot ("00 / 03" with only presets).
+  const paddedCount = String(pages.filter((p) => !p.isPreset).length).padStart(2, "0");
   const paddedMax = String(maxPages).padStart(2, "0");
 
   return (

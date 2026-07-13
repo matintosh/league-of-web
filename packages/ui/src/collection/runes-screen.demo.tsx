@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { RunesScreen } from "./runes-screen";
+import { RUNE_PATHS } from "@low/fixtures";
 import { demoRunePages } from "@low/fixtures";
 import type { RunePage } from "./runes-screen";
 
@@ -18,6 +19,7 @@ export function RunesScreenDefaultDemo() {
   return (
     <div className="h-[500px] bg-hextech-black">
       <RunesScreen
+        paths={Object.values(RUNE_PATHS)}
         pages={pages}
         maxPages={3}
         selectedPageId={selectedPageId}
@@ -43,6 +45,7 @@ export function RunesScreenSelectedDemo() {
   return (
     <div className="h-[500px] bg-hextech-black">
       <RunesScreen
+        paths={Object.values(RUNE_PATHS)}
         pages={pages}
         maxPages={3}
         selectedPageId={selectedPageId}
@@ -59,6 +62,7 @@ export function RunesScreenEmptyDemo() {
   return (
     <div className="h-[500px] bg-hextech-black">
       <RunesScreen
+        paths={Object.values(RUNE_PATHS)}
         pages={[]}
         maxPages={3}
         onSelectPage={() => {}}

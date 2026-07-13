@@ -26,6 +26,7 @@ import {
   defaultEmoteSlots,
   loadingArtUrl,
   warwickDetail,
+  RUNE_PATHS,
 } from "@low/fixtures";
 import type { SelectOption } from "@low/ui";
 import type { SlotId } from "@low/fixtures";
@@ -979,6 +980,7 @@ export function CollectionScreen() {
         {activeTab === "runes" && (
           <div className="h-full min-h-0 flex flex-col">
             <RunesScreen
+              paths={Object.values(RUNE_PATHS)}
               pages={runePages}
               maxPages={3}
               selectedPageId={runeSelectedPageId}
