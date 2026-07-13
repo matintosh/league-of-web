@@ -49,6 +49,16 @@ export interface LockInButtonProps {
    * string to keep accessible text natural.
    */
   label?: string;
+  /**
+   * Visual variant. Default "lock" uses the cyan/teal gradient (pick phase).
+   * "ban" uses a red gradient (#c13333 → #8b1f1f, border #d94444) for the ban phase.
+   *
+   * Color divergence note (#275): No red token currently exists in @low/tokens.
+   * The red values are hardcoded here as hex — intentional, documented, and consistent
+   * with the Hextech Riot-red palette visible in the loadout emote context.
+   * Tokens should be added (e.g. `--color-riot-red-1`) in a follow-up.
+   */
+  variant?: "lock" | "ban";
 }
 
 /**
@@ -78,22 +88,33 @@ export function LockInButton({
   disabled = false,
   onLockIn,
   label = "Lock In",
+  variant = "lock",
 }: LockInButtonProps) {
-  // Border colour: cyan-1 when enabled, grey-3 when disabled.
-  const borderColor = disabled ? "var(--color-grey-3)" : "var(--color-cyan-1)";
+  const isBan = variant === "ban";
 
-  // Fill: gradient when enabled; flat grey-4 when disabled.
+  // Border colour: variant-dependent when enabled, grey-3 when disabled.
+  const borderColor = disabled
+    ? "var(--color-grey-3)"
+    : isBan
+      ? "#d94444"
+      : "var(--color-cyan-1)";
+
+  // Fill: variant gradient when enabled; flat grey-4 when disabled.
   const fillStyle = disabled
     ? { background: "var(--color-grey-4)" }
-    : {
-        background:
-          "linear-gradient(to bottom, var(--color-cyan-1) 0%, var(--color-teal-grad-a) 100%)",
-      };
+    : isBan
+      ? { background: "linear-gradient(to bottom, #c13333 0%, #8b1f1f 100%)" }
+      : {
+          background:
+            "linear-gradient(to bottom, var(--color-cyan-1) 0%, var(--color-teal-grad-a) 100%)",
+        };
 
-  // Text colour: hextech-black on bright enabled fill; grey-2 when disabled.
+  // Text colour: white on red ban fill; hextech-black on cyan lock fill; grey-2 disabled.
   const textColor = disabled
     ? "var(--color-grey-2)"
-    : "var(--color-hextech-black)";
+    : isBan
+      ? "#ffffff"
+      : "var(--color-hextech-black)";
 
   return (
     <button
@@ -105,8 +126,10 @@ export function LockInButton({
       className={[
         "group relative flex w-full items-center justify-center",
         // Outer glow per the reference close-up — drop-shadow (not box-shadow:
-        // it must follow the trapezoid silhouette of the clipped layers)
-        !disabled && "[filter:drop-shadow(0_0_8px_color-mix(in_srgb,var(--color-cyan-4)_55%,transparent))]",
+        // it must follow the trapezoid silhouette of the clipped layers).
+        // Ban variant uses a red glow; lock variant uses the cyan glow.
+        !disabled && !isBan && "[filter:drop-shadow(0_0_8px_color-mix(in_srgb,var(--color-cyan-4)_55%,transparent))]",
+        !disabled && isBan && "[filter:drop-shadow(0_0_8px_rgba(217,68,68,0.55))]",
         // Vertical padding drives height — 12px top/bottom = ~44px total
         "py-3",
         // Focus ring on the outer container (keyboard a11y)
@@ -151,7 +174,8 @@ export function LockInButton({
         }}
       />
 
-      {/* Hover fill overlay — rendered on top of fill, 0→1 opacity on hover */}
+      {/* Hover fill overlay — rendered on top of fill, 0→1 opacity on hover.
+          Lock: cyan hover gradient. Ban: slightly brighter red hover. */}
       {!disabled && (
         <span
           aria-hidden="true"
@@ -159,13 +183,15 @@ export function LockInButton({
           style={{
             inset: BORDER_PX,
             clipPath: TRAP_CLIP,
-            background:
-              "linear-gradient(to bottom, var(--color-teal-grad-hover-a) 0%, var(--color-teal-grad-hover-b) 50%, var(--color-teal-grad-hover-c) 100%)",
+            background: isBan
+              ? "linear-gradient(to bottom, #d94444 0%, #a02828 100%)"
+              : "linear-gradient(to bottom, var(--color-teal-grad-hover-a) 0%, var(--color-teal-grad-hover-b) 50%, var(--color-teal-grad-hover-c) 100%)",
           }}
         />
       )}
 
-      {/* Press fill overlay — on active */}
+      {/* Press fill overlay — on active.
+          Lock: dark teal press. Ban: dark red press. */}
       {!disabled && (
         <span
           aria-hidden="true"
@@ -173,8 +199,9 @@ export function LockInButton({
           style={{
             inset: BORDER_PX,
             clipPath: TRAP_CLIP,
-            background:
-              "linear-gradient(to bottom, var(--color-teal-grad-press-a) 0%, var(--color-teal-grad-press-b) 100%)",
+            background: isBan
+              ? "linear-gradient(to bottom, #8b1f1f 0%, #5c1414 100%)"
+              : "linear-gradient(to bottom, var(--color-teal-grad-press-a) 0%, var(--color-teal-grad-press-b) 100%)",
           }}
         />
       )}

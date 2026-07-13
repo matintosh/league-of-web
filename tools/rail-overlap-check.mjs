@@ -365,6 +365,7 @@ try {
 // ── PICK screen (expect NO rail) ──
 // NOTE: The role-selector (button[aria-label='Top']) was retired in #161/#174.
 // Queue starts directly via Find Match → Accept; no role picker step.
+// Ban phase step added in #275: ACCEPT → BanPhaseScreen → (ban champion) → pick.
 console.log("\nNavigating to pick screen …");
 try {
   // From the lobby (idle state after cancel), start queue again
@@ -374,7 +375,18 @@ try {
   // Wait for accept
   await page.locator("button:has-text('Accept')").first().waitFor({ state: "visible", timeout: 15000 });
   await page.locator("button:has-text('Accept')").first().click();
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(1000);
+  // Navigate through ban phase: select a champion and click BAN (#275)
+  const onBan = await page.getByText("Ban a Champion!", { exact: false }).count();
+  if (onBan > 0) {
+    await page.locator("[role='listbox'] button").first().waitFor({ state: "visible", timeout: 3000 });
+    await page.locator("[role='listbox'] button").first().click();
+    await page.waitForTimeout(300);
+    const banBtn = page.locator("main button").filter({ hasText: /^ban$/i });
+    await banBtn.waitFor({ state: "visible", timeout: 3000 });
+    await banBtn.click();
+    await page.waitForTimeout(1000);
+  }
   // Should now be on pick screen
   const onPick = await page.getByText("Choose Your Champion!", { exact: false }).count();
   if (onPick > 0) {
