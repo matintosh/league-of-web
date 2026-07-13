@@ -53,7 +53,7 @@ export interface RankedQueuePanelProps {
    * Example:
    *   crestSrcFor={(id) => id === "lastSeason"
    *     ? rankedEmblemUrl("Gold")
-   *     : rankedMiniCrestUrl("unranked")}
+   *     : rankedUnrankedEmblemUrl()}
    */
   crestSrcFor: (queueId: string) => string;
 }
