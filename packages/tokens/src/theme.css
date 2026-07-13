@@ -9,7 +9,7 @@
  *   tokens used only in inline `style={{}}` props or SVG attributes are
  *   always present — regardless of Tailwind's class-usage scan.
  *
- * Keep ALL THREE in sync (same 55 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
+ * Keep ALL THREE in sync (same 56 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
  */
 
 @theme {
@@ -104,6 +104,9 @@
   /* Arcade event — deep purple-navy bg stops for the Arcade 2019 tab gradient (issue #187) */
   --color-arcade-bg-dark: #0d0520;
   --color-arcade-bg-deep: #050e20;
+  /* Arcade CTA — bright aqua fill for the LEARN MORE button (issue #240, pixel-sampled from
+     docs/reference/client-home-arcade2019.jpg y=978–990 x=1300–1430: mean #63eee6, std ≤ 25) */
+  --color-arcade-aqua: #63eee6;
 
   /* Typography — font files loaded by the app via next/font, exposed as vars */
   --font-display: var(--font-marcellus), "Marcellus", serif;
@@ -198,5 +201,7 @@
     /* Arcade event — deep purple-navy bg stops for the Arcade 2019 tab gradient (issue #187) */
     --color-arcade-bg-dark: #0d0520;
     --color-arcade-bg-deep: #050e20;
+    /* Arcade CTA — bright aqua fill for the LEARN MORE button (issue #240) */
+    --color-arcade-aqua: #63eee6;
   }
 }

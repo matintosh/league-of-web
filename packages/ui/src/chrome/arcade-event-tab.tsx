@@ -464,9 +464,9 @@ export function ArcadeEventTab({
           onClick={onLearnMore}
           className={[
             "w-full py-2.5",
-            "bg-blue-4 font-display text-sm uppercase tracking-widest text-white",
-            "border border-blue-3 transition-colors duration-150",
-            "hover:bg-blue-3 cursor-pointer",
+            "bg-arcade-aqua font-display text-sm uppercase tracking-widest text-blue-6",
+            "border border-blue-5 transition-colors duration-150",
+            "hover:bg-blue-1 cursor-pointer",
           ].join(" ")}
         >
           LEARN MORE
