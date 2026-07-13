@@ -25,7 +25,8 @@ const CLAIMABLE_ORB: OrbOfEnlightenmentPanelProps = {
 };
 
 const DEFAULT_RANK: TftRankBannerProps = {
-  profileIconSrc: profileIconUrl(29),
+  // TFT bonsai-tree icon (Set 1 launch icon, CDragon profile icon 4069)
+  profileIconSrc: profileIconUrl(4069),
   rankLabel: "UNRANKED",
 };
 

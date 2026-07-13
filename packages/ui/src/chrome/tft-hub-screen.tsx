@@ -277,17 +277,17 @@ function TftRankBanner({ profileIconSrc, rankLabel }: TftRankBannerProps) {
       className="flex flex-col items-center gap-0"
       style={{ flex: "0 0 24%" }}
     >
-      {/* Profile icon */}
-      <div className="relative z-10 -mb-2">
+      {/* Profile icon — 110×110 with heavier gold ring, overlapping banner top */}
+      <div className="relative z-10 -mb-4">
         <div
-          className="overflow-hidden rounded-full border-2 border-gold-4"
-          style={{ width: 64, height: 64 }}
+          className="overflow-hidden rounded-full border-4 border-gold-4"
+          style={{ width: 110, height: 110 }}
         >
           <img
             src={profileIconSrc}
             alt="Profile icon"
-            width={64}
-            height={64}
+            width={110}
+            height={110}
             className="h-full w-full object-cover"
           />
         </div>
