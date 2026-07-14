@@ -19,6 +19,12 @@ const CDRAGON_TFT =
 const CDRAGON_GAME_DATA =
   "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default";
 
+const CDRAGON_CHAMP_SELECT =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-champ-select/global/default";
+
+const CDRAGON_UIKIT =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-uikit/global/default";
+
 /**
  * Summoner spell icon URL via CDragon game data.
  *
@@ -252,6 +258,96 @@ export const masteryFtuxCrestUrl = (level: number): string => {
     ? `${BASE}/ftux-mock-crest-level-10.png`
     : `${BASE}/mastery-crest-mini-gray.png`;
 };
+
+/* ---------------------------------------------------------------------------
+ * VIDEO (.webm) HELPERS — issue #301
+ *
+ * CommunityDragon raw-mirrors the real client's ambient/magic .webm loops.
+ * The CDN honors HTTP range requests (returns 206 video/webm), so these URLs
+ * stream directly from a <video src> / <source> element — no download needed.
+ * DDragon ships NO video assets; CDragon is the only mirror for these.
+ *
+ * Usage in components: pass returned URLs as <video src> (typically muted,
+ * autoPlay, loop, playsInline for ambient background loops).
+ * All patterns curl-verified 206 video/webm (2026-07, issue #301).
+ * License: Riot fan-content policy (non-commercial fan use).
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Ambient background-loop webm from the parties plugin — the subtle animated
+ * Hextech backdrops behind party-status / queue / social panels.
+ *
+ * Slugs (each resolves to `{slug}-bg-loop.webm`):
+ *   "party-status" → party-status-bg-loop.webm
+ *   "queue-delay"  → queue-delay-bg-loop.webm
+ *   "social-panel" → social-panel-bg-loop.webm
+ *
+ * Source: CommunityDragon rcp-fe-lol-parties · {slug}-bg-loop.webm
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const partiesBgLoopUrl = (
+  slug: "party-status" | "queue-delay" | "social-panel",
+): string => cdragonPartiesUrl(`${slug}-bg-loop.webm`);
+
+/**
+ * Champ-select summoner-object magic banner webm — the animated gem/rune
+ * flourish that plays around the summoner name plate during champion select.
+ *
+ * `side`  the team color: "blue" | "gold" | "red" (gold = local player).
+ * `phase` the animation segment: "intro" (play once in), "idle" (loop),
+ *         "outro" (play once out).
+ *
+ * All 9 side×phase combinations resolve to
+ * `summoner-object-magic-action-{side}-{phase}.webm`.
+ *
+ * Source: CommunityDragon rcp-fe-lol-champ-select · video/summoner-object/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const summonerObjectMagicUrl = (
+  side: "blue" | "gold" | "red",
+  phase: "intro" | "idle" | "outro",
+): string =>
+  `${CDRAGON_CHAMP_SELECT}/video/summoner-object/summoner-object-magic-action-${side}-${phase}.webm`;
+
+/**
+ * uikit celebration / vignette magic webm — full-screen Hextech celebration
+ * overlays (e.g. post-game / reward reveal).
+ *
+ * Kinds (each resolves to `{kind}-magic.webm`):
+ *   "celebration-bg"              → celebration-bg-magic.webm (~1.2 MB looping backdrop)
+ *   "vignette-celebration-intro"  → vignette-celebration-intro-magic.webm (edge vignette flourish)
+ *
+ * Source: CommunityDragon rcp-fe-lol-uikit · videos/{kind}-magic.webm
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const uikitCelebrationMagicUrl = (
+  kind: "celebration-bg" | "vignette-celebration-intro",
+): string => `${CDRAGON_UIKIT}/videos/${kind}-magic.webm`;
+
+/**
+ * Champ-select card-select webm — the animated summoner card states shown in
+ * the champion-select carousel (idle loop, card intros, hover states).
+ *
+ * `name` is the filename WITHOUT extension, as listed in the CDragon dir JSON at
+ * `json/latest/plugins/rcp-fe-lol-champ-select/global/default/video/card-select/`.
+ * Verified names (2026-07):
+ *   "champ_select_card_idle_loop"        loop behind an idle card
+ *   "champ_select_default_card_intro"    default card reveal
+ *   "champ_select_hover_state_idle_loop" hover glow loop
+ *   "champ_select_hover_state_intro"     hover glow reveal
+ *   "champ_select_lucky_card_intro"      lucky/legendary card reveal
+ *   "champ_select_selected_state"        selected/locked card state
+ *
+ * CAVEAT: some CDragon video filenames contain parentheses (e.g.
+ * `pin_intro(fixed)`). If a name contains `(` or `)`, pass it already
+ * percent-encoded (`%28` / `%29`) — a browser <video src> will 404 on raw
+ * parens. This helper does not encode for you.
+ *
+ * Source: CommunityDragon rcp-fe-lol-champ-select · video/card-select/{name}.webm
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const champSelectCardVideoUrl = (name: string): string =>
+  `${CDRAGON_CHAMP_SELECT}/video/card-select/${name}.webm`;
 
 /*
  * MODE-SELECT BACKGROUND — CDragon asset search result (2026-07, issue #218).

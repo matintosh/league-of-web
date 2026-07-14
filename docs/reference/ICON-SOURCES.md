@@ -95,6 +95,77 @@ All verified HTTP 200 as of 2026-07.
 
 ---
 
+## CommunityDragon — client video (.webm) assets
+
+DDragon ships **no video assets** — CommunityDragon is the only mirror for the client's
+ambient/magic `.webm` loops. The CDN honors HTTP range requests (returns `206 video/webm`),
+so these URLs stream directly from a `<video src>` element; no download step is needed.
+Helpers live in `@low/fixtures` (cdragon.ts), added by issue #301. No components consume
+them yet — this issue lands the helpers only.
+
+Enumerate any directory below via its JSON listing:
+`https://raw.communitydragon.org/json/latest/plugins/<plugin>/global/default/<dir>/`
+
+**CAVEAT:** some filenames are URL-encoded on the CDN, e.g.
+`pin_intro%28fixed%29.webm` (raw `(` `)`). A browser `<video src>` must use the encoded
+form — encode `(` → `%28`, `)` → `%29`.
+
+### rcp-fe-lol-parties — ambient background loops
+
+Base: `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-parties/global/default/`
+
+| Asset | Path | Helper |
+|-------|------|--------|
+| Party status loop | `party-status-bg-loop.webm` | `partiesBgLoopUrl("party-status")` |
+| Queue delay loop | `queue-delay-bg-loop.webm` | `partiesBgLoopUrl("queue-delay")` |
+| Social panel loop | `social-panel-bg-loop.webm` | `partiesBgLoopUrl("social-panel")` |
+
+(+17 total `*-bg-loop.webm` in the dir — enumerate via JSON listing.)
+
+### rcp-fe-lol-champ-select — /video/
+
+Base: `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-champ-select/global/default/video/`
+
+| Dir | Contents | Helper |
+|-----|----------|--------|
+| `summoner-object/` | 9 files `summoner-object-magic-action-{blue,gold,red}-{intro,idle,outro}.webm` | `summonerObjectMagicUrl(side, phase)` |
+| `card-select/` | idle loop, card intros, hover states (6 files) | `champSelectCardVideoUrl(name)` |
+| `champion-ring/` | `ban-circle-slash-{red,blue}` | (no helper — enumerate) |
+| `position-assignment/` | 8 `path_{north,south}_{role}`; note encoded `pin_intro%28fixed%29.webm` | (no helper — enumerate) |
+| `lock-in/`, `cherry/` | lock-in + Arena (cherry) flourishes | (no helper — enumerate) |
+
+### rcp-fe-lol-uikit — /videos/
+
+Base: `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-uikit/global/default/videos/`
+
+| Asset | Path | Helper |
+|-------|------|--------|
+| Celebration backdrop (~1.2 MB) | `celebration-bg-magic.webm` | `uikitCelebrationMagicUrl("celebration-bg")` |
+| Celebration vignette intro | `vignette-celebration-intro-magic.webm` | `uikitCelebrationMagicUrl("vignette-celebration-intro")` |
+
+### Other video dirs (no helper yet — enumerate via JSON listing)
+
+| Plugin | Dir / asset | Notes |
+|--------|-------------|-------|
+| rcp-fe-lol-navigation | `eog_looping_bgmagic.webm` | ~3.9 MB end-of-game backdrop loop |
+| rcp-fe-lol-tft | `videos/background-sparkles`, `videos/claimable-sparkles-{free,keystone,premium}` | TFT hub sparkles |
+| rcp-fe-lol-event-hub | `videos/` (~19 webms) | season-pass / milestone flourishes |
+
+### CloudFront — champion ability preview clips (future collection use)
+
+Base: `https://d28xe8vt774jo5.cloudfront.net/champion-abilities/<4-digit-champId>/`
+Pattern: `ability_<4-digit-champId>_<Q1|W1|E1|R1|P1>.webm`
+(canonical path per the `abilityVideoPath` field in CDragon champion JSON).
+
+Example (verified `206`, served as `application/octet-stream` — valid webm bytes,
+just untyped by CloudFront): `champion-abilities/0266/ability_0266_Q1.webm` (Aatrox Q).
+
+Not wrapped in a helper in issue #301 — reserved for a future collection/champion-detail
+ability-preview feature. When wired, add an `abilityPreviewUrl(champId, slot)` helper here
+following the CDragon helper pattern (zero-pad champId to 4 digits).
+
+---
+
 ## jsDelivr — magisteriis/lol-icons-and-emblems
 
 Base: `https://cdn.jsdelivr.net/gh/magisteriis/lol-icons-and-emblems@main/ranked-emblems/`  
