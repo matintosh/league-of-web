@@ -59,6 +59,8 @@ export type {
   AwakeningMissionsProps,
   ProgressPanelProps,
 } from "./chrome/journey-tab";
+export { LaunchSplash } from "./chrome/launch-splash";
+export type { LaunchSplashProps } from "./chrome/launch-splash";
 export { MapCrestImg } from "./chrome/map-crest-img";
 export type { MapCrestImgProps } from "./chrome/map-crest-img";
 export { MasteryEternalsPanel } from "./chrome/mastery-eternals-panel";
