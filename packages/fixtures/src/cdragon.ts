@@ -60,6 +60,26 @@ export const cdragonPartiesUrl = (path: string): string =>
   `${CDRAGON_PARTIES}/${path}`;
 
 /**
+ * Client video (.webm) asset URL. The real client centralizes ALL its UI
+ * magic/ambient videos under rcp-fe-lol-static-assets `videos/` — the
+ * WAD-extracted corpus maps 1:1 by relative path into this subtree
+ * (see docs/reference/VIDEO-ASSETS.md; 198/198 curl-verified 206 video/webm,
+ * 194 with alpha).
+ *
+ * Examples confirmed HTTP 206 (2026-07):
+ *   staticVideoUrl("play-button-hover-loop.webm")
+ *   staticVideoUrl("find-match-button-idle.webm")
+ *   staticVideoUrl("timer-countdown.webm")
+ *   staticVideoUrl("ranked/emblem-wings-magic-gold.webm")
+ *
+ * Encode parens in filenames (%28/%29) — browsers 404 on raw parens.
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const staticVideoUrl = (path: string): string =>
+  `${CDRAGON_STATIC}/videos/${path}`;
+
+/**
  * Riot Points icon — the hexagonal RP coin mark (gold, ~13×14px SVG).
  * Source: CommunityDragon rcp-fe-lol-static-assets · currency/icons/rp.svg
  * License: Riot fan-content policy (non-commercial fan use).
