@@ -8,6 +8,14 @@ export { ChampSelectActionBar } from "./champ-select/champ-select-action-bar";
 export type { ChampSelectActionBarProps } from "./champ-select/champ-select-action-bar";
 export { CountdownHeader } from "./champ-select/countdown-header";
 export type { CountdownHeaderProps } from "./champ-select/countdown-header";
+export { DeclareIntentScreen } from "./champ-select/declare-intent-screen";
+export type {
+  DeclareIntentScreenProps,
+  DeclareRole,
+  DeclarePathRole,
+  DeclareRosterEntry,
+  DeclareMapVideoSources,
+} from "./champ-select/declare-intent-screen";
 export { LockInButton } from "./champ-select/lock-in-button";
 export type { LockInButtonProps, LockInVideoSources, LockInAttention } from "./champ-select/lock-in-button";
 export { SkinCarousel, SkinThumbStrip } from "./champ-select/skin-carousel";

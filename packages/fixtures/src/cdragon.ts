@@ -715,6 +715,95 @@ export function exaltedCardVideoUrl(
 }
 
 /**
+ * Champ-select declare-intent (position-assignment) team side. The map reveal
+ * and lane-path videos are authored per team side of Summoner's Rift:
+ *   "north" — the blue-side view (matches the reference screenshot)
+ *   "south" — the red-side view
+ */
+export type DeclareSide = "north" | "south";
+
+/** Roles that ship a lane-path light-up video. Support has NO path (see below). */
+export type DeclarePathRole = "top" | "jungle" | "middle" | "bottom";
+
+/**
+ * Champ-select declare-intent MAP-INTRO reveal video (webm, OPAQUE, 1280×720).
+ * The full Summoner's Rift island reveal that opens the position-assignment
+ * phase — played ONCE as the map stage backdrop.
+ *
+ *   declareMapIntroUrl("north") → …/video/position-assignment-intro/map-north-intro.webm
+ *   declareMapIntroUrl("south") → …/video/position-assignment-intro/map-south-intro.webm
+ *
+ * NOTE: these live under the rcp-fe-lol-champ-select plugin's own `video/`
+ * subtree (NOT the shared rcp-fe-lol-static-assets `videos/`). Confirmed HTTP
+ * 206 video/webm (2026-07-14).
+ *
+ * Source: CommunityDragon rcp-fe-lol-champ-select · video/position-assignment-intro/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const declareMapIntroUrl = (side: DeclareSide): string =>
+  `${CDRAGON_CHAMP_SELECT}/video/position-assignment-intro/map-${side}-intro.webm`;
+
+/**
+ * Champ-select declare-intent LANE-PATH light-up video (webm, straight alpha,
+ * 264×214) for a team side + role — the glowing cyan lane that lights up when a
+ * role is assigned, one-shot. Composited straight (own alpha) onto the lane on
+ * the map stage.
+ *
+ * The catalog ships exactly 8 paths: {north,south} × {top,jungle,middle,bottom}.
+ * There is NO support (`utility`) path — support is given pin-only treatment on
+ * the map. This is why the role union here is {@link DeclarePathRole}, not the
+ * full five-role set (calling with support would be a compile error).
+ *
+ * NOTE: the CDragon filenames use the abbreviated slug `bot` for the bottom
+ * role; this helper maps `middle`→`mid` and `bottom`→`bot` accordingly.
+ *
+ *   declarePathUrl("north", "middle") → …/video/position-assignment/path_north_mid.webm
+ *   declarePathUrl("south", "bottom") → …/video/position-assignment/path_south_bot.webm
+ *
+ * All 8 confirmed HTTP 206 video/webm (2026-07-14).
+ *
+ * Source: CommunityDragon rcp-fe-lol-champ-select · video/position-assignment/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const declarePathUrl = (
+  side: DeclareSide,
+  role: DeclarePathRole,
+): string => {
+  const SLUG: Record<DeclarePathRole, string> = {
+    top: "top",
+    jungle: "jungle",
+    middle: "mid",
+    bottom: "bot",
+  };
+  return `${CDRAGON_CHAMP_SELECT}/video/position-assignment/path_${side}_${SLUG[role]}.webm`;
+};
+
+/**
+ * Champ-select declare-intent PIN-DROP video (webm, straight alpha) — a role
+ * pin dropping from above onto a lane, one-shot. Two variants:
+ *   "ally" → pin_intro(fixed).webm     (86×506)  the standard blue-white pin
+ *   "me"   → pin_me_intro(fixed).webm  (138×532) the LOCAL player's pin,
+ *            gold-accented and wider (visually distinct per the reference).
+ *
+ * CAVEAT: both filenames contain literal parentheses. Browsers 404 on raw
+ * parens in a `<video src>`, so this helper percent-encodes them (`(`→`%28`,
+ * `)`→`%29`) per the cdragon.ts parens caveat.
+ *
+ *   declarePinUrl("ally") → …/video/position-assignment/pin_intro%28fixed%29.webm
+ *   declarePinUrl("me")   → …/video/position-assignment/pin_me_intro%28fixed%29.webm
+ *
+ * Both confirmed HTTP 206 video/webm (2026-07-14).
+ *
+ * Source: CommunityDragon rcp-fe-lol-champ-select · video/position-assignment/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const declarePinUrl = (variant: "ally" | "me"): string => {
+  const FILE = variant === "me" ? "pin_me_intro(fixed)" : "pin_intro(fixed)";
+  const encoded = FILE.replace(/\(/g, "%28").replace(/\)/g, "%29");
+  return `${CDRAGON_CHAMP_SELECT}/video/position-assignment/${encoded}.webm`;
+};
+
+/**
  * Champ-select card-select webm — the animated summoner card states shown in
  * the champion-select carousel (idle loop, card intros, hover states).
  *

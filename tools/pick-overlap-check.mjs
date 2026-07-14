@@ -127,6 +127,26 @@ try {
 }
 await page.waitForTimeout(1000);
 
+// 4b. Declare-intent phase (#348): the first champ-select beat, before bans.
+// ACCEPT lands on the declare screen ("Declare Your Champion!"), which auto-
+// advances to the ban phase after its timer (~12 s). Verify it, then wait for
+// the ban screen to appear (poll up to 20 s to cover the auto-advance).
+console.log("Step 4b: Declare-intent phase — verify, wait for auto-advance …");
+const onDeclare = await page.getByText("Declare Your Champion!", { exact: false }).count();
+if (onDeclare === 0) {
+  console.error("ERROR: Could not reach declare-intent screen ('Declare Your Champion!' not found).");
+  await browser.close();
+  process.exit(1);
+}
+console.log("✓ Declare-intent screen reached; waiting for auto-advance to bans …");
+try {
+  await page.getByText("Ban a Champion!", { exact: false }).first().waitFor({ state: "visible", timeout: 20000 });
+} catch (e) {
+  console.error("ERROR: Declare phase did not auto-advance to ban phase:", e.message);
+  await browser.close();
+  process.exit(1);
+}
+
 // 5. Navigate through ban phase (#275): verify ban screen, click a champion, click BAN
 console.log("Step 5: Ban phase — verify, select champion, ban …");
 const onBan = await page.getByText("Ban a Champion!", { exact: false }).count();

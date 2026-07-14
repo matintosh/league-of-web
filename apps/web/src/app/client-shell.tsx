@@ -58,6 +58,7 @@ import {
 import type { ClashScoutingPlayer } from "@low/fixtures";
 import type { NewsArticle } from "@low/ui";
 import { BanPhaseScreen } from "./ban-phase-screen";
+import { DeclarePhaseScreen } from "./declare-phase-screen";
 import { CollectionScreen } from "./collection-screen";
 import { ModeSelectScreen } from "./mode-select-screen";
 import { PartyLobbyScreen } from "./party-lobby-screen";
@@ -69,7 +70,9 @@ import { StoreScreen } from "./store-screen";
 // "matchmaking" view has been retired (issue #174): queue state now lives
 // inside PartyLobbyScreen; the shell no longer has a separate queue route.
 // "ban" view added (#275): ban phase sits between ACCEPT and the pick screen.
-type View = "home" | "mode-select" | "party-lobby" | "collection" | "ban" | "pick" | "loadout" | "profile" | "store" | "tft" | "competitive";
+// "declare" view added (#348): declare-intent / position-assignment phase is
+// the FIRST champ-select beat — ACCEPT → declare → ban.
+type View = "home" | "mode-select" | "party-lobby" | "collection" | "declare" | "ban" | "pick" | "loadout" | "profile" | "store" | "tft" | "competitive";
 
 // Nav set matches the reference left→right: Home, Profile, Collection,
 // Competitive (Clash — #244), Store, Teamfight Tactics.
@@ -449,7 +452,7 @@ export function ClientShell() {
   // is hidden and the champ-select screen stretches to the window's top edge.
   // Window controls survive because they live in WindowFrame's title bar (a
   // sibling above this content column), not in the navbar.
-  const champSelectActive = view === "ban" || view === "pick" || view === "loadout";
+  const champSelectActive = view === "declare" || view === "ban" || view === "pick" || view === "loadout";
 
   // Views that show the docked social rail alongside content.
   // ban, pick, and loadout are full-bleed (no rail) per issue spec — the
@@ -823,8 +826,15 @@ export function ClientShell() {
                   chosenChampionId={chosenChampionId}
                   onComplete={() => { setView("home"); setActiveNavId("home"); }}
                 />
+              ) : view === "declare" ? (
+                // Declare-intent phase (#348): the FIRST champ-select beat,
+                // before bans. Timer + auto-advance live inside the wrapper;
+                // shell transitions to the ban phase on complete.
+                <DeclarePhaseScreen
+                  onDeclareComplete={() => setView("ban")}
+                />
               ) : view === "ban" ? (
-                // Ban phase (#275): inserted between ACCEPT and pick.
+                // Ban phase (#275): inserted between declare and pick.
                 // Timer state lives inside BanPhaseScreen; shell transitions on complete.
                 <BanPhaseScreen
                   onBanComplete={() => setView("pick")}
@@ -842,7 +852,7 @@ export function ClientShell() {
                 // the rail column (FindingMatchPanel vs PartyStatusPanel) accordingly.
                 <PartyLobbyScreen
                   onBack={() => handleLeaveLobby("mode-select")}
-                  onAccept={() => { handleLeaveLobby("ban"); }}
+                  onAccept={() => { handleLeaveLobby("declare"); }}
                   partyOpen={partyOpen}
                   onPartyToggle={setPartyOpen}
                   onQueuePhaseChange={handleQueuePhaseChange}
