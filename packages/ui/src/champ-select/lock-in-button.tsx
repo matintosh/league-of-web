@@ -47,7 +47,7 @@ const BLEED_FRAC = 0.18;
 // opacity lets the tuned CSS teal base dominate so the resting idle matches the
 // reference's subtle shimmer rather than an aurora. Intro/hover/active/attention
 // stay at full opacity — only the resting idle is damped.
-const IDLE_VIDEO_OPACITY = 0.5;
+const IDLE_VIDEO_OPACITY = 0.22;
 
 /**
  * Real-client FIND MATCH button state videos, one URL per state (issue #310).
