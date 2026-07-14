@@ -39,8 +39,10 @@ function FiligreeTerminal({ className }: { className?: string }) {
   // Inner hairline: horizontal at y≈6 (starts partway in), arcing down parallel
   // and merging into the foot just inside the outer. Foot + terminal tick close
   // the sweep at the bottom-right.
-  const outer = "M0 2 H28 C36 2 38 5 40 11 L46 26 C47 28.5 48.5 30 51 30 H58";
-  const inner = "M9 6 H29 C35 6 36.5 8.5 38 13.5 L43 26 C43.9 28.2 45 29.4 47 29.6 H54";
+  // Continuous concave quarter-circle: horizontal, then one smooth cubic that
+  // sweeps down and flattens into the foot (no straight diagonal segment).
+  const outer = "M0 2 H30 C41 2 48 9 48 30 H58";
+  const inner = "M9 6 H30.5 C38.5 6 44 12 44 30 H54";
   const tick = "M58 30 V34.5";
 
   return (
@@ -104,12 +106,18 @@ function HeaderOrnament({ side }: { side: "left" | "right" }) {
 
 /**
  * CountdownBar — one half of the split progress pair. A dark track with a hairline
- * gold baseline carries a bright teal fill that is anchored at the OUTER end and
- * drains toward it (shrinks outward from the number) as `fraction` falls.
+ * gold baseline carries a bright teal fill anchored at the INNER (number) end that
+ * drains OUTWARD — the fill recedes toward the number as `fraction` falls, so at
+ * low time only a sliver of teal survives hugging the number.
  *
- * The fill ramps from a dark teal at the inner edge to a bright teal cap at the
- * outer end, matching the reference (brightest at the outer cap). `side="left"`
- * anchors the fill on the right (inner) growing left; `side="right"` mirrors.
+ * Verified against docs/reference/client-champ-select-fullscreen-declare.png @9s:
+ * the teal occupies the inner portion of the track (left run x573→741) with the
+ * OUTER portion empty (dark track x449→569); the bright cap (rgb 115,204,213)
+ * rides the fill's outer LEADING edge and dims toward the number (rgb 0,90,130).
+ *
+ * So the fill is pinned at the inner end and its bright leading edge advances/
+ * recedes outward. `side="left"` anchors on the right (number is to its right)
+ * with the bright cap at the fill's left edge; `side="right"` mirrors.
  */
 function CountdownBar({
   fraction,
@@ -119,9 +127,11 @@ function CountdownBar({
   side: "left" | "right";
 }) {
   const fillPct = `${(fraction * 100).toFixed(2)}%`;
-  // Outer end holds the bright cap. Left bar: outer = left edge; right bar: outer = right edge.
-  const anchorOuter = side === "left" ? "left-0" : "right-0";
-  // Bright cap sits at the outer end; ramp to dark teal toward the inner (number) side.
+  // Anchor at the INNER (number) end so the fill drains outward, hugging the
+  // number. Left bar's inner end is its right edge; right bar's is its left edge.
+  const anchorInner = side === "left" ? "right-0" : "left-0";
+  // Bright cap rides the OUTER leading edge of the fill, dimming toward the
+  // number. Left bar: bright at its left; right bar: bright at its right.
   const gradient =
     side === "left"
       ? "bg-linear-to-l from-blue-4 to-blue-1"
@@ -131,9 +141,9 @@ function CountdownBar({
     <div className="relative flex-1 h-[3px] bg-blue-6/60 overflow-hidden">
       {/* gold hairline baseline under the track (full width) */}
       <div className="absolute inset-x-0 bottom-0 h-px bg-gold-4/70" />
-      {/* teal fill — anchored at outer end, width = fraction, drains outward */}
+      {/* teal fill — anchored at the inner end, width = fraction, drains outward */}
       <div
-        className={`absolute inset-y-0 ${anchorOuter} ${gradient} transition-[width] duration-1000 ease-linear`}
+        className={`absolute inset-y-0 ${anchorInner} ${gradient} transition-[width] duration-1000 ease-linear`}
         style={{ width: fillPct }}
       />
     </div>
@@ -150,7 +160,8 @@ function CountdownBar({
  * Renders a display-font title (uppercase, gold-1) flanked by filigree scroll
  * brackets, and below it a row with the large seconds counter centered between
  * two symmetric teal progress bars. Both bars share one `fraction` and drain
- * OUTWARD from the number as seconds tick down (fill anchored at the outer caps).
+ * OUTWARD from the number as seconds tick down — the fill is anchored at the
+ * inner (number) end, so at low time only a sliver survives hugging the number.
  *
  * Pure presentational — no intervals. Parent supplies `secondsRemaining` and
  * calls setState each second. The fraction is clamped to [0, 1] to defend

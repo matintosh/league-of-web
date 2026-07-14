@@ -12,7 +12,7 @@ export const countdownHeaderShowcase: ShowcaseEntry = {
     {
       name: "Full — 90 of 90s",
       notes:
-        "Both bars full; bright teal caps at the outer ends. Filigree brackets flank the title, curling toward center.",
+        "Both bars full; the bright teal cap rides each outer leading edge. Filigree brackets flank the title, curling toward center.",
       render: () => (
         <div className="bg-hextech-black px-8 py-6 w-full max-w-lg">
           <CountdownHeader
@@ -26,7 +26,7 @@ export const countdownHeaderShowcase: ShowcaseEntry = {
     {
       name: "Mid — 62 of 90s",
       notes:
-        "Bars at ~69%; fill has drained inward from the number, leaving the bright outer caps.",
+        "Bars at ~69%; the fill has receded outward, leaving empty track at the outer ends and teal still hugging the number.",
       render: () => (
         <div className="bg-hextech-black px-8 py-6 w-full max-w-lg">
           <CountdownHeader
@@ -40,7 +40,7 @@ export const countdownHeaderShowcase: ShowcaseEntry = {
     {
       name: "Low — 5 of 90s",
       notes:
-        "Bars at ~5.6%; only a sliver of teal remains hugging each outer end.",
+        "Bars at ~5.6%; only a sliver of teal remains hugging the number on each side.",
       render: () => (
         <div className="bg-hextech-black px-8 py-6 w-full max-w-lg">
           <CountdownHeader
