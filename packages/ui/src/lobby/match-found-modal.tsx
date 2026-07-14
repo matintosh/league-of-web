@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useState } from "react";
 import { HextechButton } from "../chrome/hextech-button";
 import { MapCrestImg } from "../chrome/map-crest-img";
 
@@ -29,6 +29,36 @@ export interface MatchFoundModalProps {
    * Falls back to the generic HexCrest placeholder when absent.
    */
   crestSrc?: string;
+  /**
+   * WAD ready-check countdown video (the draining teal ring, 552×554 with a real
+   * alpha channel). Rendered as a transparent overlay registered to the gold ring
+   * of the circle; plays forward from mount. PRESENTATIONAL sync only — the video
+   * never drives `secondsRemaining` (the parent still owns the countdown number).
+   * When absent (or under `prefers-reduced-motion`) the CSS ring sweep from #299
+   * is the sole visual timer, unchanged.
+   */
+  countdownVideoSrc?: string;
+  /**
+   * WAD post-accept intro video (~1.5s, the ring settling into the accepted look).
+   * Played once when `accepted` flips true, then crossfades into the idle loop.
+   * Requires `acceptedIdleVideoSrc` to loop after it; on its own it plays and holds
+   * the final frame. Only meaningful alongside `countdownVideoSrc`.
+   */
+  acceptedIntroVideoSrc?: string;
+  /**
+   * WAD post-accept idle loop video (~5s, the resting accepted ring). Loops after
+   * `acceptedIntroVideoSrc` finishes (or immediately if no intro is supplied) while
+   * `accepted` stays true.
+   */
+  acceptedIdleVideoSrc?: string;
+  /**
+   * When true, the video overlay swaps from the countdown ring to the accepted
+   * state (intro → idle loop). Presentational: the consumer sets it after ACCEPT
+   * if it keeps the modal mounted long enough to show the accepted ring. Defaults
+   * to false; existing consumers that navigate away on accept can ignore it.
+   * @default false
+   */
+  accepted?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -213,6 +243,104 @@ function AcceptTrapezoid({
 }
 
 // ---------------------------------------------------------------------------
+// TimerVideoOverlay — the WAD ready-check ring videos composited over the circle.
+//
+// The source videos are 552×554 with a genuine alpha channel (the teal ring on
+// transparent), so they overlay STRAIGHT (no blend mode) directly over the gold
+// ring. The ring core sits at ~444px inside the 552px frame; sizing the video to
+// 120% of the 480px circle (≈577px) and centering it lands the video ring exactly
+// on the modal's gold ring — verified against docs/reference/client-match-found-crest.png.
+//
+// State machine (presentational only — never touches `secondsRemaining`):
+//   mount               → countdown video plays forward once
+//   accepted flips true  → accepted-intro plays once, then crossfades to
+//                          accepted-idle which loops
+// Layers crossfade via opacity over var(--motion-crossfade). The whole layer is
+// pointer-events-none + aria-hidden (the sr-only countdown stays the a11y timer)
+// and `motion-reduce:hidden` so reduced-motion users get the #299 CSS ring only.
+//
+// Registration constant: the video is 120% of the circle, centered. If the source
+// framing ever changes, re-run the overlay check in the PR description.
+// ---------------------------------------------------------------------------
+
+const VIDEO_RING_SCALE = "120%"; // video ring core → modal gold ring (see overlay check)
+
+function TimerVideoOverlay({
+  countdownSrc,
+  acceptedIntroSrc,
+  acceptedIdleSrc,
+  accepted,
+}: {
+  countdownSrc: string;
+  acceptedIntroSrc?: string;
+  acceptedIdleSrc?: string;
+  accepted: boolean;
+}) {
+  // Which accepted clip is currently showing. `intro` plays once then `onEnded`
+  // advances to `idle`. This sequences video playback only — it derives nothing
+  // about game state and adds no timers.
+  const [acceptedPhase, setAcceptedPhase] = useState<"intro" | "idle">(
+    acceptedIntroSrc ? "intro" : "idle",
+  );
+
+  const showAcceptedIntro = accepted && !!acceptedIntroSrc && acceptedPhase === "intro";
+  const showAcceptedIdle =
+    accepted && !!acceptedIdleSrc && (acceptedPhase === "idle" || !acceptedIntroSrc);
+  // Countdown fades out the moment ACCEPT swaps us into the accepted state.
+  const showCountdown = !accepted;
+
+  const layerBase =
+    "pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-auto object-contain";
+  const fade = { transition: "opacity var(--motion-crossfade)" } as const;
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 z-[5] overflow-visible motion-reduce:hidden"
+    >
+      {/* Countdown ring — straight alpha overlay, plays forward once from mount */}
+      <video
+        src={countdownSrc}
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        className={layerBase}
+        style={{ ...fade, width: VIDEO_RING_SCALE, opacity: showCountdown ? 1 : 0 }}
+      />
+
+      {/* Accepted intro — mounts only once accepted so it starts from frame 0 */}
+      {accepted && acceptedIntroSrc && (
+        <video
+          src={acceptedIntroSrc}
+          autoPlay
+          muted
+          playsInline
+          preload="auto"
+          onEnded={() => setAcceptedPhase("idle")}
+          className={layerBase}
+          style={{ ...fade, width: VIDEO_RING_SCALE, opacity: showAcceptedIntro ? 1 : 0 }}
+        />
+      )}
+
+      {/* Accepted idle loop — the resting accepted ring */}
+      {accepted && acceptedIdleSrc && (
+        <video
+          src={acceptedIdleSrc}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className={layerBase}
+          style={{ ...fade, width: VIDEO_RING_SCALE, opacity: showAcceptedIdle ? 1 : 0 }}
+        />
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // MatchFoundModal
 // ---------------------------------------------------------------------------
 
@@ -226,6 +354,13 @@ function AcceptTrapezoid({
  *
  * Presentational only — the parent drives `secondsRemaining` via its own
  * interval. No setInterval inside this component.
+ *
+ * When `countdownVideoSrc` is supplied, the WAD ready-check ring videos overlay
+ * the circle (registered to the gold ring) as the visual timer: countdown ring
+ * on mount, swapping to the accepted intro→idle loop when `accepted` flips true.
+ * The video is a straight-alpha overlay, `pointer-events-none`, and hidden under
+ * `prefers-reduced-motion` — in which case the #299 CSS ring sweep remains. The
+ * video is decorative sync only and NEVER drives `secondsRemaining`.
  */
 export function MatchFoundModal({
   open,
@@ -236,6 +371,10 @@ export function MatchFoundModal({
   subtitle,
   keyartSrc,
   crestSrc,
+  countdownVideoSrc,
+  acceptedIntroVideoSrc,
+  acceptedIdleVideoSrc,
+  accepted = false,
 }: MatchFoundModalProps) {
   const uid = useId();
   const titleId = `${uid}-title`;
@@ -329,9 +468,15 @@ export function MatchFoundModal({
             <circle cx="240" cy="240" r="228" fill="none" stroke="var(--color-gold-3)" strokeWidth="1" />
           </svg>
 
-          {/* 6. Countdown arc SVG — rotated -90° so arc starts at top */}
+          {/* 6. Countdown arc SVG — rotated -90° so arc starts at top.
+              When a countdown video is supplied it becomes the visual ring, so the
+              CSS arc is hidden under motion-safe (no double ring) but stays visible
+              under prefers-reduced-motion (where the video layer is hidden). Without
+              a video, the CSS arc is always the timer, unchanged from #299. */}
           <svg
-            className="absolute inset-0 w-full h-full -rotate-90"
+            className={`absolute inset-0 w-full h-full -rotate-90${
+              countdownVideoSrc ? " motion-safe:hidden" : ""
+            }`}
             viewBox="0 0 480 480"
             aria-hidden="true"
           >
@@ -360,6 +505,19 @@ export function MatchFoundModal({
               style={{ transition: "stroke-dashoffset 1s linear" }}
             />
           </svg>
+
+          {/* 6b. Timer video overlay — WAD ready-check ring videos registered to
+              the gold ring. Additive: renders only when a countdown video URL is
+              supplied, and hides itself under prefers-reduced-motion so the CSS
+              ring above stays the fallback. Presentational sync only. */}
+          {countdownVideoSrc && (
+            <TimerVideoOverlay
+              countdownSrc={countdownVideoSrc}
+              acceptedIntroSrc={acceptedIntroVideoSrc}
+              acceptedIdleSrc={acceptedIdleVideoSrc}
+              accepted={accepted}
+            />
+          )}
 
           {/* 7. Content stack — crest, title, subtitle, sr-only countdown */}
           <div className="absolute inset-0 flex flex-col items-center px-8" style={{ paddingTop: "80px", paddingBottom: "120px" }}>
