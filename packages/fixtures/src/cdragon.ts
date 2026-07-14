@@ -519,6 +519,33 @@ export const leagueLogoVideoUrl = (
 export const champSelectCardVideoUrl = (name: string): string =>
   `${CDRAGON_CHAMP_SELECT}/video/card-select/${name}.webm`;
 
+/**
+ * Real-client Your Shop navbar-icon magic videos (webm, straight alpha) for a
+ * given state — the glowing gold "shop" glyph the live client pulses in the top
+ * nav when a personalised Your Shop sale is available (120×120, small). Each
+ * clip composites straight (own alpha) over the static icon, so a clip that
+ * fails to load leaves the CSS/SVG glyph intact.
+ *
+ * States → `yourshop-icon-{state}.webm`:
+ *   "call-to-action-intro" one-shot attention reveal — the gold glyph bursts in
+ *                          with radial light rays, played once (1.0 s)
+ *   "call-to-action-loop"  ambient attention loop — gentle gold shimmer/pulse
+ *                          that idles to draw the eye (3.0 s, loops)
+ *   "click"                one-shot activate burst — bright white flash fired
+ *                          when the icon is clicked (0.6 s)
+ *
+ * All confirmed HTTP 206 video/webm with alpha (2026-07). Feed the returned URL
+ * to a muted/playsInline `<video>` overlay layered over the static icon (e.g.
+ * the `videoSources` of `YourShopIcon`). NO fetching happens here — pages supply
+ * URLs.
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const yourShopIconVideoUrl = (
+  state: "call-to-action-intro" | "call-to-action-loop" | "click",
+): string => staticVideoUrl(`yourshop-icon-${state}.webm`);
+
 /*
  * MODE-SELECT BACKGROUND — CDragon asset search result (2026-07, issue #218).
  *
