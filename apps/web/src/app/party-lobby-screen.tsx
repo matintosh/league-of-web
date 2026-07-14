@@ -8,6 +8,7 @@ import {
   RoleSlotRow,
   RolePickerPopover,
   LockInButton,
+  CrossMedallion,
   ChatPanel,
   MatchFoundModal,
   formatQueueTime,
@@ -820,35 +821,22 @@ export function PartyLobbyScreen({
         {/* Center: cancel ✕ + [chips + FIND MATCH / In Queue] + Priority/Secondary role triggers */}
         {/* pickerContainerRef wraps all triggers + popovers for outside-click detection */}
         <div ref={pickerContainerRef} className="flex flex-1 items-center justify-center gap-3">
-          {/* ✕ cancel — in idle: goes back to mode-select; in queue: cancels queue */}
+          {/* ✕ cancel — in idle: goes back to mode-select; in queue: cancels queue.
+              Real-client cross-circle medallion (issue #337): the CrossMedallion
+              badge owns the visual; this button owns the label + click. group/hb
+              drives the hover ring/cross brighten inside the badge. */}
           <button
             type="button"
             aria-label={isQueueing ? "Cancel queue" : "Cancel — return to mode select"}
             onClick={handleCancelOrBack}
             className={[
-              "flex shrink-0 items-center justify-center rounded-full",
-              "h-10 w-10",
-              "border border-grey-3 bg-grey-4 text-grey-1",
-              "cursor-pointer transition-colors duration-150",
-              "hover:border-gold-4 hover:text-gold-1",
+              "group/hb flex shrink-0 items-center justify-center rounded-full",
+              "cursor-pointer [filter:none] transition-[filter] duration-150",
+              "hover:[filter:drop-shadow(0_0_6px_var(--color-gold-4))]",
               "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
             ].join(" ")}
           >
-            <svg
-              aria-hidden="true"
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M2 2l10 10M12 2L2 12"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
+            <CrossMedallion size={44} />
           </button>
 
           {/* FIND MATCH slot: Autofill + Auto Accept chips stacked above button */}
