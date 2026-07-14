@@ -132,9 +132,20 @@ export function LaunchSplash({ videoSrc, onFinished, skipLabel = "Click anywhere
         const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const d = frame.data;
         for (let i = 0; i < d.length; i += 4) {
-          // White field → transparent; saturated flames and dark inks keep
-          // their body (alpha follows the darkest channel).
-          d[i + 3] = 255 - Math.min(d[i]!, d[i + 1]!, d[i + 2]!);
+          // White field → transparent (alpha follows the darkest channel),
+          // then un-blend from white (C = (obs − (1−α)·255) / α) so partially
+          // covered pixels recover their true ink color instead of keeping a
+          // milky white fringe — the logo composites cleanly over any dark bg.
+          const a = 255 - Math.min(d[i]!, d[i + 1]!, d[i + 2]!);
+          if (a === 0) {
+            d[i + 3] = 0;
+            continue;
+          }
+          const inv = 255 - a;
+          d[i] = Math.max(0, Math.min(255, Math.round(((d[i]! - inv) * 255) / a)));
+          d[i + 1] = Math.max(0, Math.min(255, Math.round(((d[i + 1]! - inv) * 255) / a)));
+          d[i + 2] = Math.max(0, Math.min(255, Math.round(((d[i + 2]! - inv) * 255) / a)));
+          d[i + 3] = a;
         }
         ctx.putImageData(frame, 0, 0);
       } catch {
@@ -167,7 +178,7 @@ export function LaunchSplash({ videoSrc, onFinished, skipLabel = "Click anywhere
         // the ledger-approved exception — no white design token exists).
         background: keyingFailed
           ? "white"
-          : "radial-gradient(ellipse at center, var(--color-blue-5), var(--color-blue-8) 55%, var(--color-hextech-black))",
+          : "var(--color-hextech-black)",
         opacity: fading ? 0 : 1,
         transition: `opacity ${FADE_MS}ms ease-out`,
       }}
