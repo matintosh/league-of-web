@@ -546,6 +546,50 @@ export const yourShopIconVideoUrl = (
   state: "call-to-action-intro" | "call-to-action-loop" | "click",
 ): string => staticVideoUrl(`yourshop-icon-${state}.webm`);
 
+/**
+ * Challenge-crystal celebration levels — the 8 named tiers that ship a
+ * crystal-level webm under `videos/challenges/crystal-levels/`. Distinct from
+ * `ChallengeTier` (which also has `iron`, and whose lowest crystal video is
+ * `bronze`): there is no `iron.webm` in the catalog, so this union is the exact
+ * set of levels for which `challengeCrystalVideoUrl` resolves to a real asset.
+ */
+export type ChallengeCrystalLevel =
+  | "bronze"
+  | "silver"
+  | "gold"
+  | "platinum"
+  | "diamond"
+  | "master"
+  | "grandmaster"
+  | "challenger";
+
+/**
+ * Real-client challenge-crystal celebration webm (issue #319) for a given
+ * crystal level — the animated gem the live client plays over the static
+ * challenge crystal (900×720, straight alpha, ~5.5–6.0 s one-shot celebration
+ * per level; e.g. gold is a warm-gold gem burst, challenger an ornate blue gem).
+ * Each clip composites straight (own alpha) over the static crystal glyph, so a
+ * clip that fails to load leaves the static crystal intact.
+ *
+ * Levels → `challenges/crystal-levels/{level}.webm`:
+ *   "bronze" · "silver" · "gold" · "platinum" · "diamond" ·
+ *   "master" · "grandmaster" · "challenger"
+ *
+ * All 8 confirmed HTTP 206 video/webm with alpha (2026-07). Feed the returned
+ * URL to a muted/playsInline `<video>` overlay layered over the static crystal
+ * (e.g. the `crystalVideoSrc` of `ChallengesScreen`). NO fetching happens here —
+ * pages supply URLs.
+ *
+ * NOTE: the catalog has no `iron` crystal video. Callers holding a full
+ * `ChallengeTier` (which includes `iron`) must gate on the level being a
+ * `ChallengeCrystalLevel` before calling — see the profile-screen wiring.
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/challenges/crystal-levels/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const challengeCrystalVideoUrl = (level: ChallengeCrystalLevel): string =>
+  staticVideoUrl(`challenges/crystal-levels/${level}.webm`);
+
 /*
  * MODE-SELECT BACKGROUND — CDragon asset search result (2026-07, issue #218).
  *

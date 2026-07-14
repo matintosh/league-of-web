@@ -13,8 +13,9 @@ import {
   rankedEmblemUrl,
   rankedUnrankedEmblemUrl,
   SAMPLE_CHALLENGES,
+  challengeCrystalVideoUrl,
 } from "@low/fixtures";
-import type { ChallengeCategory } from "@low/fixtures";
+import type { ChallengeCategory, ChallengeTier } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Profile sub-tab strip data
@@ -44,6 +45,19 @@ const PROFILE_TABS: ProfileTab[] = [
 const CHALLENGES_TOTAL_SCORE = 4725;
 /** Overall tier for the challenge crystal and sidebar label. */
 const CHALLENGES_SCORE_TIER = "silver" as const;
+
+/**
+ * Crystal-level celebration webm for the sidebar crystal (issue #319). Resolved
+ * only for tiers that ship a crystal clip — the catalog has no `iron` video, so
+ * an `iron` overall tier would leave the static crystal (additive/no-regress).
+ * `silver` is a crystal level, so this resolves to the SILVER celebration.
+ */
+const CHALLENGES_CRYSTAL_VIDEO_SRC: string | undefined = crystalVideoSrcForTier(CHALLENGES_SCORE_TIER);
+
+/** Map a challenge tier to its crystal-level webm, or undefined when none exists (`iron`). */
+function crystalVideoSrcForTier(tier: ChallengeTier): string | undefined {
+  return tier === "iron" ? undefined : challengeCrystalVideoUrl(tier);
+}
 
 // ---------------------------------------------------------------------------
 // Ranked queues fixture (page-level — component is fixture-value-free)
@@ -418,6 +432,7 @@ export function ProfileScreen({
           <ChallengesScreen
             totalScore={CHALLENGES_TOTAL_SCORE}
             scoreTier={CHALLENGES_SCORE_TIER}
+            crystalVideoSrc={CHALLENGES_CRYSTAL_VIDEO_SRC}
             activeCategory={challengeCategory}
             onCategoryChange={setChallengeCategory}
             challenges={filteredChallenges}
