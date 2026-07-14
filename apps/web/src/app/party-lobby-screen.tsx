@@ -22,6 +22,7 @@ import {
   gameModeMapUrl,
   championSplashUrl,
   partiesBgLoopUrl,
+  staticVideoUrl,
 } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -283,6 +284,16 @@ const MATCH_ACCEPT_SECONDS = 10;
 
 /** Fixture champion keyart for MatchFoundModal. */
 const DEMO_KEYART_SRC = championSplashUrl("Jinx");
+
+/**
+ * WAD ready-check ring videos, streamed from the CommunityDragon static-assets
+ * mirror via staticVideoUrl (see docs/reference/VIDEO-ASSETS.md — the whole corpus
+ * maps 1:1 into rcp-fe-lol-static-assets/…/videos/). The countdown ring is the
+ * visual timer; accepted intro→idle plays if the modal stays mounted.
+ */
+const MATCH_FOUND_COUNTDOWN_SRC = staticVideoUrl("timer-countdown.webm");
+const MATCH_FOUND_ACCEPTED_INTRO_SRC = staticVideoUrl("timer-accepted-intro.webm");
+const MATCH_FOUND_ACCEPTED_IDLE_SRC = staticVideoUrl("timer-accepted-idle.webm");
 
 // ---------------------------------------------------------------------------
 // Queue phase type (internal to this screen)
@@ -1042,6 +1053,9 @@ export function PartyLobbyScreen({
         subtitle="Summoner's Rift • Normal • 5v5"
         keyartSrc={DEMO_KEYART_SRC}
         crestSrc={gameModeMapUrl("sr")}
+        countdownVideoSrc={MATCH_FOUND_COUNTDOWN_SRC}
+        acceptedIntroVideoSrc={MATCH_FOUND_ACCEPTED_INTRO_SRC}
+        acceptedIdleVideoSrc={MATCH_FOUND_ACCEPTED_IDLE_SRC}
       />
     </div>
   );
