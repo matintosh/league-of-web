@@ -23,6 +23,7 @@ import {
   championSplashUrl,
   partiesBgLoopUrl,
   staticVideoUrl,
+  findMatchVideoUrl,
 } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -294,6 +295,20 @@ const DEMO_KEYART_SRC = championSplashUrl("Jinx");
 const MATCH_FOUND_COUNTDOWN_SRC = staticVideoUrl("timer-countdown.webm");
 const MATCH_FOUND_ACCEPTED_INTRO_SRC = staticVideoUrl("timer-accepted-intro.webm");
 const MATCH_FOUND_ACCEPTED_IDLE_SRC = staticVideoUrl("timer-accepted-idle.webm");
+
+/**
+ * Real-client FIND MATCH state videos (issue #310), streamed from the
+ * CommunityDragon static-assets mirror via the fixture helper. Layered over the
+ * CSS LockInButton as an intro→idle→hover→active state machine.
+ */
+const FIND_MATCH_VIDEOS = {
+  intro: findMatchVideoUrl("intro"),
+  idle: findMatchVideoUrl("idle"),
+  hover: findMatchVideoUrl("hover"),
+  active: findMatchVideoUrl("active"),
+  pulse: findMatchVideoUrl("pulse"),
+  allReturned: findMatchVideoUrl("all-returned"),
+};
 
 // ---------------------------------------------------------------------------
 // Queue phase type (internal to this screen)
@@ -885,11 +900,14 @@ export function PartyLobbyScreen({
               </span>
             </div>
 
-            {/* FIND MATCH / In Queue button */}
+            {/* FIND MATCH / In Queue button — real-client state videos overlay
+                the CSS button while idle; suppressed automatically once queueing
+                (disabled) so the grey "In Queue" treatment reads through. */}
             <LockInButton
               label={isQueueing ? "In Queue" : "Find Match"}
               disabled={isQueueing}
               onLockIn={startQueue}
+              videoSources={FIND_MATCH_VIDEOS}
             />
           </div>
 

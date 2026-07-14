@@ -345,6 +345,35 @@ export const uikitCelebrationMagicUrl = (
 ): string => `${CDRAGON_UIKIT}/videos/${kind}-magic.webm`;
 
 /**
+ * FIND MATCH button state-machine webm (issue #310).
+ *
+ * The real client's per-state FIND MATCH button frame/glow videos (VP9 with a
+ * straight alpha channel — composite as a plain overlay, not screen-blended).
+ * CommunityDragon mirrors all six under the static-assets `videos/` subtree
+ * (curl-verified 206 video/webm with range support, 2026-07), so they stream
+ * directly from a <video src> — no repo commit needed. (The rcp-fe-lol-parties
+ * plugin only mirrors the static PNG frames + SFX; the animated .webm live in
+ * rcp-fe-lol-static-assets/videos/ and are reached via `staticVideoUrl`.)
+ *
+ * States → `find-match-button-{state}.webm`:
+ *   "intro"        one-shot reveal — white border traces the trapezoid (1.1 s, 230×100)
+ *   "idle"         ambient shimmer loop behind the fill (7.6 s, 230×100)
+ *   "hover"        bright cyan aurora fill + white border glow (4.8 s, 230×100)
+ *   "active"       pressed/engaged energy streaks (1.3 s, 230×100)
+ *   "pulse"        green attention-pulse sweep, party ready-to-start (1.6 s, 300×200)
+ *   "all-returned" steady green outline glow, party all-ready (5 s, 300×200)
+ *
+ * NOTE: intro/idle/hover/active are 230×100; pulse/all-returned are 300×200
+ * (larger green glow bleed). The LockInButton overlay centers each on the
+ * button and lets the bleed extend beyond the trapezoid (pointer-events-none).
+ *
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const findMatchVideoUrl = (
+  state: "intro" | "idle" | "hover" | "active" | "pulse" | "all-returned",
+): string => staticVideoUrl(`find-match-button-${state}.webm`);
+
+/**
  * Champ-select card-select webm — the animated summoner card states shown in
  * the champion-select carousel (idle loop, card intros, hover states).
  *
