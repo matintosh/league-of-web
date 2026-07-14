@@ -127,6 +127,8 @@ export { EmoteWheel } from "./collection/emote-wheel";
 export type { EmoteWheelProps } from "./collection/emote-wheel";
 export { ProfileRankedScreen } from "./collection/profile-ranked-screen";
 export type { ProfileRankedScreenProps, RankedFeatureColumn, RankedMilestone, RankedSplitProgress } from "./collection/profile-ranked-screen";
+export { RankPromotionOverlay } from "./collection/rank-promotion-overlay";
+export type { RankPromotionOverlayProps } from "./collection/rank-promotion-overlay";
 export { RunesScreen, runePathIconUrl, runeIconUrl } from "./collection/runes-screen";
 export type { RunesScreenProps, RunePage, RunePath } from "./collection/runes-screen";
 export { SkinCard } from "./collection/skin-card";

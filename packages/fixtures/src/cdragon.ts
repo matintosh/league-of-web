@@ -220,6 +220,84 @@ export const rankedWingVideoUrl = (tier: RankedWingTier): string =>
   staticVideoUrl(`ranked/emblem-wings-magic-${tier}.webm`);
 
 /**
+ * Tier a promotion celebration animates AWAY FROM (the "old tier" clip that
+ * opens the sequence). The `-from-` set is the departing rank, so it spans
+ * `unranked` up through `grandmaster` but has **no `challenger`** — nobody is
+ * ever promoted *from* the apex tier (confirmed 404 on `tier-promotion-from-
+ * challenger`, 2026-07). It DOES include `emerald` (the WAD ranked video set
+ * carries emerald, unlike the jsDelivr emblem PNGs — see [[RankedWingTier]]).
+ */
+export type TierPromotionFromTier =
+  | "unranked"
+  | "iron"
+  | "bronze"
+  | "silver"
+  | "gold"
+  | "platinum"
+  | "emerald"
+  | "diamond"
+  | "master"
+  | "grandmaster";
+
+/**
+ * Tier a promotion celebration animates INTO (the "new tier" clip that closes
+ * the sequence). The `-to-` set is the arriving rank, so it spans `iron` up
+ * through `challenger` but has **no `unranked`** — a promotion never lands you
+ * back at no-rank (confirmed 404 on `tier-promotion-to-unranked`, 2026-07).
+ * Includes `emerald`, as with the `-from-` set.
+ */
+export type TierPromotionToTier =
+  | "iron"
+  | "bronze"
+  | "silver"
+  | "gold"
+  | "platinum"
+  | "emerald"
+  | "diamond"
+  | "master"
+  | "grandmaster"
+  | "challenger";
+
+/**
+ * Ranked tier-promotion celebration video (webm, alpha channel), 1280×720
+ * full-frame. Two directions compose one celebration:
+ *   - `"from"` — the departing "old tier" open (~2.4s), one of
+ *     {@link TierPromotionFromTier}.
+ *   - `"to"` — the arriving "new tier" payoff (~4.6–6.8s), one of
+ *     {@link TierPromotionToTier}.
+ * Feed both to `RankPromotionOverlay` (fromSrc/toSrc): it plays `from` once,
+ * crossfades, then plays `to` once. The clips are straight-alpha overlays —
+ * render them muted/autoPlay/playsInline with no loop (see
+ * docs/reference/VIDEO-ASSETS.md, ranked/).
+ *
+ * The `direction` narrows the accepted `tier` union, so an invalid pairing
+ * (e.g. `"to"` + `"unranked"`) is a compile error rather than a 404.
+ *
+ * Examples confirmed HTTP 206 video/webm (2026-07):
+ *   tierPromotionVideoUrl("from", "gold")       → …/videos/ranked/tier-promotion-from-gold.webm
+ *   tierPromotionVideoUrl("from", "unranked")   → …/videos/ranked/tier-promotion-from-unranked.webm
+ *   tierPromotionVideoUrl("to", "platinum")     → …/videos/ranked/tier-promotion-to-platinum.webm
+ *   tierPromotionVideoUrl("to", "challenger")   → …/videos/ranked/tier-promotion-to-challenger.webm
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/ranked/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export function tierPromotionVideoUrl(
+  direction: "from",
+  tier: TierPromotionFromTier,
+): string;
+export function tierPromotionVideoUrl(
+  direction: "to",
+  tier: TierPromotionToTier,
+): string;
+export function tierPromotionVideoUrl(
+  direction: "from" | "to",
+  tier: TierPromotionFromTier | TierPromotionToTier,
+): string {
+  return staticVideoUrl(`ranked/tier-promotion-${direction}-${tier}.webm`);
+}
+
+/**
  * Unranked queue crest URL — the emblem-family asset used when a summoner
  * has no rank yet (as opposed to `rankedMiniCrestUrl("unranked")` which is a
  * 16px SVG ring suitable only for small badge indicators).
