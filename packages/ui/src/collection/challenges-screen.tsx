@@ -14,6 +14,17 @@ export interface ChallengesScreenProps {
   totalScore: number;
   /** Player's overall tier, e.g. "silver". */
   scoreTier: ChallengeTier;
+  /**
+   * Real-client crystal-level celebration webm URL (issue #319) for the player's
+   * overall crystal, layered over the static sidebar crystal as an animated gem.
+   * Optional and additive: when omitted (or when the clip fails to load) the
+   * static `CrystalIcon` shows unchanged. The video is `pointer-events-none` and
+   * fully suppressed under `prefers-reduced-motion: reduce`.
+   *
+   * Pages supply this from `@low/fixtures` (`challengeCrystalVideoUrl`); note the
+   * catalog has no `iron` clip, so pages gate on the tier being a crystal level.
+   */
+  crystalVideoSrc?: string;
   /** Currently active category filter. Controlled by the page. */
   activeCategory: ChallengeCategory;
   /** Called when the player clicks a category filter. */
@@ -98,6 +109,60 @@ function CrystalIcon({ tier }: { tier: ChallengeTier }) {
       <line x1="2"  y1="55" x2="12" y2="50" stroke="currentColor" strokeWidth="1" opacity="0.6" />
       <line x1="62" y1="55" x2="52" y2="50" stroke="currentColor" strokeWidth="1" opacity="0.6" />
     </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// CrystalVideoLayer — real-client crystal celebration webm (issue #319)
+//
+// Overlays the animated crystal-level gem (straight alpha, ~900×720) on top of
+// the static CrystalIcon glyph. Additive & non-regressing:
+//   - Only mounts when a `src` is supplied; the static crystal always renders
+//     beneath, so an absent/broken clip leaves the exact static look.
+//   - `onError` drops the layer (video 404/decode fail → static crystal shows).
+//   - pointer-events-none + aria-hidden: never interactive, never reaches AT.
+//   - `motion-reduce:hidden` — suppressed entirely under prefers-reduced-motion
+//     (pure CSS, SSR-safe, no first-frame flash); the static crystal remains.
+//
+// The clip is a one-shot celebration; it loops so the sidebar gem keeps a gentle
+// ambient life rather than freezing on the last frame.
+// ---------------------------------------------------------------------------
+
+function CrystalVideoLayer({ src }: { src: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+
+  return (
+    <video
+      key={src}
+      src={src}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="none"
+      aria-hidden="true"
+      onError={() => setFailed(true)}
+      className="pointer-events-none absolute inset-0 h-full w-full object-contain motion-reduce:hidden"
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
+// CrystalDisplay — static crystal glyph + optional celebration video overlay
+// ---------------------------------------------------------------------------
+
+function CrystalDisplay({ tier, videoSrc }: { tier: ChallengeTier; videoSrc?: string }) {
+  return (
+    <div className="relative flex h-[72px] w-16 items-center justify-center">
+      {/* Static crystal — always rendered; sole content under reduced motion or
+          when no video is supplied / the clip fails to load. */}
+      <CrystalIcon tier={tier} />
+      {/* Real-client crystal-level celebration (issue #319). The gem is authored
+          at 900×720 with straight alpha and scales down via object-contain,
+          compositing over the static glyph beneath. */}
+      {videoSrc && <CrystalVideoLayer src={videoSrc} />}
+    </div>
   );
 }
 
@@ -391,6 +456,10 @@ function ChallengeCard({
  * Left sidebar: hexagonal crystal icon, total score, tier label, 6 category
  * filter buttons. Right: 5-column ChallengeCard grid with hover tooltips.
  *
+ * When `crystalVideoSrc` is supplied the real-client crystal-level celebration
+ * webm (issue #319) layers over the static sidebar crystal — additive
+ * (pointer-events-none, static crystal beneath, hidden under reduced motion).
+ *
  * Tooltip side: cards in the last two grid columns open their tooltip to the
  * left (right-full) so it stays within the 1280px viewport.
  *
@@ -400,6 +469,7 @@ function ChallengeCard({
 export function ChallengesScreen({
   totalScore,
   scoreTier,
+  crystalVideoSrc,
   activeCategory,
   onCategoryChange,
   challenges,
@@ -415,7 +485,7 @@ export function ChallengesScreen({
         aria-label="Challenge score and categories"
       >
         <div className="flex justify-center">
-          <CrystalIcon tier={scoreTier} />
+          <CrystalDisplay tier={scoreTier} videoSrc={crystalVideoSrc} />
         </div>
         <div className="mt-3 text-center">
           <p className="font-display text-3xl leading-none text-gold-cream tracking-wide">

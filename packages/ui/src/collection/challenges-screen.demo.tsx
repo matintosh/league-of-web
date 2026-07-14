@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { SAMPLE_CHALLENGES } from "@low/fixtures";
+import { SAMPLE_CHALLENGES, challengeCrystalVideoUrl } from "@low/fixtures";
 import type { ChallengeCategory } from "@low/fixtures";
 import { ChallengesScreen } from "./challenges-screen";
 
@@ -16,6 +16,27 @@ export function ChallengesScreenAllDemo() {
       <ChallengesScreen
         totalScore={4725}
         scoreTier="silver"
+        crystalVideoSrc={challengeCrystalVideoUrl("silver")}
+        activeCategory={activeCategory}
+        onCategoryChange={setActiveCategory}
+        challenges={filtered}
+        onChallengeClick={(id) => console.log("clicked", id)}
+      />
+    </div>
+  );
+}
+
+export function ChallengesScreenStaticCrystalDemo() {
+  const [activeCategory, setActiveCategory] = useState<ChallengeCategory>("all");
+  const filtered =
+    activeCategory === "all"
+      ? SAMPLE_CHALLENGES
+      : SAMPLE_CHALLENGES.filter((c) => c.category === activeCategory);
+  return (
+    <div style={{ height: 500 }}>
+      <ChallengesScreen
+        totalScore={2350}
+        scoreTier="bronze"
         activeCategory={activeCategory}
         onCategoryChange={setActiveCategory}
         challenges={filtered}
