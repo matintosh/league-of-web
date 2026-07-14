@@ -11,6 +11,7 @@ import {
   PlayerBannerQueueingDemo,
   PlayerBannerTierGemDemo,
   PlayerBannerBadgeSlotsDemo,
+  PlayerBannerSweepDemo,
 } from "./player-banner.demo";
 
 export const playerBannerShowcase: ShowcaseEntry = {
@@ -85,6 +86,12 @@ export const playerBannerShowcase: ShowcaseEntry = {
       notes:
         "badges tuple (3 optional BadgeSlot entries): filled slots show icon art with a colored ring; empty slots render as dark circles with a muted ring. Shows all-filled, two-filled, one-filled, all-empty, and no-badges-prop (legacy) states.",
       render: () => <PlayerBannerBadgeSlotsDemo />,
+    },
+    {
+      name: "Banner sweep — one-shot entrance flourish (with / without)",
+      notes:
+        "sweepVideoSrc: the real-client 272×620 banner-sweep webm plays ONCE over the flag on mount then unmounts to the static banner (an entrance flourish, not a loop). Self uses bannerSweepVideoUrl(\"primary\"), ally uses (\"ally\"); the third banner has no sweepVideoSrc as the static baseline. Click Replay to remount and re-fire the sweep. The overlay sits above the banner art but below the crest/text/badges (they stay legible mid-flourish); suppressed under prefers-reduced-motion; a load error drops the layer leaving the static flag.",
+      render: () => <PlayerBannerSweepDemo />,
     },
   ],
 };

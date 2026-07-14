@@ -573,6 +573,34 @@ export const leagueLogoVideoUrl = (
 ): string => staticVideoUrl(`league-logo-${state}.webm`);
 
 /**
+ * Real-client lobby player-flag banner-sweep magic video (webm, straight alpha)
+ * for a given kind — the one-shot entrance flourish the live client sweeps over a
+ * party banner as a member loads in: a gold light streaks down the flag, the whole
+ * heraldic silhouette lights up (teal side rails, a gold ring at the medallion, the
+ * bottom double-V chevron), then settles. Each clip is 272×620 — the exact aspect
+ * of the `lobby/player-banner` flag box — and ~1.8 s, played ONCE (not looped).
+ * Composites straight (its own alpha) over the static banner, so a clip that fails
+ * to load leaves the static flag intact.
+ *
+ * Kinds → `banner_{kind}.webm`:
+ *   "primary" the self / local-player banner sweep (warmer gold) — banner_primary.webm
+ *   "ally"    an ally / teammate banner sweep (cooler)           — banner_ally.webm
+ *
+ * Both confirmed HTTP 206 video/webm with alpha (2026-07). Feed the returned URL to
+ * a muted/autoPlay/playsInline `<video>` overlay layered over the static flag (e.g.
+ * the `sweepVideoSrc` of `PlayerBanner`): primary for the isSelf slot, ally for the
+ * other members. NO fetching happens here — pages supply URLs.
+ *
+ * NOTE: `provisional-banner-loop.webm` (272×660, profile-banner family) is a
+ * different, looping asset and is intentionally NOT covered by this helper.
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/banner_{kind}.webm
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const bannerSweepVideoUrl = (kind: "primary" | "ally"): string =>
+  staticVideoUrl(`banner_${kind}.webm`);
+
+/**
  * Exalted (Mythic) skin card-frame tier. The Mythic Shop's exalted cards ship
  * three ascending rarity frames, each a distinct art-deco border treatment:
  *   "one"   — gold/teal banner (tier 1)

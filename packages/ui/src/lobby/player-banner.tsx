@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useState } from "react";
 import type { ReactNode } from "react";
 
 // ---------------------------------------------------------------------------
@@ -114,6 +114,20 @@ export interface PlayerBannerProps {
    * Example: [{ iconSrc: "..." }, undefined, { iconSrc: "...", ringColor: "var(--color-blue-2)" }]
    */
   badges?: [BadgeSlot?, BadgeSlot?, BadgeSlot?];
+  /**
+   * Optional real-client banner-sweep video (webm, straight alpha) — the one-shot
+   * entrance flourish that sweeps over the flag as the member loads in. Pass
+   * `bannerSweepVideoUrl("primary")` for the self slot / `("ally")` for others
+   * (from @low/fixtures). The 272×620 clip fills the flag box and composites over
+   * the static banner art, BELOW the avatar crest / text / badges so they stay
+   * legible mid-flourish.
+   *
+   * Plays ONCE on mount then unmounts (an entrance flourish, not a loop), leaving
+   * the static flag. Suppressed under `prefers-reduced-motion`; a load error drops
+   * the layer — in both cases the static banner is unaffected. Only rendered on
+   * filled banners (ignored on `empty` slots). No layout shift.
+   */
+  sweepVideoSrc?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -478,6 +492,50 @@ function AvatarCrest({
 }
 
 // ---------------------------------------------------------------------------
+// BannerSweepLayer — real-client player-flag entrance sweep (issue #329)
+//
+// Overlays the animated banner-sweep webm (straight alpha, 272×620 — the exact
+// flag-box aspect) over the static banner as an entrance flourish. Additive &
+// non-regressing:
+//   - Only mounts when a `src` is supplied; the static banner always renders
+//     beneath, so an absent/broken clip leaves the exact static look.
+//   - Plays ONCE (no loop) then unmounts on `onEnded` — the sweep is an entrance
+//     flourish, not an idle loop, and unmounting avoids leaving the clip's faint
+//     resting ring compositing over the real medallion.
+//   - `onError` drops the layer (video 404/decode fail → static banner shows).
+//   - pointer-events-none + aria-hidden: never interactive, never reaches AT.
+//   - `motion-reduce:hidden` — suppressed entirely under prefers-reduced-motion
+//     (pure CSS, SSR-safe, no first-frame flash); the static banner remains.
+//
+// z-order: the layer sits at z-[1] inside the inner flag surface — ABOVE the
+// banner background art (chevron band + wing glaze, which are non-positioned /
+// z-0) but BELOW the avatar crest (z-10), title, badges, and footer, so those
+// stay legible through the flourish. objectFit:fill stretches the clip to the
+// flag box so its ring/rails/notch register onto the real medallion/edges/notch.
+// ---------------------------------------------------------------------------
+
+function BannerSweepLayer({ src }: { src: string }) {
+  const [done, setDone] = useState(false);
+  if (done) return null;
+
+  return (
+    <video
+      key={src}
+      src={src}
+      autoPlay
+      muted
+      playsInline
+      preload="auto"
+      aria-hidden="true"
+      onEnded={() => setDone(true)}
+      onError={() => setDone(true)}
+      className="pointer-events-none absolute inset-0 z-[1] h-full w-full motion-reduce:hidden"
+      style={{ objectFit: "fill" }}
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
 // PlayerBanner
 // ---------------------------------------------------------------------------
 
@@ -514,6 +572,7 @@ export function PlayerBanner({
   queueing = false,
   tierGem,
   badges,
+  sweepVideoSrc,
 }: PlayerBannerProps) {
   const uid = useId();
   const showCrown = crownChip ?? isSelf;
@@ -648,6 +707,11 @@ export function PlayerBanner({
               opacity: 0.18,
             }}
           />
+
+          {/* Banner-sweep entrance flourish (issue #329) — one-shot webm layered
+               over the flag box, above the background art but below the crest /
+               text / badges (z-[1]). See BannerSweepLayer for the full contract. */}
+          {sweepVideoSrc && <BannerSweepLayer src={sweepVideoSrc} />}
 
           {/* Wing crest + avatar medallion.
                Wing art is sized relative to the banner (not the avatar ring) so
