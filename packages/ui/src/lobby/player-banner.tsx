@@ -86,6 +86,7 @@ export interface PlayerBannerProps {
   /**
    * When true, renders an empty banner (dark panel, no avatar/name/wings).
    * Represents an unfilled lobby slot — dead visual, no invite affordance.
+   * Superseded by `invited` when both are set (see `invited`).
    */
   empty?: boolean;
   /**
@@ -128,6 +129,39 @@ export interface PlayerBannerProps {
    * filled banners (ignored on `empty` slots). No layout shift.
    */
   sweepVideoSrc?: string;
+  /**
+   * When true, renders the INVITED slot — a pending party member the captain has
+   * invited who has not yet accepted. The real client shows an animated heraldic
+   * flag here (dark panel, a glowing blue "summon" ring, rising blue mist) instead
+   * of the plain empty `+` circle. Mutually exclusive with `empty`; when both are
+   * set, `invited` wins.
+   *
+   * The flag box uses the teammate footprint (96px wide, art-ratio tall) so an
+   * invited slot reads as a real flag in the banner row, not a placeholder circle.
+   */
+  invited?: boolean;
+  /**
+   * Optional invited-flag loop video (webm, straight alpha — the clip carries the
+   * whole banner silhouette + gold trim in its alpha, so it fills the flag box
+   * standalone). These clips are user-extracted (WAD) and NOT CommunityDragon-
+   * mirrored — the parties plugin ships only the static `invited-banner.png` — so
+   * pages supply a LOCAL `/media/...` URL (e.g. `/media/invited-banner/invited-banner-pulse.webm`).
+   *
+   * The clip LOOPS continuously (an idle "searching" pulse, not a one-shot). It is
+   * suppressed under `prefers-reduced-motion` and dropped on a load error; in both
+   * cases the static `invitedFallbackSrc` PNG remains. Only meaningful when
+   * `invited` is true. No layout shift.
+   */
+  invitedVideoSrc?: string;
+  /**
+   * Static invited-flag PNG shown BENEATH `invitedVideoSrc` and used as the sole
+   * visual under `prefers-reduced-motion` or on video load error. Pass
+   * `partyBannerUrl("invited")` from @low/fixtures (the CommunityDragon
+   * rcp-fe-lol-parties `invited-banner.png`, 178×550 — one resting frame of the
+   * pulse). Defaults to the mirror of that URL baked into this component
+   * (`BANNER_ART.invited`) when omitted. Only meaningful when `invited` is true.
+   */
+  invitedFallbackSrc?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -567,6 +601,54 @@ function BannerSweepLayer({ src }: { src: string }) {
 }
 
 // ---------------------------------------------------------------------------
+// InvitedBannerLayer — animated pending-invite flag (issue #347)
+//
+// Probe findings (2026-07-14) on the user-extracted (WAD) assets, none of which
+// are CommunityDragon-mirrored (the parties plugin ships only invited-banner.png,
+// confirmed webm → 404):
+//   invited-banner{-1,-2}.webm  196×592  3s  VP9 alpha  — BYTE-IDENTICAL to each
+//       other; a subtle blue summon-ring pulse with faint mist. Shipped as
+//       invited-banner-loop.webm.
+//   invited-banner.webm         178×550  5s  VP8 alpha  — the "classic pulse":
+//       brighter ring + heavy rising blue smoke. Its 178×550 frame matches the
+//       static invited-banner.png EXACTLY (the PNG is one resting frame of it).
+//       Shipped as invited-banner-pulse.webm.
+// Both clips are SEAMLESS CONTINUOUS LOOPS (first↔last frame diff ≈ 0), not
+// intro→loop, and each carries the full banner silhouette + gold trim in its
+// alpha — so the video fills the flag box standalone (no banner-filled behind it).
+//
+// State machine (idle loop, not a one-shot entrance like BannerSweepLayer):
+//   - Loops for as long as the invite is pending (`loop`, no unmount).
+//   - `motion-reduce:hidden` suppresses it under prefers-reduced-motion, leaving
+//     the static invited PNG (rendered beneath) — the resting-frame look.
+//   - `onError` drops the layer → the static PNG shows (video 404/decode fail).
+//   - pointer-events-none + aria-hidden: never interactive, never reaches AT.
+// The static PNG sits at z-0; the video at z-[1]. Both fill the flag box (their
+// own silhouette registers, so objectFit:fill is exact).
+// ---------------------------------------------------------------------------
+
+function InvitedBannerLayer({ src }: { src: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+
+  return (
+    <video
+      key={src}
+      src={src}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      aria-hidden="true"
+      onError={() => setFailed(true)}
+      className="pointer-events-none absolute inset-0 z-[1] h-full w-full motion-reduce:hidden"
+      style={{ objectFit: "fill" }}
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
 // PlayerBanner
 // ---------------------------------------------------------------------------
 
@@ -577,6 +659,10 @@ function BannerSweepLayer({ src }: { src: string }) {
  * + summoner name floating ABOVE the shaped banner, optional autofill-protected chip at foot.
  * Teammate banner: narrower, slightly dimmed, smaller avatar.
  * Empty banner (empty=true): dark panel with no content — represents an unfilled slot.
+ * Invited banner (invited=true): animated heraldic flag for a pending (invited, not
+ *   yet accepted) member — dark panel, glowing blue summon ring, rising blue mist,
+ *   looping from `invitedVideoSrc` over the static `invitedFallbackSrc` PNG. Takes
+ *   precedence over `empty`.
  *
  * Heraldic shape: clip-path polygon with double-V pointed bottom. Outer shell uses
  * gold-4 background; inner fill uses blue-7 (self) or grey-4 (teammate). The 2px
@@ -604,6 +690,9 @@ export function PlayerBanner({
   tierGem,
   badges,
   sweepVideoSrc,
+  invited = false,
+  invitedVideoSrc,
+  invitedFallbackSrc,
 }: PlayerBannerProps) {
   const uid = useId();
   const showCrown = crownChip ?? isSelf;
@@ -611,6 +700,41 @@ export function PlayerBanner({
 
   // Width: self is wider (120px), teammates are narrower (96px)
   const wClass = isSelf ? "w-[120px]" : "w-[96px]";
+
+  // Invited slot — a pending party member: an animated heraldic flag (dark panel,
+  // glowing blue summon ring, rising blue mist) that replaces the plain empty `+`
+  // circle. `invited` takes precedence over `empty` when both are set. The flag
+  // box uses the teammate footprint so it reads as a real flag in the banner row.
+  // The static invited PNG is the reduced-motion / video-error fallback beneath
+  // the looping video, both filling the same flag box (each carries its own
+  // silhouette + trim in alpha).
+  if (invited) {
+    const invBoxW = TEAM_W;
+    const invBoxH = Math.round(invBoxW * ART_RATIO);
+    const staticSrc = invitedFallbackSrc ?? BANNER_ART.invited;
+
+    return (
+      <div
+        data-shot="player-banner-invited"
+        className="flex flex-col items-center"
+        aria-label="Invited party member — pending"
+      >
+        <div className="relative" style={{ width: invBoxW, height: invBoxH }}>
+          {/* Static invited flag — resting-frame PNG; sole visual under
+               reduced-motion or on video error. Fills the flag box. */}
+          <img
+            src={staticSrc}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+            style={{ objectFit: "fill" }}
+          />
+          {/* Looping animated pulse over the static frame. See InvitedBannerLayer. */}
+          {invitedVideoSrc && <InvitedBannerLayer src={invitedVideoSrc} />}
+        </div>
+      </div>
+    );
+  }
 
   // Empty slot — idle: large circular + placeholder; queueing: dark banner with blue glow ring
   if (empty) {
