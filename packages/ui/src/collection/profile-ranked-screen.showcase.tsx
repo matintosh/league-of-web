@@ -3,6 +3,9 @@ import {
   ProfileRankedDefaultDemo,
   ProfileRankedInProgressDemo,
   ProfileRankedSplitCompleteDemo,
+  ProfileRankedWingsGoldDemo,
+  ProfileRankedWingsEmeraldDemo,
+  ProfileRankedWingsChallengerDemo,
 } from "./profile-ranked-screen.demo";
 
 export const profileRankedScreenShowcase: ShowcaseEntry = {
@@ -10,7 +13,7 @@ export const profileRankedScreenShowcase: ShowcaseEntry = {
   name: "Profile Ranked Screen",
   area: "collection",
   description:
-    "Profile → RANKED sub-tab content. Season overview with 3-column feature strip (Conquer the Rift / Start Your Climb / Earn Rewards), centred QUEUE UP CTA button, and a split SP progress bar with 3 hexagonal SP checkpoint badges.",
+    "Profile → RANKED sub-tab content. Season overview with 3-column feature strip (Conquer the Rift / Start Your Climb / Earn Rewards), centred QUEUE UP CTA button, and a split SP progress bar with 3 hexagonal SP checkpoint badges. A feature column can carry an animated ranked-emblem wings video (alpha webm) over its crest art.",
   variants: [
     {
       name: "Default — pre-placement",
@@ -29,6 +32,24 @@ export const profileRankedScreenShowcase: ShowcaseEntry = {
       notes:
         "All three milestones reached — all badges at gold-3/blue-2 bright state. All connector lines gold-3. Time remaining shows 0D 0H 0M.",
       render: () => <ProfileRankedSplitCompleteDemo />,
+    },
+    {
+      name: "Emblem wings — Gold",
+      notes:
+        "The middle \"Start Your Climb\" tile overlays the animated Gold ranked-emblem wings (208×270 alpha webm) over the crest art; outer tiles stay static. Wings loop; hidden under prefers-reduced-motion (static crest shows through).",
+      render: () => <ProfileRankedWingsGoldDemo />,
+    },
+    {
+      name: "Emblem wings — Emerald",
+      notes:
+        "Emerald wings — the tier missing from the jsDelivr emblem PNG set (ICON-SOURCES.md), available here as the animated wing loop. Same alpha overlay, no blend, additive over the static crest.",
+      render: () => <ProfileRankedWingsEmeraldDemo />,
+    },
+    {
+      name: "Emblem wings — Challenger",
+      notes:
+        "Challenger blue wings — matches the reference tile's electric-blue emblem art. This is the tier wired into the live Profile → Ranked tab.",
+      render: () => <ProfileRankedWingsChallengerDemo />,
     },
   ],
 };
