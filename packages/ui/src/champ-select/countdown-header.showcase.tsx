@@ -7,12 +7,26 @@ export const countdownHeaderShowcase: ShowcaseEntry = {
   name: "Countdown Header",
   area: "champ-select",
   description:
-    "Centered phase header for champion select: display-font title with gold-4 flanking hairlines, a teal/blue-2 draining progress bar on a grey-3 track, and a large gold-1 seconds counter. Parent owns the interval.",
+    "Centered phase header for champion select: display-font title flanked by filigree scroll brackets (gold-4/gold-5, traced from the reference ornament), and a large gold-1 seconds counter centered between two symmetric teal progress bars that drain OUTWARD from the number. Parent owns the interval.",
   variants: [
     {
-      name: "Full — 62 of 90s",
+      name: "Full — 90 of 90s",
       notes:
-        "Bar at ~69% width, matching the reference screenshot (62s remaining of 90s total). Title uppercase via CSS transform.",
+        "Both bars full; bright teal caps at the outer ends. Filigree brackets flank the title, curling toward center.",
+      render: () => (
+        <div className="bg-hextech-black px-8 py-6 w-full max-w-lg">
+          <CountdownHeader
+            title="Choose Your Loadout!"
+            secondsRemaining={90}
+            totalSeconds={90}
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Mid — 62 of 90s",
+      notes:
+        "Bars at ~69%; fill has drained inward from the number, leaving the bright outer caps.",
       render: () => (
         <div className="bg-hextech-black px-8 py-6 w-full max-w-lg">
           <CountdownHeader
@@ -24,9 +38,9 @@ export const countdownHeaderShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "Nearly empty — 5 of 90s",
+      name: "Low — 5 of 90s",
       notes:
-        "Bar at ~5.6% width, hugging the left. End-cap gold-4 tab visible near the left edge.",
+        "Bars at ~5.6%; only a sliver of teal remains hugging each outer end.",
       render: () => (
         <div className="bg-hextech-black px-8 py-6 w-full max-w-lg">
           <CountdownHeader
@@ -40,7 +54,7 @@ export const countdownHeaderShowcase: ShowcaseEntry = {
     {
       name: "Zero — 0 of 90s",
       notes:
-        "Bar fully drained (0% width). End-cap hidden. Fraction clamped to 0 — no negative rendering.",
+        "Both bars fully drained (0% width) — bare dark tracks with the gold baseline. Fraction clamped to 0; no negative rendering.",
       render: () => (
         <div className="bg-hextech-black px-8 py-6 w-full max-w-lg">
           <CountdownHeader
@@ -54,7 +68,7 @@ export const countdownHeaderShowcase: ShowcaseEntry = {
     {
       name: "Ticking demo — live countdown",
       notes:
-        "Live 30-second countdown managed by TickingCountdownDemo (client component). Bar drains in real time; resets to 30 when it hits 0.",
+        "Live 30-second countdown managed by TickingCountdownDemo (client component). Both bars drain in real time; resets to 30 when it hits 0.",
       render: () => <TickingCountdownDemo />,
     },
   ],
