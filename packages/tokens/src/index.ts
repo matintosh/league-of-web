@@ -98,3 +98,23 @@ export const palette = {
 } as const;
 
 export type Palette = typeof palette;
+
+/**
+ * Hextech motion presets (issue #299) — duration + easing pairs mirroring
+ * Riot's shared-mixin approach so all client motion "feels Hextech". Exposed
+ * as CSS custom properties in theme.css (`--motion-soft`, etc.); these TS
+ * constants are the rare-case escape hatch (e.g. Web Animations API / canvas).
+ *
+ * Three-way sync: these 3 values must stay identical to the `--motion-*`
+ * custom properties in BOTH blocks of packages/tokens/src/theme.css.
+ */
+export const motion = {
+  /** Settle — soft ease-out, ~400-500ms (pieces settling into place). */
+  soft: "450ms cubic-bezier(0.22, 1, 0.36, 1)",
+  /** Attention — sharp overshoot snap, ~200ms (ready check, alerts). */
+  snap: "200ms cubic-bezier(0.5, 0, 0.2, 1.4)",
+  /** Crossfade — video state-machine intro/loop/outro blend, 200-300ms. */
+  crossfade: "250ms cubic-bezier(0.4, 0, 0.2, 1)",
+} as const;
+
+export type Motion = typeof motion;

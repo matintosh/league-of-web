@@ -126,7 +126,16 @@ function AcceptTrapClipDefs({ id }: { id: string }) {
   );
 }
 
-function AcceptTrapezoid({ onClick, clipId }: { onClick: () => void; clipId: string }) {
+function AcceptTrapezoid({
+  onClick,
+  clipId,
+  pulseClass,
+}: {
+  onClick: () => void;
+  clipId: string;
+  /** Instance-scoped entrance-pulse class applied to the glow overlay on mount. */
+  pulseClass: string;
+}) {
   const clipRef = `url(#${clipId})`;
   return (
     <button
@@ -179,6 +188,20 @@ function AcceptTrapezoid({ onClick, clipId }: { onClick: () => void; clipId: str
         }}
       />
 
+      {/* Entrance glow pulse — a clipped teal wash over the fill that brightens
+          twice on mount to draw attention, then rests invisible (base opacity 0;
+          the persistent glow is the button's drop-shadow). Disabled under
+          prefers-reduced-motion. Purely decorative. */}
+      <span
+        aria-hidden="true"
+        className={`pointer-events-none absolute opacity-0 ${pulseClass}`}
+        style={{
+          inset: ACCEPT_BORDER_PX,
+          clipPath: clipRef,
+          background: "color-mix(in srgb, var(--color-blue-2) 40%, transparent)",
+        }}
+      />
+
       <span
         className="relative z-10 font-display text-sm tracking-[0.2em] uppercase select-none text-gold-1 group-hover:text-gold-2 group-active:text-gold-2"
         style={{ transition: "color 150ms" }}
@@ -224,8 +247,55 @@ export function MatchFoundModal({
 
   const arcFraction = totalSeconds > 0 ? Math.min(1, Math.max(0, secondsRemaining / totalSeconds)) : 1;
 
+  // Entrance keyframe names are scoped to this instance's useId so multiple
+  // mounted modals (or showcase remounts) never collide. `sweep` draws the teal
+  // arc around the ring on mount; `enter` scales+fades the modal in with snap
+  // easing; `pulse` gives ACCEPT a subtle attention glow. All timing/easing
+  // comes from the Hextech motion tokens — zero ad-hoc bezier/duration literals.
+  const scope = uid.replace(/[^a-zA-Z0-9-]/g, "");
+  const kfSweep = `mfm-sweep-${scope}`;
+  const kfEnter = `mfm-enter-${scope}`;
+  const kfPulse = `mfm-pulse-${scope}`;
+
   return (
     <>
+      {/* Instance-scoped entrance keyframes. prefers-reduced-motion disables all
+          three so the modal appears instantly, fully visible (no sweep/scale). */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+@keyframes ${kfEnter} {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes ${kfSweep} {
+  from { stroke-dashoffset: 100; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes ${kfPulse} {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+.mfm-enter-${scope} {
+  animation: ${kfEnter} var(--motion-snap) both;
+}
+.mfm-sweep-${scope} {
+  animation: ${kfSweep} var(--motion-soft) backwards;
+}
+.mfm-pulse-${scope} {
+  animation: ${kfPulse} var(--motion-crossfade) 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mfm-enter-${scope},
+  .mfm-sweep-${scope},
+  .mfm-pulse-${scope} {
+    animation: none;
+  }
+}
+`,
+        }}
+      />
+
       {/* 1. Full-screen backdrop — not dismissible, no onClick */}
       <div aria-hidden="true" className="fixed inset-0 z-50 bg-hextech-black/70" />
 
@@ -237,7 +307,7 @@ export function MatchFoundModal({
           role="alertdialog"
           aria-modal="true"
           aria-labelledby={titleId}
-          className="relative w-[480px] h-[480px]"
+          className={`relative w-[480px] h-[480px] mfm-enter-${scope}`}
         >
           {/* 4. Keyart disc */}
           <div className="absolute inset-0 rounded-full overflow-hidden">
@@ -275,6 +345,7 @@ export function MatchFoundModal({
               </filter>
             </defs>
             <circle
+              className={`mfm-sweep-${scope}`}
               cx="240"
               cy="240"
               r="232"
@@ -319,7 +390,7 @@ export function MatchFoundModal({
             className="absolute left-1/2 -translate-x-1/2"
             style={{ bottom: "24px", width: "280px" }}
           >
-            <AcceptTrapezoid onClick={onAccept} clipId={acceptClipId} />
+            <AcceptTrapezoid onClick={onAccept} clipId={acceptClipId} pulseClass={`mfm-pulse-${scope}`} />
           </div>
         </div>
 

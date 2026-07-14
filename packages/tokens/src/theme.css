@@ -131,6 +131,15 @@
   /* Typography — font files loaded by the app via next/font, exposed as vars */
   --font-display: var(--font-marcellus), "Marcellus", serif;
   --font-body: var(--font-inter), "Inter", sans-serif;
+
+  /* Motion — Hextech preset timings + easings (issue #299), mirroring Riot's
+     shared-mixin approach so all client motion "feels Hextech". Easing conveys
+     priority: soft ease-out for pieces settling into place, sharp snap for
+     attention-grabbing elements (e.g. ready check). Three-way sync: keep these
+     3 motion custom properties identical across @theme, :root, and index.ts. */
+  --motion-soft: 450ms cubic-bezier(0.22, 1, 0.36, 1); /* settle — ease-out, ~400-500ms */
+  --motion-snap: 200ms cubic-bezier(0.5, 0, 0.2, 1.4); /* attention — sharp overshoot, ~200ms */
+  --motion-crossfade: 250ms cubic-bezier(0.4, 0, 0.2, 1); /* video-state-machine crossfade, 200-300ms */
 }
 
 /*
@@ -230,5 +239,13 @@
     --color-ban-red-2: #c13333;
     --color-ban-red-3: #8b1f1f;
     --color-ban-red-press: #5c1414;
+
+    /* Motion — Hextech preset timings + easings (issue #299). Duplicated here
+       (not colors, but same three-way sync discipline) so the custom properties
+       are always emitted for inline style/animation use regardless of Tailwind
+       class-usage scanning. Keep identical to the @theme block above. */
+    --motion-soft: 450ms cubic-bezier(0.22, 1, 0.36, 1);
+    --motion-snap: 200ms cubic-bezier(0.5, 0, 0.2, 1.4);
+    --motion-crossfade: 250ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
