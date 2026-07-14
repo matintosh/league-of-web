@@ -24,6 +24,7 @@ import {
   partiesBgLoopUrl,
   staticVideoUrl,
   findMatchVideoUrl,
+  bannerSweepVideoUrl,
 } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -309,6 +310,16 @@ const FIND_MATCH_VIDEOS = {
   pulse: findMatchVideoUrl("pulse"),
   allReturned: findMatchVideoUrl("all-returned"),
 };
+
+/**
+ * Real-client player-flag banner-sweep videos (issue #329) — the one-shot
+ * entrance flourish that sweeps over each banner as a member loads in. Primary
+ * (warmer gold) marks the self slot; ally marks every other member. Streamed
+ * from the CommunityDragon static-assets mirror via the fixture helper; each
+ * PlayerBanner plays its clip once on mount, then unmounts to the static flag.
+ */
+const BANNER_SWEEP_SELF_SRC = bannerSweepVideoUrl("primary");
+const BANNER_SWEEP_ALLY_SRC = bannerSweepVideoUrl("ally");
 
 // ---------------------------------------------------------------------------
 // Queue phase type (internal to this screen)
@@ -726,6 +737,7 @@ export function PartyLobbyScreen({
               wingTier={member.wingTier}
               tierGem={member.tierGem}
               badges={member.badges}
+              sweepVideoSrc={BANNER_SWEEP_ALLY_SRC}
             >
               <RoleSlotRow
                 size="sm"
@@ -748,6 +760,7 @@ export function PartyLobbyScreen({
           autofillProtected
           queueing={isQueueing}
           tierGem="gold"
+          sweepVideoSrc={BANNER_SWEEP_SELF_SRC}
           badges={[
             { iconSrc: "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests/gold.png", ringColor: "var(--color-gold-3)" },
             { iconSrc: "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests/challenger.png", ringColor: "var(--color-gold-2)" },
@@ -774,6 +787,7 @@ export function PartyLobbyScreen({
               wingTier={member.wingTier}
               tierGem={member.tierGem}
               badges={member.badges}
+              sweepVideoSrc={BANNER_SWEEP_ALLY_SRC}
             >
               <RoleSlotRow
                 size="sm"

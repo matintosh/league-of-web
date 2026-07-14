@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { PlayerBanner } from "./player-banner";
 import { RoleSlotRow } from "./role-slot-row";
-import { profileIconUrl } from "@low/fixtures";
+import { profileIconUrl, bannerSweepVideoUrl } from "@low/fixtures";
 
 // Stable profile icon URLs for demos
 const AVATAR_1 = profileIconUrl(1);
@@ -380,6 +380,68 @@ export function PlayerBannerBadgeSlotsDemo() {
         avatarSrc={AVATAR_2}
         wingTier="blue"
       />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Banner sweep — one-shot entrance flourish (issue #329)
+//
+// The sweep plays ONCE on mount then unmounts to the static flag, so this demo
+// remounts both banners via a changing `key` to replay it. Primary marks the
+// self slot; ally marks the teammate. A third banner with no sweepVideoSrc shows
+// the unchanged static baseline.
+// ---------------------------------------------------------------------------
+
+const SWEEP_PRIMARY_SRC = bannerSweepVideoUrl("primary");
+const SWEEP_ALLY_SRC = bannerSweepVideoUrl("ally");
+
+export function PlayerBannerSweepDemo() {
+  const [replayKey, setReplayKey] = useState(0);
+  return (
+    <div className="flex flex-col items-center gap-4 p-8 bg-blue-6">
+      <button
+        type="button"
+        onClick={() => setReplayKey((k) => k + 1)}
+        className="rounded-sm border border-gold-4 px-3 py-1 font-body text-xs uppercase tracking-wide text-gold-1 hover:bg-gold-5/30"
+      >
+        Replay sweep
+      </button>
+      <div className="flex items-end justify-center gap-6">
+        {/* Self — primary sweep */}
+        <PlayerBanner
+          key={`self-${replayKey}`}
+          name="TristanaPrey"
+          avatarSrc={AVATAR_1}
+          wingTier="gold"
+          isSelf
+          autofillProtected
+          tierGem="gold"
+          sweepVideoSrc={SWEEP_PRIMARY_SRC}
+        >
+          <RoleSlotRow slots={[{ role: "mid" }, { role: "support" }]} iconSrcFor={roleIconSrc} />
+        </PlayerBanner>
+        {/* Ally — ally sweep */}
+        <PlayerBanner
+          key={`ally-${replayKey}`}
+          name="Teammate"
+          avatarSrc={AVATAR_2}
+          wingTier="teal"
+          tierGem="platinum"
+          sweepVideoSrc={SWEEP_ALLY_SRC}
+        >
+          <RoleSlotRow slots={[{ role: "jungle" }, { role: "top" }]} iconSrcFor={roleIconSrc} />
+        </PlayerBanner>
+        {/* No sweep — static baseline */}
+        <PlayerBanner
+          name="NoSweep"
+          avatarSrc={AVATAR_3}
+          wingTier="green"
+          tierGem="diamond"
+        >
+          <RoleSlotRow slots={[{ role: "bottom" }, { role: "support" }]} iconSrcFor={roleIconSrc} />
+        </PlayerBanner>
+      </div>
     </div>
   );
 }
