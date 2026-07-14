@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { AmbientVideoLayer } from "../chrome/ambient-video-layer";
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -24,6 +26,15 @@ export interface TeamPlayerRowProps {
    * summoner name in gold-cream instead of grey-2.
    */
   isSelf?: boolean;
+  /**
+   * Optional summoner-object "magic" idle loop webm shown subtly behind the
+   * row — the animated gem/rune flourish the client plays around the active
+   * player's summoner slot (supply `summonerObjectMagicUrl("gold","idle")`
+   * from @low/fixtures for the local player, or the team-color variant for
+   * others). Additive: when omitted the row is visually unchanged. Hidden
+   * under `prefers-reduced-motion`.
+   */
+  ambientVideoSrc?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -76,15 +87,20 @@ export function TeamPlayerRow({
   portraitSrc,
   spellSrcs,
   isSelf = false,
+  ambientVideoSrc,
 }: TeamPlayerRowProps): ReactNode {
   const champLabel = championName ?? "Picking...";
   const champColor = CHAMP_LABEL_COLOR[state](isSelf);
   const summonerColor = isSelf ? "text-gold-cream" : "text-grey-2";
 
   return (
-    <div className="flex items-center gap-2 px-1 py-1.5">
+    <div className="relative flex items-center gap-2 px-1 py-1.5">
+      {/* Summoner-object "magic" idle loop behind the active slot — additive,
+          hidden under reduced-motion. Renders nothing when src is absent. */}
+      <AmbientVideoLayer src={ambientVideoSrc} opacity={0.45} objectFit="cover" />
+
       {/* Summoner-spell squares — two 28×28 images stacked vertically */}
-      <div className="flex flex-col gap-0.5 shrink-0">
+      <div className="relative z-10 flex flex-col gap-0.5 shrink-0">
         {spellSrcs ? (
           spellSrcs.map((src, i) => (
             <img
@@ -107,7 +123,7 @@ export function TeamPlayerRow({
       {/* Champion portrait — 56px circle with state ring */}
       <div
         className={[
-          "relative h-14 w-14 shrink-0 rounded-full",
+          "relative z-10 h-14 w-14 shrink-0 rounded-full",
           "ring-2",
           RING_COLOR[state],
           RING_ANIMATION[state],
@@ -129,7 +145,7 @@ export function TeamPlayerRow({
       </div>
 
       {/* Text block */}
-      <div className="flex min-w-0 flex-col gap-0.5">
+      <div className="relative z-10 flex min-w-0 flex-col gap-0.5">
         <span className={["truncate text-sm font-body leading-tight", champColor].join(" ")}>
           {champLabel}
         </span>

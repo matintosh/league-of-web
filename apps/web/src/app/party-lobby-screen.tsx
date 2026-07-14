@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import {
+  AmbientVideoLayer,
   LobbyHeader,
   PlayerBanner,
   RoleSlotRow,
@@ -20,6 +21,7 @@ import {
   positionIconUrl,
   gameModeMapUrl,
   championSplashUrl,
+  partiesBgLoopUrl,
 } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -639,6 +641,20 @@ export function PartyLobbyScreen({
           ].join(", "),
         }}
       />
+
+      {/*
+       * Ambient "magic" loop — the client's animated party-status backdrop
+       * (party-status-bg-loop.webm) layered subtly OVER the static gradient
+       * above. Additive: a blocked / reduced-motion video falls back to the
+       * gradient with no regression. Sits behind the edge-legibility gradients
+       * and all content (z-0). URL supplied here, not built in @low/ui.
+       */}
+      <AmbientVideoLayer
+        src={partiesBgLoopUrl("party-status")}
+        opacity={0.35}
+        objectFit="cover"
+      />
+
       {/* Top-edge dark gradient — ensures LobbyHeader subbar text stays legible */}
       <div
         aria-hidden="true"

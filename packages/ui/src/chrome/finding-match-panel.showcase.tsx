@@ -1,6 +1,7 @@
 import type { ShowcaseEntry } from "../showcase";
 import {
   FindingMatchDefaultDemo,
+  FindingMatchAmbientDemo,
   FindingMatchLongElapsedDemo,
   FindingMatchNoEstimateDemo,
   FindingMatchNoCrestDemo,
@@ -18,8 +19,14 @@ export const findingMatchPanelShowcase: ShowcaseEntry = {
     {
       name: "Default — with crest + estimate",
       notes:
-        'data-shot="finding-match-panel"; matches close-up reference: header, crest chip, large timer, teal estimate line',
+        'data-shot="finding-match-panel"; matches close-up reference: header, crest chip, large timer, teal estimate line. No ambient video (flat bg-blue-7).',
       render: () => <FindingMatchDefaultDemo />,
+    },
+    {
+      name: "With ambient video (queue-delay loop)",
+      notes:
+        "ambientVideoSrc = partiesBgLoopUrl('queue-delay'): subtle animated Hextech backdrop behind the panel. Additive over bg-blue-7; hidden under prefers-reduced-motion. Compare to Default (no video).",
+      render: () => <FindingMatchAmbientDemo />,
     },
     {
       name: "Long elapsed — no clip (1:23:45)",
