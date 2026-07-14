@@ -9,7 +9,7 @@
  *   tokens used only in inline `style={{}}` props or SVG attributes are
  *   always present — regardless of Tailwind's class-usage scan.
  *
- * Keep ALL THREE in sync (same 60 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
+ * Keep ALL THREE in sync (same 64 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
  */
 
 @theme {
@@ -72,6 +72,16 @@
   --color-cyan-2: #aff5ff;
   --color-cyan-3: #46e6ff;
   --color-cyan-4: #00add4;
+
+  /* FIND MATCH / LOCK IN idle face (#331). Phase A ships these EQUAL to the old
+     cyan-1 → teal-grad-a gradient (top #3fe7ff, bottom #0593a7, border #3fe7ff,
+     glow #00add4) so the trapezoid-primitive extraction is pixel-identical. The
+     #331 Phase-B convergence loop tunes ONLY these four values toward the
+     reference (docs/reference/client-find-match-button.png). */
+  --color-teal-grad-fm-a: #3fe7ff;
+  --color-teal-grad-fm-b: #0593a7;
+  --color-teal-fm-border: #3fe7ff;
+  --color-teal-fm-glow: #00add4;
 
   /* PlayButton v4 structure borders — XAML GoldLine/GreenLine frame colors */
   --color-pb-outer-bg: #00070e;
@@ -201,6 +211,12 @@
     --color-cyan-2: #aff5ff;
     --color-cyan-3: #46e6ff;
     --color-cyan-4: #00add4;
+
+    /* FIND MATCH / LOCK IN idle face (#331) — see @theme block comment above. */
+    --color-teal-grad-fm-a: #3fe7ff;
+    --color-teal-grad-fm-b: #0593a7;
+    --color-teal-fm-border: #3fe7ff;
+    --color-teal-fm-glow: #00add4;
 
     /* PlayButton v4 structure border colors (GoldLine/GreenLine from XAML) */
     --color-pb-outer-bg: #00070e;

@@ -47,6 +47,8 @@ export { HextechCheckbox } from "./chrome/hextech-checkbox";
 export type { HextechCheckboxProps } from "./chrome/hextech-checkbox";
 export { HextechSelect } from "./chrome/hextech-select";
 export type { HextechSelectProps, SelectOption } from "./chrome/hextech-select";
+export { TrapezoidButton } from "./chrome/trapezoid-button";
+export type { TrapezoidButtonProps, TrapLayer } from "./chrome/trapezoid-button";
 export { HextechToggle } from "./chrome/hextech-toggle";
 export type { HextechToggleProps } from "./chrome/hextech-toggle";
 export { HextechTooltip } from "./chrome/hextech-tooltip";

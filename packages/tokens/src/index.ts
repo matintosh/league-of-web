@@ -48,6 +48,14 @@ export const palette = {
   cyan3: "#46e6ff",
   /** PlayButton v4 XAML hover bar stroke bottom stop */
   cyan4: "#00add4",
+  /** FIND MATCH / LOCK IN idle fill top stop (#331) — see theme.css @theme comment */
+  tealGradFmA: "#3fe7ff",
+  /** FIND MATCH / LOCK IN idle fill bottom stop (#331) */
+  tealGradFmB: "#0593a7",
+  /** FIND MATCH / LOCK IN idle border (#331) */
+  tealFmBorder: "#3fe7ff",
+  /** FIND MATCH / LOCK IN idle glow (#331) */
+  tealFmGlow: "#00add4",
   /** PlayButton v4 GoldLine frame bg (#00070E dark near-black) */
   pbOuterBg: "#00070e",
   /** PlayButton v4 GoldLine frame border (dark bronze) */
