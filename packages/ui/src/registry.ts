@@ -3,6 +3,7 @@ import { banStatusStripShowcase } from "./champ-select/ban-status-strip.showcase
 import { champSelectActionBarShowcase } from "./champ-select/champ-select-action-bar.showcase";
 import { championPickTileShowcase } from "./champ-select/champion-pick-tile.showcase";
 import { countdownHeaderShowcase } from "./champ-select/countdown-header.showcase";
+import { declareIntentScreenShowcase } from "./champ-select/declare-intent-screen.showcase";
 import { lockInButtonShowcase } from "./champ-select/lock-in-button.showcase";
 import { skinCarouselShowcase } from "./champ-select/skin-carousel.showcase";
 import { skinThumbStripShowcase } from "./champ-select/skin-thumb-strip.showcase";
@@ -100,6 +101,7 @@ export const registry: ShowcaseEntry[] = [
   championPickTileShowcase,
   champSelectActionBarShowcase,
   countdownHeaderShowcase,
+  declareIntentScreenShowcase,
   lockInButtonShowcase,
   skinCarouselShowcase,
   skinThumbStripShowcase,

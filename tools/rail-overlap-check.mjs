@@ -376,6 +376,13 @@ try {
   await page.locator("button:has-text('Accept')").first().waitFor({ state: "visible", timeout: 15000 });
   await page.locator("button:has-text('Accept')").first().click();
   await page.waitForTimeout(1000);
+  // Declare-intent phase (#348): the first champ-select beat before bans.
+  // Verify it shows NO rail, then wait for auto-advance to the ban phase.
+  const onDeclare = await page.getByText("Declare Your Champion!", { exact: false }).count();
+  if (onDeclare > 0) {
+    totalFailures += await checkNoRail(page, "declare", `${OUT_DIR}declare-no-rail.png`);
+    await page.getByText("Ban a Champion!", { exact: false }).first().waitFor({ state: "visible", timeout: 20000 });
+  }
   // Navigate through ban phase: select a champion and click BAN (#275)
   const onBan = await page.getByText("Ban a Champion!", { exact: false }).count();
   if (onBan > 0) {
