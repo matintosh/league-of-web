@@ -573,6 +573,78 @@ export const leagueLogoVideoUrl = (
 ): string => staticVideoUrl(`league-logo-${state}.webm`);
 
 /**
+ * Exalted (Mythic) skin card-frame tier. The Mythic Shop's exalted cards ship
+ * three ascending rarity frames, each a distinct art-deco border treatment:
+ *   "one"   — gold/teal banner (tier 1)
+ *   "two"   — purple-accented frame (tier 2)
+ *   "three" — white/prismatic apex frame (tier 3)
+ * Named by the client's own file slugs (`tierone`/`tiertwo`/`tierthree`).
+ */
+export type ExaltedTier = "one" | "two" | "three";
+
+/**
+ * Animation part of an exalted card-frame sequence. All four are full-frame
+ * 400×512 straight-alpha overlays (NOT spatial halves — verified by probing
+ * mid-clip frames on a dark canvas, docs/reference/VIDEO-ASSETS.md exalted/):
+ *   "top"   — one-shot reveal phase 1: the pennant/banner outline sweeps in
+ *             (side rails + bottom V-point light up). ~1.0–2.4s.
+ *   "bot"   — one-shot reveal phase 2: the full rounded frame settles — interior
+ *             arch, ornamental crest watermark, corner chevrons, glowing rim, a
+ *             teal diamond spark at bottom-center. Hands off to the idle loop.
+ *             ~1.0–1.5s.
+ *   "loop"  — idle ambient: sparse tier-tinted sparkle drift over the settled
+ *             frame. ~3.0s, loops. **Not available for tier "three"** (see
+ *             {@link exaltedCardVideoUrl}).
+ *   "hover" — hover flourish: the full art-deco border traced bright, swapped in
+ *             on pointer-over. ~2.7s.
+ */
+export type ExaltedCardPart = "top" | "bot" | "loop" | "hover";
+
+/**
+ * Exalted (Mythic) skin card-frame magic video (webm, straight alpha) for a
+ * tier + animation part — the animated art-deco border the live client wraps
+ * around exalted cards in the Mythic Shop (`store/mythic-shop-panel`). Each clip
+ * is 400×512 and composites straight (its own alpha) over the card's splash art,
+ * so a clip that fails to load leaves the static card intact.
+ *
+ * Sequence per card: `top` → `bot` play once as the reveal, then `loop` idles,
+ * with `hover` crossfading in on pointer-over (all full-frame overlays — the
+ * top/bot names are temporal phases, not cropped halves; see {@link ExaltedCardPart}).
+ *
+ * ASYMMETRY — tier three has NO idle loop. The client ships only 11 exalted
+ * files: tiers one and two carry all four parts, but `tierthree` ships just
+ * top/bot/hover (confirmed 404 on `card-frame-tierthree-loop.webm`, 2026-07).
+ * This is encoded in the type: `part: "loop"` narrows `tier` to `"one" | "two"`,
+ * so `exaltedCardVideoUrl("three", "loop")` is a COMPILE ERROR rather than a
+ * runtime 404. The consuming component treats tier-three's missing loop as
+ * graceful absence — after the reveal it simply rests on the settled `bot`
+ * frame with no ambient drift.
+ *
+ * Examples confirmed HTTP 206 video/webm with alpha (2026-07):
+ *   exaltedCardVideoUrl("one", "top")     → …/videos/exalted/card-frame-tierone-top.webm
+ *   exaltedCardVideoUrl("one", "loop")    → …/videos/exalted/card-frame-tierone-loop.webm
+ *   exaltedCardVideoUrl("two", "hover")   → …/videos/exalted/card-frame-tiertwo-hover.webm
+ *   exaltedCardVideoUrl("three", "bot")   → …/videos/exalted/card-frame-tierthree-bot.webm
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/exalted/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export function exaltedCardVideoUrl(
+  tier: "one" | "two",
+  part: "loop",
+): string;
+export function exaltedCardVideoUrl(
+  tier: ExaltedTier,
+  part: "top" | "bot" | "hover",
+): string;
+export function exaltedCardVideoUrl(
+  tier: ExaltedTier,
+  part: ExaltedCardPart,
+): string {
+  return staticVideoUrl(`exalted/card-frame-tier${tier}-${part}.webm`);
+}
+
+/**
  * Champ-select card-select webm — the animated summoner card states shown in
  * the champion-select carousel (idle loop, card intros, hover states).
  *
