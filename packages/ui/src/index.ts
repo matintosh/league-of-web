@@ -41,7 +41,7 @@ export { FriendRequestsRow } from "./chrome/friend-requests-row";
 export type { FriendRequestsRowProps } from "./chrome/friend-requests-row";
 export { FriendRow } from "./chrome/friend-row";
 export type { FriendRowProps } from "./chrome/friend-row";
-export { HextechButton, CrossMedallion } from "./chrome/hextech-button";
+export { CrossMedallion, HextechButton } from "./chrome/hextech-button";
 export type { HextechButtonProps, HextechButtonVariant, HextechButtonSize, CrossMedallionProps } from "./chrome/hextech-button";
 export { HextechCheckbox } from "./chrome/hextech-checkbox";
 export type { HextechCheckboxProps } from "./chrome/hextech-checkbox";
