@@ -9,6 +9,7 @@ import {
   demoEternalEntries,
   profileIconUrl,
   rankedIntroUrl,
+  rankedWingVideoUrl,
   rankedEmblemUrl,
   rankedUnrankedEmblemUrl,
   SAMPLE_CHALLENGES,
@@ -90,6 +91,9 @@ const RANKED_FEATURE_COLUMNS: RankedFeatureColumn[] = [
   {
     // CDragon ranked-intro: Challenger/Diamond wings rank emblem with electric-blue glow (276×157)
     imageUrl: rankedIntroUrl("earn-rank"),
+    // Animate the emblem crest with the real client's wing-magic loop. Challenger
+    // (blue wings) matches this tile's electric-blue emblem art.
+    wingVideoSrc: rankedWingVideoUrl("challenger"),
     title: "Start Your Climb",
     description:
       "Play placement games to earn your rank. During placements, games have bonus LP gains and no LP losses. You'll unlock a provisional rank after your first placement game.",

@@ -22,6 +22,8 @@
 
 import { useId } from "react";
 
+import { AmbientVideoLayer } from "../chrome/ambient-video-layer";
+
 // ---------------------------------------------------------------------------
 // Public prop types
 // ---------------------------------------------------------------------------
@@ -56,6 +58,18 @@ export interface RankedFeatureColumn {
   title: string;
   /** Short body copy paragraph. */
   description: string;
+  /**
+   * Optional ranked-emblem "wings" magic video (webm with alpha) overlaid on
+   * this column's thumbnail — the animated flourish that cradles the tier crest
+   * on the real client's "Start Your Climb" tile. Supply from @low/fixtures via
+   * `rankedWingVideoUrl(tier)` (208×270 alpha loop).
+   *
+   * Purely additive: the video is an alpha overlay (no blend) sized so the
+   * wings wrap the emblem art. When absent — or when the browser can't play it,
+   * or the user prefers reduced motion — the static thumbnail shows through
+   * unchanged.
+   */
+  wingVideoSrc?: string;
 }
 
 export interface ProfileRankedScreenProps {
@@ -491,7 +505,8 @@ function SplitProgressBar({ progress }: SplitProgressBarProps) {
  *  - Header zone: SOLO/DUO queue selector + edit icon (left), Summoner Search
  *    + League System FAQ link (right). Season label below queue selector.
  *  - Feature strip: 3 equal-width columns with thumbnail art, uppercase title,
- *    and body copy paragraph.
+ *    and body copy paragraph. A column may supply `wingVideoSrc` to overlay the
+ *    real client's animated ranked-emblem wings (alpha webm) on its thumbnail.
  *  - CTA: centred QUEUE UP trapezoid button.
  *  - Progress bar: SPLIT 2 OF 2 label + time remaining left; 3 milestone nodes
  *    with mini-crest icons and SP labels on a horizontal track.
@@ -577,7 +592,10 @@ export function ProfileRankedScreen({
               key={i}
               className="flex flex-1 flex-col gap-3 px-2"
             >
-              {/* Thumbnail art */}
+              {/* Thumbnail art + optional ranked-emblem wings video overlay.
+                  The wing clip (208×270 alpha, cradles the crest in its central
+                  void) is centred over the emblem art and sized ~1.55× the tile
+                  height so the wings frame the crest like the real client. */}
               <div className="relative h-[150px] w-full shrink-0 overflow-hidden bg-blue-6">
                 <img
                   src={col.imageUrl}
@@ -585,6 +603,15 @@ export function ProfileRankedScreen({
                   aria-hidden="true"
                   className="h-full w-full object-cover"
                 />
+                {col.wingVideoSrc && (
+                  <AmbientVideoLayer
+                    src={col.wingVideoSrc}
+                    opacity={1}
+                    objectFit="contain"
+                    blendMode="normal"
+                    className="[--wing-h:232px] top-1/2 left-1/2 h-[var(--wing-h)] w-[calc(var(--wing-h)*208/270)] -translate-x-1/2 -translate-y-1/2 inset-auto"
+                  />
+                )}
               </div>
 
               {/* Column title */}

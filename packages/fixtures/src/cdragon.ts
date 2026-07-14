@@ -179,6 +179,47 @@ export const rankedEmblemUrl = (
   `https://cdn.jsdelivr.net/gh/magisteriis/lol-icons-and-emblems@main/ranked-emblems/Emblem_${tier}.png`;
 
 /**
+ * Ranked tiers that ship an animated emblem-wings "magic" video.
+ *
+ * NOTE: this set intentionally has **no iron** — the client ships wing videos
+ * only from bronze up. It **does** include `emerald`, which is missing from the
+ * jsDelivr emblem PNG set consumed by `rankedEmblemUrl` (see
+ * docs/reference/ICON-SOURCES.md). Kept separate from `ChallengeTier` (which
+ * has iron and no emerald) because the two asset families differ by tier.
+ */
+export type RankedWingTier =
+  | "bronze"
+  | "silver"
+  | "gold"
+  | "platinum"
+  | "emerald"
+  | "diamond"
+  | "master"
+  | "grandmaster"
+  | "challenger";
+
+/**
+ * Animated ranked-emblem "wings" magic video (webm, alpha channel) for a tier —
+ * the ethereal wing flourish that cradles the tier crest on the profile Ranked
+ * screen. Each clip is 208×270, ~2.7–3.0s, and loops; the crest sits in the
+ * central void the wings wrap (see docs/reference/VIDEO-ASSETS.md, ranked/).
+ *
+ * Feed the returned URL to a `<video>` alpha overlay (muted/autoPlay/loop/
+ * playsInline) layered over the static tier emblem — e.g. as the `wingVideoSrc`
+ * of a `ProfileRankedScreen` feature column.
+ *
+ * Examples confirmed HTTP 206 video/webm (2026-07):
+ *   rankedWingVideoUrl("gold")       → …/videos/ranked/emblem-wings-magic-gold.webm
+ *   rankedWingVideoUrl("emerald")    → …/videos/ranked/emblem-wings-magic-emerald.webm
+ *   rankedWingVideoUrl("challenger") → …/videos/ranked/emblem-wings-magic-challenger.webm
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/ranked/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const rankedWingVideoUrl = (tier: RankedWingTier): string =>
+  staticVideoUrl(`ranked/emblem-wings-magic-${tier}.webm`);
+
+/**
  * Unranked queue crest URL — the emblem-family asset used when a summoner
  * has no rank yet (as opposed to `rankedMiniCrestUrl("unranked")` which is a
  * 16px SVG ring suitable only for small badge indicators).
