@@ -1,6 +1,8 @@
 "use client";
 
 import { useId } from "react";
+import { YourShopIcon } from "./your-shop-icon";
+import type { YourShopIconVideoSources } from "./your-shop-icon";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -52,6 +54,20 @@ export interface YourShopScreenProps {
   onRevealAll?: () => void;
   /** Optional RP coin icon URL (CDragon or DDragon). */
   rpIconSrc?: string;
+  /**
+   * Real-client Your Shop navbar-icon CTA videos (issue #317). When provided,
+   * the header renders the animated `YourShopIcon` entry-point badge — its
+   * `ctaIntro` plays once, then `ctaLoop` idles as an attention loop; a `click`
+   * burst plays on activation. Omit to render the static glyph only.
+   *
+   * Live-client entry-point gap: the app has no navbar/store trigger that opens
+   * this overlay (it is showcase-only), so per issue #317 the CTA icon lives in
+   * the store screen header. Pages supply these from `@low/fixtures`
+   * (`yourShopIconVideoUrl`).
+   */
+  iconVideoSources?: YourShopIconVideoSources;
+  /** Called when the header Your Shop CTA icon is activated. */
+  onIconActivate?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -374,6 +390,8 @@ export function YourShopScreen({
   onClose,
   onRevealAll,
   rpIconSrc,
+  iconVideoSources,
+  onIconActivate,
 }: YourShopScreenProps) {
   const uid = useId();
 
@@ -409,10 +427,19 @@ export function YourShopScreen({
           aria-hidden="true"
         />
 
-        {/* Title */}
-        <h1 className="font-display text-xl uppercase tracking-[0.25em] text-gold-cream mx-4">
-          Your Shop
-        </h1>
+        {/* Title cluster: entry-point CTA icon + heading. The icon is the store
+            screen's Your Shop entry point (live-client navbar trigger gap, issue
+            #317) — it carries the intro→loop attention CTA and the click burst. */}
+        <div className="flex items-center gap-3 mx-4">
+          <YourShopIcon
+            label="Your Shop"
+            videoSources={iconVideoSources}
+            onActivate={onIconActivate}
+          />
+          <h1 className="font-display text-xl uppercase tracking-[0.25em] text-gold-cream">
+            Your Shop
+          </h1>
+        </div>
 
         {/* Decorative horizontal rule — right arm */}
         <div

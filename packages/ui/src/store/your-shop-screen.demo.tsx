@@ -1,9 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { championSplashUrl } from "@low/fixtures";
+import { championSplashUrl, yourShopIconVideoUrl } from "@low/fixtures";
 import { YourShopScreen } from "./your-shop-screen";
 import type { YourShopCard } from "./your-shop-screen";
+
+// Real-client Your Shop CTA icon videos, resolved from @low/fixtures (the page
+// supplies URLs; components never fetch or build them).
+const ICON_VIDEO_SOURCES = {
+  ctaIntro: yourShopIconVideoUrl("call-to-action-intro"),
+  ctaLoop: yourShopIconVideoUrl("call-to-action-loop"),
+  click: yourShopIconVideoUrl("click"),
+};
 
 // ---------------------------------------------------------------------------
 // Shared fixture data — 6 personalised offers (October 2024 era)
@@ -89,6 +97,8 @@ export function YourShopUnrevealedDemo() {
         onRevealAll={() =>
           setRevealedIds(new Set(BASE_CARDS.map((c) => c.id)))
         }
+        iconVideoSources={ICON_VIDEO_SOURCES}
+        onIconActivate={() => alert("Your Shop icon activated")}
       />
     </div>
   );
@@ -123,6 +133,8 @@ export function YourShopPartialDemo() {
         onRevealAll={() =>
           setRevealedIds(new Set(BASE_CARDS.map((c) => c.id)))
         }
+        iconVideoSources={ICON_VIDEO_SOURCES}
+        onIconActivate={() => alert("Your Shop icon activated")}
       />
     </div>
   );
@@ -146,6 +158,8 @@ export function YourShopRevealedDemo() {
         expiryLabel={EXPIRY}
         includesChampionNote
         onClose={() => alert("close")}
+        iconVideoSources={ICON_VIDEO_SOURCES}
+        onIconActivate={() => alert("Your Shop icon activated")}
       />
     </div>
   );

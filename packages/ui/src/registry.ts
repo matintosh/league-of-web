@@ -84,6 +84,7 @@ import { mythicShopPanelShowcase } from "./store/mythic-shop-panel.showcase";
 import { storeItemPurchaseModalShowcase } from "./store/store-item-purchase-modal.showcase";
 import { storeItemTileShowcase } from "./store/store-item-tile.showcase";
 import { storeSubNavBarShowcase } from "./store/store-sub-nav-bar.showcase";
+import { yourShopIconShowcase } from "./store/your-shop-icon.showcase";
 import { yourShopScreenShowcase } from "./store/your-shop-screen.showcase";
 
 /**
@@ -175,7 +176,7 @@ export const registry: ShowcaseEntry[] = [
   rolePickerPopoverShowcase,
   roleSelectorShowcase,
   roleSlotRowShowcase,
-  // store — alphabetical: FeaturedTab < HeroCarousel < LootTab < MythicShopPanel < StoreItemPurchaseModal < StoreItemTile < StoreSubNavBar < YourShopScreen
+  // store — alphabetical: FeaturedTab < HeroCarousel < LootTab < MythicShopPanel < StoreItemPurchaseModal < StoreItemTile < StoreSubNavBar < YourShopIcon < YourShopScreen
   featuredTabShowcase,
   heroCarouselShowcase,
   lootTabShowcase,
@@ -183,5 +184,6 @@ export const registry: ShowcaseEntry[] = [
   storeItemPurchaseModalShowcase,
   storeItemTileShowcase,
   storeSubNavBarShowcase,
+  yourShopIconShowcase,
   yourShopScreenShowcase,
 ];
