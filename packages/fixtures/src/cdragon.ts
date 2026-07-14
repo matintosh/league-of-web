@@ -415,6 +415,86 @@ export const findMatchVideoUrl = (
 ): string => staticVideoUrl(`find-match-button-${state}.webm`);
 
 /**
+ * Real-client PLAY-button magic-layer video (webm, straight alpha) for a given
+ * state — the authentic "animated border overlay / radial effects" layers of
+ * the magic-button anatomy (docs/reference/HEXTECH-UI-NOTES.md) that the CSS v7
+ * PlayButton approximates. Each clip is 146×58 and composites straight (its own
+ * alpha) over the static button; transparent regions let the CSS frame read
+ * through, so a video that fails to load leaves the static look intact.
+ *
+ * States → `play-button-{state}.webm`:
+ *   "enabled-intro" one-shot reveal — particle burst played once when the
+ *                   button becomes enabled, then handed off to idle (1.6 s)
+ *   "hover-intro"   one-shot hover-in — cyan border trace ramps up (1.1 s)
+ *   "hover-loop"    ambient hover loop — bright cyan frame + travelling border
+ *                   shimmer, the "animated border overlay" (2.4 s, loops)
+ *   "hover-outro"   one-shot hover-out — border trace fades down (0.4 s)
+ *   "magic-release" press-release magic burst — cyan energy flare (1.1 s)
+ *   "release"       press-release — restrained particle pop (1.2 s)
+ *
+ * All confirmed HTTP 206 video/webm with alpha (2026-07). Feed the returned URL
+ * to a muted/playsInline `<video>` overlay layered over the CSS button (e.g. the
+ * `videoSources` of `PlayButton`). NO fetching happens here — pages supply URLs.
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const playButtonVideoUrl = (
+  state:
+    | "enabled-intro"
+    | "hover-intro"
+    | "hover-loop"
+    | "hover-outro"
+    | "magic-release"
+    | "release",
+): string => staticVideoUrl(`play-button-${state}.webm`);
+
+/**
+ * Generic Hextech button particle-layer video (webm, straight alpha) — the
+ * ambient/hover/pressed particle drifts the real client stacks behind primary
+ * buttons (150×80). Additive accent overlays; NOT the button frame itself.
+ *
+ * States → `buttons/particles-{state}.webm`:
+ *   "default" ambient particle drift loop (5 s)
+ *   "hover"   denser hover particles (5 s, loops)
+ *   "pressed" one-shot press particle pop (0.4 s)
+ *
+ * Confirmed HTTP 206 video/webm with alpha (2026-07). Reachable by both the
+ * PlayButton and the lobby button; feed to a `<video>` overlay.
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/buttons/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const buttonParticlesVideoUrl = (
+  state: "default" | "hover" | "pressed",
+): string => staticVideoUrl(`buttons/particles-${state}.webm`);
+
+/**
+ * Real-client League "L" logo-medallion magic video (webm, straight alpha) for
+ * a given state — the animation of the PLAY-button medallion socket (64×54).
+ * Scope note on issue #309 (builder-316 investigation): this set IS the
+ * PlayButton medallion socket animation, wired via `PlayButton`'s
+ * `medallionVideoSources`. Composites straight (own alpha) over the static
+ * emblem, so a missing/broken clip leaves the CSS medallion intact.
+ *
+ * States → `league-logo-{state}.webm`:
+ *   "intro"       one-shot reveal — bronze L outline fills to gold L + teal
+ *                 energy socket, played once on mount (2.9 s)
+ *   "loop-idle"   calm teal energy swirl in the socket (4.8 s, loops)
+ *   "loop-active" energetic teal swirl — the engaged/hover face (2.4 s, loops)
+ *   "magic"       one-shot gold-rim glow + cyan flash accent (1.2 s)
+ *
+ * All confirmed HTTP 206 video/webm with alpha (2026-07). Frame captures in the
+ * #316 close trail. NO fetching happens here — pages supply URLs.
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const leagueLogoVideoUrl = (
+  state: "intro" | "loop-idle" | "loop-active" | "magic",
+): string => staticVideoUrl(`league-logo-${state}.webm`);
+
+/**
  * Champ-select card-select webm — the animated summoner card states shown in
  * the champion-select carousel (idle loop, card intros, hover states).
  *

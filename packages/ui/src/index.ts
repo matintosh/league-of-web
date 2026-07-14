@@ -74,7 +74,12 @@ export type { NewsCardProps } from "./chrome/news-card";
 export { PartyStatusPanel } from "./chrome/party-status-panel";
 export type { PartyStatusPanelProps } from "./chrome/party-status-panel";
 export { PlayButton } from "./chrome/play-button";
-export type { PlayButtonProps, PlayButtonSize } from "./chrome/play-button";
+export type {
+  PlayButtonProps,
+  PlayButtonSize,
+  PlayButtonVideoSources,
+  PlayButtonMedallionVideoSources,
+} from "./chrome/play-button";
 export { PlayerHovercard } from "./chrome/player-hovercard";
 export type { PlayerHovercardProps } from "./chrome/player-hovercard";
 export { ProfileBanner } from "./chrome/profile-banner";
