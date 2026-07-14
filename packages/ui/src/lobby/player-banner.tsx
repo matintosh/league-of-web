@@ -193,16 +193,47 @@ const TIER_GEM_SRC: Record<TierGem, string> = {
 };
 
 // ---------------------------------------------------------------------------
-// Heraldic banner clip-path — pointed double-V bottom silhouette.
+// Party-flag chrome art — CommunityDragon rcp-fe-lol-parties (issue #336)
 //
-// Outer border shell and inner fill both use this polygon;
-// the 2px gap between them (via p-[2px] on the outer div) creates the
-// gold-trim effect that follows the entire outline including the notch.
-// Proportions sampled from client-lobby-solo.jpg reference.
+// The live client paints each party member's flag from a single straight-alpha
+// PNG that already carries the whole heraldic silhouette (scooped-neck top,
+// ornate gold corner scrolls, double-V pointed bottom) AND its gold hairline
+// trim. We drop that art in as one background <img> filling the flag box, so
+// the component no longer needs a CSS clip-path shell or hand-painted border —
+// the avatar crest / tier gem / badges / role row / footer composite ON TOP.
+//
+// Exploration findings (2026-07-14), rcp-fe-lol-parties/global/default/:
+//   banner-filled.png         968×1400  navy fill + warm gold trim & corner
+//                                       scrolls — a seated member (self+teammate)
+//   banner-empty.png          968×1376  same silhouette, desaturated cool grey —
+//                                       an unfilled slot (no gold)
+//   current-player-banner.png 234×400   teal self flag with a gold medallion ring
+//                                       BAKED at top-centre — unused here, since
+//                                       our live AvatarCrest already draws that ring
+//   invited-banner.png        178×550   dark panel + glowing blue summon ring —
+//                                       the searching/invited (queueing) slot
+// All four curl-verified HTTP 206 image/png (range request). The self slot reuses
+// banner-filled (brightened via isSelf styling) so its baked ring isn't doubled.
+// Mirror of `partyBannerUrl` in @low/fixtures (kept inline like WING_SRC above so
+// the component owns no fetch — pages/demos may use the exported helper instead).
 // ---------------------------------------------------------------------------
 
-const BANNER_CLIP =
-  "polygon(0% 0%, 100% 0%, 100% 76%, 59% 76%, 50% 91%, 41% 76%, 0% 76%)";
+const CDRAGON_PARTIES =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-parties/global/default";
+
+const BANNER_ART = {
+  filled: `${CDRAGON_PARTIES}/banner-filled.png`,
+  empty: `${CDRAGON_PARTIES}/banner-empty.png`,
+  invited: `${CDRAGON_PARTIES}/invited-banner.png`,
+} as const;
+
+// Flag-box aspect from the real banner-filled art content bbox (963×1389 →
+// h/w ≈ 1.44). Widths stay at the established 120 (self) / 96 (teammate); heights
+// derive from the art ratio so the trim renders undistorted and the consumer's
+// side-by-side layout keeps the same footprint.
+const SELF_W = 120;
+const TEAM_W = 96;
+const ART_RATIO = 1389 / 963;
 
 // ---------------------------------------------------------------------------
 // Crown chip icon — small gold crown SVG inline glyph
@@ -507,11 +538,11 @@ function AvatarCrest({
 //   - `motion-reduce:hidden` — suppressed entirely under prefers-reduced-motion
 //     (pure CSS, SSR-safe, no first-frame flash); the static banner remains.
 //
-// z-order: the layer sits at z-[1] inside the inner flag surface — ABOVE the
-// banner background art (chevron band + wing glaze, which are non-positioned /
-// z-0) but BELOW the avatar crest (z-10), title, badges, and footer, so those
-// stay legible through the flourish. objectFit:fill stretches the clip to the
-// flag box so its ring/rails/notch register onto the real medallion/edges/notch.
+// z-order: the layer sits at z-[1] inside the flag box — ABOVE the static
+// banner-art <img> (z-0) but BELOW the avatar crest (z-10), title, badges, and
+// footer, so those stay legible through the flourish. objectFit:fill stretches
+// the clip to the flag box so its ring/rails/notch register onto the real
+// medallion/edges/notch.
 // ---------------------------------------------------------------------------
 
 function BannerSweepLayer({ src }: { src: string }) {
@@ -647,6 +678,15 @@ export function PlayerBanner({
 
   const wingSrc = WING_SRC[wingTier];
 
+  // Flag box footprint: established widths, height from the real art aspect.
+  const boxW = isSelf ? SELF_W : TEAM_W;
+  const boxH = Math.round(boxW * ART_RATIO);
+  // The pointed double-V bottom occupies the lowest ~21% of the art (corners of
+  // the flat body sit at y≈1097/1389). Reserve that band as content padding so
+  // the crest / badges / role row / footer stay inside the flat interior and
+  // never spill over the decorative point.
+  const pointPad = Math.round(boxH * 0.2);
+
   return (
     <div
       data-shot={isSelf ? "player-banner-self" : "player-banner-teammate"}
@@ -672,47 +712,42 @@ export function PlayerBanner({
       </div>
 
       {/* ---------------------------------------------------------------- */}
-      {/* HERALDIC SHAPE: gold border shell (outer) + dark fill (inner)    */}
+      {/* HERALDIC FLAG — real client party-banner art (issue #336)         */}
+      {/* The banner-filled PNG carries the silhouette + gold trim; content  */}
+      {/* stacks over it. Self reuses the same art brightened (its baked     */}
+      {/* medallion ring lives in current-player-banner, which we skip so    */}
+      {/* the live AvatarCrest ring isn't doubled).                          */}
       {/* ---------------------------------------------------------------- */}
       <div
-        className={[
-          // Outer border shell — gold-4 background, clipped to heraldic polygon
-          isSelf ? "bg-gold-4" : "bg-gold-6",
-          "p-[2px]",
-          "w-full",
-        ].join(" ")}
-        style={{
-          clipPath: BANNER_CLIP,
-          // Height drives the shaped area; below the polygon is transparent.
-          // Reduced slightly to stay proportional after medallion resize.
-          height: isSelf ? 270 : 240,
-        }}
+        className="relative flex flex-col items-center w-full"
+        style={{ height: boxH }}
       >
-        {/* Inner surface — dark fill, same clip so fill matches silhouette */}
+        {/* Static flag art — fills the box, silhouette + trim baked into alpha */}
+        <img
+          src={BANNER_ART.filled}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+          style={{
+            objectFit: "fill",
+            // Self flag reads warmer/brighter than a teammate's in the client.
+            filter: isSelf
+              ? "brightness(1.12) saturate(1.15)"
+              : "brightness(0.92)",
+          }}
+        />
+
+        {/* Banner-sweep entrance flourish (issue #329/#330) — one-shot webm
+             layered over the flag art but below the crest / text / badges
+             (z-[1]). See BannerSweepLayer for the full contract. */}
+        {sweepVideoSrc && <BannerSweepLayer src={sweepVideoSrc} />}
+
+        {/* Content column sits above the art (z-10). Bottom padding reserves
+             the pointed-bottom band so no content spills over the point. */}
         <div
-          className={[
-            "relative flex flex-col items-center overflow-hidden w-full h-full",
-            isSelf ? "bg-blue-7" : "bg-grey-4",
-            "pt-3 pb-2 gap-1",
-          ].join(" ")}
-          style={{ clipPath: BANNER_CLIP }}
+          className="relative z-10 flex h-full w-full flex-col items-center gap-1 pt-3"
+          style={{ paddingBottom: pointPad }}
         >
-          {/* Chevron texture band at top */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-5 pointer-events-none"
-            style={{
-              background:
-                "repeating-linear-gradient(60deg, transparent, transparent 3px, var(--color-gold-5) 3px, var(--color-gold-5) 4px)",
-              opacity: 0.18,
-            }}
-          />
-
-          {/* Banner-sweep entrance flourish (issue #329) — one-shot webm layered
-               over the flag box, above the background art but below the crest /
-               text / badges (z-[1]). See BannerSweepLayer for the full contract. */}
-          {sweepVideoSrc && <BannerSweepLayer src={sweepVideoSrc} />}
-
           {/* Wing crest + avatar medallion.
                Wing art is sized relative to the banner (not the avatar ring) so
                it continues to frame the full banner width at any ring size.

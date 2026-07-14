@@ -19,12 +19,12 @@ export const playerBannerShowcase: ShowcaseEntry = {
   name: "Player Banner",
   area: "lobby",
   description:
-    "Vertical heraldic banner card for the pre-game lobby. Pointed double-V bottom with gold trim via clip-path shell technique. Crown+name above the shape. Self: larger scale, gold wings, level badge (level prop, defaults 15), autofill chip. Medallion proportions sampled from party reference: 56px/120px=46.7% (self), 44px/96px=45.8% (teammate). Empty: large grey + circle (~90px). Queue treatment (queueing=true): empty slots show dark circle with blue glow ring; self banner shows asterisk foot glyph. Wing art from CommunityDragon ranked-emblem PNGs. V11 additions: tierGem prop adds a ranked-mini-crest PNG at 12 o'clock on the portrait ring; badges tuple adds 3 circular badge slots below the role row.",
+    "Vertical heraldic banner card for the pre-game lobby. The flag chrome is the REAL client party-banner art (issue #336) — CommunityDragon rcp-fe-lol-parties `banner-filled.png`, a straight-alpha PNG that carries the whole silhouette (scooped-neck top, ornate gold corner scrolls, double-V pointed bottom) plus its gold trim, dropped in as one background <img>. The avatar crest / tier gem / level badge / badges / role row / footer composite on top; content is padded clear of the pointed-bottom band. Crown+name above the shape. Self reuses the same art brightened (its baked medallion ring lives in the unused current-player-banner art, so the live AvatarCrest ring isn't doubled). Widths stay 120px (self) / 96px (teammate); height derives from the art aspect (h/w≈1.44). Empty: large grey + circle (~90px). Queue treatment (queueing=true): empty slots show dark circle with blue glow ring; self banner shows asterisk foot glyph. Wing art from CommunityDragon ranked-emblem PNGs. tierGem prop adds a ranked-mini-crest PNG at 12 o'clock on the portrait ring; badges tuple adds 3 circular badge slots below the role row.",
   variants: [
     {
       name: "Heraldic shape — self + teammate + empty circle",
       notes:
-        "Shows the pointed bottom silhouette on self (gold) and teammate (teal) banners with gold trim, crown+name floating above, level badge on medallion, and the new + circle empty slot side by side.",
+        "Shows the real client banner art (banner-filled.png) on self (brightened) and teammate banners — scooped-neck top, gold corner scrolls, double-V pointed bottom, baked gold trim — with crown+name floating above, level badge on medallion, and the + circle empty slot side by side.",
       render: () => <PlayerBannerHeraldShapeDemo />,
     },
     {
