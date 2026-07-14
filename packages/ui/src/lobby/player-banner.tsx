@@ -611,7 +611,8 @@ function BannerSweepLayer({ src }: { src: string }) {
 //       invited-banner-loop.webm.
 //   invited-banner.webm         178×550  5s  VP8 alpha  — the "classic pulse":
 //       brighter ring + heavy rising blue smoke. Its 178×550 frame matches the
-//       static invited-banner.png EXACTLY (the PNG is one resting frame of it).
+//       static invited-banner.png silhouette (a darker resting-state cousin —
+//       same dims/palette, not a pixel-identical frame).
 //       Shipped as invited-banner-pulse.webm.
 // Both clips are SEAMLESS CONTINUOUS LOOPS (first↔last frame diff ≈ 0), not
 // intro→loop, and each carries the full banner silhouette + gold trim in its

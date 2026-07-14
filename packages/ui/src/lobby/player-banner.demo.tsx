@@ -190,7 +190,7 @@ export function PlayerBannerEmptyDemo() {
 // ---------------------------------------------------------------------------
 
 // Two distinct shipped clips (probe #347): the 5s VP8 "classic pulse" whose
-// 178×550 frame matches the static PNG exactly, and the subtler 3s VP9 loop.
+// 178×550 silhouette matches the static PNG family (resting-state approximation), and the subtler 3s VP9 loop.
 const INVITED_PULSE_SRC = "/media/invited-banner/invited-banner-pulse.webm";
 const INVITED_LOOP_SRC = "/media/invited-banner/invited-banner-loop.webm";
 const INVITED_STATIC_SRC = partyBannerUrl("invited");
