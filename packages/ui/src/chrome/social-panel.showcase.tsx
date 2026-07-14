@@ -1,5 +1,6 @@
 import type { ShowcaseEntry } from "../showcase";
 import {
+  SocialPanelAmbientDemo,
   SocialPanelEmptyGroupDemo,
   SocialPanelFullReplicaDemo,
   SocialPanelInteractiveDemo,
@@ -26,6 +27,12 @@ export const socialPanelShowcase: ShowcaseEntry = {
       notes:
         'Closest to the real LoL client: "General" group expanded with 4 friends across in-game/in-queue/away/offline; "Work" group collapsed, showing derived (1/2) count. FriendRequestsRow shows a badge of 2. data-shot="social-panel" on the wrapper.',
       render: () => <SocialPanelFullReplicaDemo />,
+    },
+    {
+      name: "With ambient loop (socialpanel_bgloop)",
+      notes:
+        'ambientVideoSrc={socialPanelBgLoopUrl()} — the real client\'s animated Hextech backdrop, screen-blended subtly behind the friends list (opaque loop, low opacity). Additive over bg-blue-7; hidden under prefers-reduced-motion. data-shot="social-panel-ambient".',
+      render: () => <SocialPanelAmbientDemo />,
     },
     {
       name: "Empty group",

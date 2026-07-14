@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Summoner } from "@low/fixtures";
-import { profileIconUrl } from "@low/fixtures";
+import { profileIconUrl, socialPanelBgLoopUrl } from "@low/fixtures";
 import type { FriendGroup } from "./social-panel";
 import { SocialPanel } from "./social-panel";
 
@@ -109,6 +109,24 @@ export function SocialPanelFullReplicaDemo() {
         groups={FULL_REPLICA_GROUPS}
         requestCount={2}
         profileIconSrcFor={iconSrc}
+      />
+    </div>
+  );
+}
+
+/**
+ * Full replica WITH the ambient social-panel loop wired — the real client's
+ * animated Hextech backdrop, screen-blended subtly behind the friends list.
+ * Hidden under prefers-reduced-motion.
+ */
+export function SocialPanelAmbientDemo() {
+  return (
+    <div data-shot="social-panel-ambient" className="h-[480px]">
+      <SocialPanel
+        groups={FULL_REPLICA_GROUPS}
+        requestCount={2}
+        profileIconSrcFor={iconSrc}
+        ambientVideoSrc={socialPanelBgLoopUrl()}
       />
     </div>
   );

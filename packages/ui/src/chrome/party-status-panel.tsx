@@ -1,5 +1,6 @@
 "use client";
 
+import { AmbientVideoLayer } from "./ambient-video-layer";
 import { MapCrestImg } from "./map-crest-img";
 
 // ---------------------------------------------------------------------------
@@ -43,6 +44,15 @@ export interface PartyStatusPanelProps {
    * Defaults to true (open) when not provided.
    */
   open?: boolean;
+  /**
+   * Optional ambient "magic" loop webm shown subtly behind the widget — the
+   * client's animated party backdrop (supply `partiesBgLoopUrl("party-status")`
+   * from @low/fixtures). Additive: when omitted the flat `bg-blue-7` panel is
+   * unchanged. The loop is opaque (bright Hextech glow on near-black), so it
+   * composites screen-blended — the dark field drops out and only the glow adds.
+   * Hidden under `prefers-reduced-motion`.
+   */
+  ambientVideoSrc?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -155,6 +165,7 @@ export function PartyStatusPanel({
   capacity,
   onToggleOpen,
   open = true,
+  ambientVideoSrc,
 }: PartyStatusPanelProps) {
   const clampedFilled = Math.min(Math.max(filled, 0), capacity);
 
@@ -169,8 +180,13 @@ export function PartyStatusPanel({
   return (
     <div
       data-shot="party-status-panel"
-      className="w-full border-b border-gold-5 bg-blue-7"
+      className="relative w-full overflow-hidden border-b border-gold-5 bg-blue-7"
     >
+      {/* Ambient "magic" backdrop — subtle animated Hextech loop behind the
+          widget. Opaque loop → screen-blended so only the glow adds over
+          bg-blue-7; hidden under reduced-motion. */}
+      <AmbientVideoLayer src={ambientVideoSrc} opacity={0.4} />
+
       {/* ------------------------------------------------------------------ */}
       {/* 1. Header row — icon + "Open Party" label                           */}
       {/* When onToggleOpen is provided → interactive toggle button           */}
@@ -181,7 +197,7 @@ export function PartyStatusPanel({
           aria-pressed={open}
           onClick={onToggleOpen}
           className={[
-            "flex w-full cursor-pointer items-center gap-1.5 px-3 py-1.5",
+            "relative z-10 flex w-full cursor-pointer items-center gap-1.5 px-3 py-1.5",
             "font-display text-xs uppercase tracking-widest",
             "text-status-online transition-colors duration-150 hover:opacity-80",
           ].join(" ")}
@@ -192,7 +208,7 @@ export function PartyStatusPanel({
       ) : (
         <div
           className={[
-            "flex items-center gap-1.5 px-3 py-1.5",
+            "relative z-10 flex items-center gap-1.5 px-3 py-1.5",
             "font-display text-xs uppercase tracking-widest",
             "text-status-online",
           ].join(" ")}
@@ -207,7 +223,7 @@ export function PartyStatusPanel({
       {/* crestSrc chip overlaps the left edge with a drop-shadow glow        */}
       {/* ------------------------------------------------------------------ */}
       <div
-        className="relative mx-0 flex items-center"
+        className="relative z-10 mx-0 flex items-center"
         style={{
           background: "var(--color-party-band)",
           minHeight: 48,
@@ -253,7 +269,7 @@ export function PartyStatusPanel({
       {/* ------------------------------------------------------------------ */}
       {/* 3. Queue label caption — below the band, xs text                    */}
       {/* ------------------------------------------------------------------ */}
-      <div className="truncate px-3 pb-1.5 pt-0.5 font-body text-xs text-grey-1">
+      <div className="relative z-10 truncate px-3 pb-1.5 pt-0.5 font-body text-xs text-grey-1">
         {queueLabel}
       </div>
     </div>

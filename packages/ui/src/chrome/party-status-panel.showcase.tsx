@@ -1,7 +1,7 @@
 import type { ShowcaseEntry } from "../showcase";
 import { PartyStatusPanel } from "./party-status-panel";
 import { PartyStatusPanelToggleDemo } from "./party-status-panel.demo";
-import { gameModeMapUrl } from "@low/fixtures";
+import { gameModeMapUrl, partiesBgLoopUrl } from "@low/fixtures";
 
 const SR_CREST = gameModeMapUrl("sr");
 
@@ -94,6 +94,39 @@ export const partyStatusPanelShowcase: ShowcaseEntry = {
           <PartyStatusPanel
             queueLabel="Normal Draft"
             filled={1}
+            capacity={5}
+            open={true}
+          />
+        </div>
+      ),
+    },
+    {
+      name: "With ambient loop (party-status)",
+      notes:
+        'ambientVideoSrc={partiesBgLoopUrl("party-status")} — the real client\'s animated Hextech backdrop, screen-blended behind the widget (opaque loop, subtle opacity). Hidden under prefers-reduced-motion.',
+      render: () => (
+        <div className="w-[200px] bg-blue-7">
+          <PartyStatusPanel
+            queueLabel="Ranked Solo/Duo"
+            crestSrc={SR_CREST}
+            filled={3}
+            capacity={5}
+            open={true}
+            ambientVideoSrc={partiesBgLoopUrl("party-status")}
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Without ambient loop (static baseline)",
+      notes:
+        "ambientVideoSrc omitted — the flat bg-blue-7 widget is unchanged. Compare against the ambient variant above.",
+      render: () => (
+        <div className="w-[200px] bg-blue-7">
+          <PartyStatusPanel
+            queueLabel="Ranked Solo/Duo"
+            crestSrc={SR_CREST}
+            filled={3}
             capacity={5}
             open={true}
           />
