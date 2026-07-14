@@ -7,11 +7,16 @@ export const playButtonShowcase: ShowcaseEntry = {
   name: "Play Button",
   area: "chrome",
   description:
-    "XAML-spec v4 play button: concave-left SVG arrow bar, 3-stop state gradients, STOP slide toggle. Medallion + GoldLine/GreenLine frame layers.",
+    "v7 play button matched to the hi-res Riot reference: heavy-sans PLAY (Inter 800) at ~38% cap-height, " +
+    "fill-region centering, enlarged gold-L medallion extending above/below the bar, double-stroke teal frame " +
+    "(bright outer over dark inner edge), and a magic-button hover crossfade (idle/hover frame layers + radial glow). " +
+    "Concave-left SVG arrow bar, STOP slide toggle, GoldLine/GreenLine frame layers preserved.",
   variants: [
     {
       name: "Default",
-      notes: "Default state — 80%-alpha 3-stop cyan gradient stroke, grey-4 fill, PLAY label.",
+      notes:
+        "Default state — double-stroke teal frame (80%-alpha 3-stop cyan bright band over a dark teal-frame inner edge), " +
+        "grey-4 fill, heavy-sans PLAY label centered in the fill region.",
       render: () => <PlayButton />,
     },
     {
@@ -22,7 +27,9 @@ export const playButtonShowcase: ShowcaseEntry = {
     {
       name: "Hover note",
       notes:
-        "Hover for bright-cyan 3-stop stroke, lifted fill gradient (#1D3B4A→#082734), and drop-shadow glow on the outer wrapper.",
+        "Hover crossfades between stacked frame layers (idle → hover) per the Hextech magic-button anatomy — an opacity " +
+        "transition between full frame layers, not a property restyle. Hover layer: bright-cyan double-stroke, lifted fill " +
+        "gradient (#1D3B4A→#082734), and a radial cyan glow bloom behind the frame, plus the outer-wrapper drop-shadow.",
       render: () => <PlayButton />,
     },
     {

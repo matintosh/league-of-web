@@ -68,15 +68,22 @@ function makeSize(barH: number, extra: {
   fontSize: number; cornerLeg: number; cornerInset: number; pressExtend: number;
 }): SizeConfig {
   const s = barH / 28; // scale from XAML 1× (bar=28)
+  // v7: the hi-res reference teal frame is wider than the raw XAML frame
+  // (outerW-greenLeft ≈ 3.75:1 vs ref 5.42:1). `dx` lengthens only the straight
+  // middle of the bar (chevron angle + concave-left edge + medallion overlap
+  // unchanged) to nudge the frame toward the reference aspect without shrinking
+  // the PLAY cap-height match. Modest value: over-widening scales the whole
+  // button down in the width-normalized composite and undercuts cap-height.
+  const dx = sc(14, s);
   return {
     ...extra,
     bar: barH,
-    barWidth: sc(118, s),
-    tipNarrowX: sc(103, s),
+    barWidth: sc(118, s) + dx,
+    tipNarrowX: sc(103, s) + dx,
     tipY: Math.round(barH / 2),
     concaveX: sc(10, s),
     totalH: sc(38, s),
-    outerW: sc(155, s),   // XAML: 165 total - 10 left margin
+    outerW: sc(155, s) + dx,   // XAML: 165 total - 10 left margin, + straight-run stretch
     outerMarginLeft: sc(10, s),
     greenLeft: sc(50, s),
     greenMargin: sc(4, s),
@@ -88,11 +95,16 @@ function makeSize(barH: number, extra: {
 
 const SIZE_MAP: Record<PlayButtonSize, SizeConfig> = {
   default: makeSize(28, {
-    medallion: 44, socket: 44, socketPressed: 40,
+    // v7: cap height ≈ 38% of teal-bar height (was ~25%). Inter cap-height ratio
+    // ≈ 0.73; fontSize ≈ 0.38·barH / 0.73. Fine-tuned to 15 vs composite (18 ran tall).
+    // Medallion: reference gold-L is ~1.26× bar height and extends above AND below
+    // the bar (was flush-to-bar at 44 → 1.57× but read small because the glyph only
+    // filled 0.65×). Enlarged to 52 so the emblem reads at reference proportions.
+    medallion: 52, socket: 52, socketPressed: 47,
     fontSize: 15, cornerLeg: 8, cornerInset: 3, pressExtend: 1.3,
   }),
   hero: makeSize(46, {
-    medallion: 72, socket: 72, socketPressed: 65,
+    medallion: 86, socket: 86, socketPressed: 78,
     fontSize: 25, cornerLeg: 13, cornerInset: 5, pressExtend: 2.2,
   }),
 };
@@ -114,9 +126,10 @@ interface GradDefsProps {
   dsId: string; // default stroke
   hsId: string; // hover stroke
   hfId: string; // hover fill
+  glowId: string; // hover radial glow
 }
 
-function GradDefs({ dsId, hsId, hfId }: GradDefsProps) {
+function GradDefs({ dsId, hsId, hfId, glowId }: GradDefsProps) {
   return (
     <defs>
       {/* Default stroke: 3-stop 80%-alpha cyan — XAML #CC3FE7FF → #CC006D7D → #CC0493A7 */}
@@ -136,6 +149,13 @@ function GradDefs({ dsId, hsId, hfId }: GradDefsProps) {
         <stop offset="0%"   stopColor="var(--color-pb-hover-fill)" stopOpacity="1" />
         <stop offset="100%" stopColor="var(--color-navy-swirl)" stopOpacity="1" />
       </linearGradient>
+      {/* Hover radial glow — magic-button "radial effects" layer (HEXTECH-UI-NOTES.md).
+          Bright cyan bloom fading to transparent, drawn behind the frame on hover. */}
+      <radialGradient id={glowId} cx="50%" cy="50%" r="60%">
+        <stop offset="0%"   stopColor="var(--color-cyan-1)" stopOpacity="0.5" />
+        <stop offset="55%"  stopColor="var(--color-cyan-1)" stopOpacity="0.18" />
+        <stop offset="100%" stopColor="var(--color-cyan-1)" stopOpacity="0" />
+      </radialGradient>
     </defs>
   );
 }
@@ -264,7 +284,7 @@ function Medallion({ size, greyed, discId, glyphId, swirlId, emblemSrc, emblemHe
             style={{ width: emblemHeight ?? size, height: emblemHeight ?? size, objectFit: "contain" }}
           />
         ) : (
-          <LeagueGlyph size={Math.round(size * 0.65)} gradId={glyphId} greyed={greyed} />
+          <LeagueGlyph size={Math.round(size * 0.9)} gradId={glyphId} greyed={greyed} />
         )}
       </div>
     </div>
@@ -311,7 +331,21 @@ export interface PlayButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
 }
 
 /**
- * PlayButton v5 — XAML-spec geometry + state gradients + STOP toggle + label override.
+ * PlayButton v7 — hi-res-reference fidelity pass over the v5 XAML geometry.
+ *
+ * ## v7 reference-match changes (docs/reference/play-button-hires-full.png)
+ * - PLAY label: heavy sans (Inter 800) at ~38% cap-height of the teal bar,
+ *   tight tracking — replaces the thin Marcellus serif that read too small.
+ * - Fill-region centering: PLAY is centered between the medallion inner edge and
+ *   the chevron-tip narrowing (the visible fill), not the full bar.
+ * - Medallion: enlarged gold-L (~1.26× bar height) that extends above and below
+ *   the bar, matching the reference emblem proportion.
+ * - Teal frame: double-stroke (bright cyan outer band over a darker teal-frame
+ *   inner edge), ≈7% of bar height.
+ * - Frame aspect: straight-run stretch (`dx`) toward the reference 5.42:1.
+ * - Hover: magic-button LAYER CROSSFADE (HEXTECH-UI-NOTES.md) — stacked idle and
+ *   hover frame layers cross-fade on opacity, plus a radial cyan glow bloom
+ *   behind the frame — instead of a single-frame property restyle.
  *
  * ## Shape: concave-left SVG arrow bar
  * Path: `M 0,0 L tx,0 L bw,ty L tx,bh L 0,bh C ci,ty 0,0 0,0 Z`
@@ -321,11 +355,11 @@ export interface PlayButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
  * ## XAML layer mapping
  * - GoldLine: `bg #00070E, border 1px #34291E` outer dark-bronze frame
  * - GreenLine: `bg #1E2328, border 2px #09343D` inner teal frame (clears emblem)
- * - Arrow: SVG `<path>` overlay with per-state gradient stroke + fill
+ * - Arrow: stacked SVG frame layers (glow / idle double-stroke / hover double-stroke)
  *
  * ## State gradients
- * - Default: 80%-alpha 3-stop cyan (#3FE7FF→#006D7D→#0493A7), grey-4 fill
- * - Hover: full-alpha bright-cyan (#AFF5FF→#46E6FF→#00ADD4), lifted fill (#1D3B4A→#082734)
+ * - Default: 80%-alpha 3-stop cyan (#3FE7FF→#006D7D→#0493A7) over dark inner edge, grey-4 fill
+ * - Hover: full-alpha bright-cyan (#AFF5FF→#46E6FF→#00ADD4), lifted fill (#1D3B4A→#082734), radial glow
  * - Queueing: flat grey-2 stroke, grey-4 fill, grey-3 text; STOP label slides in
  * - Disabled: grey-3 stroke, grey-4 fill, greyed medallion; no glow
  *
@@ -357,6 +391,7 @@ export function PlayButton({
   const dsId    = `${uid}-ds`;
   const hsId    = `${uid}-hs`;
   const hfId    = `${uid}-hf`;
+  const glowId  = `${uid}-gl`;
 
   // Pressed state — drives socket shrink + bar extend. CSS :active pseudo-class
   // cannot override inline style (specificity), so JS state handles the override.
@@ -371,18 +406,33 @@ export function PlayButton({
     totalH, outerW, outerMarginLeft,
     greenLeft, greenMargin,
     arrowLeft, arrowTop,
-    textLeft, fontSize, pressExtend,
+    fontSize, pressExtend,
   } = cfg;
 
   const greyed = disabled || queueing;
   const d = barPath(cfg);
 
+  // v7 teal-frame stroke — reference reads as a double-stroke (bright outer band
+  // over a darker inner edge), total ≈ 7% of bar height. We render two stacked
+  // strokes: a wider dark inner edge under a narrower bright stroke. Both scale
+  // with bar height so the proportion holds across default/hero.
+  const strokeInner = 2.75 * (bar / 28); // bright band
+  const strokeOuter = strokeInner + 1.6 * (bar / 28); // dark inner edge under it
+
   // Resolved CSS vars for pressed/rest state
   const currentSocketSize = pressed ? socketPressed : socket;
   const currentPressExtend = pressed ? pressExtend : 0;
 
-  // Right padding: clears the tip region
-  const textRight = barWidth - tipNarrowX + 8;
+  // v7 fill-region centering. The label window is a flex-1 element between a
+  // left and a right spacer; its midpoint is the average of the two spacer
+  // edges. The reference centers PLAY in the FILL REGION (medallion inner edge
+  // → chevron-tip narrowing), not the full bar. So:
+  //   left spacer  = greenLeft                    (fill starts at the green frame)
+  //   right spacer = outerW - (arrowLeft+tipNarrowX)   (chevron narrowing point)
+  // → window center = (greenLeft + arrowLeft + tipNarrowX) / 2 = fill center.
+  const fillLeft = greenLeft;
+  const tipNarrowFrameX = arrowLeft + tipNarrowX;
+  const textRight = outerW - tipNarrowFrameX;
 
   // How much of the medallion overhangs to the left of the outer frame
   const medallionOverhang = Math.round(medallion - outerMarginLeft * 1.5);
@@ -417,7 +467,7 @@ export function PlayButton({
     >
       {/* Gradient defs in a hidden SVG — position:absolute, 0×0, overflow:hidden */}
       <svg width="0" height="0" aria-hidden="true" style={{ position: "absolute", overflow: "hidden" }}>
-        <GradDefs dsId={dsId} hsId={hsId} hfId={hfId} />
+        <GradDefs dsId={dsId} hsId={hsId} hfId={hfId} glowId={glowId} />
       </svg>
 
       {/* ------------------------------------------------------------------ */}
@@ -524,27 +574,52 @@ export function PlayButton({
               height={bar}
               fill="var(--color-pb-outer-bg)"
             />
-            {/* Default state: grey-4 fill + 80%-alpha cyan gradient stroke */}
-            <path
-              d={d}
-              fill="var(--color-grey-4)"
-              stroke={
-                disabled   ? "var(--color-grey-3)" :
-                queueing   ? "var(--color-grey-2)" :
-                `url(#${dsId})`
-              }
-              strokeWidth={2.5 * (bar / 28)}
-              className={!greyed ? "transition-opacity duration-150 group-hover/pb:opacity-0" : undefined}
-            />
-            {/* Hover state: lifted fill gradient + bright-cyan stroke */}
+
+            {/* ---- Radial glow layer (magic-button "radial effects"): a bright
+                cyan bloom behind the frame, revealed on hover via crossfade. ---- */}
             {!greyed && (
               <path
                 d={d}
-                fill={`url(#${hfId})`}
-                stroke={`url(#${hsId})`}
-                strokeWidth={2.5 * (bar / 28)}
-                className="opacity-0 transition-opacity duration-150 group-hover/pb:opacity-100"
+                fill={`url(#${glowId})`}
+                stroke="none"
+                className="opacity-0 transition-opacity duration-200 ease-out group-hover/pb:opacity-100"
+                style={{ filter: `blur(${Math.round(2 * (bar / 28))}px)` }}
               />
+            )}
+
+            {/* ---- IDLE frame layer ----
+                Double-stroke: a wider dark inner edge under a narrower bright cyan
+                stroke, so the teal frame reads as bright-outer / dark-inner like the
+                reference (stroke ≈ 7% of bar height). Crossfades OUT on hover. */}
+            <g
+              className={!greyed ? "transition-opacity duration-200 ease-out group-hover/pb:opacity-0" : undefined}
+            >
+              {/* dark inner edge (drawn first, wider) */}
+              {!greyed && (
+                <path d={d} fill="none" stroke="var(--color-teal-frame)" strokeWidth={strokeOuter} />
+              )}
+              {/* fill + bright stroke */}
+              <path
+                d={d}
+                fill="var(--color-grey-4)"
+                stroke={
+                  disabled   ? "var(--color-grey-3)" :
+                  queueing   ? "var(--color-grey-2)" :
+                  `url(#${dsId})`
+                }
+                strokeWidth={strokeInner}
+              />
+            </g>
+
+            {/* ---- HOVER frame layer ----
+                Same double-stroke recipe with the brighter hover gradient + lifted
+                fill. Crossfades IN on hover (opacity transition between layers, not a
+                property restyle) per HEXTECH-UI-NOTES.md magic-button anatomy. */}
+            {!greyed && (
+              <g className="opacity-0 transition-opacity duration-200 ease-out group-hover/pb:opacity-100">
+                <path d={d} fill="none" stroke="var(--color-teal-grad-hover-c)" strokeWidth={strokeOuter} />
+                <path d={d} fill={`url(#${hfId})`} stroke={`url(#${hsId})`} strokeWidth={strokeInner} />
+              </g>
             )}
           </svg>
         </div>
@@ -560,7 +635,10 @@ export function PlayButton({
           className={[
             "absolute inset-0 z-[3]",
             "flex items-center cursor-pointer overflow-hidden",
-            "font-display uppercase tracking-[0.15em]",
+            // v7: reference PLAY is a heavy sans (near-black), not the thin
+            // Marcellus serif. Use font-body (Inter) at weight 800 with tight
+            // tracking to match the bold-sans cap-height + weight of the ref.
+            "font-body font-extrabold uppercase tracking-[-0.01em]",
             disabled
               ? "cursor-not-allowed text-grey-2"
               : queueing
@@ -571,14 +649,14 @@ export function PlayButton({
           ].join(" ")}
           style={{ fontSize }}
         >
-          {/* Left spacer: clears GreenLine left inset + concave region.
+          {/* Left spacer: fill-region left edge (green frame inset).
               Narrows by --press-extend on active so text tracks with the bar. */}
           <span
             aria-hidden="true"
             style={{
               flexShrink: 0,
               display: "inline-block",
-              width: `calc(${greenLeft + textLeft}px - var(--press-extend, 0px))`,
+              width: `calc(${fillLeft}px - var(--press-extend, 0px))`,
               transition: "width 150ms",
             }}
           />
