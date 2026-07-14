@@ -73,15 +73,18 @@
   --color-cyan-3: #46e6ff;
   --color-cyan-4: #00add4;
 
-  /* FIND MATCH / LOCK IN idle face (#331) — measured from the dedicated crop
-     docs/reference/client-find-match-button.png. The reference idle fill is a
-     near-flat teal (top strip rgb(19,101,126) → bottom rgb(18,96,118), mean
-     rgb(18,97,120)), NOT the hot cyan the old cyan-1→teal-grad-a gradient read.
-     Border is the crisp bright teal ring (visible edge ~rgb(19,143,180), peak
-     ~rgb(18,175,220)). Glow follows the border hue. #331 Phase-B convergence
-     tuned these four values (iteration table in the PR). */
-  --color-teal-grad-fm-a: #13657e;
-  --color-teal-grad-fm-b: #12607a;
+  /* FIND MATCH / LOCK IN idle face (#331). The v11 in-context reference
+     (client-lobby-party-v11.png, button y608-668) idle fill is a STEEP vertical
+     gradient: dark navy-teal across the top (rgb(16,57,79) at y0.25) ramping to a
+     bright teal glow at the bottom arc (rgb(14,150,174) at y0.75) — NOT the flat
+     hot cyan the old cyan-1→teal-grad-a gradient read. teal-grad-fm-a is the dark
+     top stop, teal-grad-fm-b the bright bottom; the fill holds fm-a to ~30% before
+     ramping (see lock-in-button.tsx) so the mid stays dark like the reference. The
+     whole-button mean also lands within 12/channel of the dedicated crop
+     (client-find-match-button.png, mean rgb(18,97,120)). Border is the crisp bright
+     teal ring (rgb(19,143,180)); glow follows the border hue. Iter numbers in the PR. */
+  --color-teal-grad-fm-a: #104258;
+  --color-teal-grad-fm-b: #0fbdd6;
   --color-teal-fm-border: #138fb4;
   --color-teal-fm-glow: #127ea0;
 
@@ -215,8 +218,8 @@
     --color-cyan-4: #00add4;
 
     /* FIND MATCH / LOCK IN idle face (#331) — see @theme block comment above. */
-    --color-teal-grad-fm-a: #13657e;
-    --color-teal-grad-fm-b: #12607a;
+    --color-teal-grad-fm-a: #104258;
+    --color-teal-grad-fm-b: #0fbdd6;
     --color-teal-fm-border: #138fb4;
     --color-teal-fm-glow: #127ea0;
 

@@ -295,7 +295,12 @@ export function LockInButton({
     ? "var(--color-grey-4)"
     : isBan
       ? "linear-gradient(to bottom, var(--color-ban-red-2) 0%, var(--color-ban-red-3) 100%)"
-      : "linear-gradient(to bottom, var(--color-teal-grad-fm-a) 0%, var(--color-teal-grad-fm-b) 100%)";
+      : // Reference (v11 in-context) idle fill is dark navy-teal across the top,
+        // holding until the bottom third where it ramps to a bright teal glow at
+        // the arc (#331 iter2). Holding teal-grad-fm-a (dark) to ~45% before
+        // ramping to teal-grad-fm-b (bright) reproduces that steep bottom-weighted
+        // curve — a plain 0→100% linear reads too bright through the middle.
+        "linear-gradient(to bottom, var(--color-teal-grad-fm-a) 0%, var(--color-teal-grad-fm-a) 30%, var(--color-teal-grad-fm-b) 100%)";
 
   // Text colour: white on both the red ban fill AND the teal lock fill; grey-2 disabled.
   // The reference FIND MATCH label is white (mean rgb(227,231,232), peak #fff) over the

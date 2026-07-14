@@ -49,9 +49,9 @@ export const palette = {
   /** PlayButton v4 XAML hover bar stroke bottom stop */
   cyan4: "#00add4",
   /** FIND MATCH / LOCK IN idle fill top stop (#331) — see theme.css @theme comment */
-  tealGradFmA: "#13657e",
+  tealGradFmA: "#104258",
   /** FIND MATCH / LOCK IN idle fill bottom stop (#331) */
-  tealGradFmB: "#12607a",
+  tealGradFmB: "#0fbdd6",
   /** FIND MATCH / LOCK IN idle border (#331) */
   tealFmBorder: "#138fb4",
   /** FIND MATCH / LOCK IN idle glow (#331) */
