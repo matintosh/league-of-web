@@ -15,6 +15,7 @@ import {
   FindingMatchPanel,
   SettingsModal,
   SettingsRow,
+  LaunchSplash,
   HextechToggle,
   NewsCard,
   HomeNewsScreen,
@@ -365,6 +366,11 @@ const DOCK_BUTTONS: DockButton[] = [
 export function ClientShell() {
   const router = useRouter();
   const [view, setView] = useState<View>("home");
+  // Launch splash — Riot ident video on initial load (#300). Plain useState so
+  // every hard reload is a launch; client-side navs never remount the shell,
+  // so this stays true→false once per page load. The shell owns visibility;
+  // LaunchSplash calls onFinished (video ended / click / Escape / reduced-motion).
+  const [splashVisible, setSplashVisible] = useState(true);
   // Season-intro modal dismissal lives here (not in ProfileScreen): the
   // profile screen unmounts on main-nav switches, and "once per session"
   // must survive that (#227 review finding).
@@ -886,6 +892,16 @@ export function ClientShell() {
         activeSectionId={activeSectionId}
         onSelectSection={setActiveSectionId}
       />
+
+      {/* Launch splash — fixed full-viewport ident video over the whole client
+          on initial load. Client renders underneath so there's no pop-in after
+          the fade. Shell owns visibility (#300). */}
+      {splashVisible && (
+        <LaunchSplash
+          videoSrc="/media/riot-splash-jinx.webm"
+          onFinished={() => setSplashVisible(false)}
+        />
+      )}
     </div>
   );
 }
