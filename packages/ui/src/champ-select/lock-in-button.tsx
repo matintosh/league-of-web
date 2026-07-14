@@ -7,7 +7,7 @@
 //     in TrapezoidButton (../chrome/trapezoid-button), consumed here and by the
 //     MATCH FOUND ACCEPT button so both are literally the same primitive (#331).
 //   - Enabled fill: teal vertical gradient (teal-grad-fm-a top → teal-grad-fm-b
-//     bottom), thin teal-fm-border border, hextech-black TEXT (dark-on-bright).
+//     bottom), thin teal-fm-border border, WHITE text (matched to reference #331).
 //   - Disabled/In Queue: grey-4 dark fill, grey-3 border + grey-2 text.
 //
 // Do not refactor into HextechButton props — the shape/color contract is
@@ -46,9 +46,8 @@ const BLEED_FRAC = 0.18;
 // than the reference idle (see #331 convergence). Compositing it at reduced
 // opacity lets the tuned CSS teal base dominate so the resting idle matches the
 // reference's subtle shimmer rather than an aurora. Intro/hover/active/attention
-// stay at full opacity — only the resting idle is damped. Phase B tunes this
-// down; Phase A ships it at 1.0 to prove zero visual change.
-const IDLE_VIDEO_OPACITY = 1;
+// stay at full opacity — only the resting idle is damped.
+const IDLE_VIDEO_OPACITY = 0.5;
 
 /**
  * Real-client FIND MATCH button state videos, one URL per state (issue #310).
@@ -238,8 +237,8 @@ function LockInVideoLayer({
  * - Trapezoid + outward-arc silhouette (shared TrapezoidButton primitive): wider
  *   top, sides slope inward 12% per side, base closes with a downward quadratic
  *   bezier. Scales to any container width via objectBoundingBox clipPath.
- * - Enabled: teal vertical gradient fill (teal-grad-fm-a → teal-grad-fm-b),
- *   teal-fm-border border, hextech-black text (dark-on-bright).
+ * - Enabled: near-flat teal fill (teal-grad-fm-a → teal-grad-fm-b),
+ *   teal-fm-border border, white text (matched to reference FIND MATCH, #331).
  * - Hover: brighter cyan hover gradient.
  * - Active/press: dimmed teal press gradient, text goes grey-1.
  * - Disabled/In Queue: grey-4 fill, grey-3 border, grey-2 text, cursor-not-allowed.
@@ -298,13 +297,16 @@ export function LockInButton({
       ? "linear-gradient(to bottom, var(--color-ban-red-2) 0%, var(--color-ban-red-3) 100%)"
       : "linear-gradient(to bottom, var(--color-teal-grad-fm-a) 0%, var(--color-teal-grad-fm-b) 100%)";
 
-  // Text colour: white on red ban fill; hextech-black on teal lock fill; grey-2 disabled.
-  // White is the CSS keyword — not a token, not a raw hex — for maximum contrast on the dark red fill.
+  // Text colour: white on both the red ban fill AND the teal lock fill; grey-2 disabled.
+  // The reference FIND MATCH label is white (mean rgb(227,231,232), peak #fff) over the
+  // dark teal idle fill — NOT the dark-on-bright inversion the old hot-cyan fill assumed
+  // (#331: with the fill corrected to the reference teal, white is the faithful label).
+  // White is the CSS keyword — not a token, not a raw hex — for maximum contrast.
   const textColor = disabled
     ? "var(--color-grey-2)"
     : isBan
       ? "white"
-      : "var(--color-hextech-black)";
+      : "white";
 
   // Shape layers, bottom → top: border shell, fill, then hover/press overlays
   // when interactive. clipPath is injected by TrapezoidButton.
@@ -398,7 +400,10 @@ export function LockInButton({
         ) : undefined
       }
       labelClassName={[
-        "font-display text-sm tracking-[0.2em] uppercase",
+        // text-lg + 0.12em tracking: the reference FIND MATCH label fills ~50%
+        // of the button body width (cap-height ≈ 24% of body); text-sm/0.2em read
+        // ~38% and too airy (#331 measurement).
+        "font-display text-lg tracking-[0.12em] uppercase",
         // Press: text dims to grey-1 over the darker press gradient (JSDoc contract)
         !disabled && "group-active:!text-grey-1",
       ]

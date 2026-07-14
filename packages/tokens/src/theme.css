@@ -73,15 +73,17 @@
   --color-cyan-3: #46e6ff;
   --color-cyan-4: #00add4;
 
-  /* FIND MATCH / LOCK IN idle face (#331). Phase A ships these EQUAL to the old
-     cyan-1 → teal-grad-a gradient (top #3fe7ff, bottom #0593a7, border #3fe7ff,
-     glow #00add4) so the trapezoid-primitive extraction is pixel-identical. The
-     #331 Phase-B convergence loop tunes ONLY these four values toward the
-     reference (docs/reference/client-find-match-button.png). */
-  --color-teal-grad-fm-a: #3fe7ff;
-  --color-teal-grad-fm-b: #0593a7;
-  --color-teal-fm-border: #3fe7ff;
-  --color-teal-fm-glow: #00add4;
+  /* FIND MATCH / LOCK IN idle face (#331) — measured from the dedicated crop
+     docs/reference/client-find-match-button.png. The reference idle fill is a
+     near-flat teal (top strip rgb(19,101,126) → bottom rgb(18,96,118), mean
+     rgb(18,97,120)), NOT the hot cyan the old cyan-1→teal-grad-a gradient read.
+     Border is the crisp bright teal ring (visible edge ~rgb(19,143,180), peak
+     ~rgb(18,175,220)). Glow follows the border hue. #331 Phase-B convergence
+     tuned these four values (iteration table in the PR). */
+  --color-teal-grad-fm-a: #13657e;
+  --color-teal-grad-fm-b: #12607a;
+  --color-teal-fm-border: #138fb4;
+  --color-teal-fm-glow: #127ea0;
 
   /* PlayButton v4 structure borders — XAML GoldLine/GreenLine frame colors */
   --color-pb-outer-bg: #00070e;
@@ -213,10 +215,10 @@
     --color-cyan-4: #00add4;
 
     /* FIND MATCH / LOCK IN idle face (#331) — see @theme block comment above. */
-    --color-teal-grad-fm-a: #3fe7ff;
-    --color-teal-grad-fm-b: #0593a7;
-    --color-teal-fm-border: #3fe7ff;
-    --color-teal-fm-glow: #00add4;
+    --color-teal-grad-fm-a: #13657e;
+    --color-teal-grad-fm-b: #12607a;
+    --color-teal-fm-border: #138fb4;
+    --color-teal-fm-glow: #127ea0;
 
     /* PlayButton v4 structure border colors (GoldLine/GreenLine from XAML) */
     --color-pb-outer-bg: #00070e;
