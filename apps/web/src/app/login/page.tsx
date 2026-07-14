@@ -70,7 +70,7 @@ export default function LoginPage() {
       </div>
 
       {/* Bounded login window — fixed size, centered on the dark backdrop. */}
-      <div style={{ width: LOGIN_WIDTH, height: LOGIN_HEIGHT }}>
+      <div className="shrink-0" style={{ width: LOGIN_WIDTH, height: LOGIN_HEIGHT }}>
         <WindowFrame
           title="League of Web"
           onHelp={() => console.log("help")}
