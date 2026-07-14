@@ -110,6 +110,8 @@ export { TftHubScreen } from "./chrome/tft-hub-screen";
 export type { TftHubScreenProps, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, MissionCounter, RewardItem } from "./chrome/tft-hub-screen";
 export { TopNavbar } from "./chrome/top-navbar";
 export type { TopNavbarProps, NavItem } from "./chrome/top-navbar";
+export { TrapezoidButton } from "./chrome/trapezoid-button";
+export type { TrapezoidButtonProps, TrapLayer } from "./chrome/trapezoid-button";
 export { WelcomeToSeasonModal } from "./chrome/welcome-to-season-modal";
 export type { WelcomeToSeasonModalProps } from "./chrome/welcome-to-season-modal";
 export { WindowFrame } from "./chrome/window-frame";

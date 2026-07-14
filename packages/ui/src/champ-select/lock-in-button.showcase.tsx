@@ -19,9 +19,10 @@ export const lockInButtonShowcase: ShowcaseEntry = {
     "Trapezoid + curved-bottom-arc gradient confirmation button for the pick phase and lobby. " +
     "Shape: wider top, sides slope inward 12% per side, base closes with a downward quadratic bezier arc " +
     "(sagitta ≈ 22% of body height, matching client-lobby-party-v11.png reference). " +
-    "Clip implemented via SVG <clipPath clipPathUnits='objectBoundingBox'> so it scales to any width. " +
-    "Enabled lock: bright cyan-teal vertical gradient fill (cyan-1 → teal-grad-a), " +
-    "2px cyan-1 border following the arc silhouette, hextech-black text (dark-on-bright inversion). " +
+    "Clip implemented via SVG <clipPath clipPathUnits='objectBoundingBox'> (shared TrapezoidButton primitive) so it scales to any width. " +
+    "Enabled lock: near-flat teal idle fill (teal-grad-fm-a → teal-grad-fm-b), " +
+    "2px teal-fm-border ring following the arc silhouette, WHITE text — matched 1:1 to the reference " +
+    "FIND MATCH button (docs/reference/client-find-match-button.png; #331: fill Δ2.5, border Δ0.0/channel). " +
     "Enabled ban: red gradient fill (ban-red-2 → ban-red-3), white text. " +
     "Disabled/In Queue: grey-4 fill, grey-3 border, grey-2 text. " +
     "Drop-shadow glow follows the curved silhouette (filter:drop-shadow on outer wrapper). " +
@@ -30,7 +31,8 @@ export const lockInButtonShowcase: ShowcaseEntry = {
     {
       name: "Enabled — lock variant (FIND MATCH / LOCK IN)",
       notes:
-        "Bright cyan gradient fill, hextech-black text, cyan-1 border following trapezoid+arc. " +
+        "Near-flat teal idle fill (teal-grad-fm-a → teal-grad-fm-b), white text, teal-fm-border ring " +
+        "following trapezoid+arc — matched to the reference FIND MATCH crop (#331). " +
         "Curved bottom edge bows downward — sagitta ≈ 22% of body height. " +
         "Drop-shadow glow follows the arc. " +
         "Hover brightens to teal-grad-hover-a/b/c gradient. Press dims to teal-grad-press stops.",

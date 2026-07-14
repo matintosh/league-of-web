@@ -9,7 +9,7 @@
  *   tokens used only in inline `style={{}}` props or SVG attributes are
  *   always present — regardless of Tailwind's class-usage scan.
  *
- * Keep ALL THREE in sync (same 60 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
+ * Keep ALL THREE in sync (same 64 hex values): (1) the @theme block, (2) the @layer base :root block, (3) packages/tokens/src/index.ts.
  */
 
 @theme {
@@ -72,6 +72,21 @@
   --color-cyan-2: #aff5ff;
   --color-cyan-3: #46e6ff;
   --color-cyan-4: #00add4;
+
+  /* FIND MATCH / LOCK IN idle face (#331). The v11 in-context reference
+     (client-lobby-party-v11.png, button y608-668) idle fill is a STEEP vertical
+     gradient: dark navy-teal across the top (rgb(16,57,79) at y0.25) ramping to a
+     bright teal glow at the bottom arc (rgb(14,150,174) at y0.75) — NOT the flat
+     hot cyan the old cyan-1→teal-grad-a gradient read. teal-grad-fm-a is the dark
+     top stop, teal-grad-fm-b the bright bottom; the fill holds fm-a to ~30% before
+     ramping (see lock-in-button.tsx) so the mid stays dark like the reference. The
+     whole-button mean also lands within 12/channel of the dedicated crop
+     (client-find-match-button.png, mean rgb(18,97,120)). Border is the crisp bright
+     teal ring (rgb(19,143,180)); glow follows the border hue. Iter numbers in the PR. */
+  --color-teal-grad-fm-a: #104258;
+  --color-teal-grad-fm-b: #0fbdd6;
+  --color-teal-fm-border: #138fb4;
+  --color-teal-fm-glow: #127ea0;
 
   /* PlayButton v4 structure borders — XAML GoldLine/GreenLine frame colors */
   --color-pb-outer-bg: #00070e;
@@ -201,6 +216,12 @@
     --color-cyan-2: #aff5ff;
     --color-cyan-3: #46e6ff;
     --color-cyan-4: #00add4;
+
+    /* FIND MATCH / LOCK IN idle face (#331) — see @theme block comment above. */
+    --color-teal-grad-fm-a: #104258;
+    --color-teal-grad-fm-b: #0fbdd6;
+    --color-teal-fm-border: #138fb4;
+    --color-teal-fm-glow: #127ea0;
 
     /* PlayButton v4 structure border colors (GoldLine/GreenLine from XAML) */
     --color-pb-outer-bg: #00070e;

@@ -1,4 +1,4 @@
-// Keep in sync with packages/tokens/src/theme.css — same 60 hex values.
+// Keep in sync with packages/tokens/src/theme.css — same 64 hex values.
 /** Hextech palette as TS constants — for the rare case CSS classes can't be used (e.g. canvas). */
 export const palette = {
   gold1: "#f0e6d2",
@@ -48,6 +48,14 @@ export const palette = {
   cyan3: "#46e6ff",
   /** PlayButton v4 XAML hover bar stroke bottom stop */
   cyan4: "#00add4",
+  /** FIND MATCH / LOCK IN idle fill top stop (#331) — see theme.css @theme comment */
+  tealGradFmA: "#104258",
+  /** FIND MATCH / LOCK IN idle fill bottom stop (#331) */
+  tealGradFmB: "#0fbdd6",
+  /** FIND MATCH / LOCK IN idle border (#331) */
+  tealFmBorder: "#138fb4",
+  /** FIND MATCH / LOCK IN idle glow (#331) */
+  tealFmGlow: "#127ea0",
   /** PlayButton v4 GoldLine frame bg (#00070E dark near-black) */
   pbOuterBg: "#00070e",
   /** PlayButton v4 GoldLine frame border (dark bronze) */

@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { HextechButton } from "../chrome/hextech-button";
 import { MapCrestImg } from "../chrome/map-crest-img";
+import { TrapezoidButton, TRAP_BORDER_PX, type TrapLayer } from "../chrome/trapezoid-button";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -117,128 +118,77 @@ function MapCrestFrame({ src }: { src: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// AcceptTrapezoid — ACCEPT! button, trapezoid + curved-bottom arc silhouette.
+// AcceptTrapezoid — ACCEPT! button.
 //
-// Same clip-path technique as LockInButton (objectBoundingBox, scales with
-// container). Colors differ: dark teal/navy fill (blue-5) with teal-ring border
-// — matches the reference ACCEPT inside the circle (RGB 51–57, 81–85 background,
+// The trapezoid + curved-bottom-arc silhouette is the shared TrapezoidButton
+// primitive (../chrome/trapezoid-button) — the SAME shape as FIND MATCH / LOCK IN
+// (#331 unification). This wrapper supplies only the ACCEPT palette + entrance
+// pulse overlay. Colors: dark teal/navy fill (blue-5) with teal-ring border —
+// matches the reference ACCEPT inside the circle (RGB 51–57, 81–85 background,
 // teal border). Hover brightens to blue-4; active dims further.
-//
-// Slope and arc geometry match the LockInButton reference proportions so the
-// Hextech trapezoid language is consistent across both CTAs.
 // ---------------------------------------------------------------------------
-
-const ACCEPT_SLOPE = 0.12;
-const ACCEPT_ARC_PAD = 0.22;
-const ACCEPT_Y_BODY = 1 / (1 + ACCEPT_ARC_PAD); // ≈ 0.8197
-const ACCEPT_BORDER_PX = 2;
-
-function acceptTrapPath(): string {
-  const yb = ACCEPT_Y_BODY.toFixed(6);
-  return `M 0,0 L 1,0 L ${(1 - ACCEPT_SLOPE).toFixed(6)},${yb} Q 0.5,1 ${ACCEPT_SLOPE.toFixed(6)},${yb} Z`;
-}
-const ACCEPT_PATH_D = acceptTrapPath();
-
-function AcceptTrapClipDefs({ id }: { id: string }) {
-  return (
-    <svg
-      width={0}
-      height={0}
-      aria-hidden="true"
-      style={{ position: "absolute", overflow: "hidden" }}
-    >
-      <defs>
-        <clipPath id={id} clipPathUnits="objectBoundingBox">
-          <path d={ACCEPT_PATH_D} />
-        </clipPath>
-      </defs>
-    </svg>
-  );
-}
 
 function AcceptTrapezoid({
   onClick,
-  clipId,
   pulseClass,
 }: {
   onClick: () => void;
-  clipId: string;
   /** Instance-scoped entrance-pulse class applied to the glow overlay on mount. */
   pulseClass: string;
 }) {
-  const clipRef = `url(#${clipId})`;
+  const layers: TrapLayer[] = [
+    {
+      // Border shell — teal-ring color
+      key: "shell",
+      inset: 0,
+      style: { background: "var(--color-teal-ring)", transition: "background 150ms" },
+    },
+    {
+      // Fill layer — dark teal (blue-5)
+      key: "fill",
+      inset: TRAP_BORDER_PX,
+      className: "group-hover:!bg-[var(--color-blue-4)]",
+      style: { background: "var(--color-blue-5)", transition: "background 150ms" },
+    },
+    {
+      // Active press overlay — slightly darker
+      key: "press",
+      inset: TRAP_BORDER_PX,
+      className: "opacity-0 group-active:opacity-100 transition-opacity duration-75",
+      style: { background: "var(--color-teal-grad-press-a)" },
+    },
+  ];
+
   return (
-    <button
-      type="button"
+    <TrapezoidButton
       onClick={onClick}
+      layers={layers}
       className={[
-        "group relative flex w-full items-center justify-center",
         // Teal glow following the clipped silhouette
         "[filter:drop-shadow(0_0_10px_color-mix(in_srgb,var(--color-blue-2)_60%,transparent))]",
-        "pt-3 cursor-pointer",
+        "cursor-pointer",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-2 focus-visible:outline-offset-2",
       ].join(" ")}
-      style={{
-        paddingBottom: `calc(12px + 44px * ${ACCEPT_ARC_PAD})`,
-      }}
+      // Entrance glow pulse — a clipped teal wash over the fill that brightens
+      // twice on mount to draw attention, then rests invisible (base opacity 0;
+      // the persistent glow is the button's drop-shadow). Disabled under
+      // prefers-reduced-motion. Purely decorative.
+      overlay={({ clipRef }) => (
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute opacity-0 ${pulseClass}`}
+          style={{
+            inset: TRAP_BORDER_PX,
+            clipPath: clipRef,
+            background: "color-mix(in srgb, var(--color-blue-2) 40%, transparent)",
+          }}
+        />
+      )}
+      labelClassName="font-display text-sm tracking-[0.2em] uppercase text-gold-1 group-hover:text-gold-2 group-active:text-gold-2"
+      labelStyle={{ transition: "color 150ms" }}
     >
-      <AcceptTrapClipDefs id={clipId} />
-
-      {/* Border shell — teal-ring color */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          clipPath: clipRef,
-          background: "var(--color-teal-ring)",
-          transition: "background 150ms",
-        }}
-      />
-
-      {/* Fill layer — dark teal (blue-5) */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute group-hover:!bg-[var(--color-blue-4)]"
-        style={{
-          inset: ACCEPT_BORDER_PX,
-          clipPath: clipRef,
-          background: "var(--color-blue-5)",
-          transition: "background 150ms",
-        }}
-      />
-
-      {/* Active press overlay — slightly darker */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute opacity-0 group-active:opacity-100 transition-opacity duration-75"
-        style={{
-          inset: ACCEPT_BORDER_PX,
-          clipPath: clipRef,
-          background: "var(--color-teal-grad-press-a)",
-        }}
-      />
-
-      {/* Entrance glow pulse — a clipped teal wash over the fill that brightens
-          twice on mount to draw attention, then rests invisible (base opacity 0;
-          the persistent glow is the button's drop-shadow). Disabled under
-          prefers-reduced-motion. Purely decorative. */}
-      <span
-        aria-hidden="true"
-        className={`pointer-events-none absolute opacity-0 ${pulseClass}`}
-        style={{
-          inset: ACCEPT_BORDER_PX,
-          clipPath: clipRef,
-          background: "color-mix(in srgb, var(--color-blue-2) 40%, transparent)",
-        }}
-      />
-
-      <span
-        className="relative z-10 font-display text-sm tracking-[0.2em] uppercase select-none text-gold-1 group-hover:text-gold-2 group-active:text-gold-2"
-        style={{ transition: "color 150ms" }}
-      >
-        Accept!
-      </span>
-    </button>
+      Accept!
+    </TrapezoidButton>
   );
 }
 
@@ -380,7 +330,6 @@ export function MatchFoundModal({
   const titleId = `${uid}-title`;
   const glowId = `${uid}-arc-glow`;
   const crestGradId = `${uid}-crest-grad`;
-  const acceptClipId = `${uid}-accept-trap`;
 
   if (!open) return null;
 
@@ -548,7 +497,7 @@ export function MatchFoundModal({
             className="absolute left-1/2 -translate-x-1/2"
             style={{ bottom: "24px", width: "280px" }}
           >
-            <AcceptTrapezoid onClick={onAccept} clipId={acceptClipId} pulseClass={`mfm-pulse-${scope}`} />
+            <AcceptTrapezoid onClick={onAccept} pulseClass={`mfm-pulse-${scope}`} />
           </div>
         </div>
 
