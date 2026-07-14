@@ -6,7 +6,8 @@ export interface LaunchSplashProps {
   /**
    * Source URL of the ident video (webm/mp4). The real client plays the Riot
    * Games ident animation on launch; supply the served asset path here, e.g.
-   * "/media/riot-splash-jinx.webm".
+   * "/media/riot-splash-jinx.webm". Must be same-origin (or CORS-enabled) —
+   * the dark-background treatment reads video pixels through a canvas.
    */
   videoSrc: string;
   /**
@@ -35,21 +36,32 @@ const FADE_MS = 300;
  * client-side navigations never remount it.
  *
  * Behaviour:
- * - Video plays once (`autoPlay muted playsInline`, no loop), object-contain
- *   centered over a white field (the ident artwork sits on white).
+ * - The ident artwork is delivered on a baked white field. To sit it on the
+ *   Hextech dark background, frames are white-keyed through a canvas
+ *   (alpha = 255 − min(r,g,b): white → transparent, inks/flames keep body)
+ *   and composited over a blue-5 → blue-8 → hextech-black radial.
+ * - The source video plays once (`autoPlay muted playsInline`, no loop),
+ *   hidden; the canvas mirrors it at the displayed size.
+ * - If pixel access is unavailable (no 2d context, cross-origin taint), the
+ *   raw video is shown instead on its native white field — never a blank
+ *   screen.
  * - When the video ends, OR the user clicks anywhere, OR presses Escape, the
  *   overlay fades out over ~300ms and then calls `onFinished` (single path).
  * - `prefers-reduced-motion: reduce` skips the splash entirely — `onFinished`
  *   is called on mount and nothing is shown.
  *
  * a11y: the overlay is a `role="dialog"` labelled "Launch" with an sr-only
- * skip hint. The video is decorative (`aria-hidden`).
+ * skip hint. The video/canvas are decorative (`aria-hidden`).
  */
 export function LaunchSplash({ videoSrc, onFinished, skipLabel = "Click anywhere or press Escape to skip" }: LaunchSplashProps) {
   // Fading drives the fade-out opacity transition; once true it never resets.
   const [fading, setFading] = useState(false);
+  // Keying failed (taint / no context) — fall back to the raw white video.
+  const [keyingFailed, setKeyingFailed] = useState(false);
   // Guards onFinished against firing twice (e.g. Escape during an ended fade).
   const finishedRef = useRef(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Begins the single dismissal path: fade out, then call onFinished after the
   // transition. Idempotent — repeated calls (video ended + click) are no-ops.
@@ -86,6 +98,63 @@ export function LaunchSplash({ videoSrc, onFinished, skipLabel = "Click anywhere
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [finish]);
 
+  // White-key render loop: mirror the hidden video onto the canvas each frame
+  // with white mapped to transparency, sized to the video's contain-fit box.
+  useEffect(() => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) {
+      setKeyingFailed(true);
+      return;
+    }
+    let raf = 0;
+
+    const fitCanvas = () => {
+      if (!video.videoWidth || !video.videoHeight) return;
+      // object-contain box of the video inside the viewport, capped at native
+      // size — keying cost scales with the pixel count we actually display.
+      const scale = Math.min(
+        window.innerWidth / video.videoWidth,
+        window.innerHeight / video.videoHeight,
+        1,
+      );
+      canvas.width = Math.round(video.videoWidth * scale);
+      canvas.height = Math.round(video.videoHeight * scale);
+    };
+
+    const draw = () => {
+      raf = window.requestAnimationFrame(draw);
+      if (!video.videoWidth || canvas.width === 0) return;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      try {
+        const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const d = frame.data;
+        for (let i = 0; i < d.length; i += 4) {
+          // White field → transparent; saturated flames and dark inks keep
+          // their body (alpha follows the darkest channel).
+          d[i + 3] = 255 - Math.min(d[i]!, d[i + 1]!, d[i + 2]!);
+        }
+        ctx.putImageData(frame, 0, 0);
+      } catch {
+        // Cross-origin taint — abandon keying, show the raw video instead.
+        window.cancelAnimationFrame(raf);
+        setKeyingFailed(true);
+      }
+    };
+
+    fitCanvas();
+    video.addEventListener("loadedmetadata", fitCanvas);
+    window.addEventListener("resize", fitCanvas);
+    raf = window.requestAnimationFrame(draw);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      video.removeEventListener("loadedmetadata", fitCanvas);
+      window.removeEventListener("resize", fitCanvas);
+    };
+  }, [keyingFailed]);
+
   return (
     <div
       role="dialog"
@@ -93,23 +162,34 @@ export function LaunchSplash({ videoSrc, onFinished, skipLabel = "Click anywhere
       onClick={finish}
       className="fixed inset-0 z-[100] flex h-full w-full cursor-pointer items-center justify-center"
       style={{
-        // The ident artwork sits on a white field — `white` keyword is the
-        // ledger-approved exception (no white design token exists).
-        background: "white",
+        // Keyed ident sits on the Hextech dark field; if keying is unavailable
+        // the raw artwork's baked white field shows instead (`white` keyword is
+        // the ledger-approved exception — no white design token exists).
+        background: keyingFailed
+          ? "white"
+          : "radial-gradient(ellipse at center, var(--color-blue-5), var(--color-blue-8) 55%, var(--color-hextech-black))",
         opacity: fading ? 0 : 1,
         transition: `opacity ${FADE_MS}ms ease-out`,
       }}
     >
       <span className="sr-only">{skipLabel}</span>
       <video
+        ref={videoRef}
         aria-hidden="true"
         src={videoSrc}
         autoPlay
         muted
         playsInline
         onEnded={finish}
-        className="h-full w-full object-contain"
+        className={
+          keyingFailed
+            ? "h-full w-full object-contain"
+            : "pointer-events-none absolute h-px w-px opacity-0"
+        }
       />
+      {!keyingFailed && (
+        <canvas ref={canvasRef} aria-hidden="true" className="max-h-full max-w-full" />
+      )}
     </div>
   );
 }
