@@ -400,13 +400,83 @@ export function DeclareIntentScreen({
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-hextech-black">
-      {/* Ambient dark vignette behind everything */}
-      <div className="pointer-events-none absolute inset-0">
+      {/* ---------------------------------------------------------------- */}
+      {/* Full-bleed map backdrop — the 1280x720 map-intro clip is CENTERED  */}
+      {/* on the window (its beacon sits window-center in the reference) and */}
+      {/* runs behind the header/roster/tray; paths + pins share its frame   */}
+      {/* so the normalized anchors are frame-true.                          */}
+      {/* ---------------------------------------------------------------- */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {/* Static fallback layer — always beneath; videos paint over it.
+            Under reduced motion the videos hide and this is what shows. */}
+        <StaticMapStage roster={roster} />
+
+        {/* Map-intro reveal video (opaque, played once, centered full-bleed) */}
+        {mapIntroSrc && (
+          <video
+            key={mapIntroSrc}
+            aria-hidden="true"
+            src={mapIntroSrc}
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover motion-reduce:hidden"
+          />
+        )}
+
+        {/* Lane paths — one-shot alpha light-ups for roles that have a path */}
+        {video?.pathSrcs &&
+          roster.map((entry) => {
+            if (!hasPath(entry.role)) return null;
+            const src = video.pathSrcs?.[entry.role];
+            if (!src) return null;
+            const a = LANE_ANCHORS[entry.role];
+            return (
+              <OverlayClip
+                key={`path-${entry.summonerName}`}
+                src={src}
+                xPct={a.x * 100}
+                yPct={a.y * 100}
+                widthPct={22}
+                originY="center"
+                z={5}
+              />
+            );
+          })}
+
+        {/* Pins — one-shot alpha drops; me-pin is distinct (gold, wider) */}
+        {(video?.pinSrc || video?.mePinSrc) &&
+          roster.map((entry) => {
+            const a = LANE_ANCHORS[entry.role];
+            const src = entry.isSelf ? video?.mePinSrc : video?.pinSrc;
+            if (!src) return null;
+            return (
+              <OverlayClip
+                key={`pin-${entry.summonerName}`}
+                src={src}
+                xPct={a.x * 100}
+                yPct={a.y * 100}
+                widthPct={entry.isSelf ? 9 : 7}
+                originY="bottom"
+                z={entry.isSelf ? 8 : 6}
+              />
+            );
+          })}
+
+        {/* Side vignette — dark edges blending the map into the chrome (the
+            reference fades hard at left/right, softer top/bottom). z above
+            the map stack, below the z-10 content columns. */}
         <div
-          className="absolute inset-0"
+          aria-hidden="true"
+          className="absolute inset-0 z-[9]"
           style={{
-            background:
-              "radial-gradient(ellipse 80% 70% at 50% 40%, color-mix(in srgb, var(--color-blue-7) 25%, transparent) 0%, transparent 75%)",
+            background: [
+              "linear-gradient(to right, var(--color-hextech-black) 0%, color-mix(in srgb, var(--color-hextech-black) 55%, transparent) 12%, transparent 30%)",
+              "linear-gradient(to left, var(--color-hextech-black) 0%, color-mix(in srgb, var(--color-hextech-black) 55%, transparent) 10%, transparent 26%)",
+              "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 70%, transparent) 0%, transparent 14%)",
+              "linear-gradient(to top, var(--color-hextech-black) 0%, color-mix(in srgb, var(--color-hextech-black) 60%, transparent) 10%, transparent 28%)",
+            ].join(", "),
           }}
         />
       </div>
@@ -448,67 +518,8 @@ export function DeclareIntentScreen({
           </div>
         </aside>
 
-        {/* Center map stage */}
-        <main className="relative flex-1 min-w-0 overflow-hidden">
-          {/* Static fallback layer — always rendered beneath; the video layers
-              paint over it. Under reduced motion the videos are hidden and this
-              is what shows. */}
-          <StaticMapStage roster={roster} />
-
-          {/* Map-intro reveal video (opaque, played once) — the hero stage.
-              Only rendered when a src is supplied; hidden under reduced motion. */}
-          {mapIntroSrc && (
-            <video
-              key={mapIntroSrc}
-              aria-hidden="true"
-              src={mapIntroSrc}
-              autoPlay
-              muted
-              playsInline
-              preload="auto"
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover motion-reduce:hidden"
-            />
-          )}
-
-          {/* Lane paths — one-shot alpha light-ups for roles that have a path */}
-          {video?.pathSrcs &&
-            roster.map((entry) => {
-              if (!hasPath(entry.role)) return null;
-              const src = video.pathSrcs?.[entry.role];
-              if (!src) return null;
-              const a = LANE_ANCHORS[entry.role];
-              return (
-                <OverlayClip
-                  key={`path-${entry.summonerName}`}
-                  src={src}
-                  xPct={a.x * 100}
-                  yPct={a.y * 100}
-                  widthPct={22}
-                  originY="center"
-                  z={5}
-                />
-              );
-            })}
-
-          {/* Pins — one-shot alpha drops; me-pin is distinct (gold, wider) */}
-          {(video?.pinSrc || video?.mePinSrc) &&
-            roster.map((entry) => {
-              const a = LANE_ANCHORS[entry.role];
-              const src = entry.isSelf ? video?.mePinSrc : video?.pinSrc;
-              if (!src) return null;
-              return (
-                <OverlayClip
-                  key={`pin-${entry.summonerName}`}
-                  src={src}
-                  xPct={a.x * 100}
-                  yPct={a.y * 100}
-                  widthPct={entry.isSelf ? 9 : 7}
-                  originY="bottom"
-                  z={entry.isSelf ? 8 : 6}
-                />
-              );
-            })}
-        </main>
+        {/* Center spacer — the map backdrop renders full-bleed behind */}
+        <main className="relative flex-1 min-w-0" />
       </div>
 
       {/* ------------------------------------------------------------------ */}
