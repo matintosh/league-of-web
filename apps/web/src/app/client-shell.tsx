@@ -445,9 +445,20 @@ export function ClientShell() {
 
   const toggleSocialPanel = () => setSocialExpanded((prev) => !prev);
 
+  // Champ-select phases are a full-screen takeover (issue #341): the TopNavbar
+  // is hidden and the champ-select screen stretches to the window's top edge.
+  // Window controls survive because they live in WindowFrame's title bar (a
+  // sibling above this content column), not in the navbar.
+  const champSelectActive = view === "ban" || view === "pick" || view === "loadout";
+
   // Views that show the docked social rail alongside content.
-  // ban, pick, and loadout are full-bleed (no rail) per issue spec.
-  const railVisible = view !== "ban" && view !== "pick" && view !== "loadout";
+  // ban, pick, and loadout are full-bleed (no rail) per issue spec — the
+  // reference replaces the docked rail with compact corner chat buttons.
+  // Rail hiding here is safe for queue UX: by ban/pick/loadout the queue is
+  // long over (match was accepted in the party-lobby view, which keeps its
+  // rail + FindingMatchPanel). The match-found/queue widgets live only in the
+  // party-lobby phase, so no queue function is lost by dropping the rail here.
+  const railVisible = !champSelectActive;
 
   // Reset queue state when leaving the party-lobby view so rail reverts to PartyStatusPanel.
   // This runs synchronously with the view change so there's no flash.
@@ -618,6 +629,10 @@ export function ClientShell() {
         onClose={() => console.log("close")}
       >
         <div className="flex h-full flex-col">
+          {/* TopNavbar is hidden during champ-select phases (#341): those
+              screens are a full-screen takeover. Window controls stay because
+              they belong to WindowFrame's title bar, not the navbar. */}
+          {!champSelectActive && (
           <TopNavbar
             playSlot={
               // PlayButton lives permanently in the navbar (zone 1).
@@ -754,6 +769,7 @@ export function ClientShell() {
               </div>
             }
           />
+          )}
 
           {/* Content row — flex row containing the screen (flex-1 min-w-0) and,
               on railed views, the docked social rail as a normal in-flow column.
