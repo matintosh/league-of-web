@@ -6,6 +6,9 @@ import {
   LockInButtonCustomLabelDemo,
   LockInButtonFullWidthDemo,
   LockInButtonBanVariantDemo,
+  LockInButtonVideoDemo,
+  LockInButtonPulseDemo,
+  LockInButtonAllReturnedDemo,
 } from "./lock-in-button.demo";
 
 export const lockInButtonShowcase: ShowcaseEntry = {
@@ -62,6 +65,31 @@ export const lockInButtonShowcase: ShowcaseEntry = {
         "w-full by default — trapezoid+arc scales with container width via objectBoundingBox clipPath. " +
         "Sagitta scales proportionally.",
       render: () => <LockInButtonFullWidthDemo />,
+    },
+    {
+      name: "Video state machine (intro → idle → hover → active)",
+      notes:
+        "Real-client FIND MATCH state videos (issue #310) layered over the CSS button. " +
+        "Intro plays once on mount, then the idle shimmer loops. Hover crossfades (~250ms) into the " +
+        "bright cyan hover face; press shows the engaged/active face. Videos carry alpha and composite " +
+        "straight (no blend) below the label, extending past the trapezoid for glow bleed but staying " +
+        "pointer-events-none — the hit area and clip geometry are unchanged. Under prefers-reduced-motion " +
+        "the videos are hidden and the pure-CSS button shows.",
+      render: () => <LockInButtonVideoDemo />,
+    },
+    {
+      name: "Video — pulse attention (ready-to-start)",
+      notes:
+        "attention=\"pulse\" — the green attention-pulse sweep the real client plays when a match is " +
+        "ready to start. Authored on a 300×200 canvas so the green glow bleeds well past the button.",
+      render: () => <LockInButtonPulseDemo />,
+    },
+    {
+      name: "Video — all-returned attention (party all-ready)",
+      notes:
+        "attention=\"all-returned\" — the steady green outline glow shown when the whole party is ready. " +
+        "Same 300×200 bleed geometry as the pulse state.",
+      render: () => <LockInButtonAllReturnedDemo />,
     },
   ],
 };
