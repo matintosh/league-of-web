@@ -12,6 +12,7 @@ import {
   PlayerBannerTierGemDemo,
   PlayerBannerBadgeSlotsDemo,
   PlayerBannerSweepDemo,
+  PlayerBannerInvitedDemo,
 } from "./player-banner.demo";
 
 export const playerBannerShowcase: ShowcaseEntry = {
@@ -92,6 +93,12 @@ export const playerBannerShowcase: ShowcaseEntry = {
       notes:
         "sweepVideoSrc: the real-client 272×620 banner-sweep webm plays ONCE over the flag on mount then unmounts to the static banner (an entrance flourish, not a loop). Self uses bannerSweepVideoUrl(\"primary\"), ally uses (\"ally\"); the third banner has no sweepVideoSrc as the static baseline. Click Replay to remount and re-fire the sweep. The overlay sits above the banner art but below the crest/text/badges (they stay legible mid-flourish); suppressed under prefers-reduced-motion; a load error drops the layer leaving the static flag.",
       render: () => <PlayerBannerSweepDemo />,
+    },
+    {
+      name: "Invited slot — animated pending-invite flag (issue #347)",
+      notes:
+        "invited=true: a pending party member the captain has invited but who hasn't accepted. Replaces the plain empty + circle with an animated heraldic flag (dark panel, glowing blue summon ring, rising blue mist). invitedVideoSrc loops continuously (an idle \"searching\" pulse, not a one-shot); the clip carries its own silhouette + gold trim in alpha so it fills the flag box standalone. Two shipped clips: the 5s \"classic pulse\" (same 178×550 silhouette family as the static PNG — a resting-state approximation, not a pixel match) and a subtler 3s loop — both user-extracted (WAD), NOT CommunityDragon-mirrored (parties plugin ships only invited-banner.png), so served from local /media/. The static invited PNG (invitedFallbackSrc = partyBannerUrl(\"invited\")) sits beneath and is the sole visual under prefers-reduced-motion or on video load error. Third banner has no video → static-only (same as the reduced-motion look). pointer-events-none, no layout contract change.",
+      render: () => <PlayerBannerInvitedDemo />,
     },
   ],
 };

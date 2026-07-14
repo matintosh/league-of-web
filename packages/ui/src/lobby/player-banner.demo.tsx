@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { PlayerBanner } from "./player-banner";
 import { RoleSlotRow } from "./role-slot-row";
-import { profileIconUrl, bannerSweepVideoUrl } from "@low/fixtures";
+import { profileIconUrl, bannerSweepVideoUrl, partyBannerUrl } from "@low/fixtures";
 
 // Stable profile icon URLs for demos
 const AVATAR_1 = profileIconUrl(1);
@@ -176,6 +176,51 @@ export function PlayerBannerEmptyDemo() {
       <PlayerBanner name="" avatarSrc="" empty />
       <PlayerBanner name="" avatarSrc="" empty />
       <PlayerBanner name="" avatarSrc="" empty />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Invited banner (animated pending-invite flag) — issue #347
+//
+// The invited-flag clips are user-extracted (WAD) and NOT CommunityDragon-
+// mirrored, so pages/demos supply a LOCAL /media/ URL rather than a cdragon
+// helper. The static invited PNG (partyBannerUrl("invited")) is the resting-
+// frame fallback shown under reduced-motion / on video error.
+// ---------------------------------------------------------------------------
+
+// Two distinct shipped clips (probe #347): the 5s VP8 "classic pulse" whose
+// 178×550 silhouette matches the static PNG family (resting-state approximation), and the subtler 3s VP9 loop.
+const INVITED_PULSE_SRC = "/media/invited-banner/invited-banner-pulse.webm";
+const INVITED_LOOP_SRC = "/media/invited-banner/invited-banner-loop.webm";
+const INVITED_STATIC_SRC = partyBannerUrl("invited");
+
+export function PlayerBannerInvitedDemo() {
+  return (
+    <div className="flex items-center justify-center gap-6 p-8 bg-blue-6">
+      {/* Animated pulse (5s VP8) over the static fallback */}
+      <PlayerBanner
+        name=""
+        avatarSrc=""
+        invited
+        invitedVideoSrc={INVITED_PULSE_SRC}
+        invitedFallbackSrc={INVITED_STATIC_SRC}
+      />
+      {/* Subtler loop variant (3s VP9) */}
+      <PlayerBanner
+        name=""
+        avatarSrc=""
+        invited
+        invitedVideoSrc={INVITED_LOOP_SRC}
+        invitedFallbackSrc={INVITED_STATIC_SRC}
+      />
+      {/* No video supplied → static invited PNG only (also the reduced-motion look) */}
+      <PlayerBanner
+        name=""
+        avatarSrc=""
+        invited
+        invitedFallbackSrc={INVITED_STATIC_SRC}
+      />
     </div>
   );
 }
