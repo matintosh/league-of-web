@@ -7,7 +7,7 @@
 //     in TrapezoidButton (../chrome/trapezoid-button), consumed here and by the
 //     MATCH FOUND ACCEPT button so both are literally the same primitive (#331).
 //   - Enabled fill: teal vertical gradient (teal-grad-fm-a top → teal-grad-fm-b
-//     bottom), thin teal-fm-border border, WHITE text (matched to reference #331).
+//     bottom), near-white hot frame + white/teal glow (v14 #335), WHITE text.
 //   - Disabled/In Queue: grey-4 dark fill, grey-3 border + grey-2 text.
 //
 // Do not refactor into HextechButton props — the shape/color contract is
@@ -35,12 +35,25 @@ const CROSSFADE_TRANSITION = "opacity var(--motion-crossfade)";
 // The pulse / all-returned videos are authored on a larger 300×200 canvas so
 // their green glow can bleed well beyond the trapezoid. The interactive
 // (intro/idle/hover/active) videos are 230×100 with tighter bleed. We give the
-// overlay box a symmetric negative inset so the video's own frame — already
-// centered on the trapezoid — lands with its bleed extending past the button
-// bounds. This is a *visual* overflow only: the layer is pointer-events-none
-// and sits outside the button's layout box via absolute positioning, so it
-// never changes the hit area, the clipPath geometry, or the flow.
-const BLEED_FRAC = 0.18;
+// overlay box a symmetric negative inset so the video's own trapezoid frame —
+// centered on the canvas — scales up to land ON the CSS clip edge, with its
+// glow bleed extending past the button bounds. This is a *visual* overflow only:
+// the layer is pointer-events-none and sits outside the button's layout box via
+// absolute positioning, so it never changes the hit area, the clipPath
+// geometry, or the flow.
+//
+// v14 registration (#335): the 230×100 clips carry their OWN trapezoid outline
+// whose tight bright-border bbox measures 197×59 within the canvas (scratchpad
+// hover-frame sampling) — i.e. 85.7% of canvas width, 59% of canvas height,
+// centered. That outline's normalized silhouette (top corners x0.091/0.909,
+// full-width base, bottom tip y1.0) matches the v14 CSS clip almost exactly, so
+// it is the SAME shape — it only needs to be scaled UP to fill the button. With
+// `objectFit: contain` on a box inset by -BLEED_FRAC, the height-constrained
+// video renders at (1+2·BLEED)·H; 0.28 scales the 59%-tall border bbox up to
+// ~button height at the in-app 200×70 (aspect 2.87) FIND MATCH slot so the video
+// border sits on the CSS frame rather than floating inset inside it (was 0.18,
+// which left the video border ~7px inside the frame — the pre-v14 mismatch).
+const BLEED_FRAC = 0.28;
 
 // Idle-video opacity. The idle shimmer video reads much hotter/brighter cyan
 // than the reference idle (see #331 convergence). Compositing it at reduced
@@ -234,11 +247,13 @@ function LockInVideoLayer({
  * LockInButton — trapezoid-shaped gradient confirmation button with curved bottom arc.
  *
  * Visual contract:
- * - Trapezoid + outward-arc silhouette (shared TrapezoidButton primitive): wider
- *   top, sides slope inward 12% per side, base closes with a downward quadratic
- *   bezier. Scales to any container width via objectBoundingBox clipPath.
- * - Enabled: near-flat teal fill (teal-grad-fm-a → teal-grad-fm-b),
- *   teal-fm-border border, white text (matched to reference FIND MATCH, #331).
+ * - Trapezoid + curved-bottom-arc silhouette (shared TrapezoidButton primitive,
+ *   v14 #335): NARROW arched top, sides splay OUTWARD to a full-width base, which
+ *   closes with a downward quadratic bezier. Scales to any container width via
+ *   objectBoundingBox clipPath.
+ * - Enabled: near-flat teal fill (teal-grad-fm-a → teal-grad-fm-b), a near-white
+ *   hot frame with a two-stop white/teal glow, white text (matched to the v14
+ *   FIND MATCH reference, #335).
  * - Hover: brighter cyan hover gradient.
  * - Active/press: dimmed teal press gradient, text goes grey-1.
  * - Disabled/In Queue: grey-4 fill, grey-3 border, grey-2 text, cursor-not-allowed.
@@ -284,11 +299,16 @@ export function LockInButton({
     Object.values(videoSources).some(Boolean);
 
   // Border colour: variant-dependent when enabled, grey-3 when disabled.
+  // v14 (#335): the lock/FIND MATCH frame reads NEAR-WHITE hot, not thin teal.
+  // Sampled frame core RGB ≈ (231,249,248) — white with a faint cyan cast. A
+  // color-mix of white + teal-grad-fm-b (the bright fill cyan) reproduces that
+  // cast without a raw hex: 88% white / 12% cyan ≈ (226,247,250). BAN keeps its
+  // ban-red frame family; ACCEPT owns its teal-ring frame in match-found-modal.
   const borderColor = disabled
     ? "var(--color-grey-3)"
     : isBan
       ? "var(--color-ban-red-1)"
-      : "var(--color-teal-fm-border)";
+      : "color-mix(in srgb, white 88%, var(--color-teal-grad-fm-b) 12%)";
 
   // Fill: variant gradient when enabled; flat grey-4 when disabled.
   const fillBackground = disabled
@@ -383,9 +403,12 @@ export function LockInButton({
       className={[
         // Outer glow per the reference close-up — drop-shadow (not box-shadow:
         // it must follow the clipped silhouette including the arc).
-        // Ban variant uses a red glow; lock variant uses the teal glow.
+        // Ban variant uses a red glow; lock variant (v14, #335) uses a HOT
+        // two-stop halo: a tight near-white inner bloom hugging the frame plus a
+        // softer teal outer glow — matching the near-white frame + teal bleed the
+        // v14 reference shows (frame core ≈ white/cyan, glow band ≈ dim teal).
         !disabled && !isBan &&
-          "[filter:drop-shadow(0_0_8px_color-mix(in_srgb,var(--color-teal-fm-glow)_55%,transparent))]",
+          "[filter:drop-shadow(0_0_4px_color-mix(in_srgb,white_60%,var(--color-teal-grad-fm-b)_40%))_drop-shadow(0_0_10px_color-mix(in_srgb,var(--color-teal-fm-glow)_55%,transparent))]",
         !disabled && isBan &&
           "[filter:drop-shadow(0_0_8px_color-mix(in_srgb,var(--color-ban-red-1)_55%,transparent))]",
         !disabled &&

@@ -11,21 +11,25 @@ export const trapezoidButtonShowcase: ShowcaseEntry = {
   name: "Trapezoid Button",
   area: "chrome",
   description:
-    "Shared curved-trapezoid CTA primitive (#331). Wide flat top, sides slope inward 12% per side, " +
-    "base closes with a downward quadratic-bezier arc (sagitta ≈ 22% of body height), clipped via " +
+    "Shared curved-trapezoid CTA primitive (#331, v14 silhouette #335). NARROW flat top " +
+    "(corners inset ~8.5% per side, gently arched up), sides splaying OUTWARD to a full-width base, " +
+    "capped by a downward quadratic-bezier arc (sagitta ≈ 29% of frame height). Clipped via " +
     "SVG <clipPath clipPathUnits='objectBoundingBox'> so it scales to any width. Palette-agnostic: " +
     "consumers supply an ordered list of clipped shape layers (border shell + fill + overlays) plus " +
     "label styling. This is the single source of truth for the FIND MATCH / LOCK IN button, the BAN " +
     "button, and the MATCH FOUND ACCEPT button — LockInButton and MatchFoundModal both wrap it, adding " +
     "their video and entrance overlays on top. Presentational: props in, onClick out; no fetching.",
-  referenceImage: "client-find-match-button.png",
+  referenceImage: "client-find-match-shape-v14.png",
   referenceNote:
-    "docs/reference/client-find-match-button.png — the FIND MATCH surface whose trapezoid+arc geometry this primitive owns.",
+    "docs/reference/client-find-match-shape-v14.png — the FIND MATCH surface whose v14 trapezoid+arc " +
+    "geometry (steep outward splay, near-white hot frame) this primitive owns; see " +
+    "find-match-shape-compare.png for the silhouette-aligned overlay.",
   variants: [
     {
       name: "Lock palette (FIND MATCH / LOCK IN base)",
       notes:
-        "Teal idle gradient (teal-grad-fm-a → teal-grad-fm-b), teal-fm-border, teal-fm-glow drop-shadow. " +
+        "Teal idle gradient (teal-grad-fm-a → teal-grad-fm-b) with the v14 near-white hot frame + " +
+        "teal glow (LockInButton supplies the frame colour; this demo shows the shared geometry). " +
         "Static CSS base — the real LockInButton layers the #310 state videos over this.",
       render: () => <TrapezoidButtonLockDemo />,
     },
@@ -44,7 +48,7 @@ export const trapezoidButtonShowcase: ShowcaseEntry = {
     {
       name: "Full width (480px container)",
       notes:
-        "Slope + arc scale with container width via the objectBoundingBox clipPath — sagitta stays proportional.",
+        "Outward splay + arc scale with container width via the objectBoundingBox clipPath — sagitta stays proportional.",
       render: () => <TrapezoidButtonWideDemo />,
     },
   ],

@@ -3,8 +3,10 @@
 //
 // The pick-phase "LOCK IN" / lobby "FIND MATCH" button (LockInButton) and the
 // MATCH FOUND "ACCEPT!" button (MatchFoundModal) are the SAME Hextech shape:
-//   - Trapezoid silhouette: wide flat top, sides sloping inward ~12% per side,
-//     narrower base — with a CURVED BOTTOM ARC bowing downward (outward arc).
+//   - Trapezoid silhouette: NARROW flat top, sides splaying OUTWARD downward to
+//     a full-width base — capped by a CURVED BOTTOM ARC bowing downward. The top
+//     edge is gently arched upward. (v14: matches
+//     docs/reference/client-find-match-shape-v14.png.)
 //   - A border "shell" layer (bg = border colour) with the fill layer inset
 //     BORDER_PX on top, both sharing one objectBoundingBox <clipPath> so the
 //     border follows the arc without CSS borders fighting the clip.
@@ -16,58 +18,95 @@
 // This primitive is the single source of truth; both consumers supply only
 // their palette (via `layers`) and optional overlays (via `overlay`).
 //
-// Trapezoid + arc geometry (sampled from docs/reference/client-find-match-button.png
-// and client-lobby-party-v11.png):
-//   Top edge: full width (x=0..1)
-//   Sides: slope inward ~12% per side from top to the trapezoid base
-//   Bottom: quadratic bezier from bottom-left inset to bottom-right inset,
-//           bowing downward. Control point at horizontal center, sagitta below base.
+// ---------------------------------------------------------------------------
+// v14 geometry — re-measured from docs/reference/client-find-match-shape-v14.png
+// (PIL, near-white bright-frame outline; scratchpad measure_v14d.py):
+//
+//   Outer frame bbox 375×94 px → aspect ≈ 3.99:1.
+//   TOP edge:   outer corners at x 0.085 / 0.915 of the box width (NARROW top,
+//               ~8.5% inset per side), gently arched upward (~2px rise).
+//   SIDES:      splay OUTWARD downward — half-width 0.415 at top → 0.5 at base,
+//               reaching the FULL width (x 0 / 1) at the base corners.
+//   BASE row:   y ≈ 0.713 of the box height (where the straight sides end and
+//               the bottom arc begins).
+//   BOTTOM arc: quadratic bow from the full-width base corners down through the
+//               center tip at (0.5, 1.0); sagitta ≈ 0.287 of the box height
+//               (27px at the 94px reference scale).
+//
+// This REVERSES the pre-v14 silhouette: the old shape was wide-top / narrow-base
+// (inward taper, TRAP_SLOPE = 0.12). v14 is narrow-top / full-width-base
+// (outward splay, TRAP_TOP_INSET = 0.085) — the true client shape.
+//
+// Before → after (objectBoundingBox 0..1):
+//   top corners:      (0.00, 0) / (1.00, 0)   →  (0.085, ~0.02) / (0.915, ~0.02)
+//   top arc peak y:   flat (0)                →  0 (center rises ~0.02 above corners)
+//   base corners:     (0.12, 0.820) / (0.88…) →  (0.000, 0.713) / (1.000, 0.713)
+//   bottom arc tip:   (0.5, 1.0)              →  (0.5, 1.0)   [sagitta deeper vs body]
 //
 // Clip technique — SVG <clipPath> with clipPathUnits="objectBoundingBox":
-//   Coordinates are 0..1 fractions of the element bounding box. This makes
-//   the shape scale correctly at any width. The outer button container has
-//   extra bottom padding (ARC_PAD_FRAC of height) so the arc has room to bow
+//   Coordinates are 0..1 fractions of the element bounding box, so the shape
+//   scales correctly at any width. The outer button container adds extra bottom
+//   padding (ARC_PAD_FRAC of body height) so the bottom arc has room to bow
 //   below the trapezoid body without clipping.
-//
-// Arc math (objectBoundingBox, 0..1 space):
-//   Container height = body_height + arc_pad (arc_pad ≈ 22% of body_height).
-//   Body ends at y_body = body_height / container_height.
-//   Left inset corner:  (SLOPE, y_body)  where SLOPE = 0.12
-//   Right inset corner: (1-SLOPE, y_body)
-//   Arc control point:  (0.5, 1.0)  — bottom of padded container = sagitta tip
-//   SVG path:  M 0,0 L 1,0 L (1-S),y_body Q 0.5,1 S,y_body L 0,0 Z
 // ---------------------------------------------------------------------------
 
 "use client";
 
 import { useId, type CSSProperties, type ReactNode } from "react";
 
-// Pixel inset for the border shell trick (shell is 2px larger on each side).
-export const TRAP_BORDER_PX = 2;
+// Pixel inset for the border shell trick (the shell reads as the frame; the fill
+// is inset this many px on each side). v14 frame measures ~4.7% of height ≈
+// 4-5px at the 94px reference scale; at the in-app ~50-60px body height a 3px
+// inset lands in that ratio band and reads as the thick near-white v14 frame
+// (pre-v14 was 2px teal). Consumers key their fill/overlay insets off this.
+export const TRAP_BORDER_PX = 3;
 
-// Trapezoid inward slope: 12% per side (sampled from reference close-up).
-export const TRAP_SLOPE = 0.12;
+// Top-edge inset per side (objectBoundingBox). The flat top spans
+// x[TRAP_TOP_INSET .. 1-TRAP_TOP_INSET]; sides splay OUTWARD to full width at the
+// base. Measured 0.085 (top outer corners x136..447 in a 375px-wide frame box).
+export const TRAP_TOP_INSET = 0.085;
 
-// Arc padding: fraction of the body height added below for the downward arc.
-// 0.22 ≈ 22% → at a 44px body this adds ~10px arc room (matches ~16px sagitta
-// at the wider reference scale where button is ~200px in a 430px reference box).
-export const TRAP_ARC_PAD_FRAC = 0.22;
+// Top-edge upward arch (objectBoundingBox y). The top center rises this far above
+// the top corners — a gentle convex arc. Measured ~2px over a 94px box ≈ 0.02.
+export const TRAP_TOP_ARC = 0.02;
 
-// Precomputed y_body in objectBoundingBox space.
-// container_height = body + arc_pad = body * (1 + ARC_PAD_FRAC)
-// y_body = body / container_height = 1 / (1 + ARC_PAD_FRAC)
-export const TRAP_Y_BODY = 1 / (1 + TRAP_ARC_PAD_FRAC); // ≈ 0.8197
+// Base row (objectBoundingBox y): where the straight sides end and the bottom arc
+// begins. Measured y≈0.713 (widest bright row y132 in a 94px-tall frame box).
+export const TRAP_Y_BASE = 0.713;
+
+// Arc padding: fraction of the BODY height added below for the downward bottom
+// arc. The body ends at the base row; container height = body + arc_pad. With the
+// base at TRAP_Y_BASE of the FULL box and the arc tip at y=1.0, the sagitta is
+// (1 - TRAP_Y_BASE) of the box = 0.287. Expressed as a fraction of body height:
+//   arc_pad / body = (1 - Y_BASE) / Y_BASE  ⇒  0.287 / 0.713 ≈ 0.402.
+export const TRAP_ARC_PAD_FRAC = (1 - TRAP_Y_BASE) / TRAP_Y_BASE; // ≈ 0.4025
 
 // Bottom padding CSS: pt-3 (12px) body top + ARC_PAD_FRAC of the ~44px body.
 // Shared by both consumers so the arc room is identical everywhere.
 export const TRAP_PADDING_BOTTOM = `calc(12px + 44px * ${TRAP_ARC_PAD_FRAC})`;
 
-// SVG path in objectBoundingBox units (0..1 × 0..1):
-//   M top-left → top-right → bottom-right inset (slope) → Q arc control (center bottom) → bottom-left inset → Z
-// The Q (quadratic bezier) bows through (0.5, 1.0) — the bottom of the padded container.
+// SVG path in objectBoundingBox units (0..1 × 0..1), clockwise from top-left:
+//   top-left corner → (arched top) → top-right corner
+//   → straight side splaying OUT to base-right (full width)
+//   → (bottom arc) bowing through center tip → base-left (full width)
+//   → straight side back up to top-left. Close.
+//
+// Top arc: quadratic from top-left (S, TOP_ARC) through peak (0.5, 0) to
+//          top-right (1-S, TOP_ARC) — center sits TOP_ARC above the corners.
+// Bottom arc: quadratic from base-right (1, Y_BASE) through tip (0.5, 1) to
+//          base-left (0, Y_BASE).
 function trapArcPath(): string {
-  const yb = TRAP_Y_BODY.toFixed(6);
-  return `M 0,0 L 1,0 L ${(1 - TRAP_SLOPE).toFixed(6)},${yb} Q 0.5,1 ${TRAP_SLOPE.toFixed(6)},${yb} Z`;
+  const s = TRAP_TOP_INSET.toFixed(6);
+  const s1 = (1 - TRAP_TOP_INSET).toFixed(6);
+  const ta = TRAP_TOP_ARC.toFixed(6);
+  const yb = TRAP_Y_BASE.toFixed(6);
+  return (
+    `M ${s},${ta} ` + // top-left corner (slightly below the arc peak)
+    `Q 0.5,0 ${s1},${ta} ` + // arched top edge, peaking at center (y=0)
+    `L 1,${yb} ` + // splay outward to full-width base-right
+    `Q 0.5,1 0,${yb} ` + // bottom arc bowing through center tip
+    `Z` // straight side back up to the top-left start
+  );
 }
 
 const TRAP_PATH_D = trapArcPath();
