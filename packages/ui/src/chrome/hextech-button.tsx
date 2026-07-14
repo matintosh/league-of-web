@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import type { ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
 
 // ---------------------------------------------------------------------------
@@ -52,6 +53,195 @@ const sizes: Record<HextechButtonSize, SizeConfig> = {
   // Large scales proportionally; height and padding preserved from pre-#56 for existing consumers.
   large: { height: 56, paddingClass: "px-14 py-4", textClass: "text-base" },
 };
+
+// ---------------------------------------------------------------------------
+// CrossMedallion — cross-circle cancel badge (v14 reference)
+//
+// The real client's queue-cancel affordance (docs/reference/
+// client-find-match-shape-v14.png, left of FIND MATCH): a gold ring circle with
+// a centered ✕ cross over a dark Hextech fill. Sits like PlayButton's medallion
+// socket — gold ring + dark disc — but with NO League logo and NO video socket:
+// a static gold cross instead. Mirrors PlayButton's Medallion recipe (gold ring
+// stroke, radial dark disc) at HextechButton scale.
+//
+// Reference measurements (56px ⌀ crop, upscaled 6× + PIL-sampled):
+//   outer ⌀ ......... ≈ 53–56 px  → default `size` 56
+//   ring gradient ... warm gold top rgb(182,159,90) ≈ gold-3, mid bronze
+//                     rgb(148,115,51) ≈ gold-4, dark bottom ≈ gold-5
+//                     (vertical top-light gradient)
+//   dark fill ....... rgb(29,35,40)  → grey-4 (#1e2328 = rgb(30,35,40)), exact
+//   cross ........... rgb(192,186,148) ≈ gold-cream (#cdbe91), rounded stroke
+//   cross arm span .. ≈ 36% of ⌀ ; stroke ≈ 9% of ⌀
+//
+// Purely presentational (props in, no callbacks): the badge renders the visual
+// only. Drop it into HextechButton's `medallion` slot, or wrap it in your own
+// <button> for a standalone cancel affordance (how the lobby footer uses it).
+// aria-hidden — the wrapping control owns the accessible label.
+// ---------------------------------------------------------------------------
+
+export interface CrossMedallionProps {
+  /** Outer diameter in px. Defaults to 56 (v14 reference). */
+  size?: number;
+  /**
+   * Greyed / inert styling — ring + cross desaturate to grey, hover brightening
+   * is suppressed. The wrapping control still owns `disabled`; this only styles.
+   */
+  disabled?: boolean;
+}
+
+/**
+ * CrossMedallion — the v14 cross-circle cancel badge: gold ring + centered ✕
+ * cross over a dark Hextech disc. Presentational and static (no logo, no video).
+ *
+ * ## Anatomy (mirrors PlayButton's Medallion at HextechButton scale)
+ * - Base disc: radial dark fill (navy-swirl core → grey-4), sampled rgb(29,35,40).
+ * - Gold ring: vertical gradient stroke — gold-3 (warm top) → gold-4 → gold-5
+ *   (bronze bottom), matching the reference's top-lit ring. `color-dodge` blend
+ *   lifts it off the dark disc like the PlayButton ring.
+ * - Cross: gold-cream ✕ with rounded caps, ~36% of ⌀, drop-shadowed for depth.
+ *
+ * ## Hover (layer crossfade — HEXTECH-UI-NOTES.md magic-button anatomy)
+ * Two stacked ring+cross states (idle / bright) crossfade on opacity via the
+ * shared `--motion-crossfade` token when the nearest `.group/hb` is hovered —
+ * NOT a single-element restyle. Wrap the badge in an element carrying `group/hb`
+ * (HextechButton already does; standalone callers add it) to drive the brighten.
+ *
+ * @example Standalone cancel button (lobby footer)
+ * <button className="group/hb" aria-label="Cancel" onClick={onCancel}>
+ *   <CrossMedallion />
+ * </button>
+ *
+ * @example In a HextechButton medallion slot
+ * <HextechButton variant="primary" medallion={<CrossMedallion size={40} />}>
+ *   Cancel
+ * </HextechButton>
+ */
+export function CrossMedallion({ size = 56, disabled = false }: CrossMedallionProps) {
+  const uid = useId();
+  const discId = `${uid}-disc`;
+  const ringId = `${uid}-ring`;
+  const ringHId = `${uid}-ringh`;
+  const crossId = `${uid}-cross`;
+
+  const s = size;
+  const r = s / 2;
+  // Ring stroke ≈ 8% of ⌀ (reference bronze band); scale with size, floor for small.
+  const ringW = Math.max(2, s * 0.08);
+  const ringR = r - ringW / 2; // ring stroke centered on the edge
+  const innerR = r - ringW; // dark disc inside the ring
+
+  // Cross geometry: arm half-span ≈ 18% of ⌀ (≈ 36% total), stroke ≈ 9% of ⌀.
+  const arm = s * 0.18;
+  const crossW = Math.max(2, s * 0.09);
+  const c = r; // cross centered
+  const a1 = c - arm;
+  const a2 = c + arm;
+
+  return (
+    <div
+      aria-hidden="true"
+      className="relative shrink-0"
+      style={{ width: s, height: s }}
+    >
+      <svg
+        viewBox={`0 0 ${s} ${s}`}
+        width={s}
+        height={s}
+        className="absolute inset-0"
+        overflow="visible"
+      >
+        <defs>
+          {/* Dark disc — radial deep-navy core fading to grey-4, sampled rgb(29,35,40). */}
+          <radialGradient id={discId} cx="42%" cy="38%" r="70%">
+            <stop offset="0%" stopColor="var(--color-navy-swirl)" stopOpacity="0.75" />
+            <stop offset="55%" stopColor="var(--color-grey-4)" />
+            <stop offset="100%" stopColor="var(--color-grey-4)" />
+          </radialGradient>
+          {/* Idle ring: warm gold top → bronze bottom (top-lit vertical gradient). */}
+          <linearGradient id={ringId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-gold-3)" />
+            <stop offset="55%" stopColor="var(--color-gold-4)" />
+            <stop offset="100%" stopColor="var(--color-gold-5)" />
+          </linearGradient>
+          {/* Hover ring: brighter cream-gold top → gold-3 bottom (crossfades in). */}
+          <linearGradient id={ringHId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-gold-1)" />
+            <stop offset="55%" stopColor="var(--color-gold-2)" />
+            <stop offset="100%" stopColor="var(--color-gold-3)" />
+          </linearGradient>
+          {/* Cross gradient — gold-cream top → gold-2, gives the ✕ subtle depth. */}
+          <linearGradient id={crossId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-gold-cream)" />
+            <stop offset="100%" stopColor="var(--color-gold-2)" />
+          </linearGradient>
+        </defs>
+
+        {/* Base disc: dark Hextech fill inside the ring. */}
+        <circle
+          cx={r}
+          cy={r}
+          r={innerR}
+          fill={disabled ? "var(--color-grey-4)" : `url(#${discId})`}
+        />
+
+        {/* IDLE ring + cross — crossfades OUT on hover. */}
+        <g
+          className={
+            disabled
+              ? undefined
+              : "transition-opacity group-hover/hb:opacity-0"
+          }
+          style={disabled ? undefined : { transition: `opacity var(--motion-crossfade)` }}
+        >
+          <circle
+            cx={r}
+            cy={r}
+            r={ringR}
+            fill="none"
+            stroke={disabled ? "var(--color-grey-3)" : `url(#${ringId})`}
+            strokeWidth={ringW}
+          />
+          <g
+            stroke={disabled ? "var(--color-grey-2)" : `url(#${crossId})`}
+            strokeWidth={crossW}
+            strokeLinecap="round"
+            style={{ filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.55))" }}
+          >
+            <line x1={a1} y1={a1} x2={a2} y2={a2} />
+            <line x1={a2} y1={a1} x2={a1} y2={a2} />
+          </g>
+        </g>
+
+        {/* HOVER ring + cross — brighter gold, crossfades IN on hover (opacity
+            transition between stacked states, not a property restyle). */}
+        {!disabled && (
+          <g
+            className="opacity-0 transition-opacity group-hover/hb:opacity-100"
+            style={{ transition: `opacity var(--motion-crossfade)` }}
+          >
+            <circle
+              cx={r}
+              cy={r}
+              r={ringR}
+              fill="none"
+              stroke={`url(#${ringHId})`}
+              strokeWidth={ringW}
+            />
+            <g
+              stroke="var(--color-gold-1)"
+              strokeWidth={crossW}
+              strokeLinecap="round"
+              style={{ filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.55))" }}
+            >
+              <line x1={a1} y1={a1} x2={a2} y2={a2} />
+              <line x1={a2} y1={a1} x2={a1} y2={a2} />
+            </g>
+          </g>
+        )}
+      </svg>
+    </div>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Public props

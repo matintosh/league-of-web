@@ -1,5 +1,5 @@
 import type { ShowcaseEntry } from "../showcase";
-import { HextechButton } from "./hextech-button";
+import { CrossMedallion, HextechButton } from "./hextech-button";
 
 // ---------------------------------------------------------------------------
 // Inline icon helpers for demo purposes
@@ -49,28 +49,9 @@ function ArrowIcon() {
   );
 }
 
-/** Simple gold-ring medallion for demo — mirrors the spec sheet leading badge. */
+/** Reference cross-circle medallion sized to the default (34px) bar. */
 function DemoMedallion() {
-  return (
-    <div
-      style={{
-        width: 32,
-        height: 32,
-        borderRadius: "50%",
-        border: "2px solid var(--color-gold-3)",
-        background: "var(--color-blue-6)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: 14,
-        color: "var(--color-gold-2)",
-        fontWeight: "bold",
-        flexShrink: 0,
-      }}
-    >
-      ✕
-    </div>
-  );
+  return <CrossMedallion size={40} />;
 }
 
 // ---------------------------------------------------------------------------
@@ -142,8 +123,73 @@ export const hextechButtonShowcase: ShowcaseEntry = {
   name: "Hextech Button",
   area: "chrome",
   description:
-    "Three-family Hextech button: gold rectangle (secondary), teal chevron (primary), and parallelogram (slanted). Supports leading icon (secondary) and medallion badge (primary/slanted).",
+    "Three-family Hextech button: gold rectangle (secondary), teal chevron (primary), and parallelogram (slanted). Supports leading icon (secondary) and medallion badge (primary/slanted). CrossMedallion is the v14 cross-circle cancel badge (gold ring + ✕ over dark fill).",
   variants: [
+    // ---- CrossMedallion — v14 cross-circle cancel badge (issue #337) ----
+    {
+      name: "CrossMedallion — cross-circle cancel (v14)",
+      notes:
+        "Gold ring + centered ✕ over dark Hextech fill (grey-4). Ring gold-3→gold-4→gold-5 top-lit gradient, cross gold-cream. Standalone cancel affordance (lobby footer, left of FIND MATCH). Compare vs docs/reference/client-find-match-shape-v14.png left circle. Default size 56.",
+      render: () => (
+        <div data-shot="cross-medallion" style={{ display: "inline-block", padding: 12 }}>
+          <button
+            type="button"
+            aria-label="Cancel"
+            className="group/hb block cursor-pointer rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3 [filter:none] hover:[filter:drop-shadow(0_0_6px_var(--color-gold-4))]"
+          >
+            <CrossMedallion />
+          </button>
+        </div>
+      ),
+    },
+    {
+      name: "CrossMedallion — hover",
+      notes:
+        "Hover brightens ring+cross via a layer crossfade (two stacked idle/bright states, opacity transition on --motion-crossfade), NOT a single-element restyle. Hover the badge in /showcase to see the brighten; the .group/hb host drives it.",
+      render: () => (
+        <div data-shot="cross-medallion-hover" style={{ display: "inline-block", padding: 12 }}>
+          <button
+            type="button"
+            aria-label="Cancel"
+            className="group/hb block cursor-pointer rounded-full [filter:none] hover:[filter:drop-shadow(0_0_8px_var(--color-gold-3))]"
+          >
+            <CrossMedallion />
+          </button>
+        </div>
+      ),
+    },
+    {
+      name: "CrossMedallion — disabled",
+      notes: "Greyed ring (grey-3) + grey-2 cross, no hover brighten. Inert styling only.",
+      render: () => (
+        <div data-shot="cross-medallion-disabled" style={{ display: "inline-block", padding: 12 }}>
+          <CrossMedallion disabled />
+        </div>
+      ),
+    },
+    {
+      name: "CrossMedallion — sizes",
+      notes: "Scales cleanly: ring/cross proportions hold from 32→72px.",
+      render: () => (
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <CrossMedallion size={32} />
+          <CrossMedallion size={40} />
+          <CrossMedallion size={56} />
+          <CrossMedallion size={72} />
+        </div>
+      ),
+    },
+    {
+      name: "CrossMedallion — in HextechButton medallion slot",
+      notes:
+        "Drops into the existing medallion?: ReactNode slot (primary/slanted). Additive — no change to existing props.",
+      render: () => (
+        <HextechButton variant="primary" medallion={<CrossMedallion size={40} />}>
+          Cancel
+        </HextechButton>
+      ),
+    },
+
     // ---- Reference replicas (top) — exact Figma metrics: 34px, 8/16 pad, 4px gap, 12px icon ----
     {
       name: "Reference replica — 9900 (gold crest)",
