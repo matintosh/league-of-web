@@ -71,6 +71,45 @@ export function MatchFoundModalWithKeyartDemo() {
 // Interactive ticking demo
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Entrance replay demo — key-remount trick to replay the mount animation
+// ---------------------------------------------------------------------------
+
+/**
+ * Entrance replay: clicking "Replay entrance" bumps a key so the modal fully
+ * unmounts and remounts, re-firing the on-mount CSS entrance (ring sweep,
+ * modal scale/fade snap-in, ACCEPT glow pulse). With prefers-reduced-motion
+ * enabled the modal appears instantly, fully visible.
+ */
+export function MatchFoundModalEntranceReplayDemo() {
+  const [replayKey, setReplayKey] = useState(0);
+
+  return (
+    <div className="flex flex-col items-center gap-4 p-6">
+      <HextechButton onClick={() => setReplayKey((k) => k + 1)}>
+        Replay entrance
+      </HextechButton>
+      <p className="font-body text-xs text-grey-2">
+        Remounts the modal so the on-mount entrance plays again: teal ring sweeps
+        around, modal scales/fades in (snap easing), ACCEPT glow pulses.
+      </p>
+      <div className="relative overflow-hidden [transform:translateZ(0)] h-[560px] w-[520px]">
+        <MatchFoundModal
+          key={replayKey}
+          open={true}
+          secondsRemaining={10}
+          totalSeconds={10}
+          keyartSrc={championSplashUrl("Ahri")}
+          crestSrc={SR_CREST}
+          subtitle="Summoner's Rift • Ranked • 5v5"
+          onAccept={() => {}}
+          onDecline={() => {}}
+        />
+      </div>
+    </div>
+  );
+}
+
 /** Interactive: ticking demo with trigger button */
 export function MatchFoundModalDemo() {
   const [open, setOpen] = useState(false);

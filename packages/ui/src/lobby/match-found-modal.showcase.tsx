@@ -5,6 +5,7 @@ import {
   MatchFoundModalNearlyExpiredDemo,
   MatchFoundModalWithKeyartDemo,
   MatchFoundModalNoCrestDemo,
+  MatchFoundModalEntranceReplayDemo,
   MatchFoundModalDemo,
 } from "./match-found-modal.demo";
 
@@ -42,6 +43,12 @@ export const matchFoundModalShowcase: ShowcaseEntry = {
       name: "No crest (HexCrest fallback)",
       notes: "crestSrc absent — renders the gold hexagon HexCrest placeholder SVG.",
       render: () => <MatchFoundModalNoCrestDemo />,
+    },
+    {
+      name: "Entrance replay",
+      notes:
+        'Click "Replay entrance" to remount and replay the on-mount animation: teal ring sweeps around (soft easing), modal scales/fades in (snap easing), ACCEPT glow pulses. Honors prefers-reduced-motion (instant, fully visible).',
+      render: () => <MatchFoundModalEntranceReplayDemo />,
     },
     {
       name: "Trigger + ticking demo",
