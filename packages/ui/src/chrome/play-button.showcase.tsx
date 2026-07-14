@@ -1,6 +1,10 @@
 import type { ShowcaseEntry } from "../showcase";
 import { PlayButton } from "./play-button";
-import { PlayButtonQueueingToggleDemo } from "./play-button.demo";
+import {
+  PlayButtonQueueingToggleDemo,
+  PlayButtonVideoMagicDemo,
+  PlayButtonMedallionMagicDemo,
+} from "./play-button.demo";
 
 export const playButtonShowcase: ShowcaseEntry = {
   slug: "play-button",
@@ -84,6 +88,26 @@ export const playButtonShowcase: ShowcaseEntry = {
       notes:
         "size='hero' + emblemSrc — emblem scales proportionally with the hero bar height (~62px socket). Explicit width/height on <img> prevents layout shift.",
       render: () => <PlayButton size="hero" emblemSrc="/lol-emblem.png" />,
+    },
+    {
+      name: "v8 video magic layers (interactive)",
+      notes:
+        "issue #309 — the REAL client magic-button videos (WAD corpus) layered over the CSS v7 button: 146×58 frame videos " +
+        "(enabled-intro on mount, hover-intro→hover-loop→hover-outro on pointer, release/magic-release on press) + the 64×54 " +
+        "league-logo videos on the medallion socket (intro→loop-idle, loop-active on hover, magic accent). All webm carry " +
+        "straight alpha and composite over the CSS button — a missing/failed clip leaves the v7 look intact. pointer-events-none, " +
+        "below the label, and fully suppressed under prefers-reduced-motion (motion-reduce:hidden). Videos stream from CommunityDragon " +
+        "via @low/fixtures (playButtonVideoUrl / buttonParticlesVideoUrl / leagueLogoVideoUrl). Emblem resolves from apps/web/public/, " +
+        "so this variant only renders fully inside apps/web.",
+      render: () => <PlayButtonVideoMagicDemo />,
+    },
+    {
+      name: "v8 medallion socket videos only (interactive)",
+      notes:
+        "The league-logo medallion videos alone (medallionVideoSources) with the pure-CSS v7 frame — bronze→gold reveal handing off " +
+        "to the calm idle swirl, energetic swirl on hover. Demonstrates the two video state machines are independent: frame videos " +
+        "omitted, socket videos on.",
+      render: () => <PlayButtonMedallionMagicDemo />,
     },
   ],
 };

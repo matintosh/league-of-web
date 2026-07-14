@@ -1,7 +1,14 @@
 "use client";
 
-import React, { useId, useState, useCallback } from "react";
+import React, { useId, useState, useCallback, useEffect, useRef } from "react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+
+// Video-state crossfade. The real client sequences its magic-button video
+// states with ~250ms crossfades (docs/reference/HEXTECH-UI-NOTES.md); we use the
+// shared Hextech motion token --motion-crossfade (authored for exactly this
+// video-state-machine use in packages/tokens/src/theme.css) so timing/easing
+// stays centralized rather than ad-hoc per component.
+const VIDEO_CROSSFADE = "opacity var(--motion-crossfade)";
 
 // ---------------------------------------------------------------------------
 // Size map
@@ -292,6 +299,292 @@ function Medallion({ size, greyed, discId, glyphId, swirlId, emblemSrc, emblemHe
 }
 
 // ---------------------------------------------------------------------------
+// Video magic layers (v8, issue #309)
+//
+// The WAD corpus ships the REAL client PLAY-button magic videos — the authentic
+// "animated border overlay / radial effects" layers (docs/reference/
+// HEXTECH-UI-NOTES.md) that the v7 CSS crossfade approximated. All webm carry a
+// straight alpha channel, so each <video> composites directly over the CSS
+// button: transparent regions let the frame read through, which also means a
+// video that fails to load leaves the static look intact. The whole overlay is
+// pointer-events-none + aria-hidden and is removed under prefers-reduced-motion
+// via motion-reduce:hidden (pure CSS, SSR-safe, no first-frame flash).
+//
+// Two independent state machines are layered:
+//   1. PlayButtonVideoLayer — 146×58 frame videos over the full button box:
+//        enabled-intro (once on mount) → [idle: none] ; hover-intro → hover-loop
+//        while pointer is over, hover-outro on leave ; release / magic-release
+//        one-shots on press-release. Sits below the label so PLAY stays legible.
+//   2. MedallionVideoLayer — 64×54 league-logo videos over the medallion socket:
+//        intro (once on mount) → loop-idle ; loop-active while hovered/engaged ;
+//        magic one-shot accent fired alongside the button intro.
+// ---------------------------------------------------------------------------
+
+/**
+ * Real-client PLAY-button frame magic videos (issue #309), one URL per state.
+ * All optional — a state's video only layers when its URL is supplied, and the
+ * pure-CSS v7 button always renders beneath regardless, so a missing or broken
+ * clip never regresses the static look. Pages/showcase supply URLs from
+ * `@low/fixtures` (`playButtonVideoUrl(...)`, `buttonParticlesVideoUrl(...)`);
+ * NO fetching happens in `@low/ui`.
+ */
+export interface PlayButtonVideoSources {
+  /** One-shot particle-burst reveal played once when the button mounts enabled. */
+  enabledIntro?: string;
+  /** One-shot hover-in — cyan border trace ramps up; crossfades to `hoverLoop`. */
+  hoverIntro?: string;
+  /** Ambient hover loop — bright cyan frame + travelling border shimmer. */
+  hoverLoop?: string;
+  /** One-shot hover-out — border trace fades down on pointer-leave. */
+  hoverOutro?: string;
+  /** One-shot press-release magic burst — cyan energy flare. */
+  magicRelease?: string;
+  /** One-shot press-release — restrained particle pop. */
+  release?: string;
+  /** Ambient generic particle-drift loop behind the frame (buttons/particles-default). */
+  particles?: string;
+}
+
+/**
+ * Real-client League "L" medallion-socket magic videos (issue #309, absorbed
+ * from #316). All optional; the CSS medallion renders beneath regardless. Pages
+ * supply URLs from `@low/fixtures` (`leagueLogoVideoUrl(...)`).
+ */
+export interface PlayButtonMedallionVideoSources {
+  /** One-shot bronze→gold+teal reveal played once on mount; hands off to `loopIdle`. */
+  intro?: string;
+  /** Calm teal energy-swirl loop — the resting socket state. */
+  loopIdle?: string;
+  /** Energetic teal swirl — crossfades in while the button is hovered/engaged. */
+  loopActive?: string;
+  /** One-shot gold-rim + cyan flash accent, fired alongside the button intro. */
+  magic?: string;
+}
+
+// The frame videos are authored at 146×58 centered on the whole button (medallion
+// + bar). Their glow bleeds slightly past the frame, so the overlay box is inset
+// by a small negative fraction to let that bleed extend past the button bounds
+// without being clipped. Visual-only overflow: the layer is pointer-events-none
+// and absolutely positioned, so it never changes the hit area or the flow.
+const VIDEO_BLEED_FRAC = 0.08;
+
+// ---------------------------------------------------------------------------
+// PlayButtonVideoLayer — the frame video state machine (146×58).
+// ---------------------------------------------------------------------------
+
+type FrameVideoState =
+  | "enabledIntro"
+  | "hoverIntro"
+  | "hoverLoop"
+  | "hoverOutro"
+  | "release"
+  | "magicRelease"
+  | "idle";
+
+function PlayButtonVideoLayer({
+  sources,
+  hovered,
+  releaseTick,
+}: {
+  sources: PlayButtonVideoSources;
+  hovered: boolean;
+  /** Bumped on every press-release to (re)fire the one-shot release clip. */
+  releaseTick: number;
+}) {
+  // introDone flips once the enabled-intro one-shot finishes (or immediately when
+  // there is no intro clip), leaving the resting state to idle/hover.
+  const [introDone, setIntroDone] = useState(!sources.enabledIntro);
+  // hoverOutroActive plays the one-shot hover-out clip after the pointer leaves.
+  const [hoverOutroActive, setHoverOutroActive] = useState(false);
+  // hoverIntroDone flips once the one-shot hover-in finishes, handing off to the
+  // hover loop; it resets on every fresh hover-enter so the lead-in replays.
+  const [hoverIntroDone, setHoverIntroDone] = useState(false);
+  // Which one-shot release clip to fire (magic preferred), keyed by releaseTick.
+  const [releasePlaying, setReleasePlaying] = useState(false);
+  const prevHovered = useRef(hovered);
+  const seenReleaseTick = useRef(releaseTick);
+
+  // Hover edge detection: rising edge resets the hover-intro one-shot; falling
+  // edge fires the hover-outro one-shot (if provided).
+  useEffect(() => {
+    if (hovered && !prevHovered.current) {
+      setHoverIntroDone(false);
+      setHoverOutroActive(false);
+    }
+    if (!hovered && prevHovered.current && sources.hoverOutro) {
+      setHoverOutroActive(true);
+    }
+    prevHovered.current = hovered;
+  }, [hovered, sources.hoverOutro]);
+
+  // Detect a new release tick → fire the release/magic-release one-shot.
+  useEffect(() => {
+    if (releaseTick !== seenReleaseTick.current) {
+      seenReleaseTick.current = releaseTick;
+      if (sources.magicRelease || sources.release) setReleasePlaying(true);
+    }
+  }, [releaseTick, sources.magicRelease, sources.release]);
+
+  // Resolve the single active frame state, in priority order.
+  let state: FrameVideoState;
+  if (releasePlaying && (sources.magicRelease || sources.release)) {
+    state = sources.magicRelease ? "magicRelease" : "release";
+  } else if (!introDone && sources.enabledIntro) {
+    state = "enabledIntro";
+  } else if (hovered && !hoverIntroDone && sources.hoverIntro) {
+    // One-shot hover-in leads before the loop takes over.
+    state = "hoverIntro";
+  } else if (hovered && (sources.hoverLoop || sources.hoverIntro)) {
+    state = sources.hoverLoop ? "hoverLoop" : "hoverIntro";
+  } else if (hoverOutroActive && sources.hoverOutro) {
+    state = "hoverOutro";
+  } else {
+    state = "idle";
+  }
+
+  // Stacked layers, each at its own opacity; only `state` is opaque. Keeping all
+  // decoders warm avoids the remount stalls a single swapping <video src> hits.
+  const layers: {
+    key: FrameVideoState;
+    src?: string;
+    loop: boolean;
+    onEnded?: () => void;
+  }[] = [
+    { key: "hoverLoop", src: sources.hoverLoop, loop: true },
+    { key: "hoverIntro", src: sources.hoverIntro, loop: false, onEnded: () => setHoverIntroDone(true) },
+    { key: "hoverOutro", src: sources.hoverOutro, loop: false, onEnded: () => setHoverOutroActive(false) },
+    { key: "enabledIntro", src: sources.enabledIntro, loop: false, onEnded: () => setIntroDone(true) },
+    { key: "release", src: sources.release, loop: false, onEnded: () => setReleasePlaying(false) },
+    { key: "magicRelease", src: sources.magicRelease, loop: false, onEnded: () => setReleasePlaying(false) },
+  ];
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute z-[2] overflow-visible motion-reduce:hidden"
+      style={{ inset: `${-VIDEO_BLEED_FRAC * 100}%` }}
+    >
+      {/* Ambient particle drift — always-on subtle loop beneath the frame states. */}
+      {sources.particles ? (
+        <video
+          key="particles"
+          src={sources.particles}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="absolute inset-0 h-full w-full"
+          style={{ objectFit: "contain", opacity: 0.7 }}
+        />
+      ) : null}
+      {layers.map(({ key, src, loop, onEnded }) =>
+        src ? (
+          <video
+            key={key}
+            src={src}
+            autoPlay
+            loop={loop}
+            muted
+            playsInline
+            preload="auto"
+            onEnded={onEnded}
+            className="absolute inset-0 h-full w-full"
+            style={{
+              objectFit: "contain",
+              opacity: state === key ? 1 : 0,
+              transition: VIDEO_CROSSFADE,
+            }}
+          />
+        ) : null,
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// MedallionVideoLayer — the league-logo socket state machine (64×54).
+// Absolutely fills the medallion box; clipped to the circle by the caller's
+// overflow-hidden socket shell so the swirl stays inside the ring.
+// ---------------------------------------------------------------------------
+
+type MedallionVideoState = "intro" | "loopIdle" | "loopActive" | "magic";
+
+function MedallionVideoLayer({
+  sources,
+  active,
+  magicTick,
+}: {
+  sources: PlayButtonMedallionVideoSources;
+  /** True while the button is hovered/engaged → energetic loop-active swirl. */
+  active: boolean;
+  /** Bumped to (re)fire the one-shot magic accent (e.g. alongside the intro). */
+  magicTick: number;
+}) {
+  const [introDone, setIntroDone] = useState(!sources.intro);
+  const [magicPlaying, setMagicPlaying] = useState(false);
+  const seenMagicTick = useRef(magicTick);
+
+  useEffect(() => {
+    if (magicTick !== seenMagicTick.current) {
+      seenMagicTick.current = magicTick;
+      if (sources.magic) setMagicPlaying(true);
+    }
+  }, [magicTick, sources.magic]);
+
+  let state: MedallionVideoState;
+  if (magicPlaying && sources.magic) {
+    state = "magic";
+  } else if (!introDone && sources.intro) {
+    state = "intro";
+  } else if (active && sources.loopActive) {
+    state = "loopActive";
+  } else {
+    state = "loopIdle";
+  }
+
+  const layers: {
+    key: MedallionVideoState;
+    src?: string;
+    loop: boolean;
+    onEnded?: () => void;
+  }[] = [
+    { key: "loopIdle", src: sources.loopIdle, loop: true },
+    { key: "loopActive", src: sources.loopActive, loop: true },
+    { key: "intro", src: sources.intro, loop: false, onEnded: () => setIntroDone(true) },
+    { key: "magic", src: sources.magic, loop: false, onEnded: () => setMagicPlaying(false) },
+  ];
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 z-[1] motion-reduce:hidden"
+    >
+      {layers.map(({ key, src, loop, onEnded }) =>
+        src ? (
+          <video
+            key={key}
+            src={src}
+            autoPlay
+            loop={loop}
+            muted
+            playsInline
+            preload="auto"
+            onEnded={onEnded}
+            className="absolute inset-0 h-full w-full"
+            style={{
+              objectFit: "cover",
+              opacity: state === key ? 1 : 0,
+              transition: VIDEO_CROSSFADE,
+            }}
+          />
+        ) : null,
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Public props
 // ---------------------------------------------------------------------------
 
@@ -328,6 +621,31 @@ export interface PlayButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
    * Source asset is 497×474 RGBA; always downscaling, no upscaling.
    */
   emblemSrc?: string;
+  /**
+   * Real-client PLAY-button frame magic videos (v8, issue #309). When provided,
+   * the matching webm layer over the CSS button as a state machine: `enabledIntro`
+   * plays once on mount; `hoverIntro`/`hoverLoop` crossfade in while the pointer is
+   * over and `hoverOutro` plays on leave; `release`/`magicRelease` fire once on
+   * press-release; `particles` is an ambient drift loop. Omit entirely (or
+   * per-state) to keep the pure-CSS v7 button. Videos are additive — they never
+   * change geometry or the hit area, sit below the label, and are fully suppressed
+   * while `disabled`/`queueing` and under `prefers-reduced-motion: reduce`.
+   *
+   * Pages supply these from `@low/fixtures` (`playButtonVideoUrl`,
+   * `buttonParticlesVideoUrl`).
+   */
+  videoSources?: PlayButtonVideoSources;
+  /**
+   * Real-client League "L" medallion-socket magic videos (v8, issue #309, absorbed
+   * from #316). When provided, the league-logo webm animate the medallion socket:
+   * `intro` plays once on mount → `loopIdle`; `loopActive` crossfades in while the
+   * button is hovered/engaged; `magic` fires once alongside the button intro. The
+   * static emblem/glyph renders beneath, so a missing clip leaves the CSS medallion
+   * intact. Suppressed while `disabled`/`queueing` and under reduced motion.
+   *
+   * Pages supply these from `@low/fixtures` (`leagueLogoVideoUrl`).
+   */
+  medallionVideoSources?: PlayButtonMedallionVideoSources;
 }
 
 /**
@@ -382,6 +700,8 @@ export function PlayButton({
   size = "default",
   queueing = false,
   emblemSrc,
+  videoSources,
+  medallionVideoSources,
   ...props
 }: PlayButtonProps) {
   const uid = useId();
@@ -393,11 +713,49 @@ export function PlayButton({
   const hfId    = `${uid}-hf`;
   const glowId  = `${uid}-gl`;
 
+  const greyed = disabled || queueing;
+
+  // Video magic layers (v8, issue #309). Only mount when interactive AND at least
+  // one source is supplied — the CSS button always renders beneath, so dropping the
+  // layer (greyed, or no sources) leaves the exact v7 look. Kept as CSS-only
+  // fallback for reduced-motion (motion-reduce:hidden inside each layer) and JS-off.
+  const hasFrameVideo =
+    !greyed && !!videoSources && Object.values(videoSources).some(Boolean);
+  const hasMedallionVideo =
+    !greyed &&
+    !!medallionVideoSources &&
+    Object.values(medallionVideoSources).some(Boolean);
+  const videoEnabled = hasFrameVideo || hasMedallionVideo;
+
   // Pressed state — drives socket shrink + bar extend. CSS :active pseudo-class
   // cannot override inline style (specificity), so JS state handles the override.
   const [pressed, setPressed] = useState(false);
+
+  // Pointer-hover state — only needed to drive the video crossfades (the CSS path
+  // keeps using :hover). Tracked so the frame/medallion layers can pick the active
+  // clip. Off entirely when there is no video layer.
+  const [hovered, setHovered] = useState(false);
+  // Bumped on each press-release to (re)fire the one-shot release/magic clips.
+  const [releaseTick, setReleaseTick] = useState(0);
+  // Bumped once on mount to fire the medallion `magic` accent alongside the intro.
+  const [magicTick, setMagicTick] = useState(0);
+  useEffect(() => {
+    if (hasMedallionVideo && medallionVideoSources?.magic) setMagicTick((t) => t + 1);
+    // Fire once per mount; deliberately not re-firing on source identity churn.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleMouseDown = useCallback(() => { if (!disabled && !queueing) setPressed(true); }, [disabled, queueing]);
-  const handleMouseUp   = useCallback(() => setPressed(false), []);
+  const handleMouseUp   = useCallback(() => {
+    setPressed((wasPressed) => {
+      // A genuine release (pointer was down) advances the release tick so the
+      // one-shot release/magic-release clips replay.
+      if (wasPressed && videoEnabled) setReleaseTick((t) => t + 1);
+      return false;
+    });
+  }, [videoEnabled]);
+  const handlePointerEnter = useCallback(() => { if (videoEnabled) setHovered(true); }, [videoEnabled]);
+  const handlePointerLeave = useCallback(() => { if (videoEnabled) setHovered(false); }, [videoEnabled]);
 
   const cfg = SIZE_MAP[size];
   const {
@@ -409,7 +767,6 @@ export function PlayButton({
     fontSize, pressExtend,
   } = cfg;
 
-  const greyed = disabled || queueing;
   const d = barPath(cfg);
 
   // v7 teal-frame stroke — reference reads as a double-stroke (bright outer band
@@ -440,7 +797,7 @@ export function PlayButton({
   return (
     <div
       className={[
-        "inline-flex items-center group/pb",
+        "relative inline-flex items-center group/pb",
         "has-[:disabled]:[filter:none] has-[:disabled]:hover:[filter:none]",
         disabled || queueing
           ? "[filter:none]"
@@ -463,8 +820,24 @@ export function PlayButton({
       }
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      onMouseLeave={() => {
+        handleMouseUp();
+        handlePointerLeave();
+      }}
+      onMouseEnter={handlePointerEnter}
     >
+      {/* Real-client frame video state machine (v8, issue #309). Spans the whole
+          button box (medallion + bar), sits above the frame (z-2) but below the
+          label. pointer-events-none + motion-reduce:hidden inside the layer, so it
+          never affects the hit area and vanishes under reduced motion. */}
+      {hasFrameVideo && videoSources && (
+        <PlayButtonVideoLayer
+          sources={videoSources}
+          hovered={hovered}
+          releaseTick={releaseTick}
+        />
+      )}
+
       {/* Gradient defs in a hidden SVG — position:absolute, 0×0, overflow:hidden */}
       <svg width="0" height="0" aria-hidden="true" style={{ position: "absolute", overflow: "hidden" }}>
         <GradDefs dsId={dsId} hsId={hsId} hfId={hfId} glowId={glowId} />
@@ -487,9 +860,10 @@ export function PlayButton({
       >
         {/* Socket shell: tracks --socket-size with overflow:hidden + border-radius:50%
             to clip the fixed-size medallion SVG into a circle that visibly shrinks
-            on press (44→40 default, 72→65 hero) without layout reflow. */}
+            on press (44→40 default, 72→65 hero) without layout reflow. The same
+            overflow-hidden circle clips the league-logo video swirl to the ring. */}
         <div
-          className="transition-all duration-150 overflow-hidden flex items-center justify-center"
+          className="relative transition-all duration-150 overflow-hidden flex items-center justify-center"
           style={{
             width: "var(--socket-size)",
             height: "var(--socket-size)",
@@ -505,6 +879,16 @@ export function PlayButton({
             emblemSrc={emblemSrc}
             emblemHeight={totalH}
           />
+          {/* Real-client league-logo socket video (v8, issue #309, from #316).
+              Sits over the static emblem, clipped to the circle by this shell.
+              loop-active engages while the button is hovered. */}
+          {hasMedallionVideo && medallionVideoSources && (
+            <MedallionVideoLayer
+              sources={medallionVideoSources}
+              active={hovered || pressed}
+              magicTick={magicTick}
+            />
+          )}
         </div>
       </div>
 

@@ -28,7 +28,7 @@ import {
   TftHubScreen,
   ClashScreen,
 } from "@low/ui";
-import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab } from "@low/ui";
+import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -44,6 +44,9 @@ import {
   positionIconUrl,
   rankedEmblemUrl,
   partiesBgLoopUrl,
+  playButtonVideoUrl,
+  buttonParticlesVideoUrl,
+  leagueLogoVideoUrl,
   demoBattlePassChapters,
   demoBattlePassLevelRewards,
   DEMO_STARTER_PACK,
@@ -78,6 +81,27 @@ const NAV_ITEMS: NavItem[] = [
   { id: "store",       label: "Store" },
   { id: "tft",         label: "Teamfight Tactics" },
 ];
+
+// v8 PLAY-button magic-layer videos (issue #309). Real client webm streamed from
+// CommunityDragon via @low/fixtures — the frame state machine (146×58) and the
+// league-logo medallion socket (64×54). Defined once at module scope so the URLs
+// are stable across renders (each object identity is constant).
+const PLAY_BUTTON_VIDEO_SOURCES: PlayButtonVideoSources = {
+  enabledIntro: playButtonVideoUrl("enabled-intro"),
+  hoverIntro: playButtonVideoUrl("hover-intro"),
+  hoverLoop: playButtonVideoUrl("hover-loop"),
+  hoverOutro: playButtonVideoUrl("hover-outro"),
+  magicRelease: playButtonVideoUrl("magic-release"),
+  release: playButtonVideoUrl("release"),
+  particles: buttonParticlesVideoUrl("default"),
+};
+
+const LEAGUE_LOGO_VIDEO_SOURCES: PlayButtonMedallionVideoSources = {
+  intro: leagueLogoVideoUrl("intro"),
+  loopIdle: leagueLogoVideoUrl("loop-idle"),
+  loopActive: leagueLogoVideoUrl("loop-active"),
+  magic: leagueLogoVideoUrl("magic"),
+};
 
 const KEYART_CHAMPION = "Jinx";
 
@@ -603,6 +627,12 @@ export function ClientShell() {
                 disabled={playDisabled}
                 label={playLabel}
                 emblemSrc="/lol-emblem.png"
+                // v8 real-client magic-layer videos (issue #309). The frame +
+                // medallion video state machines auto-suppress while disabled, so
+                // they only animate on the home view where PLAY is enabled. URLs
+                // stream from CommunityDragon via @low/fixtures (no repo commits).
+                videoSources={PLAY_BUTTON_VIDEO_SOURCES}
+                medallionVideoSources={LEAGUE_LOGO_VIDEO_SOURCES}
                 onClick={() => { if (!playDisabled) setView("mode-select"); }}
               />
             }
