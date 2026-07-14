@@ -44,7 +44,6 @@ import {
   positionIconUrl,
   rankedEmblemUrl,
   partiesBgLoopUrl,
-  socialPanelBgLoopUrl,
   playButtonVideoUrl,
   buttonParticlesVideoUrl,
   leagueLogoVideoUrl,
@@ -920,7 +919,6 @@ export function ClientShell() {
                     onToggleGroup={handleToggleFriendGroup}
                     onFriendClick={(s) => console.log("friend click:", s.gameName)}
                     profileIconSrcFor={(s) => profileIconUrl(s.profileIconId)}
-                    ambientVideoSrc={socialPanelBgLoopUrl()}
                   />
                 </div>
 
