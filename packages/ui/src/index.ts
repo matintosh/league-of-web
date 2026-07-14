@@ -15,6 +15,8 @@ export type { SkinCarouselProps, SkinThumbStripProps, SkinOption } from "./champ
 export { TeamPlayerRow } from "./champ-select/team-player-row";
 export type { TeamPlayerRowProps, PickState } from "./champ-select/team-player-row";
 // chrome
+export { AmbientVideoLayer } from "./chrome/ambient-video-layer";
+export type { AmbientVideoLayerProps } from "./chrome/ambient-video-layer";
 export { ArcadeEventTab } from "./chrome/arcade-event-tab";
 export type { ArcadeEventTabProps, EventSkinCard } from "./chrome/arcade-event-tab";
 export { BattlePassScreen } from "./chrome/battle-pass-screen";

@@ -1,5 +1,6 @@
 "use client";
 
+import { AmbientVideoLayer } from "./ambient-video-layer";
 import { MapCrestImg } from "./map-crest-img";
 
 // ---------------------------------------------------------------------------
@@ -29,6 +30,13 @@ export interface FindingMatchPanelProps {
   estimatedLabel?: string;
   /** URL for the game-mode/map crest image at the left of the body band. Omit to hide. */
   crestSrc?: string;
+  /**
+   * Optional ambient "magic" loop webm shown subtly behind the panel — the
+   * client's animated queue backdrop (supply `partiesBgLoopUrl("queue-delay")`
+   * from @low/fixtures). Additive: when omitted the flat `bg-blue-7` panel is
+   * unchanged. Hidden under `prefers-reduced-motion`.
+   */
+  ambientVideoSrc?: string;
   /** Called when the user clicks the ✕ cancel button in the header. */
   onCancel: () => void;
 }
@@ -75,6 +83,7 @@ export function FindingMatchPanel({
   elapsedLabel,
   estimatedLabel,
   crestSrc,
+  ambientVideoSrc,
   onCancel,
 }: FindingMatchPanelProps) {
   return (
@@ -82,12 +91,16 @@ export function FindingMatchPanel({
       data-shot="finding-match-panel"
       role="region"
       aria-label="Finding match"
-      className="w-full border-b border-gold-5 bg-blue-7"
+      className="relative w-full overflow-hidden border-b border-gold-5 bg-blue-7"
     >
+      {/* Ambient "magic" backdrop — subtle animated Hextech loop behind the
+          panel. Additive over bg-blue-7; hidden under reduced-motion. */}
+      <AmbientVideoLayer src={ambientVideoSrc} opacity={0.4} />
+
       {/* ------------------------------------------------------------------ */}
       {/* 1. Header row — "FINDING MATCH" label + ✕ cancel button            */}
       {/* ------------------------------------------------------------------ */}
-      <div className="flex items-center justify-between px-3 py-1.5">
+      <div className="relative z-10 flex items-center justify-between px-3 py-1.5">
         <span className="font-display text-xs uppercase tracking-widest text-grey-1">
           Finding Match
         </span>
@@ -106,7 +119,7 @@ export function FindingMatchPanel({
       {/* crest chip overlaps the left edge; timer + estimate centred right  */}
       {/* ------------------------------------------------------------------ */}
       <div
-        className="relative flex items-center"
+        className="relative z-10 flex items-center"
         style={{
           background: "color-mix(in srgb, var(--color-hextech-black) 60%, transparent)",
           minHeight: 52,

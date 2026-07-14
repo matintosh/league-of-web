@@ -43,6 +43,7 @@ import {
   gameModeMapUrl,
   positionIconUrl,
   rankedEmblemUrl,
+  partiesBgLoopUrl,
   demoBattlePassChapters,
   demoBattlePassLevelRewards,
   DEMO_STARTER_PACK,
@@ -847,6 +848,7 @@ export function ClientShell() {
                       elapsedLabel={queueElapsedLabel}
                       estimatedLabel={ESTIMATED_LABEL}
                       crestSrc={gameModeMapUrl("sr")}
+                      ambientVideoSrc={partiesBgLoopUrl("queue-delay")}
                       onCancel={() => lobbyCancel.current?.()}
                     />
                   ) : (

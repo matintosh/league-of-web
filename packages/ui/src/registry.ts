@@ -7,6 +7,7 @@ import { lockInButtonShowcase } from "./champ-select/lock-in-button.showcase";
 import { skinCarouselShowcase } from "./champ-select/skin-carousel.showcase";
 import { skinThumbStripShowcase } from "./champ-select/skin-thumb-strip.showcase";
 import { teamPlayerRowShowcase } from "./champ-select/team-player-row.showcase";
+import { ambientVideoLayerShowcase } from "./chrome/ambient-video-layer.showcase";
 import { arcadeEventTabShowcase } from "./chrome/arcade-event-tab.showcase";
 import { battlePassScreenShowcase } from "./chrome/battle-pass-screen.showcase";
 import { chatPanelShowcase } from "./chrome/chat-panel.showcase";
@@ -100,7 +101,8 @@ export const registry: ShowcaseEntry[] = [
   skinCarouselShowcase,
   skinThumbStripShowcase,
   teamPlayerRowShowcase,
-  // chrome — alphabetical: ArcadeEventTab < ChatPanel < ClashScreen < ClubsEmptyState < ...
+  // chrome — alphabetical: AmbientVideoLayer < ArcadeEventTab < ChatPanel < ClashScreen < ...
+  ambientVideoLayerShowcase,
   arcadeEventTabShowcase,
   battlePassScreenShowcase,
   chatPanelShowcase,

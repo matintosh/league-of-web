@@ -55,6 +55,7 @@ import {
   championSquareUrl,
   positionIconUrl,
   summonerSpellIconUrl,
+  summonerObjectMagicUrl,
 } from "@low/fixtures";
 import type { ChampionRole } from "@low/fixtures";
 
@@ -271,6 +272,11 @@ export function PickScreen({ onLockIn }: PickScreenProps) {
               summonerName={member.summonerName}
               isSelf={member.isSelf}
               spellSrcs={PLAYER_SPELLS[member.summonerName]}
+              // Local player's active slot gets the "magic" idle loop behind
+              // it (gold = self); other rows stay static.
+              ambientVideoSrc={
+                member.isSelf ? summonerObjectMagicUrl("gold", "idle") : undefined
+              }
             />
           ))}
 

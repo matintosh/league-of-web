@@ -1,4 +1,8 @@
-import { championSquareUrl, summonerSpellIconUrl } from "@low/fixtures";
+import {
+  championSquareUrl,
+  summonerSpellIconUrl,
+  summonerObjectMagicUrl,
+} from "@low/fixtures";
 import type { ShowcaseEntry } from "../showcase";
 import { TeamPlayerRow } from "./team-player-row";
 
@@ -14,6 +18,9 @@ const FLASH_SRC = summonerSpellIconUrl("summoner_flash");
 const IGNITE_SRC = summonerSpellIconUrl("summonerignite");
 const GHOST_SRC = summonerSpellIconUrl("summoner_haste");
 const SPELL_PAIR: [string, string] = [FLASH_SRC, IGNITE_SRC];
+
+// Summoner-object "magic" idle loop for the local player (gold side).
+const SELF_MAGIC_SRC = summonerObjectMagicUrl("gold", "idle");
 
 export const teamPlayerRowShowcase: ShowcaseEntry = {
   slug: "team-player-row",
@@ -45,6 +52,22 @@ export const teamPlayerRowShowcase: ShowcaseEntry = {
             summonerName="cherwood"
             isSelf
             spellSrcs={SPELL_PAIR}
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Picking — self with ambient magic loop",
+      notes:
+        "ambientVideoSrc = summonerObjectMagicUrl('gold','idle'): the animated gem/rune flourish behind the local player's active slot. Additive over the static row; hidden under prefers-reduced-motion. Compare to 'Picking — self' (no video).",
+      render: () => (
+        <div className="bg-blue-7 p-4 w-64">
+          <TeamPlayerRow
+            state="picking"
+            summonerName="cherwood"
+            isSelf
+            spellSrcs={SPELL_PAIR}
+            ambientVideoSrc={SELF_MAGIC_SRC}
           />
         </div>
       ),

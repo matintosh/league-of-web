@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { FindingMatchPanel } from "./finding-match-panel";
-import { gameModeMapUrl } from "@low/fixtures";
+import { gameModeMapUrl, partiesBgLoopUrl } from "@low/fixtures";
 
 const SR_CREST = gameModeMapUrl("sr");
+const QUEUE_LOOP = partiesBgLoopUrl("queue-delay");
 
 // ---------------------------------------------------------------------------
 // Static demos — 'use client' wrappers that supply the required onCancel prop.
@@ -20,6 +21,25 @@ export function FindingMatchDefaultDemo() {
         elapsedLabel="20:03"
         estimatedLabel="Estimated: 5:02"
         crestSrc={SR_CREST}
+        onCancel={() => {}}
+      />
+    </div>
+  );
+}
+
+/**
+ * With ambient "magic" loop — queue-delay-bg-loop.webm behind the panel.
+ * Compare against the "Default" variant (no video) to confirm the loop is
+ * additive and subtle. Hidden under prefers-reduced-motion.
+ */
+export function FindingMatchAmbientDemo() {
+  return (
+    <div className="w-[200px] bg-blue-7">
+      <FindingMatchPanel
+        elapsedLabel="20:03"
+        estimatedLabel="Estimated: 5:02"
+        crestSrc={SR_CREST}
+        ambientVideoSrc={QUEUE_LOOP}
         onCancel={() => {}}
       />
     </div>
