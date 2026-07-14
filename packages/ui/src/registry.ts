@@ -57,6 +57,7 @@ import { championDetailShowcase } from "./collection/champion-detail.showcase";
 import { emoteTileShowcase } from "./collection/emote-tile.showcase";
 import { emoteWheelShowcase } from "./collection/emote-wheel.showcase";
 import { profileRankedScreenShowcase } from "./collection/profile-ranked-screen.showcase";
+import { rankPromotionOverlayShowcase } from "./collection/rank-promotion-overlay.showcase";
 import { runesScreenShowcase } from "./collection/runes-screen.showcase";
 import { skinCardShowcase } from "./collection/skin-card.showcase";
 import { skinPreviewShowcase } from "./collection/skin-preview.showcase";
@@ -152,13 +153,14 @@ export const registry: ShowcaseEntry[] = [
   loginCheckboxShowcase,
   loginTextInputShowcase,
   socialLoginButtonsShowcase,
-  // collection — alphabetical: ChallengesScreen < ChampionCard < ChampionDetail < EmoteTile < EmoteWheel < ProfileRankedScreen < RunesScreen < SkinCard < SkinPreview < SpellsTab < StatMedallion < StatsTab
+  // collection — alphabetical: ChallengesScreen < ChampionCard < ChampionDetail < EmoteTile < EmoteWheel < ProfileRankedScreen < RankPromotionOverlay < RunesScreen < SkinCard < SkinPreview < SpellsTab < StatMedallion < StatsTab
   challengesScreenShowcase,
   championCardShowcase,
   championDetailShowcase,
   emoteTileShowcase,
   emoteWheelShowcase,
   profileRankedScreenShowcase,
+  rankPromotionOverlayShowcase,
   runesScreenShowcase,
   skinCardShowcase,
   skinPreviewShowcase,
