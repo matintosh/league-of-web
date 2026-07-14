@@ -601,6 +601,48 @@ export const bannerSweepVideoUrl = (kind: "primary" | "ally"): string =>
   staticVideoUrl(`banner_${kind}.webm`);
 
 /**
+ * Real-client lobby party-flag chrome art (issue #336) — the STATIC heraldic
+ * banner PNG the live client paints behind each party member. Each file is a
+ * straight-alpha PNG carrying the whole flag silhouette (scooped-neck top,
+ * ornate gold corner scrolls, double-V pointed bottom) plus its gold hairline
+ * trim, so it drops in as a single background `<img>` filling the flag box —
+ * no CSS clip-path or hand-painted border needed. The `lobby/player-banner`
+ * component's own avatar crest / tier gem / badges / role row composite ON TOP.
+ *
+ * Kinds → parties-plugin file:
+ *   "filled"  → banner-filled.png          (968×1400) — a seated member: navy
+ *               fill, warm gold trim + corner scrolls. Used for self AND
+ *               teammate slots (self is brightened via component styling).
+ *   "empty"   → banner-empty.png           (968×1376) — an unfilled slot: the
+ *               same silhouette desaturated to cool grey-blue, no gold.
+ *   "self"    → current-player-banner.png  (234×400)  — the local-player flag
+ *               with a teal wash and a gold medallion ring baked at top-centre.
+ *               Provided for completeness; the component uses "filled" for self
+ *               so its live AvatarCrest ring isn't doubled by the baked ring.
+ *   "invited" → invited-banner.png         (178×550)  — the searching/invited
+ *               slot: dark panel with a glowing blue summon ring, matching the
+ *               queueing empty treatment.
+ *
+ * All four confirmed HTTP 206 image/png (range request, 2026-07). Pass the
+ * returned URL as an <img> `src`. NO fetching happens here — pages/components
+ * supply the resolved URL. Tokens rule applies to CSS colors, not asset URLs.
+ *
+ * Source: CommunityDragon rcp-fe-lol-parties · {file}
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const partyBannerUrl = (
+  kind: "filled" | "empty" | "self" | "invited",
+): string => {
+  const FILE: Record<typeof kind, string> = {
+    filled: "banner-filled.png",
+    empty: "banner-empty.png",
+    self: "current-player-banner.png",
+    invited: "invited-banner.png",
+  };
+  return cdragonPartiesUrl(FILE[kind]);
+};
+
+/**
  * Exalted (Mythic) skin card-frame tier. The Mythic Shop's exalted cards ship
  * three ascending rarity frames, each a distinct art-deco border treatment:
  *   "one"   — gold/teal banner (tier 1)
