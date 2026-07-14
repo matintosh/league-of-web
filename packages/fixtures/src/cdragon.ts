@@ -25,6 +25,9 @@ const CDRAGON_CHAMP_SELECT =
 const CDRAGON_UIKIT =
   "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-uikit/global/default";
 
+const CDRAGON_SOCIAL =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-social/global/default";
+
 /**
  * Summoner spell icon URL via CDragon game data.
  *
@@ -427,6 +430,28 @@ export const masteryFtuxCrestUrl = (level: number): string => {
 export const partiesBgLoopUrl = (
   slug: "party-status" | "queue-delay" | "social-panel",
 ): string => cdragonPartiesUrl(`${slug}-bg-loop.webm`);
+
+/**
+ * Social-panel ambient background-loop webm from the rcp-fe-lol-social plugin —
+ * the subtle animated Hextech backdrop the real client plays behind the friends
+ * list. Distinct from `partiesBgLoopUrl("social-panel")` (parties plugin): this
+ * is the social plugin's own `socialpanel_bgloop.webm`, the loop that actually
+ * sits behind the docked friends rail.
+ *
+ * The clip is 222×202, ~5s, and OPAQUE (no alpha — bright Hextech glow on a near
+ * -black field). Composite it screen-blended so the dark field drops out and only
+ * the glow adds over the panel's static `bg-blue-7` — the default AmbientVideoLayer
+ * treatment (probed 2026-07, minAlpha 255).
+ *
+ * Confirmed HTTP 206 video/webm (range request, 2026-07). Feed the returned URL
+ * to a muted/autoPlay/loop/playsInline `<video>` overlay (e.g. the
+ * `ambientVideoSrc` of `SocialPanel`). NO fetching happens here — pages supply URLs.
+ *
+ * Source: CommunityDragon rcp-fe-lol-social · videos/socialpanel_bgloop.webm
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const socialPanelBgLoopUrl = (): string =>
+  `${CDRAGON_SOCIAL}/videos/socialpanel_bgloop.webm`;
 
 /**
  * Champ-select summoner-object magic banner webm — the animated gem/rune

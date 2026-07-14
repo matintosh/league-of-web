@@ -1,6 +1,7 @@
 "use client";
 
 import type { Summoner } from "@low/fixtures";
+import { AmbientVideoLayer } from "./ambient-video-layer";
 import { FriendGroupHeader } from "./friend-group-header";
 import { FriendRequestsRow } from "./friend-requests-row";
 import { FriendRow } from "./friend-row";
@@ -75,6 +76,15 @@ export interface SocialPanelProps {
    * the 1280px window ≈ 192–205px. Recommended docked value: 200.
    */
   width?: number;
+  /**
+   * Optional ambient "magic" loop webm shown subtly behind the friends list —
+   * the client's animated social backdrop (supply `socialPanelBgLoopUrl()` from
+   * @low/fixtures). Additive: when omitted the flat `bg-blue-7` panel is
+   * unchanged. The loop is opaque (bright Hextech glow on near-black), so it
+   * composites screen-blended — the dark field drops out and only the glow adds.
+   * Hidden under `prefers-reduced-motion`.
+   */
+  ambientVideoSrc?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -118,19 +128,34 @@ export function SocialPanel({
   onFriendClick,
   profileIconSrcFor,
   width = 250,
+  ambientVideoSrc,
 }: SocialPanelProps) {
   const showRequests = requestCount != null && requestCount > 0;
 
   return (
-    <div className="flex h-full flex-col bg-blue-7" style={{ width }}>
+    <div
+      className="relative flex h-full flex-col overflow-hidden bg-blue-7"
+      style={{ width }}
+    >
+      {/* Ambient "magic" backdrop — subtle animated Hextech loop behind the
+          friends list. Opaque loop → screen-blended so only the glow adds over
+          bg-blue-7; hidden under reduced-motion. */}
+      <AmbientVideoLayer src={ambientVideoSrc} opacity={0.35} />
+
       {/* ── 1. Social header strip ── */}
-      <SocialHeader />
+      <div className="relative z-10">
+        <SocialHeader />
+      </div>
 
       {/* ── 2. Friend requests row (hidden when count is 0 or undefined) ── */}
-      {showRequests && <FriendRequestsRow count={requestCount!} />}
+      {showRequests && (
+        <div className="relative z-10">
+          <FriendRequestsRow count={requestCount!} />
+        </div>
+      )}
 
       {/* ── 3. Friend groups — scrollable ── */}
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="relative z-10 min-h-0 flex-1 overflow-y-auto">
         {groups.map((group) => {
           const online = group.friends.filter((f) => isOnline(f.summoner)).length;
           const total = group.friends.length;
