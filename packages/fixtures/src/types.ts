@@ -56,6 +56,23 @@ export interface StoreItem {
   isWishlisted?: boolean;
   /** When true, renders a "Not enough RP" label in red. */
   insufficientRP?: boolean;
+  /**
+   * Optional icon URLs for the individual contents of a bundle/pass, shown as a
+   * vertical column of circular glyphs at the tile's right edge (grid variant).
+   * Up to 3 render; any beyond that are collapsed behind a "+N" overflow slot.
+   * Presentational — callers supply resolved URLs (e.g. from a cdragon helper).
+   */
+  subItems?: StoreSubItem[];
+}
+
+/** One contained item shown in a featured tile's right-edge glyph column. */
+export interface StoreSubItem {
+  /** Stable id for the contained item (used as React key + alt text). */
+  id: string;
+  /** Accessible label, e.g. "Arcade 2019 Ward Skin". */
+  name: string;
+  /** Circular glyph art URL (caller-resolved). */
+  iconUrl: string;
 }
 
 // ---------------------------------------------------------------------------

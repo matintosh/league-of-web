@@ -3,7 +3,7 @@
  * All image URLs use DDragon splash art (verified CDN paths).
  * Fixture values only; never import in @low/ui components.
  */
-import { championSplashUrl } from "./ddragon";
+import { championSplashUrl, championSquareUrl } from "./ddragon";
 import type { StoreItem, HeroSlide, PurchaseBundle } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -59,6 +59,10 @@ export const demoFeaturedItems: StoreItem[] = [
     rpPrice: 1650,
     imageUrl: championSplashUrl("Caitlyn", 6),
     isWishlisted: false,
+    subItems: [
+      { id: "arcade-ward", name: "Arcade 2019 Ward Skin", iconUrl: championSquareUrl("Lulu") },
+      { id: "arcade-icon", name: "Arcade 2019 Icon", iconUrl: championSquareUrl("Caitlyn") },
+    ],
   },
   {
     id: "little-legends-series-1-rare-10",
@@ -68,6 +72,9 @@ export const demoFeaturedItems: StoreItem[] = [
     imageUrl: championSplashUrl("Lulu", 3),
     quantity: 10,
     isWishlisted: false,
+    subItems: [
+      { id: "ll-s1-egg", name: "Series 1 Rare Egg", iconUrl: championSquareUrl("Lulu") },
+    ],
   },
   {
     id: "arcade-orbs-25",
@@ -78,6 +85,12 @@ export const demoFeaturedItems: StoreItem[] = [
     quantity: 25,
     isWishlisted: false,
     insufficientRP: true,
+    subItems: [
+      { id: "arcade-orb", name: "Arcade Orb", iconUrl: championSquareUrl("MissFortune") },
+      { id: "arcade-jackpot", name: "Arcade Jackpot Orb", iconUrl: championSquareUrl("Ezreal") },
+      { id: "arcade-tokens", name: "400 Arcade Tokens", iconUrl: championSquareUrl("Lulu") },
+      { id: "arcade-extra", name: "Arcade Emote", iconUrl: championSquareUrl("Jinx") },
+    ],
   },
   {
     id: "little-legends-series-2-rare-10",
@@ -87,6 +100,9 @@ export const demoFeaturedItems: StoreItem[] = [
     imageUrl: championSplashUrl("Lulu", 5),
     quantity: 10,
     isWishlisted: false,
+    subItems: [
+      { id: "ll-s2-egg", name: "Series 2 Rare Egg", iconUrl: championSquareUrl("Lulu") },
+    ],
   },
 ];
 
