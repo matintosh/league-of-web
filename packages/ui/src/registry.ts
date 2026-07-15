@@ -39,6 +39,7 @@ import { playerHovercardShowcase } from "./chrome/player-hovercard.showcase";
 import { profileBannerShowcase } from "./chrome/profile-banner.showcase";
 import { profileChipShowcase } from "./chrome/profile-chip.showcase";
 import { rankedQueuePanelShowcase } from "./chrome/ranked-queue-panel.showcase";
+import { rpTopUpButtonShowcase } from "./chrome/rp-top-up-button.showcase";
 import { searchInputShowcase } from "./chrome/search-input.showcase";
 import { sectionHeaderShowcase } from "./chrome/section-header.showcase";
 import { settingsModalShowcase } from "./chrome/settings-modal.showcase";
@@ -140,6 +141,7 @@ export const registry: ShowcaseEntry[] = [
   profileBannerShowcase,
   profileChipShowcase,
   rankedQueuePanelShowcase,
+  rpTopUpButtonShowcase,
   searchInputShowcase,
   sectionHeaderShowcase,
   settingsModalShowcase,

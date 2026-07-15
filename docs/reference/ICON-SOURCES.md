@@ -56,7 +56,19 @@ Base: `.../rcp-fe-lol-static-assets/global/default/images/`
 | Updates/notifications | `top-nav-updates-eat-icon.svg` | 26×24 | Player-bust badge (updates/notif) — same band canvas as profile/collections | #386 notif |
 | Loyalty medallion | `loyalty-nav-bar.svg` | 30×30 | Gold circular scroll medallion (loyalty) | #386 (optional) |
 
+**#386 wiring status (nav-band icon cluster shipped):** `nav-icon-collections`
+→ Collection (live), `nav-icon-loot` → Store/Loot (live), `nav-icon-store` → Store
+(live), `missionicon.svg` (section D) → **DISABLED placeholder** (no Missions
+screen yet — follow-up), `top-nav-updates-eat-icon` → **DISABLED placeholder**
+(no notifications surface yet — follow-up). Your Shop gold CTA is #364's
+`YourShopIcon` (already live). `loyalty-nav-bar` not used (no loyalty program in
+the clone). `nav-icon-profile` remains #387's scope (top-right profile chip).
+
 ### B. RP top-up button — static-assets `images/` (3 interactive states)
+
+**#386: shipped** as the `@low/ui` `RpTopUpButton` (3-state resting/hover/pressed
+disc) at the right of the RP capsule; helper `rpTopUpIconUrl(state)` in
+`@low/fixtures`.
 
 Circular dark disc with a gold **`+`**; the "add RP" affordance next to currency.
 

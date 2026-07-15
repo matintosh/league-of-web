@@ -96,6 +96,8 @@ export { ProfileChip } from "./chrome/profile-chip";
 export type { ProfileChipProps } from "./chrome/profile-chip";
 export { RankedQueuePanel } from "./chrome/ranked-queue-panel";
 export type { RankedQueuePanelProps, RankedQueue } from "./chrome/ranked-queue-panel";
+export { RpTopUpButton } from "./chrome/rp-top-up-button";
+export type { RpTopUpButtonProps } from "./chrome/rp-top-up-button";
 export { SearchInput } from "./chrome/search-input";
 export type { SearchInputProps } from "./chrome/search-input";
 export { SectionHeader } from "./chrome/section-header";

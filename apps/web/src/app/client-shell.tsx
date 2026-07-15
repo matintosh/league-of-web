@@ -29,6 +29,7 @@ import {
   ClashScreen,
   YourShopIcon,
   YourShopScreen,
+  RpTopUpButton,
 } from "@low/ui";
 import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard } from "@low/ui";
 import {
@@ -42,6 +43,9 @@ import {
   rpIconUrl,
   blueEssenceIconUrl,
   navIconUrl,
+  navUpdatesIconUrl,
+  navMissionIconUrl,
+  rpTopUpIconUrl,
   yourShopIconVideoUrl,
   gameModeMapUrl,
   positionIconUrl,
@@ -725,28 +729,47 @@ export function ClientShell() {
               else if (id === "home") setView("home");
             }}
             currencySlot={
-              // Right region: icon pair (zone 3) + divider (zone 4) + stacked currency (zone 5)
-              // Composed at page level so TopNavbar stays slot-agnostic.
+              // Current-era right region (era shift #384 / #386): a menu-access
+              // ICON CLUSTER, then the gold Your Shop CTA, a divider, and the
+              // stacked currency block with an RP top-up disc. Measured from
+              // docs/reference/client-current-home-activity-center.jpg (1280×720):
+              // six ~53px-pitch glyph slots, then the gold CTA disc, then the RP
+              // capsule (2152 + `+` disc) with BE below. Composed at page level so
+              // TopNavbar stays slot-agnostic. Profile identity is NOT here — it
+              // lives in the rail ProfileChip (#146) and the reserved top-right
+              // profile-chip slot is #387's scope (handoff below).
               <div className="flex items-center gap-3">
-                {/* Zone 3 — Your Shop CTA + Loot + Essence icon buttons.
-                    Real nav icons from CommunityDragon static-assets. */}
+                {/* Menu-access icon cluster — real CommunityDragon nav-band SVGs.
+                    Order matches the reference left→right: collections, missions,
+                    loot, updates, store. cursor-default (nav glyphs are not text
+                    links); opacity hover lift matches the client's icon feedback. */}
                 <div className="flex items-center gap-1.5">
-                  {/* Your Shop entry point (issue #361). Sits at the left end of
-                      the icon cluster — left of Loot/Essence, i.e. left of the
-                      Store area — matching the real client. Sized to 28px to line
-                      up with the h-7 (28px) sibling icon buttons. The CTA video
-                      state machine (intro→loop attention + click burst) streams
-                      from @low/fixtures; static gold glyph shows under reduced
-                      motion. Activating it opens the Your Shop overlay. */}
-                  <YourShopIcon
-                    size={28}
-                    videoSources={YOUR_SHOP_ICON_VIDEO_SOURCES}
-                    onActivate={() => setShowYourShop(true)}
-                  />
+                  <button
+                    type="button"
+                    aria-label="Collection"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
+                    onClick={() => { setView("collection"); setActiveNavId("collection"); }}
+                  >
+                    {/* Real nav-icon-collections.svg — stacked cards, gold fills */}
+                    <img src={navIconUrl("collections")} alt="" aria-hidden="true" width={22} height={20} />
+                  </button>
+                  {/* Missions/objectives — no destination screen exists yet, so
+                      this is a DISABLED placeholder per issue #386 (aria-disabled +
+                      no handler). Uses the real navigation-plugin missionicon.svg.
+                      TODO(#395): wire to a Missions screen when one is built. */}
+                  <button
+                    type="button"
+                    aria-label="Missions"
+                    aria-disabled
+                    className="flex h-7 w-7 cursor-default items-center justify-center opacity-40"
+                  >
+                    {/* Real missionicon.svg (navigation plugin) — gold scroll */}
+                    <img src={navMissionIconUrl("mission")} alt="" aria-hidden="true" width={20} height={20} />
+                  </button>
                   <button
                     type="button"
                     aria-label="Loot"
-                    className="flex h-7 w-7 cursor-default items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
                     onClick={() => {
                       setActiveStoreTab("loot");
                       setView("store");
@@ -756,31 +779,69 @@ export function ClientShell() {
                     {/* Real nav-icon-loot.svg — hardcoded gold fills, no filter needed */}
                     <img src={navIconUrl("loot")} alt="" aria-hidden="true" width={22} height={22} />
                   </button>
+                  {/* Updates/notifications — no notifications surface exists yet, so
+                      DISABLED placeholder per #386. Uses the real static-assets
+                      top-nav-updates-eat-icon.svg (player-bust badge).
+                      TODO(#396): wire to a notifications/updates panel when built. */}
                   <button
                     type="button"
-                    aria-label="Essence"
-                    className="flex h-7 w-7 cursor-default items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
-                    onClick={() => console.log("essence")}
+                    aria-label="Updates"
+                    aria-disabled
+                    className="flex h-7 w-7 cursor-default items-center justify-center opacity-40"
                   >
-                    {/* BE icon — no dedicated nav-icon-essence; use be-icon.png at nav size.
-                        The CommunityDragon be-icon.png is the canonical blue-essence hexagon. */}
-                    <img src={blueEssenceIconUrl()} alt="" aria-hidden="true" width={18} height={18} />
+                    {/* Real top-nav-updates-eat-icon.svg — updates/notif bust badge */}
+                    <img src={navUpdatesIconUrl()} alt="" aria-hidden="true" width={22} height={20} />
                   </button>
+                  <button
+                    type="button"
+                    aria-label="Store"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
+                    onClick={() => { setActiveStoreTab("featured"); setView("store"); setActiveNavId("store"); }}
+                  >
+                    {/* Real nav-icon-store.svg — three stacked coins, #f0e6d2 fill */}
+                    <img src={navIconUrl("store")} alt="" aria-hidden="true" width={20} height={19} />
+                  </button>
+
+                  {/* Your Shop gold CTA — sits at the RIGHT end of the glyph
+                      cluster, immediately before the currency block (matching the
+                      reference). Sized to 28px to line up with the h-7 siblings.
+                      The CTA video state machine (intro→loop attention + click
+                      burst) streams from @low/fixtures; static gold glyph shows
+                      under reduced motion. Activating it opens the Your Shop
+                      overlay (issue #361/#364). */}
+                  <YourShopIcon
+                    size={28}
+                    videoSources={YOUR_SHOP_ICON_VIDEO_SOURCES}
+                    onActivate={() => setShowYourShop(true)}
+                  />
                 </div>
 
-                {/* Zone 4 — 1px vertical divider */}
+                {/* 1px vertical divider between the icon cluster and currency */}
                 <div className="h-5 w-px bg-gold-5 shrink-0" aria-hidden="true" />
 
-                {/* Zone 5 — stacked currency (RP on top, BE below, right-aligned).
-                    Real currency icons from CommunityDragon. */}
-                <CurrencyDisplay
-                  wallet={demoWallet}
-                  onBuyRp={() => console.log("buy rp")}
-                  onBuyBe={() => console.log("buy be")}
-                  stacked
-                  rpIconSrc={rpIconUrl()}
-                  beIconSrc={blueEssenceIconUrl()}
-                />
+                {/* Stacked currency (RP on top, BE below, right-aligned) with the
+                    RP top-up disc. Per the reference the RP row carries a circular
+                    gold `+` top-up disc at its right end (real rp-top-up-nav-*.svg,
+                    3-state); BE has no top-up affordance. We pass no-op buy handlers
+                    to CurrencyDisplay's inline `+` (kept for the BE row / non-nav
+                    call sites) — the visible top-up here is the RpTopUpButton. */}
+                <div className="flex items-center gap-2">
+                  <CurrencyDisplay
+                    wallet={demoWallet}
+                    onBuyRp={() => console.log("buy rp")}
+                    onBuyBe={() => console.log("buy be")}
+                    stacked
+                    showBuyButtons={false}
+                    rpIconSrc={rpIconUrl()}
+                    beIconSrc={blueEssenceIconUrl()}
+                  />
+                  <RpTopUpButton
+                    restingSrc={rpTopUpIconUrl("resting")}
+                    hoverSrc={rpTopUpIconUrl("hover")}
+                    pressedSrc={rpTopUpIconUrl("pressed")}
+                    onClick={() => console.log("buy rp")}
+                  />
+                </div>
               </div>
             }
             playerSlot={
@@ -796,7 +857,7 @@ export function ClientShell() {
                   aria-expanded={socialExpanded}
                   onClick={toggleSocialPanel}
                   className={[
-                    "flex h-7 w-7 cursor-pointer items-center justify-center transition-colors duration-150",
+                    "flex h-6 w-6 cursor-pointer items-center justify-center transition-colors duration-150",
                     socialExpanded ? "text-gold-2" : "text-grey-1 hover:text-gold-1",
                   ].join(" ")}
                 >
@@ -821,7 +882,7 @@ export function ClientShell() {
                   type="button"
                   aria-label="Settings"
                   onClick={() => setSettingsOpen(true)}
-                  className="flex h-7 w-7 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+                  className="flex h-6 w-6 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
                 >
                   {/* Gear icon */}
                   <svg
