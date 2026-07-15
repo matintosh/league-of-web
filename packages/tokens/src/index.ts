@@ -70,6 +70,13 @@ export const palette = {
    *  Pixel-sampled from docs/reference/client-lobby-solo.jpg — distinct from
    *  statusOnline (#00c853 bright lime). */
   partyBand: "#1a3a1a",
+  /** Honor celebration crest green — peak honor-crest green from the "CHECKPOINT REACHED"
+   *  overlay (issue #360), pixel-sampled from docs/reference/client-honor-checkpoint-celebration.png. */
+  honorGreen: "#36f532",
+  /** Honor crest gold-green highlight — the bright rim on the crest gems (issue #360). */
+  honorGreenBright: "#7dffa0",
+  /** Honor celebration backdrop — deep green-black forest base for the overlay gradient (issue #360). */
+  honorForest: "#0d2417",
   /** Warning/alert accent — queue-type-list warning triangle, pixel-sampled from client-pvp-mode-select.jpg (issue #80) */
   warning: "#ed2c49",
   // Login — light-theme palette (issue #100, pixel-sampled from docs/reference/riot-login-page.png)

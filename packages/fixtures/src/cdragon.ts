@@ -924,6 +924,115 @@ export type ChallengeCrystalLevel =
 export const challengeCrystalVideoUrl = (level: ChallengeCrystalLevel): string =>
   staticVideoUrl(`challenges/crystal-levels/${level}.webm`);
 
+// ---------------------------------------------------------------------------
+// Honor celebration videos (issue #360) — the in-client "CHECKPOINT REACHED"
+// / "HONOR LEVEL UP" / "HONOR UNLOCKED" overlay's magic layer.
+//
+// All live under videos/honor/celebration/ (crest clips, straight alpha) plus
+// videos/honor/{voting_bg,celebration/transition_green} for full-frame ambience.
+// See docs/reference/VIDEO-ASSETS.md — 52 files under honor/, all MIRRORED (206).
+// ---------------------------------------------------------------------------
+
+/**
+ * Checkpoint crest-video variant key — the catalog names checkpoint clips by an
+ * `{honorLevel}-{checkpoint}` prefix (the honor level being approached and which
+ * of its checkpoints was reached). Intro/loop exist for levels 2–4 × checkpoints
+ * 1–3; the settled reference (`client-honor-checkpoint-celebration.png`) is the
+ * `3-3` crest (last checkpoint before Honor level 3).
+ */
+export type HonorCheckpointVariant =
+  | "2-1" | "2-2" | "2-3"
+  | "3-1" | "3-2" | "3-3"
+  | "4-1" | "4-2" | "4-3";
+
+/** Checkpoint outro clips only exist for the level reached (3, 4, 5). */
+export type HonorCheckpointOutroLevel = 3 | 4 | 5;
+
+/**
+ * Honor "CHECKPOINT REACHED" crest videos (issue #360) — the animated green-gold
+ * honor crest the client plays into the celebration overlay's center slot.
+ * 600×650 straight-alpha webm; sequence intro (4.1s one-shot) → loop (14.5s
+ * idle) → outro (3.0s dismiss). Each composites straight over the gradient
+ * backdrop, so a clip that fails to load leaves the static crest glyph intact.
+ *
+ *   honorCheckpointVideoUrl("intro", "3-3") → …/honor/celebration/3-3_checkpoint_intro.webm
+ *   honorCheckpointVideoUrl("loop",  "3-3") → …/honor/celebration/3-3_checkpoint_loop.webm
+ *   honorCheckpointVideoUrl("outro", 3)     → …/honor/celebration/3_checkpoint_outro.webm
+ *
+ * All confirmed HTTP 206 video/webm (2026-07). Feed the returned URL to the
+ * `HonorCheckpointOverlay` crest slot; NO fetching happens here — pages supply URLs.
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/honor/celebration/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export function honorCheckpointVideoUrl(phase: "intro" | "loop", variant: HonorCheckpointVariant): string;
+export function honorCheckpointVideoUrl(phase: "outro", level: HonorCheckpointOutroLevel): string;
+export function honorCheckpointVideoUrl(
+  phase: "intro" | "loop" | "outro",
+  key: HonorCheckpointVariant | HonorCheckpointOutroLevel,
+): string {
+  return staticVideoUrl(`honor/celebration/${key}_checkpoint_${phase}.webm`);
+}
+
+/** Honor level-up crest video levels (per-level intro + idle loop, 1–5). */
+export type HonorLevelUpLevel = 1 | 2 | 3 | 4 | 5;
+
+/**
+ * Honor "HONOR LEVEL UP" crest videos (issue #360) — the level-up variant of the
+ * celebration crest, 450×419 straight-alpha webm. `intro` is a one-shot per-level
+ * reveal (4–7s), `loop` the 14.5s idle. Feed to the `HonorCheckpointOverlay`
+ * crest slot for level-up celebrations.
+ *
+ *   honorLevelUpVideoUrl("intro", 3) → …/honor/celebration/3_levelup_intro.webm
+ *   honorLevelUpVideoUrl("loop",  3) → …/honor/celebration/3_levelup_loop.webm
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/honor/celebration/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const honorLevelUpVideoUrl = (
+  phase: "intro" | "loop",
+  level: HonorLevelUpLevel,
+): string => staticVideoUrl(`honor/celebration/${level}_levelup_${phase}.webm`);
+
+/** Honor unlock intro clips only exist for levels 0–2 (450×419 one-shot). */
+export type HonorUnlockLevel = 0 | 1 | 2;
+
+/**
+ * Honor "HONOR UNLOCKED" crest video (issue #360) — the unlock-intro variant,
+ * 450×419 straight-alpha one-shot (4.0s). Feed to the `HonorCheckpointOverlay`
+ * crest slot for unlock celebrations.
+ *
+ *   honorUnlockVideoUrl(0) → …/honor/celebration/0_unlock.webm
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/honor/celebration/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const honorUnlockVideoUrl = (level: HonorUnlockLevel): string =>
+  staticVideoUrl(`honor/celebration/${level}_unlock.webm`);
+
+/**
+ * Honor full-frame green transition wipe (issue #360) — 1280×720 straight-alpha
+ * webm (3.0s), the sweeping green wipe layered full-frame behind the crest.
+ * Feed to the overlay's `backdropVideo` slot.
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/honor/celebration/transition_green.webm
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const honorTransitionVideoUrl = (): string =>
+  staticVideoUrl("honor/celebration/transition_green.webm");
+
+/**
+ * Honor voting-backdrop video (issue #360) — 1280×720 OPAQUE webm (5.0s, no
+ * alpha), the honor set's ambient fish-forest backdrop. Optional full-frame
+ * `backdropVideo` for the overlay; because it is opaque it fully replaces the
+ * gradient backdrop when supplied.
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/honor/voting_bg.webm
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const honorVotingBgVideoUrl = (): string =>
+  staticVideoUrl("honor/voting_bg.webm");
+
 /*
  * MODE-SELECT BACKGROUND — CDragon asset search result (2026-07, issue #218).
  *

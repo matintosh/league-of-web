@@ -109,6 +109,15 @@
      visually distinct — a new token is necessary for the muted band fill. */
   --color-party-band: #1a3a1a;
 
+  /* Honor celebration — the in-client "CHECKPOINT REACHED" overlay (issue #360),
+     pixel-sampled from docs/reference/client-honor-checkpoint-celebration.png.
+     honor-green (#36f532, 54,245,50) is the peak honor-crest green; -bright the
+     gold-green highlight; -forest the deep green-black backdrop base (the fish-
+     forest ambience, CDragon-unavailable art → gradient per known-divergence). */
+  --color-honor-green: #36f532;
+  --color-honor-green-bright: #7dffa0;
+  --color-honor-forest: #0d2417;
+
   /* Warning — destructive/alert accent (queue-type-list warning triangle) */
   --color-warning: #ed2c49;
 
@@ -236,6 +245,11 @@
 
     /* Party band — dark forest green for OPEN PARTY rail block (issue #163) */
     --color-party-band: #1a3a1a;
+
+    /* Honor celebration overlay — checkpoint crest green + forest backdrop (issue #360) */
+    --color-honor-green: #36f532;
+    --color-honor-green-bright: #7dffa0;
+    --color-honor-forest: #0d2417;
 
     /* Warning */
     --color-warning: #ed2c49;
