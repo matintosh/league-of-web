@@ -59,6 +59,16 @@ interface SizeConfig {
   arrowTop: number;
   /** Text left padding inside bar = XAML TextBlock margin-left=30 (scaled) */
   textLeft: number;
+  /**
+   * Dark GoldLine backing plate that extends PAST the chevron tip (px).
+   * The hi-res reference (docs/reference/play-button-hires-full.png) keeps ~0.6×
+   * bar-height of bronze frame to the right of the teal chevron before the frame
+   * ends; the raw XAML had almost none. This lengthens the outer frame's right run
+   * only — it does NOT move the chevron tip, the fill region, or the PLAY text —
+   * so it corrects the frame's right proportion (and closes the #357 width-
+   * normalized PLAY-cx residual) without disturbing fill-region centering.
+   */
+  backingExtend: number;
   /** Label font size (px) */
   fontSize: number;
   /** Corner leg length (px) */
@@ -83,6 +93,18 @@ function makeSize(barH: number, extra: {
   // the PLAY cap-height match. Modest value: over-widening scales the whole
   // button down in the width-normalized composite and undercuts cap-height.
   const dx = sc(14, s);
+  // v9 (#357): backing plate past the chevron tip. Measured on the hi-res
+  // reference the outer bronze GoldLine frame runs ~0.6× bar-height PAST the teal
+  // chevron tip before it ends; the raw XAML backing was ~5px. Because the PLAY
+  // label is centered in the FILL region (medallion inner edge → chevron
+  // narrowing) and this only extends the frame to the RIGHT of the tip, growing
+  // it lengthens the outer frame (widening the button box) WITHOUT moving the
+  // chevron, the fill region, or the text — which is exactly the lever that pulls
+  // the width-normalized PLAY center left toward the reference (cx≈504) that pure
+  // straight-run `dx` widening could not (fill-centering drags the text right in
+  // lockstep with the frame, leaving normalized-cx near-invariant). Empirically
+  // tuned against tools/compare-ref.mjs; see #357.
+  const bx = sc(30, s);
   return {
     ...extra,
     bar: barH,
@@ -91,13 +113,14 @@ function makeSize(barH: number, extra: {
     tipY: Math.round(barH / 2),
     concaveX: sc(10, s),
     totalH: sc(38, s),
-    outerW: sc(155, s) + dx,   // XAML: 165 total - 10 left margin, + straight-run stretch
+    outerW: sc(155, s) + dx + bx,   // XAML 165 - 10 left margin, + straight run (dx) + backing plate (bx)
     outerMarginLeft: sc(10, s),
     greenLeft: sc(50, s),
     greenMargin: sc(4, s),
     arrowLeft: sc(40, s),
     arrowTop: sc(5, s),
     textLeft: sc(30, s),
+    backingExtend: bx,
   };
 }
 
@@ -784,6 +807,7 @@ export function PlayButton({
     greenLeft, greenMargin,
     arrowLeft, arrowTop,
     fontSize, pressExtend,
+    backingExtend,
   } = cfg;
 
   const d = barPath(cfg);
@@ -928,13 +952,21 @@ export function PlayButton({
         {/* ---------------------------------------------------------------- */}
         {/* INNER FRAME — GreenLine                                          */}
         {/* XAML margin 50 4 4 4 from GoldLine bounds.                       */}
+        {/* v9 (#357): stop the inner frame's right edge at the chevron-tip   */}
+        {/* zone rather than the outer frame's right edge. The GoldLine now   */}
+        {/* runs `backingExtend` px past the tip (reference-matched dark      */}
+        {/* bronze backing plate); if the GreenLine also spanned that run its */}
+        {/* teal top/right border would draw a stray cyan line across the     */}
+        {/* dark backing (the reference has only the bronze GoldLine there).  */}
+        {/* Ending it `backingExtend` short keeps the inner teal frame hugging */}
+        {/* the chevron, matching docs/reference/play-button-hires-full.png.  */}
         {/* ---------------------------------------------------------------- */}
         <div
           style={{
             position: "absolute",
             left: greenLeft,
             top: greenMargin,
-            right: greenMargin,
+            right: greenMargin + backingExtend,
             bottom: greenMargin,
             background: "var(--color-grey-4)",
             border: "2px solid var(--color-pb-inner-border)",
@@ -966,14 +998,21 @@ export function PlayButton({
             overflow="visible"
             aria-hidden="true"
           >
-            {/* Backing plate: extends past the chevron tip to the right.
-                Sampled from hi-res closeup: plate extends ~23px past tip at 1×.
-                The stepped corner top-right is achieved by the rectangle shape that
-                the chevron tip cuts through visually. Color: pb-inner-border (sampled ≈ #073b44). */}
+            {/* Backing plate: dark bronze fill that runs from the chevron tip to
+                the outer frame's right edge (v9/#357). The hi-res reference keeps
+                ~0.6× bar-height of GoldLine frame past the teal tip; `backingExtend`
+                lengthens the frame there, and this rect fills that run so the tip
+                reads as cutting through a solid plate (not floating in a gap). Width
+                reaches the inner-frame right inset: from tipNarrowX to
+                (outerW - arrowLeft - greenMargin) in this SVG's tip-relative coords.
+                Color: pb-outer-bg (sampled ≈ dark bronze). */}
             <rect
               x={tipNarrowX}
               y={0}
-              width={barWidth - tipNarrowX + Math.round(5 * (bar / 28))}
+              width={Math.max(
+                barWidth - tipNarrowX + Math.round(5 * (bar / 28)),
+                outerW - arrowLeft - greenMargin - tipNarrowX,
+              )}
               height={bar}
               fill="var(--color-pb-outer-bg)"
             />
