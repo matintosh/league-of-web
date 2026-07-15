@@ -11,6 +11,15 @@ export interface SocialHeaderProps {
    * Receives the action key: "add" | "groups" | "list" | "search".
    */
   onAction?: (action: SocialAction) => void;
+  /**
+   * Called when the rail collapse affordance is clicked (issue #401). When
+   * provided, a leading « chevron button renders before the "SOCIAL" label —
+   * this is where the social-rail collapse toggle folds into the header (the
+   * reference has no beside-chip toggle; collapse lives on the rail itself).
+   * Omit it and the chevron is absent, so existing SocialHeader consumers are
+   * unchanged.
+   */
+  onToggleCollapse?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -76,22 +85,52 @@ const iconMap: Record<
 /**
  * SocialHeader — top strip of the social sidebar.
  *
- * Left: "Social" label, font-display text-xs uppercase tracking-widest text-grey-1.
+ * Left: optional « collapse chevron (#401) + "Social" label, font-display
+ *   text-xs uppercase tracking-widest text-grey-1.
  * Right: four 18px icon buttons (add friend, groups, list, search).
- * Each button fires `onAction?.(key)` on click.
+ * Each button fires `onAction?.(key)` on click; the chevron fires
+ * `onToggleCollapse?.()`.
  *
  * Reference: "SOCIAL ＋ 🗂 ≡ 🔍" strip in the LoL client right sidebar.
  */
-export function SocialHeader({ onAction }: SocialHeaderProps) {
+export function SocialHeader({ onAction, onToggleCollapse }: SocialHeaderProps) {
   return (
     <div
       data-shot="social-header"
       className="flex w-full items-center justify-between px-3 py-2"
     >
-      {/* "Social" label — natural-case in JSX, CSS uppercase */}
-      <span className="font-display text-[11px] uppercase tracking-widest text-grey-1">
-        Social
-      </span>
+      {/* Leading group: collapse chevron (when wired) + "Social" label */}
+      <div className="flex items-center gap-1.5">
+        {onToggleCollapse && (
+          <button
+            type="button"
+            aria-label="Collapse social panel"
+            aria-expanded={true}
+            onClick={onToggleCollapse}
+            className="flex h-4 w-4 items-center justify-center text-grey-1 transition-colors duration-100 hover:text-gold-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-3"
+          >
+            {/* « double-chevron pointing toward the window edge (collapse) */}
+            <svg
+              aria-hidden="true"
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6,2 2,6 6,10" />
+              <polyline points="10,2 6,6 10,10" />
+            </svg>
+          </button>
+        )}
+        {/* "Social" label — natural-case in JSX, CSS uppercase */}
+        <span className="font-display text-[11px] uppercase tracking-widest text-grey-1">
+          Social
+        </span>
+      </div>
 
       {/* Icon buttons */}
       <div className="flex items-center gap-1">

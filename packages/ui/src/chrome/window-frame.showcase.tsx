@@ -5,6 +5,7 @@ import {
   WindowFrameCloseOnlyDemo,
   WindowFrameNoControlsDemo,
   WindowFrameIntegratedDemo,
+  WindowFrameIntegratedWithGearDemo,
 } from "./window-frame.demo";
 
 export const windowFrameShowcase: ShowcaseEntry = {
@@ -19,6 +20,12 @@ export const windowFrameShowcase: ShowcaseEntry = {
       notes:
         'chrome="integrated" — current-client era (#385): no title-bar row; controls float top-right above content and in-frame overlays. Used by the app shell at "/".',
       render: () => <WindowFrameIntegratedDemo />,
+    },
+    {
+      name: "Integrated with gear",
+      notes:
+        'onSettings supplied — the ⚙ settings control renders in the window-control row, in the reference order help → minimize → settings → close (#401). The gear is opt-in: omit onSettings and the row is the classic ? ─ ✕. This is how the app shell wires the gear in the current era, matching client-current-home-activity-center.jpg.',
+      render: () => <WindowFrameIntegratedWithGearDemo />,
     },
     {
       name: "Default",

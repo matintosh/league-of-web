@@ -22,3 +22,20 @@ export function SocialHeaderActionLogDemo() {
     </div>
   );
 }
+
+/**
+ * Demo of the collapse chevron affordance (#401). Wiring onToggleCollapse
+ * renders the leading « button; clicking it here logs the collapse intent.
+ */
+export function SocialHeaderCollapseDemo() {
+  const [collapsedCount, setCollapsedCount] = useState(0);
+
+  return (
+    <div className="w-64 bg-blue-7">
+      <SocialHeader onToggleCollapse={() => setCollapsedCount((n) => n + 1)} />
+      <p className="px-3 py-1 font-body text-xs text-grey-1">
+        Collapse clicked: <span className="text-gold-2">{collapsedCount}</span>
+      </p>
+    </div>
+  );
+}
