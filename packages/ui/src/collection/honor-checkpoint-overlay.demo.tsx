@@ -61,7 +61,8 @@ const VARIANTS: Variant[] = [
  * Replay demo: pick a celebration to play its overlay in a framed stage. Each
  * play key-remounts the overlay so the intro → loop sequence restarts from frame
  * 0. A finished counter proves `onFinished` fires once per run (on OK, backdrop
- * click, or Escape — after the outro clip, if any). Under prefers-reduced-motion
+ * click, or Escape — the fade starts immediately, the outro clip if any plays
+ * underneath). Under prefers-reduced-motion
  * the overlay still renders in full (static crest + gradient) and waits for an
  * explicit dismiss — it never auto-closes.
  */
@@ -87,8 +88,9 @@ export function HonorCheckpointOverlayReplayDemo() {
         ))}
       </div>
       <p className="font-body text-xs text-grey-2">
-        Plays the crest intro, idles on the loop, then the outro (if any) on
-        dismiss. Click OK, click the backdrop, or press Escape to finish.
+        Plays the crest intro, idles on the loop, then on dismiss the fade starts
+        immediately (the outro, if any, plays underneath). Click OK, click the
+        backdrop, or press Escape to finish.
       </p>
       <p className="font-body text-xs text-gold-2" data-testid="finished-count">
         onFinished fired: {finishedCount}
