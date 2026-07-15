@@ -97,7 +97,7 @@ export function NavProductSwitcher({
               aria-disabled={isDisabled ? true : undefined}
               onClick={isDisabled ? undefined : () => onSelect(product.id)}
               className={[
-                "flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-display text-xs uppercase tracking-wide transition-colors duration-150",
+                "flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-display text-xs tracking-wide transition-colors duration-150",
                 isDisabled
                   ? "cursor-default border-gold-4 bg-gold-5 text-gold-2 opacity-70 pointer-events-none"
                   : isActive
