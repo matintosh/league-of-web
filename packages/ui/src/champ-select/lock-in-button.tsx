@@ -24,6 +24,7 @@ import {
   TRAP_BORDER_PX,
   type TrapLayer,
 } from "../chrome/trapezoid-button";
+import { usePausedVideo } from "../chrome/use-paused-video";
 
 // Video crossfade transition. The real client sequences video states with
 // ~250ms crossfades (docs/reference/HEXTECH-UI-NOTES.md). We use the shared
@@ -61,6 +62,45 @@ const BLEED_FRAC = 0.28;
 // reference's subtle shimmer rather than an aurora. Intro/hover/active/attention
 // stay at full opacity — only the resting idle is damped.
 const IDLE_VIDEO_OPACITY = 0.22;
+
+// One crossfade <video> layer whose decoder pauses while hidden (#358). Only the
+// active (opaque) layer decodes; the rest sit paused at opacity 0, still mounted
+// so their resume is seamless under var(--motion-crossfade). `visibleOpacity`
+// lets the resting idle stay damped (IDLE_VIDEO_OPACITY) when it is the active
+// state, so the tuned CSS teal base keeps dominating the idle look (#331).
+function CrossfadeVideo({
+  src,
+  visible,
+  visibleOpacity,
+  loop,
+  onEnded,
+}: {
+  src: string;
+  visible: boolean;
+  visibleOpacity: number;
+  loop: boolean;
+  onEnded?: () => void;
+}) {
+  const ref = usePausedVideo(visible);
+  return (
+    <video
+      ref={ref}
+      src={src}
+      autoPlay
+      loop={loop}
+      muted
+      playsInline
+      preload="auto"
+      onEnded={onEnded}
+      className="absolute inset-0 h-full w-full"
+      style={{
+        objectFit: "contain",
+        opacity: visible ? visibleOpacity : 0,
+        transition: CROSSFADE_TRANSITION,
+      }}
+    />
+  );
+}
 
 /**
  * Real-client FIND MATCH button state videos, one URL per state (issue #310).
@@ -221,21 +261,13 @@ function LockInVideoLayer({
     >
       {layers.map(({ key, src, loop, onEnded }) =>
         src ? (
-          <video
+          <CrossfadeVideo
             key={key}
             src={src}
-            autoPlay
+            visible={state === key}
+            visibleOpacity={key === "idle" ? IDLE_VIDEO_OPACITY : 1}
             loop={loop}
-            muted
-            playsInline
-            preload="auto"
             onEnded={onEnded}
-            className="absolute inset-0 h-full w-full"
-            style={{
-              objectFit: "contain",
-              opacity: state === key ? (key === "idle" ? IDLE_VIDEO_OPACITY : 1) : 0,
-              transition: CROSSFADE_TRANSITION,
-            }}
           />
         ) : null,
       )}

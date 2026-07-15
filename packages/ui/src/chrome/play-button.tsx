@@ -2,6 +2,7 @@
 
 import React, { useId, useState, useCallback, useEffect, useRef } from "react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { usePausedVideo } from "./use-paused-video";
 
 // Video-state crossfade. The real client sequences its magic-button video
 // states with ~250ms crossfades (docs/reference/HEXTECH-UI-NOTES.md); we use the
@@ -368,6 +369,40 @@ export interface PlayButtonMedallionVideoSources {
 // and absolutely positioned, so it never changes the hit area or the flow.
 const VIDEO_BLEED_FRAC = 0.08;
 
+// One crossfade <video> layer whose decoder pauses while hidden (#358). Only the
+// active (opaque) layer decodes; the rest sit paused at opacity 0, still mounted
+// so their resume is seamless under var(--motion-crossfade). Shared by both the
+// frame and medallion state machines below (they differ only in object-fit).
+function CrossfadeVideo({
+  src,
+  visible,
+  loop,
+  onEnded,
+  objectFit,
+}: {
+  src: string;
+  visible: boolean;
+  loop: boolean;
+  onEnded?: () => void;
+  objectFit: "contain" | "cover";
+}) {
+  const ref = usePausedVideo(visible);
+  return (
+    <video
+      ref={ref}
+      src={src}
+      autoPlay
+      loop={loop}
+      muted
+      playsInline
+      preload="auto"
+      onEnded={onEnded}
+      className="absolute inset-0 h-full w-full"
+      style={{ objectFit, opacity: visible ? 1 : 0, transition: VIDEO_CROSSFADE }}
+    />
+  );
+}
+
 // ---------------------------------------------------------------------------
 // PlayButtonVideoLayer — the frame video state machine (146×58).
 // ---------------------------------------------------------------------------
@@ -480,21 +515,13 @@ function PlayButtonVideoLayer({
       ) : null}
       {layers.map(({ key, src, loop, onEnded }) =>
         src ? (
-          <video
+          <CrossfadeVideo
             key={key}
             src={src}
-            autoPlay
+            visible={state === key}
             loop={loop}
-            muted
-            playsInline
-            preload="auto"
             onEnded={onEnded}
-            className="absolute inset-0 h-full w-full"
-            style={{
-              objectFit: "contain",
-              opacity: state === key ? 1 : 0,
-              transition: VIDEO_CROSSFADE,
-            }}
+            objectFit="contain"
           />
         ) : null,
       )}
@@ -562,21 +589,13 @@ function MedallionVideoLayer({
     >
       {layers.map(({ key, src, loop, onEnded }) =>
         src ? (
-          <video
+          <CrossfadeVideo
             key={key}
             src={src}
-            autoPlay
+            visible={state === key}
             loop={loop}
-            muted
-            playsInline
-            preload="auto"
             onEnded={onEnded}
-            className="absolute inset-0 h-full w-full"
-            style={{
-              objectFit: "cover",
-              opacity: state === key ? 1 : 0,
-              transition: VIDEO_CROSSFADE,
-            }}
+            objectFit="cover"
           />
         ) : null,
       )}
