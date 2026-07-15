@@ -485,8 +485,8 @@ export function ClientShell() {
 
   // Champ-select phases are a full-screen takeover (issue #341): the TopNavbar
   // is hidden and the champ-select screen stretches to the window's top edge.
-  // Window controls survive because they live in WindowFrame's title bar (a
-  // sibling above this content column), not in the navbar.
+  // Window controls survive because they float in WindowFrame's integrated
+  // chrome (#385) — layered above this content column, not in the navbar.
   const champSelectActive = view === "declare" || view === "ban" || view === "pick" || view === "loadout";
 
   // Views that show the docked social rail alongside content.
@@ -685,7 +685,7 @@ export function ClientShell() {
       style={{ width: CLIENT_WIDTH, height: CLIENT_HEIGHT }}
     >
       <WindowFrame
-        title="League of Web"
+        chrome="integrated"
         onHelp={() => console.log("help")}
         onMinimize={() => console.log("minimize")}
         onClose={() => console.log("close")}
@@ -693,7 +693,8 @@ export function ClientShell() {
         <div className="flex h-full flex-col">
           {/* TopNavbar is hidden during champ-select phases (#341): those
               screens are a full-screen takeover. Window controls stay because
-              they belong to WindowFrame's title bar, not the navbar. */}
+              they float in WindowFrame's integrated chrome (a sibling above
+              this content column, #385), not in the navbar. */}
           {!champSelectActive && (
           <TopNavbar
             playSlot={
@@ -1023,13 +1024,14 @@ export function ClientShell() {
           Shell owns visibility so it survives across nav; close restores the
           underlying view untouched.
 
-          Positioned to start just below WindowFrame's 32px title bar (inset by
-          the frame's 1px border) so the window controls (?, minimize, close),
-          which live in that title bar above the shell content, stay clickable
-          above the overlay. z-40 sits under the fixed launch splash (z-100). */}
+          Inset by the frame's 1px border on all sides. There is no title bar
+          in the integrated chrome (#385), so the overlay spans the full window
+          height. The floating window controls (?, minimize, close) live inside
+          WindowFrame at z-[60] — above this z-40 overlay — so they stay
+          clickable over it. z-40 sits under the fixed launch splash (z-100). */}
       {showYourShop && (
         <div
-          className="absolute inset-x-px bottom-px top-[33px] z-40"
+          className="absolute inset-px z-40"
           aria-modal="true"
           role="dialog"
           aria-label="Your Shop"

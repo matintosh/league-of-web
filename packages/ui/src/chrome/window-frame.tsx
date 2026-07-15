@@ -5,7 +5,20 @@ import type { ReactNode } from "react";
 export interface WindowFrameProps {
   /** Content to render inside the frame (the full app shell). */
   children?: ReactNode;
-  /** Optional title text displayed in the title bar centre. */
+  /**
+   * Chrome variant.
+   * - `"titlebar"` (default): a slim draggable title-bar row across the top,
+   *   with the window controls at its right end. Used by the login window,
+   *   whose reference still has the classic bar.
+   * - `"integrated"`: NO title-bar row (current-client era, issue #385). The
+   *   window controls render as a floating cluster at the absolute top-right
+   *   inside the frame, layered above the shell content and any in-frame
+   *   overlays so they stay clickable everywhere.
+   *
+   * @default "titlebar"
+   */
+  chrome?: "titlebar" | "integrated";
+  /** Optional title text displayed in the title bar centre (titlebar variant only). */
   title?: string;
   /** Whether the help (?) control is rendered. Defaults to true. */
   showHelp?: boolean;
@@ -21,15 +34,146 @@ export interface WindowFrameProps {
   onClose?: () => void;
 }
 
+/** Help glyph — ? */
+function HelpGlyph() {
+  return (
+    <svg
+      width="8"
+      height="10"
+      viewBox="0 0 8 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M1.5 3C1.5 1.619 2.619 0.5 4 0.5C5.381 0.5 6.5 1.619 6.5 3C6.5 4.119 5.8 4.93 4.875 5.4C4.425 5.63 4 6.05 4 6.5V7"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+      />
+      <circle cx="4" cy="9" r="0.75" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Minimise glyph — horizontal rule */
+function MinimizeGlyph() {
+  return (
+    <svg
+      width="10"
+      height="2"
+      viewBox="0 0 10 2"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <rect width="10" height="2" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Close glyph — ✕ */
+function CloseGlyph() {
+  return (
+    <svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <line
+        x1="1"
+        y1="1"
+        x2="9"
+        y2="9"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="square"
+      />
+      <line
+        x1="9"
+        y1="1"
+        x2="1"
+        y2="9"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="square"
+      />
+    </svg>
+  );
+}
+
+interface WindowControlsProps {
+  showHelp: boolean;
+  showMinimize: boolean;
+  showClose: boolean;
+  onHelp?: () => void;
+  onMinimize?: () => void;
+  onClose?: () => void;
+}
+
+/** The ? ─ ✕ button cluster, shared by both chrome variants. */
+function WindowControls({
+  showHelp,
+  showMinimize,
+  showClose,
+  onHelp,
+  onMinimize,
+  onClose,
+}: WindowControlsProps) {
+  return (
+    <>
+      {showHelp && (
+        <button
+          type="button"
+          aria-label="Help"
+          onClick={onHelp}
+          className="flex h-5 w-5 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+        >
+          <HelpGlyph />
+        </button>
+      )}
+      {showMinimize && (
+        <button
+          type="button"
+          aria-label="Minimize"
+          onClick={onMinimize}
+          className="flex h-5 w-5 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+        >
+          <MinimizeGlyph />
+        </button>
+      )}
+      {showClose && (
+        <button
+          type="button"
+          aria-label="Close"
+          onClick={onClose}
+          className="flex h-5 w-5 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+        >
+          <CloseGlyph />
+        </button>
+      )}
+    </>
+  );
+}
+
 /**
  * WindowFrame wraps the entire app shell with the LoL client's outer chrome:
- * 1px gold-5 border, hextech-black background, a slim draggable title bar,
- * and top-right window controls (minimize, close).
+ * a 1px gold-5 border and hextech-black background.
+ *
+ * Two chrome variants (see {@link WindowFrameProps.chrome}):
+ * - `"titlebar"` (default): a slim draggable title bar with controls at its
+ *   right end — the classic layout, still used by the login window.
+ * - `"integrated"`: no title-bar row; the controls float at the top-right,
+ *   above the shell content and in-frame overlays (current-client era, #385).
  *
  * Purely presentational — no internal state.
  */
 export function WindowFrame({
   children,
+  chrome = "titlebar",
   title,
   showHelp = true,
   showMinimize = true,
@@ -38,6 +182,36 @@ export function WindowFrame({
   onMinimize,
   onClose,
 }: WindowFrameProps) {
+  const controls = (
+    <WindowControls
+      showHelp={showHelp}
+      showMinimize={showMinimize}
+      showClose={showClose}
+      onHelp={onHelp}
+      onMinimize={onMinimize}
+      onClose={onClose}
+    />
+  );
+
+  if (chrome === "integrated") {
+    return (
+      <div className="relative flex h-full w-full flex-col border border-gold-5 bg-hextech-black">
+        {/* Content fills the whole frame — no title-bar row is reserved. */}
+        <div className="flex-1 overflow-auto">{children}</div>
+
+        {/* Floating window controls — absolute top-right, above shell content
+            AND in-frame overlays (e.g. Your Shop takeover, z-40). z-[60] keeps
+            them clickable everywhere while sitting under the launch splash
+            (z-100). */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-[60] flex justify-end px-3 pt-2">
+          <div className="pointer-events-auto flex items-center gap-1">
+            {controls}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full w-full flex-col border border-gold-5 bg-hextech-black">
       {/* Title bar */}
@@ -52,92 +226,7 @@ export function WindowFrame({
         </div>
 
         {/* Window controls — order: ? ─ ✕ per reference */}
-        <div className="flex items-center gap-1">
-          {showHelp && (
-            <button
-              type="button"
-              aria-label="Help"
-              onClick={onHelp}
-              className="flex h-5 w-5 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
-            >
-              {/* Help glyph — ? */}
-              <svg
-                width="8"
-                height="10"
-                viewBox="0 0 8 10"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  d="M1.5 3C1.5 1.619 2.619 0.5 4 0.5C5.381 0.5 6.5 1.619 6.5 3C6.5 4.119 5.8 4.93 4.875 5.4C4.425 5.63 4 6.05 4 6.5V7"
-                  stroke="currentColor"
-                  strokeWidth="1.25"
-                  strokeLinecap="round"
-                />
-                <circle cx="4" cy="9" r="0.75" fill="currentColor" />
-              </svg>
-            </button>
-          )}
-          {showMinimize && (
-            <button
-              type="button"
-              aria-label="Minimize"
-              onClick={onMinimize}
-              className="flex h-5 w-5 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
-            >
-              {/* Minimise glyph — horizontal rule */}
-              <svg
-                width="10"
-                height="2"
-                viewBox="0 0 10 2"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <rect width="10" height="2" fill="currentColor" />
-              </svg>
-            </button>
-          )}
-
-          {showClose && (
-            <button
-              type="button"
-              aria-label="Close"
-              onClick={onClose}
-              className="flex h-5 w-5 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
-            >
-              {/* Close glyph — ✕ */}
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 10 10"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <line
-                  x1="1"
-                  y1="1"
-                  x2="9"
-                  y2="9"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                />
-                <line
-                  x1="9"
-                  y1="1"
-                  x2="1"
-                  y2="9"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                />
-              </svg>
-            </button>
-          )}
-        </div>
+        <div className="flex items-center gap-1">{controls}</div>
       </div>
 
       {/* Content area */}
