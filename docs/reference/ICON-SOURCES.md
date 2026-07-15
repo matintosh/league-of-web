@@ -33,6 +33,121 @@ Base: `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/g
 Note: There is no `nav-icon-essence.svg` in CommunityDragon. The Essence nav button uses
 `images/be-icon.png` at 18px instead.
 
+---
+
+## Current-era nav icons (era-shift epic #384 / asset hunt #389)
+
+The modern client's top nav band carries a **right-side icon cluster** (menu-access glyphs),
+a **currency + RP top-up** group, then the **profile chip** with **window controls** at the
+far top-right. The assets below are the real CDN sources for that band. All curl-verified
+**HTTP 200** on 2026-07-15 against CommunityDragon `latest`. Glyphs were rasterized and
+visually confirmed (noted in the "Depicts" column).
+
+### A. Menu-access glyphs — static-assets `images/` (nav-band SVGs)
+
+Base: `.../rcp-fe-lol-static-assets/global/default/images/`
+
+| Asset | Path | Dims (viewBox) | Depicts | For issue |
+|-------|------|----------------|---------|-----------|
+| Loot | `nav-icon-loot.svg` | 27×25 | Hextech chest (loot) | #386 loot |
+| Collections | `nav-icon-collections.svg` | 26×24 | Stacked cards (collection) | #386 |
+| Store | `nav-icon-store.svg` | 20×19 | Three stacked coins (`#f0e6d2` fill) | #386 store |
+| Profile | `nav-icon-profile.svg` | 26×24 | Bust-in-frame silhouette | #387 profile |
+| Updates/notifications | `top-nav-updates-eat-icon.svg` | 26×24 | Player-bust badge (updates/notif) — same band canvas as profile/collections | #386 notif |
+| Loyalty medallion | `loyalty-nav-bar.svg` | 30×30 | Gold circular scroll medallion (loyalty) | #386 (optional) |
+
+### B. RP top-up button — static-assets `images/` (3 interactive states)
+
+Circular dark disc with a gold **`+`**; the "add RP" affordance next to currency.
+
+| State | Path | Dims |
+|-------|------|------|
+| Resting | `rp-top-up-nav-resting.svg` | 20×20 |
+| Hover | `rp-top-up-nav-hover.svg` | 20×20 |
+| Pressed | `rp-top-up-nav-pressed.svg` | 20×20 |
+
+(`rp-top-up-nav-resting.png` / `-hover.png` / `-pressed.png` / `-loading.png` raster
+variants also exist alongside the SVGs.)
+
+### C. Window / app controls — **rcp-fe-lol-navigation** plugin root
+
+Base: `.../rcp-fe-lol-navigation/global/default/`
+
+**Corrects the earlier "Window controls: no CDN source" note** — the navigation plugin
+ships them. All **72×72 PNG**, cream `#cdbe91`-family glyph on transparent:
+
+| Asset | Path | Depicts | For issue |
+|-------|------|---------|-----------|
+| Close | `control-close.png` | X | #385/#387 window ctl |
+| Hide (minimize) | `control-hide.png` | Bottom minimize dash | #385/#387 |
+| Settings | `control-settings.png` | Gear | #386/#387 settings |
+| Settings (disabled) | `control-settings-disabled.png` | Dimmed gear | #386/#387 |
+| Help | `control-help.png` | Question mark | #386/#387 |
+
+### D. Missions / objectives — **rcp-fe-lol-navigation** plugin root
+
+| Asset | Path | Dims | Depicts |
+|-------|------|------|---------|
+| Mission (scroll) | `missionicon.svg` | 20×20 | Gold scroll/objective list (`#cdbe91`) |
+| Daily / FWOTD | `dailyicon.svg` | 20×20 | Down-arrow daily reward |
+| All (list) | `allicon.svg` | 20×20 | Grid/list rows ("all missions") |
+| Mission-XP chevron | `mxp-icon.svg` | 20×20 | Blue double-chevron (`#616EFF`) |
+| Blue-XP | `bxp-icon.png` | 20×20 | Blue XP glyph |
+| Mission tracker button | `mission_tracker_button.png` | 152×768 | 6-state scroll button sprite (default/hover/pressed/selected/…) |
+| Store RP (nav) | `store-rp.png` | 72×72 | RP purchase gem/shards glyph |
+
+### E. Social status glyphs — static-assets `images/`
+
+| Asset | Path | Dims | Depicts | For issue |
+|-------|------|------|---------|-----------|
+| Friend status sprite | `friend_icons.png` | 72×216 | 3-stacked person glyphs: **available (cream)**, **away (gold `#e8a000`)**, **offline (grey)** — the social presence dot/bust colors | #388 social colors |
+
+### F. Generic uikit glyphs (fallbacks — not nav-band specific)
+
+Base: `.../rcp-fe-lol-uikit/global/default/images/`
+
+| Asset | Path | Dims | Depicts |
+|-------|------|------|---------|
+| Settings | `icon_settings.png` | 72×72 | Fine gear (uikit variant) |
+| Close | `close.png` | 72×72 | X |
+| Drawer close | `drawer-close-button.svg` | 24×24 | X (thin) |
+| Info | `info-icon.svg` | 18×18 | i-in-circle |
+| Clock | `hextech-ui-icons/clock.svg` | 14×14 | Clock (static-assets) |
+| Lock closed | `hextech-ui-icons/lock-closed.svg` | 27×40 | Padlock (static-assets) |
+| Question mark | `hextech-ui-icons/question-mark.svg` | 20×20 | Help (static-assets) |
+
+**Search glyph — lives in the SOCIAL RAIL header, not the nav band.** The committed
+current-era capture (`client-current-home-activity-center.jpg`) confirms the magnifying-glass
+search sits in the social rail header row (alongside add-friend / create-group / group-list),
+NOT in the nav-band icon cluster. There is no dedicated nav-band magnifying-glass in the
+static-assets, navigation, social, or uikit plugins (only `uikit/images/search-box-clear.png`
+= the clear-X inside a search field, and `static-assets/images/icon-search-empty-poro.svg` =
+an empty-state poro). So #386's tentative "search?" nav icon should be **dropped from the nav
+band**; the search affordance belongs to the rail header (#388 territory) as a uikit-style glyph.
+
+### Current-era reference captures (committed)
+
+Real full-window client screenshots of the **current-era chrome** (post-2024/2025 redesign),
+committed to `docs/reference/` as the visual ground truth for the era-shift epic #384. All
+are Riot-published assets (not fan concepts) from the official *`/dev`: Seasons in 2025*
+article, hosted on Riot's CMS. Riot Games Fan Content Policy (non-commercial reference use).
+
+Source article (all five): https://www.leagueoflegends.com/en-us/news/dev/dev-seasons-in-2025/
+Direct-image host: `https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/`
+
+| File | Dims | Depicts (chrome features visible) |
+|------|------|-----------------------------------|
+| `client-current-home-activity-center.jpg` | 1280×720 | **Best full-chrome home ref.** No title bar; PLAY top-left; LEAGUE/TFT/LoR nav; right-side icon cluster (collections/missions/loot/store/coins + gold Your-Shop CTA); stacked currency (2152 RP / 30456 BE) with `+` top-up; profile chip far top-right (lvl 350, name, bell) with help/minimize/gear/close controls; slim social rail with search glyph in its header |
+| `client-current-home-ambessa.jpg` | 1280×720 | Same chrome; Ambessa new-champion Activity Center variant |
+| `client-current-battlepass-chapter.jpg` | 1280×720 | Battle Pass "Chapter II" track, full nav + chip + rail |
+| `client-current-battlepass-level.jpg` | 1280×720 | Battle Pass level detail, full chrome |
+| `client-current-objectives-modal.jpg` | 1920×1080 | **Highest-res.** Objectives modal over ARAM lobby; PARTY button top-left, full nav band, profile chip (status text), social rail |
+
+Note: these carry a mocked "V11.9" version tag (Riot's demo build for the 2025 reveal) but the
+chrome IS the live current-era Activity Center layout (Season 1 Act 1 "Welcome to Noxus" /
+Ambessa / Arcane content confirms late-2024/2025). Wiki `Client.png` was rejected — despite a
+2026 upload date it is the OLD 2017-era inline-tab layout (no top-right profile chip).
+
 ### Position (role) icons
 
 All at 34×34, using hardcoded fills:
@@ -200,10 +315,45 @@ Source: https://www.pinterest.com/pin/hextech-iconography/
 
 ---
 
+## Era-shift placeholder gap analysis (#389 → #386/#387/#388)
+
+Cross-check of what each era-shift child issue needs vs what the asset hunt found. See the
+"Current-era nav icons" section above for the exact paths.
+
+**#386 — nav icon cluster:** all covered, no placeholders needed.
+- loot → `nav-icon-loot.svg` ✓ · collections → `nav-icon-collections.svg` ✓ ·
+  store → `nav-icon-store.svg` (three coins) ✓ · missions/objectives → `missionicon.svg` /
+  `mission_tracker_button.png` ✓ · updates/notifications → `top-nav-updates-eat-icon.svg` ✓ ·
+  loyalty → `loyalty-nav-bar.svg` ✓ · RP top-up `+` → `rp-top-up-nav-{resting,hover,pressed}.svg` ✓
+- **"search?" nav icon: DROP IT** — the capture shows search in the social-rail header, not the
+  nav band (see search-glyph note above). No nav-band placeholder required.
+
+**#387 — profile chip top-right:** mostly covered.
+- profile glyph → `nav-icon-profile.svg` ✓ · window controls (close/hide/settings/help) →
+  `control-*.png` (navigation plugin, 72×72) ✓
+- **GAP (soft): notification bell glyph.** The capture shows a small bell beside the profile
+  name. No standalone bell asset was found (`top-nav-updates-eat-icon.svg` is a player-bust
+  badge, not a bell). If #387 needs the literal bell → **placeholder (tokens hex-glyph) + note**,
+  or reuse the updates badge. Likely a uikit-internal glyph not exposed as a discrete file.
+
+**#388 — social rail slim pass:** covered.
+- friend status colors → `friend_icons.png` (72×216 sprite: available cream / away gold
+  `#e8a000` / offline grey) ✓ — authoritative source for the "weird social colors" retune.
+- rail-header search glyph → uikit-style magnifying glass (rail header, per capture) ✓
+
+**Net:** one soft placeholder gap only (the #387 notification bell). Everything else in the
+era-shift cluster has a real CDN asset. If #389 closes before #386/#387/#388 build, file a
+one-line follow-up only for the bell.
+
+---
+
 ## Out of scope (noted)
 
 - **SocialDock / SocialHeader** button glyphs: CommunityDragon social plugin ships mask
   overlays, not standalone button glyphs. Our inline SVGs are kept.
-- **Window controls** (minimize/close): OS-level chrome, no CDN source.
+- **Window controls** (minimize/close/settings/help): ~~OS-level chrome, no CDN source~~
+  **UPDATED (#389):** the `rcp-fe-lol-navigation` plugin **does** ship them as 72×72 PNGs
+  (`control-close.png`, `control-hide.png`, `control-settings.png`, `control-help.png`) —
+  see "Current-era nav icons › C. Window / app controls" above.
 - **Emerald ranked emblem**: 404 on jsDelivr. Use `ranked-mini-crests/emerald.svg` from
   CommunityDragon static-assets if needed by issue #141.
