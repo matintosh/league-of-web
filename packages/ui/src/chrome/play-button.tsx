@@ -61,7 +61,7 @@ interface SizeConfig {
   textLeft: number;
   /**
    * Dark GoldLine backing plate that extends PAST the chevron tip (px).
-   * The hi-res reference (docs/reference/play-button-hires-full.png) keeps ~0.6×
+   * The hi-res reference (docs/reference/play-button-hires-full.png) keeps ~0.26×
    * bar-height of bronze frame to the right of the teal chevron before the frame
    * ends; the raw XAML had almost none. This lengthens the outer frame's right run
    * only — it does NOT move the chevron tip, the fill region, or the PLAY text —
@@ -94,7 +94,7 @@ function makeSize(barH: number, extra: {
   // button down in the width-normalized composite and undercuts cap-height.
   const dx = sc(14, s);
   // v9 (#357): backing plate past the chevron tip. Measured on the hi-res
-  // reference the outer bronze GoldLine frame runs ~0.6× bar-height PAST the teal
+  // reference the outer bronze GoldLine frame runs ~0.26× bar-height PAST the teal
   // chevron tip before it ends; the raw XAML backing was ~5px. Because the PLAY
   // label is centered in the FILL region (medallion inner edge → chevron
   // narrowing) and this only extends the frame to the RIGHT of the tip, growing
