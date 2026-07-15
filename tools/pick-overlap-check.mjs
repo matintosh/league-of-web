@@ -37,10 +37,11 @@
  *   - bottomStrip/chatPanelWrapper: chatPanel is a child of bottomStrip
  *   - teamRail/selfChip: self countdown chip overlaps the self row region (designed)
  *
- * Chrome geometry (h-16 navbar, 33px titlebar):
- *   titlebar: 0–33px
- *   navbar:   33–97px
- *   content:  97px and below
+ * Chrome geometry (#385 removed the title bar — integrated chrome):
+ *   no titlebar; the window controls float top-right inside WindowFrame.
+ *   Champ-select is a full-screen takeover, so the content starts at the top
+ *   edge (inset only by the frame's 1px border). This checker measures zones by
+ *   their relative bounding rects, so it is title-bar-height agnostic.
  */
 
 import { chromium } from "/Users/matintosh/dev/league-of-web/node_modules/playwright/index.mjs";

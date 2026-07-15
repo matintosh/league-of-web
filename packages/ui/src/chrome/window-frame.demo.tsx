@@ -51,3 +51,18 @@ export function WindowFrameNoControlsDemo() {
     </div>
   );
 }
+
+export function WindowFrameIntegratedDemo() {
+  return (
+    <div className="h-48 w-96">
+      <WindowFrame
+        chrome="integrated"
+        onHelp={() => {}}
+        onMinimize={() => {}}
+        onClose={() => {}}
+      >
+        <PlaceholderContent />
+      </WindowFrame>
+    </div>
+  );
+}
