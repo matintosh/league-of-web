@@ -16,6 +16,15 @@ export interface NavItem {
 export interface TopNavbarProps {
   /** Far-left CTA slot, e.g. <PlayButton /> as ReactNode */
   playSlot: ReactNode;
+  /**
+   * Optional left-zone slot rendered immediately right of the play CTA, e.g.
+   * <NavProductSwitcher /> (issue #403 — the current-era LEAGUE/TFT/LoR product
+   * switcher). Kept as a distinct slot from the screen-nav `navItems` row so our
+   * app routing stays intact (issue #403 option 2, the pragmatic hybrid): the
+   * switcher closes the measured left-zone geometry gap while screen access
+   * continues through `navItems`. Omit to keep the pre-#403 layout.
+   */
+  productSwitcherSlot?: ReactNode;
   /** Center navigation items list */
   navItems: NavItem[];
   /** ID of the currently active nav item */
@@ -96,6 +105,7 @@ function ActiveChevron() {
  */
 export function TopNavbar({
   playSlot,
+  productSwitcherSlot,
   navItems,
   activeId,
   onNavigate,
@@ -107,9 +117,18 @@ export function TopNavbar({
       {/* Left region — play slot; self-center so the PLAY button stays vertically centred */}
       <div className="flex shrink-0 items-center">{playSlot}</div>
 
+      {/* Left-zone product switcher (#403) — sits right of PLAY, before the
+          screen-nav row. Vertically centred, spacing measured from the ref. */}
+      {productSwitcherSlot && (
+        <div className="ml-4 flex shrink-0 items-center">{productSwitcherSlot}</div>
+      )}
+
       {/* Center region — nav items stretch full height so buttons can place the
-          chevron at top-0 (= navbar top) while text sits at the bottom via pb-3 */}
-      <div className="flex flex-1 items-stretch justify-center gap-6 overflow-x-auto">
+          chevron at top-0 (= navbar top) while text sits at the bottom via pb-3.
+          `min-w-0` lets the row shrink inside the band so it never pushes into
+          the right cluster; it stays centered in the space between the left zone
+          (play + #403 switcher) and the right currency/profile cluster. */}
+      <div className="flex flex-1 min-w-0 items-stretch justify-center gap-4 overflow-x-auto">
         {navItems.map((item) => {
           const isActive = item.id === activeId;
           const isDisabled = item.disabled === true;

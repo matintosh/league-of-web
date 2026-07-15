@@ -77,6 +77,8 @@ export { MasteryEternalsPanel } from "./chrome/mastery-eternals-panel";
 export type { MasteryEternalsPanelProps } from "./chrome/mastery-eternals-panel";
 export { ModalFrame } from "./chrome/modal-frame";
 export type { ModalFrameProps, ModalFrameSize } from "./chrome/modal-frame";
+export { NavProductSwitcher } from "./chrome/nav-product-switcher";
+export type { NavProductSwitcherProps, NavProduct } from "./chrome/nav-product-switcher";
 export { NewsCard } from "./chrome/news-card";
 export type { NewsCardProps } from "./chrome/news-card";
 export { PartyStatusPanel } from "./chrome/party-status-panel";
