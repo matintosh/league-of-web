@@ -93,6 +93,102 @@ function WishlistButton({
   );
 }
 
+/** Small clock/timer glyph shown on the pennant ribbon. */
+function ClockGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="11"
+      height="11"
+      viewBox="0 0 12 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="6" cy="6.4" r="4.2" stroke="currentColor" strokeWidth="1.1" />
+      <path
+        d="M6 4.1V6.4L7.6 7.6"
+        stroke="currentColor"
+        strokeWidth="1.1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Top-left pennant/banner ribbon marker (bundle + pass tiles).
+ * Downward-pointing notched banner in the Riot dark-red family (≈#692724),
+ * reached via a token color-mix so no bespoke hex leaks into the component.
+ */
+function PennantMarker() {
+  return (
+    <span
+      aria-hidden="true"
+      className="absolute top-0 left-2 z-10 flex h-7 w-6 justify-center pt-1 text-gold-1"
+      style={{
+        // Dark-red brick tone measured off the reference ribbon (rgb 105,39,36).
+        background:
+          "color-mix(in srgb, var(--color-ban-red-2) 54%, var(--color-blue-7) 46%)",
+        // Downward pennant: full top, notched (inverted-V) bottom edge.
+        clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%)",
+      }}
+    >
+      <ClockGlyph />
+    </span>
+  );
+}
+
+/**
+ * Vertical column of circular sub-item glyphs at the tile's right edge, with a
+ * gold "+" wishlist affordance at the top. Renders up to 3 glyphs; any beyond
+ * that collapse into a "+N" overflow slot. `hasQuantity` nudges the column down
+ * so the glyphs clear the quantity badge sharing the top-right corner.
+ */
+function SubItemColumn({
+  subItems,
+  hasQuantity,
+}: {
+  subItems: NonNullable<StoreItem["subItems"]>;
+  hasQuantity: boolean;
+}) {
+  const MAX = 3;
+  const shown = subItems.slice(0, MAX);
+  const overflow = subItems.length - shown.length;
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute right-1 z-10 flex flex-col items-center gap-1"
+      style={{ top: hasQuantity ? 22 : 6 }}
+    >
+      {/* Gold "+" affordance */}
+      <span className="font-display text-[13px] font-bold leading-none text-gold-2 [text-shadow:0_1px_2px_rgba(1,10,19,0.9)]">
+        +
+      </span>
+      {/* Thin gold divider under the "+" */}
+      <span className="h-px w-4 bg-gold-4/60" />
+      {shown.map((sub) => (
+        <img
+          key={sub.id}
+          src={sub.iconUrl}
+          alt={sub.name}
+          width={20}
+          height={20}
+          className="h-5 w-5 rounded-full border border-gold-5 object-cover"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.visibility = "hidden";
+          }}
+        />
+      ))}
+      {overflow > 0 && (
+        <span className="flex h-5 w-5 items-center justify-center rounded-full border border-gold-5 bg-blue-7/80 text-[9px] font-bold text-gold-2">
+          +{overflow}
+        </span>
+      )}
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Grid tile — 230×130px featured-grid layout
 // ---------------------------------------------------------------------------
@@ -137,27 +233,25 @@ function GridTile({
         aria-hidden="true"
       />
 
-      {/* Top-left: wishlist / type-icon placeholder */}
-      <div className="absolute top-1.5 left-1.5 z-10">
-        {/* Red "selected" marker badge (circular) — present on bundled/pass types */}
-        {(item.type === "bundle" || item.type === "pass") && (
-          <span
-            aria-hidden="true"
-            className="flex h-5 w-5 items-center justify-center rounded-full bg-riot-red text-[9px] font-bold text-white"
-          >
-            !
-          </span>
-        )}
-      </div>
+      {/* Top-left: bundle/pass pennant ribbon (dark-red, notched bottom) */}
+      {(item.type === "bundle" || item.type === "pass") && <PennantMarker />}
 
-      {/* Top-right: quantity badge */}
+      {/* Top-right: quantity badge (plain gold text — no pill) */}
       {item.quantity !== undefined && (
-        <div className="absolute top-1.5 right-1.5 z-10">
-          <span className="flex items-center gap-0.5 rounded-sm bg-riot-red px-1 py-0.5 text-[10px] font-bold text-white leading-none">
+        <div className="absolute top-1 right-2 z-10">
+          <span className="font-display text-[13px] font-bold leading-none text-gold-1 tracking-tight [text-shadow:0_1px_2px_rgba(1,10,19,0.9)]">
             {item.quantity}
-            <span className="text-[8px]">x</span>
+            <span className="text-[10px] text-gold-2">x</span>
           </span>
         </div>
+      )}
+
+      {/* Right-edge sub-item glyph column (bundle contents + wishlist "+") */}
+      {item.subItems && item.subItems.length > 0 && (
+        <SubItemColumn
+          subItems={item.subItems}
+          hasQuantity={item.quantity !== undefined}
+        />
       )}
 
       {/* Bottom content */}
