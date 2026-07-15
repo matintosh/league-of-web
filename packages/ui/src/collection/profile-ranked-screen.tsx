@@ -11,8 +11,9 @@
 //      Below that: season label ("2019 SEASON") with a small badge icon.
 //   2. Feature strip: 3 equal-width columns, each with a thumbnail image,
 //      uppercase title in gold-1, body copy in grey-1.
-//   3. CTA zone: centred QUEUE UP button (LockInButton trapezoid geometry,
-//      gold secondary style to match the reference's outlined gold look).
+//   3. CTA zone: centred QUEUE UP button — a right-pointing chevron banner
+//      (flat left edge, chevron point on the right) with a teal gradient border
+//      and cool cyan-white label, matching the reference.
 //   4. Progress bar zone (pinned to bottom): split label + time remaining left;
 //      full-width track with 3 milestone stops; mini-crest icons; SP labels.
 //
@@ -355,12 +356,29 @@ function SummonerSearchInput({ onChange }: SummonerSearchInputProps) {
 }
 
 // ---------------------------------------------------------------------------
-// QueueUpButton — Trapezoid-shaped QUEUE UP button.
-// Reuses the same chevron clip-path geometry as LockInButton but with a
-// gold secondary style matching the reference (outlined gold, dark fill).
+// QueueUpButton — right-pointing chevron QUEUE UP button.
+//
+// Reference: docs/reference/client-ranked-queue-up-detail.png, re-measured from
+// docs/reference/client-profile-ranked.jpg (button bbox x672–911, y872–918).
+//
+// Shape (PIL-measured, NOT a symmetric double-chevron hexagon): the LEFT side is
+// a flat vertical edge with square corners; only the RIGHT side is a chevron
+// point. Flat top/bottom run to 90.8% of the width, then the point extends to
+// the tip at 100% width / 50% height — a right-pointing banner/pentagon.
+//   clip: polygon(0 0, 90.8% 0, 100% 50%, 90.8% 100%, 0 100%)
+//
+// Border (PIL-measured): a vertical gradient — bright cyan-white at the top
+// (193,227,229 → blue-1) fading to a mid teal at the bottom (50,116,146, dist
+// 30.6 → teal-ring). Rendered as a linear-gradient border shell, not a flat
+// stroke, matching the reference sheen. Glow follows the teal hue (teal-fm-glow).
+//
+// Label (PIL-measured): cool cyan-white, brightest ≈(221,249,249), mean
+// ≈(190,218,218) — blue-1 (dist 16.1), NOT warm gold-1.
+//
+// Fill: near-black with a faint teal lift (measured (29,34,38)) → hextech-black.
 // ---------------------------------------------------------------------------
 
-const TRAP_CLIP = "polygon(0% 0%, 100% 0%, 88% 100%, 12% 100%)";
+const CHEVRON_CLIP = "polygon(0% 0%, 90.8% 0%, 100% 50%, 90.8% 100%, 0% 100%)";
 const BORDER_PX = 2;
 
 function QueueUpButton({ onClick }: { onClick: () => void }) {
@@ -371,32 +389,33 @@ function QueueUpButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       className={[
         "group relative flex h-10 w-[180px] cursor-pointer items-center justify-center",
-        "[filter:drop-shadow(0_0_6px_color-mix(in_srgb,var(--color-gold-3)_40%,transparent))]",
-        "hover:[filter:drop-shadow(0_0_12px_color-mix(in_srgb,var(--color-gold-2)_60%,transparent))]",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3 focus-visible:outline-offset-2",
+        "[filter:drop-shadow(0_0_6px_color-mix(in_srgb,var(--color-teal-fm-glow)_45%,transparent))]",
+        "hover:[filter:drop-shadow(0_0_12px_color-mix(in_srgb,var(--color-blue-2)_60%,transparent))]",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-2 focus-visible:outline-offset-2",
       ].join(" ")}
     >
-      {/* Border shell */}
+      {/* Border shell — bright cyan-white top → teal bottom gradient */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 transition-colors duration-150 group-hover:[background:var(--color-gold-2)]"
+        className="pointer-events-none absolute inset-0 transition-[filter] duration-150 group-hover:brightness-125"
         style={{
-          clipPath: TRAP_CLIP,
-          background: "var(--color-gold-4)",
+          clipPath: CHEVRON_CLIP,
+          background:
+            "linear-gradient(to bottom, var(--color-blue-1), var(--color-teal-ring))",
         }}
       />
       {/* Fill layer */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute transition-colors duration-150 group-hover:[background:var(--color-gold-6)]"
+        className="pointer-events-none absolute transition-colors duration-150 group-hover:[background:var(--color-blue-6)]"
         style={{
           inset: BORDER_PX,
-          clipPath: TRAP_CLIP,
+          clipPath: CHEVRON_CLIP,
           background: "var(--color-hextech-black)",
         }}
       />
-      {/* Label */}
-      <span className="relative z-10 font-display text-sm tracking-[0.2em] uppercase text-gold-1 select-none transition-colors duration-150 group-hover:text-gold-cream group-active:text-gold-3">
+      {/* Label — cool cyan-white */}
+      <span className="relative z-10 font-display text-sm tracking-[0.2em] uppercase text-blue-1 select-none transition-[filter] duration-150 group-hover:brightness-110 group-active:[color:var(--color-blue-2)]">
         Queue Up
       </span>
     </button>
@@ -507,7 +526,8 @@ function SplitProgressBar({ progress }: SplitProgressBarProps) {
  *  - Feature strip: 3 equal-width columns with thumbnail art, uppercase title,
  *    and body copy paragraph. A column may supply `wingVideoSrc` to overlay the
  *    real client's animated ranked-emblem wings (alpha webm) on its thumbnail.
- *  - CTA: centred QUEUE UP trapezoid button.
+ *  - CTA: centred QUEUE UP button — a right-pointing chevron banner with a teal
+ *    gradient border and cool cyan-white label.
  *  - Progress bar: SPLIT 2 OF 2 label + time remaining left; 3 milestone nodes
  *    with mini-crest icons and SP labels on a horizontal track.
  *
