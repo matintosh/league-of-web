@@ -147,40 +147,38 @@ function LockIcon({ size = 16 }: { size?: number }) {
 }
 
 // ---------------------------------------------------------------------------
-// HextechChevronIcon — chevron overlay on the orb placeholder
-// Approximates the Hextech crest mark visible in the reference.
+// OrbChevronGlyph — electric-blue double-chevron at the orb core.
+//
+// Reuses the CDragon tft_up_arrow.svg paths already used by TftMissionBadge so
+// the level-up chevron motif reads identically across the hub. Filled with blue
+// tokens rather than gold: reference brightest-cluster core sampled
+// rgb(14,82,148), which sits between blue-4 (#005a82) and a blue-1 highlight —
+// approximated with a top-lit gradient. No hexagon ring is present in the
+// reference (docs/reference/client-tft-orb-detail.jpg — gold-mask count ≈ 0).
 // ---------------------------------------------------------------------------
 
-function HextechChevronIcon() {
+function OrbChevronGlyph() {
   return (
     <svg
       aria-hidden="true"
-      width="64"
-      height="64"
-      viewBox="0 0 64 64"
+      width="96"
+      height="96"
+      viewBox="0 0 40 40"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="text-gold-1"
-      style={{ filter: "drop-shadow(0 0 6px var(--color-blue-2))" }}
+      style={{ filter: "drop-shadow(0 0 10px color-mix(in srgb, var(--color-blue-3) 70%, transparent))" }}
     >
-      {/* Outer hexagon ring */}
-      <polygon
-        points="32,4 58,18 58,46 32,60 6,46 6,18"
-        stroke="currentColor"
-        strokeWidth="2"
-        fill="none"
-        opacity="0.7"
-      />
-      {/* Inner chevron / caret up shape */}
+      {/* Upper chevron — brighter, top-lit electric-blue edge.
+          blue-1 10% + blue-4 90% ≈ rgb(20,106,142), matching the reference
+          brightest-cluster core rgb(14,82,148). */}
       <path
-        d="M32 20L46 36H18L32 20Z"
-        fill="currentColor"
-        opacity="0.85"
+        d="M31,26.6l5-5.1L20,5L4,21.5l5.1,5.3L20,16L31,26.6z"
+        fill="color-mix(in srgb, var(--color-blue-1) 10%, var(--color-blue-4) 90%)"
       />
+      {/* Lower chevron — dimmer mid-blue body (plain blue-4) */}
       <path
-        d="M32 30L42 42H22L32 30Z"
-        fill="currentColor"
-        opacity="0.5"
+        d="M27.9,29.9L24,34l-4-4.1L16,34l-4-4.1l8-8.3L27.9,29.9z"
+        fill="var(--color-blue-4)"
       />
     </svg>
   );
@@ -209,17 +207,21 @@ function OrbOfEnlightenmentPanel({
         Orb of Enlightenment
       </h2>
 
-      {/* Orb art */}
+      {/* Orb art — rimless blue-glow sphere (no gold ring; reference is a
+          bordered radial glow with an electric-blue chevron core) */}
       <div className="flex justify-center">
         <div
-          className="flex items-center justify-center rounded-full border-2 border-gold-5 bg-blue-6"
+          className="flex items-center justify-center rounded-full"
           style={{
             width: 180,
             height: 180,
-            boxShadow: "0 0 24px color-mix(in srgb, var(--color-blue-2) 40%, transparent), inset 0 0 32px color-mix(in srgb, var(--color-blue-6) 60%, transparent)",
+            background:
+              "radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--color-blue-3) 55%, transparent) 0%, color-mix(in srgb, var(--color-blue-4) 60%, transparent) 38%, transparent 72%)",
+            boxShadow:
+              "0 0 36px color-mix(in srgb, var(--color-blue-3) 45%, transparent), inset 0 0 40px color-mix(in srgb, var(--color-blue-6) 70%, transparent)",
           }}
         >
-          <HextechChevronIcon />
+          <OrbChevronGlyph />
         </div>
       </div>
 
@@ -262,7 +264,7 @@ function OrbOfEnlightenmentPanel({
         <button
           type="button"
           onClick={onPlay}
-          className="flex-1 border border-gold-4 bg-gold-5 px-4 py-2 font-display text-xs uppercase tracking-widest text-gold-1 transition-colors duration-150 hover:bg-gold-4 cursor-pointer"
+          className="flex-1 border border-gold-4 bg-grey-4 px-4 py-2 font-display text-xs uppercase tracking-widest text-gold-1 transition-colors duration-150 hover:bg-gold-5/40 cursor-pointer"
         >
           Play
         </button>
@@ -272,9 +274,9 @@ function OrbOfEnlightenmentPanel({
           aria-disabled={!claimable}
           disabled={!claimable}
           className={[
-            "flex-1 border px-4 py-2 font-display text-xs uppercase tracking-widest transition-colors duration-150",
+            "flex-1 border bg-grey-4 px-4 py-2 font-display text-xs uppercase tracking-widest transition-colors duration-150",
             claimable
-              ? "border-gold-4 text-gold-1 hover:bg-gold-5/20 cursor-pointer"
+              ? "border-gold-4 text-gold-1 hover:bg-gold-5/40 cursor-pointer"
               : "cursor-default border-grey-3 text-grey-2 opacity-60",
           ].join(" ")}
         >
