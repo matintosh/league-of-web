@@ -31,7 +31,14 @@ export interface YourShopCard {
   skinName?: string;
   /** Called when the mystery card is clicked to reveal it. */
   onReveal?: () => void;
-  /** Called when the "buy" button is clicked on a revealed card. */
+  /**
+   * Called when a revealed card is clicked to purchase it.
+   *
+   * The real client has no per-card PURCHASE button (issue #368): the entire
+   * revealed card is the click target and clicking it surfaces the standard
+   * purchase modal. When provided, the revealed card renders as a `<button>`;
+   * when omitted, it renders as a static, non-interactive tile.
+   */
   onPurchase?: () => void;
 }
 
@@ -69,6 +76,24 @@ export interface YourShopScreenProps {
   /** Called when the header Your Shop CTA icon is activated. */
   onIconActivate?: () => void;
 }
+
+// ---------------------------------------------------------------------------
+// Shared layout constants
+// ---------------------------------------------------------------------------
+
+/**
+ * Card frame aspect (width / height). The real Your Shop cards are TALL narrow
+ * frames — measured 206×513 px on the 2082-wide reference (issue #368), giving
+ * w/h ≈ 0.40. Both revealed and unrevealed cards share this frame.
+ */
+const CARD_ASPECT = "206 / 513";
+
+/**
+ * Share of the revealed card's height occupied by the splash art; the remaining
+ * ~27% is the dark price band housing the discount, struck price and RP price.
+ * Measured from the reference: art collapses to the band at ~73% of frame height.
+ */
+const ART_HEIGHT_PCT = "73%";
 
 // ---------------------------------------------------------------------------
 // Icons
@@ -153,7 +178,7 @@ function MysteryCard({
           : "cursor-default",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
       ].join(" ")}
-      style={{ width: "100%", aspectRatio: "3/4", minWidth: 120 }}
+      style={{ width: "100%", aspectRatio: CARD_ASPECT, minWidth: 90 }}
     >
       {/* Dark teal-navy background */}
       <div
@@ -263,82 +288,86 @@ function RevealedCard({
   card: YourShopCard;
   rpIconSrc?: string;
 }) {
+  const isClickable = !!card.onPurchase;
+
+  // The whole card is the purchase target (no per-card button, per issue #368).
+  // Render as a <button> when purchasable, else a plain static tile.
+  const Tag = isClickable ? "button" : "div";
+
   return (
-    <div
-      className="relative flex flex-col overflow-hidden border-2 border-gold-5"
-      style={{ width: "100%", aspectRatio: "3/4", minWidth: 120 }}
-      aria-label={card.skinName ?? "Skin offer"}
+    <Tag
+      {...(isClickable
+        ? {
+            type: "button" as const,
+            onClick: card.onPurchase,
+            "aria-label": `Purchase ${card.skinName ?? "skin offer"}`,
+          }
+        : { "aria-label": card.skinName ?? "Skin offer" })}
+      className={[
+        "relative flex flex-col overflow-hidden border-2 border-gold-5 text-left",
+        isClickable
+          ? "cursor-pointer transition-[border-color,box-shadow] duration-150 hover:border-gold-3 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3"
+          : "",
+      ].join(" ")}
+      style={{ width: "100%", aspectRatio: CARD_ASPECT, minWidth: 90 }}
     >
-      {/* Art fills full card */}
-      <img
-        src={card.artSrc ?? ""}
-        alt={card.skinName ?? "Skin splash art"}
-        className="absolute inset-0 h-full w-full object-cover object-top"
-        onError={(e) => {
-          (e.currentTarget as HTMLImageElement).style.opacity = "0";
-        }}
-      />
-
-      {/* Gradient overlay so price bar is readable */}
+      {/* Art zone — top ~73% of the frame */}
       <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 95%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 50%, transparent) 35%, transparent 65%)",
-        }}
-        aria-hidden="true"
-      />
+        className="relative w-full shrink-0 overflow-hidden"
+        style={{ height: ART_HEIGHT_PCT }}
+      >
+        <img
+          src={card.artSrc ?? ""}
+          alt={card.skinName ?? "Skin splash art"}
+          className="absolute inset-0 h-full w-full object-cover object-top"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.opacity = "0";
+          }}
+        />
+      </div>
 
-      {/* Discount badge — top-left */}
-      {card.discountPct !== undefined && (
-        <div className="absolute top-2 left-2 z-10">
-          <span
-            className="flex items-center justify-center px-2 py-0.5 font-display text-xs font-bold text-hextech-black"
-            style={{ backgroundColor: "var(--color-gold-2)" }}
-          >
-            -{card.discountPct}%
-          </span>
-          {/* Small triangle pointer below badge */}
-          <div
-            className="mx-auto"
-            style={{
-              width: 0,
-              height: 0,
-              borderLeft: "6px solid transparent",
-              borderRight: "6px solid transparent",
-              borderTop: "6px solid var(--color-gold-2)",
-            }}
-          />
-        </div>
-      )}
-
-      {/* Bottom price zone */}
-      <div className="absolute bottom-0 inset-x-0 z-10 px-2 pb-2 pt-3">
-        {/* Skin name */}
-        {card.skinName && (
-          <p className="font-display text-[11px] uppercase tracking-wide text-gold-1 text-center line-clamp-2 leading-tight mb-1">
-            {card.skinName}
-          </p>
-        )}
-
-        {/* Original price (struck-through) */}
-        {card.originalRpPrice !== undefined && (
-          <div className="flex items-center justify-center gap-1 mb-0.5">
-            <span className="font-body text-[10px] text-grey-1 line-through">
-              {card.originalRpPrice.toLocaleString("en-US")} RP
+      {/* Dark price band — bottom ~27%. Houses discount + struck price + RP. */}
+      <div
+        className="relative flex flex-1 flex-col items-center justify-center gap-0.5 px-1 py-1"
+        style={{ backgroundColor: "var(--color-hextech-black)" }}
+      >
+        {/* Discount — large gold text with a small teal ▼ pointer below it. */}
+        {card.discountPct !== undefined && (
+          <div className="flex flex-col items-center leading-none">
+            <span className="font-display text-base font-bold text-gold-3">
+              -{card.discountPct}%
             </span>
+            {/* Teal downward pointer (sampled ~#28bcc5 → blue-2). */}
+            <div
+              aria-hidden="true"
+              style={{
+                width: 0,
+                height: 0,
+                borderLeft: "5px solid transparent",
+                borderRight: "5px solid transparent",
+                borderTop: "5px solid var(--color-blue-2)",
+                marginTop: 1,
+              }}
+            />
           </div>
         )}
 
-        {/* Final price row */}
+        {/* Original price (struck-through, grey). */}
+        {card.originalRpPrice !== undefined && (
+          <span className="font-body text-[10px] text-grey-1 line-through leading-none">
+            {card.originalRpPrice.toLocaleString("en-US")} RP
+          </span>
+        )}
+
+        {/* Final RP price with coin icon, centered. */}
         {card.rpPrice !== undefined && (
-          <div className="flex items-center justify-center gap-1">
+          <div className="flex items-center justify-center gap-1 leading-none">
             {rpIconSrc ? (
               <img
                 src={rpIconSrc}
                 alt="RP"
-                width={12}
-                height={12}
+                width={13}
+                height={13}
                 aria-hidden="true"
               />
             ) : (
@@ -346,25 +375,13 @@ function RevealedCard({
                 <RpCoinIcon />
               </span>
             )}
-            <span className="font-display text-[13px] text-gold-2">
+            <span className="font-display text-sm text-gold-1">
               {card.rpPrice.toLocaleString("en-US")}
             </span>
           </div>
         )}
-
-        {/* Purchase button */}
-        {card.onPurchase && (
-          <button
-            type="button"
-            onClick={card.onPurchase}
-            className="mt-2 w-full cursor-pointer font-display text-[10px] uppercase tracking-wider text-hextech-black py-1 transition-opacity hover:opacity-90"
-            style={{ backgroundColor: "var(--color-gold-2)" }}
-          >
-            Purchase
-          </button>
-        )}
       </div>
-    </div>
+    </Tag>
   );
 }
 
@@ -464,10 +481,19 @@ export function YourShopScreen({
       {/* ------------------------------------------------------------------ */}
       {/* Card row */}
       {/* ------------------------------------------------------------------ */}
-      <div className="relative z-10 flex-1 flex items-center justify-center px-6 min-h-0">
-        <div className="w-full flex gap-3 justify-center">
+      {/* Card row. Tall narrow cards (aspect ≈ 0.40): six across the 1280×720
+          takeover fit within a ~1180px band (reference pitch 336/2082 ≈ 16% of
+          width, gutter ≈ 68px at live scale). maxWidth caps each card so the
+          6-wide row never overflows; the height cap keeps them clear of the
+          header/footer in the 720px viewport. */}
+      <div className="relative z-10 flex-1 flex items-center justify-center px-8 min-h-0">
+        <div className="flex w-full items-center justify-center gap-[3%]">
           {cards.slice(0, 6).map((card, i) => (
-            <div key={card.id} className="flex-1" style={{ maxWidth: 210 }}>
+            <div
+              key={card.id}
+              className="flex-1"
+              style={{ maxWidth: 140, maxHeight: "100%" }}
+            >
               {card.revealed ? (
                 <RevealedCard card={card} rpIconSrc={rpIconSrc} />
               ) : (
