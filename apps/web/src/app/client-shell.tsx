@@ -31,6 +31,7 @@ import {
   YourShopIcon,
   YourShopScreen,
   RpTopUpButton,
+  ObjectivesModal,
 } from "@low/ui";
 import type { NavItem, NavProduct, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard } from "@low/ui";
 import {
@@ -62,6 +63,7 @@ import {
   DEMO_LEVEL_UP_REWARDS,
   DEMO_DAILY_PLAY_REWARDS,
   DEMO_LEVEL_REWARD_CARDS,
+  DEMO_OBJECTIVES,
 } from "@low/fixtures";
 import type { ClashScoutingPlayer } from "@low/fixtures";
 import type { NewsArticle } from "@low/ui";
@@ -467,6 +469,17 @@ export function ClientShell() {
    */
   const [showYourShop, setShowYourShop] = useState(false);
   const [yourShopRevealedIds, setYourShopRevealedIds] = useState<Set<string>>(new Set());
+  /**
+   * Objectives modal (issue #395). The nav-band Missions icon opens the
+   * ObjectivesModal as a centered dialog over the current view; the shell owns
+   * visibility (nav-surviving) and which category is active. Follows the Your
+   * Shop overlay conventions (Escape + ✕ + backdrop close), but as a centered
+   * modal rather than a full-bleed takeover, matching the reference.
+   */
+  const [showObjectives, setShowObjectives] = useState(false);
+  const [objectivesCategoryId, setObjectivesCategoryId] = useState(
+    DEMO_OBJECTIVES.activeCategoryId,
+  );
   /** DDragon champion id chosen in the pick phase; passed to LoadoutScreen. */
   const [chosenChampionId, setChosenChampionId] = useState<string | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -543,6 +556,17 @@ export function ClientShell() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [showYourShop]);
+
+  // Escape closes the Objectives modal (same path as the ✕ / backdrop). Listener
+  // is only attached while the modal is open, torn down on close/unmount.
+  useEffect(() => {
+    if (!showObjectives) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowObjectives(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [showObjectives]);
 
   // Reset queue state when leaving the party-lobby view so rail reverts to PartyStatusPanel.
   // This runs synchronously with the view change so there's no flash.
@@ -791,15 +815,15 @@ export function ClientShell() {
                     {/* Real nav-icon-collections.svg — stacked cards, gold fills */}
                     <img src={navIconUrl("collections")} alt="" aria-hidden="true" width={22} height={20} />
                   </button>
-                  {/* Missions/objectives — no destination screen exists yet, so
-                      this is a DISABLED placeholder per issue #386 (aria-disabled +
-                      no handler). Uses the real navigation-plugin missionicon.svg.
-                      TODO(#395): wire to a Missions screen when one is built. */}
+                  {/* Missions/objectives — opens the ObjectivesModal (issue #395,
+                      previously a #386 disabled placeholder). Uses the real
+                      navigation-plugin missionicon.svg. Enabled: activating it
+                      opens the centered Objectives dialog over the current view. */}
                   <button
                     type="button"
                     aria-label="Missions"
-                    aria-disabled
-                    className="flex h-7 w-7 cursor-default items-center justify-center opacity-40"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
+                    onClick={() => setShowObjectives(true)}
                   >
                     {/* Real missionicon.svg (navigation plugin) — gold scroll */}
                     <img src={navMissionIconUrl("mission")} alt="" aria-hidden="true" width={20} height={20} />
@@ -1150,6 +1174,29 @@ export function ClientShell() {
           />
         </div>
       )}
+
+      {/* Objectives modal (issue #395) — the nav-band Missions icon opens this
+          centered dialog over the current view. Unlike Your Shop's full-bleed
+          takeover, the reference shows a centered modal over the (still visible,
+          dimmed) lobby; the ObjectivesModal renders its own absolute inset-0
+          backdrop + centered card. It is z-40 (its internal root), so it sits
+          under the floating window controls (?─minimize─⚙─✕ at z-[60] in
+          WindowFrame) — those stay clickable above it — and under the launch
+          splash (z-100). Escape (effect above), the ✕, and the backdrop all
+          close it; the shell owns visibility so it survives nav. */}
+      <ObjectivesModal
+        open={showObjectives}
+        header={DEMO_OBJECTIVES.header}
+        bxp={DEMO_OBJECTIVES.bxp}
+        categories={DEMO_OBJECTIVES.categories}
+        activeCategoryId={objectivesCategoryId}
+        sectionLabel={DEMO_OBJECTIVES.sectionLabel}
+        sectionCount={DEMO_OBJECTIVES.sectionCount}
+        missions={DEMO_OBJECTIVES.missions}
+        onSelectCategory={setObjectivesCategoryId}
+        onClose={() => setShowObjectives(false)}
+        onBackdropClick={() => setShowObjectives(false)}
+      />
 
       <SettingsModal
         open={settingsOpen}

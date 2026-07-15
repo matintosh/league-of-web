@@ -34,6 +34,7 @@ import { masteryEternalsPanelShowcase } from "./chrome/mastery-eternals-panel.sh
 import { modalFrameShowcase } from "./chrome/modal-frame.showcase";
 import { navProductSwitcherShowcase } from "./chrome/nav-product-switcher.showcase";
 import { newsCardShowcase } from "./chrome/news-card.showcase";
+import { objectivesModalShowcase } from "./chrome/objectives-modal.showcase";
 import { partyStatusPanelShowcase } from "./chrome/party-status-panel.showcase";
 import { playButtonShowcase } from "./chrome/play-button.showcase";
 import { playerHovercardShowcase } from "./chrome/player-hovercard.showcase";
@@ -137,6 +138,7 @@ export const registry: ShowcaseEntry[] = [
   modalFrameShowcase,
   navProductSwitcherShowcase,
   newsCardShowcase,
+  objectivesModalShowcase,
   partyStatusPanelShowcase,
   playButtonShowcase,
   playerHovercardShowcase,
