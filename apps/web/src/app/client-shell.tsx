@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -511,6 +511,17 @@ export function ClientShell() {
       : undefined,
   }));
 
+  // Escape closes the Your Shop overlay (same path as the ✕ button). Listener is
+  // only attached while the overlay is open, and torn down on close/unmount.
+  useEffect(() => {
+    if (!showYourShop) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowYourShop(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [showYourShop]);
+
   // Reset queue state when leaving the party-lobby view so rail reverts to PartyStatusPanel.
   // This runs synchronously with the view change so there's no flash.
   const handleLeaveLobby = useCallback((nextView: View) => {
@@ -1004,14 +1015,25 @@ export function ClientShell() {
         </div>
       </WindowFrame>
 
-      {/* Your Shop overlay (issue #361) — full-bleed above the current view,
-          opened by the navbar CTA icon. Shell owns visibility so it survives
-          across nav; close restores the underlying view untouched. Covers the
-          whole client window (over the WindowFrame content, under the fixed
-          launch splash). z-40 sits below SettingsModal's z-50, matching the
-          real client where settings can layer over an open shop. */}
+      {/* Your Shop overlay (issue #361) — a full-window takeover opened by the
+          navbar CTA icon, matching the real client: it covers the entire client
+          content (navbar + view), and the ONLY way out is its ✕ (or Escape).
+          The SettingsModal / social toggle in the navbar are intentionally
+          unreachable while it's open — this mirrors the real client's Your Shop.
+          Shell owns visibility so it survives across nav; close restores the
+          underlying view untouched.
+
+          Positioned to start just below WindowFrame's 32px title bar (inset by
+          the frame's 1px border) so the window controls (?, minimize, close),
+          which live in that title bar above the shell content, stay clickable
+          above the overlay. z-40 sits under the fixed launch splash (z-100). */}
       {showYourShop && (
-        <div className="absolute inset-0 z-40" aria-modal="true" role="dialog" aria-label="Your Shop">
+        <div
+          className="absolute inset-x-px bottom-px top-[33px] z-40"
+          aria-modal="true"
+          role="dialog"
+          aria-label="Your Shop"
+        >
           <YourShopScreen
             cards={yourShopCards}
             expiryLabel={YOUR_SHOP_EXPIRY}
