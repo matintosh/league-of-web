@@ -275,6 +275,7 @@ const INITIAL_GROUPS: FriendGroup[] = [
 export function SocialPanelInteractiveDemo() {
   const [groups, setGroups] = useState<FriendGroup[]>(INITIAL_GROUPS);
   const [lastClicked, setLastClicked] = useState<string | null>(null);
+  const [lastHeaderAction, setLastHeaderAction] = useState<string | null>(null);
 
   function handleToggleGroup(name: string) {
     setGroups((prev) =>
@@ -296,6 +297,7 @@ export function SocialPanelInteractiveDemo() {
           requestCount={3}
           onToggleGroup={handleToggleGroup}
           onFriendClick={handleFriendClick}
+          onHeaderAction={(action) => setLastHeaderAction(action)}
           profileIconSrcFor={iconSrc}
         />
       </div>
@@ -303,6 +305,11 @@ export function SocialPanelInteractiveDemo() {
         {lastClicked
           ? `Last clicked: ${lastClicked}`
           : "Click a friend row to see their gameName logged here."}
+      </p>
+      <p className="font-body text-xs text-grey-2">
+        {lastHeaderAction
+          ? `Last header action: ${lastHeaderAction} (the search glyph fires "search")`
+          : "Click a header glyph (add / groups / list / search) to log the action."}
       </p>
     </div>
   );

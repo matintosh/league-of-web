@@ -31,7 +31,7 @@ export const findingMatchPanelShowcase: ShowcaseEntry = {
     {
       name: "Long elapsed — no clip (1:23:45)",
       notes:
-        "h:mm:ss format; timer must not clip or wrap at 200px width — layout accommodates extra character",
+        "h:mm:ss format; timer must not clip or wrap at rail width — layout accommodates extra character",
       render: () => <FindingMatchLongElapsedDemo />,
     },
     {
@@ -45,9 +45,9 @@ export const findingMatchPanelShowcase: ShowcaseEntry = {
       render: () => <FindingMatchNoCrestDemo />,
     },
     {
-      name: "In-rail-width context (200px)",
+      name: "In-rail-width context (224px)",
       notes:
-        "200px wide with gold-5 rail border — simulates social rail context from client-queue-in-lobby.png",
+        "224px wide with gold-5 rail border — simulates social rail context from client-queue-in-lobby.png",
       render: () => <FindingMatchInRailDemo />,
     },
     {

@@ -5,7 +5,7 @@ import { AmbientVideoLayer } from "./ambient-video-layer";
 import { FriendGroupHeader } from "./friend-group-header";
 import { FriendRequestsRow } from "./friend-requests-row";
 import { FriendRow } from "./friend-row";
-import { SocialHeader } from "./social-header";
+import { SocialHeader, type SocialAction } from "./social-header";
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -68,23 +68,31 @@ export interface SocialPanelProps {
   /**
    * Panel width in pixels.
    *
-   * Defaults to `250` for back-compat with the original overlay implementation.
-   * Pass a smaller value (e.g. `200`) when the panel is docked as an in-flow
-   * column so the content area has enough room at 1280×720.
-   *
-   * Measured from the real client pvp-mode-select reference: rail ≈ 15–16% of
-   * the 1280px window ≈ 192–205px. Recommended docked value: 200.
+   * Defaults to `224` — PIL-measured from the current-era reference
+   * (docs/reference/client-current-home-activity-center.jpg, 1280×720): the
+   * rail spans x=1056→1280 = 224px. The "slim" feel of the modern rail comes
+   * from thin friend rows (48px pitch, 28px avatars) and a near-black bg, not
+   * from a narrow column — the width itself is close to the older 250px.
    */
   width?: number;
   /**
    * Optional ambient "magic" loop webm shown subtly behind the friends list —
    * the client's animated social backdrop (supply `socialPanelBgLoopUrl()` from
-   * @low/fixtures). Additive: when omitted the flat `bg-blue-7` panel is
+   * @low/fixtures). Additive: when omitted the flat near-black navy panel is
    * unchanged. The loop is opaque (bright Hextech glow on near-black), so it
    * composites screen-blended — the dark field drops out and only the glow adds.
    * Hidden under `prefers-reduced-motion`.
    */
   ambientVideoSrc?: string;
+  /**
+   * Called when a SocialHeader icon action fires — `"add" | "groups" | "list"
+   * | "search"`. The current-era rail carries a magnifying-glass **search**
+   * glyph in this header (confirmed in the committed reference capture, per
+   * ICON-SOURCES.md #388). The affordance is presentational: leave this
+   * undefined for a visual-only no-op, or wire it to open a friend-search
+   * field. No search UI is owned by this component.
+   */
+  onHeaderAction?: (action: SocialAction) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -112,9 +120,10 @@ function isOnline(summoner: Summoner): boolean {
  *   3. Per-group sections: FriendGroupHeader + FriendRow list
  *      (rows hidden when group.collapsed === true)
  *
- * Width: ~250px (w-[250px]). Background: bg-blue-7 (near-black slate used by
- * the real LoL client sidebar — sampled from reference screenshot).
- * The friend list area is independently scrollable via a min-h-0 flex chain.
+ * Width: 224px (current-era measured). Background: near-black navy
+ * (color-mix blue-7 22% over hextech-black ≈ rgb(3,10,18), sampled from the
+ * current-era reference). The friend list area is independently scrollable via
+ * a min-h-0 flex chain.
  *
  * Controlled collapse: the panel reads `group.collapsed` and calls
  * `onToggleGroup?.(name)` — it owns no internal group state.
@@ -127,14 +136,15 @@ export function SocialPanel({
   onToggleGroup,
   onFriendClick,
   profileIconSrcFor,
-  width = 250,
+  width = 224,
   ambientVideoSrc,
+  onHeaderAction,
 }: SocialPanelProps) {
   const showRequests = requestCount != null && requestCount > 0;
 
   return (
     <div
-      className="relative flex h-full flex-col overflow-hidden bg-blue-7"
+      className="relative flex h-full flex-col overflow-hidden bg-[color-mix(in_srgb,var(--color-blue-7)_22%,var(--color-hextech-black))]"
       style={{ width }}
     >
       {/* Ambient "magic" backdrop — subtle animated Hextech loop behind the
@@ -144,7 +154,7 @@ export function SocialPanel({
 
       {/* ── 1. Social header strip ── */}
       <div className="relative z-10">
-        <SocialHeader />
+        <SocialHeader onAction={onHeaderAction} />
       </div>
 
       {/* ── 2. Friend requests row (hidden when count is 0 or undefined) ── */}

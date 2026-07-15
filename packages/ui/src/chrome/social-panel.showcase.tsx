@@ -20,7 +20,7 @@ export const socialPanelShowcase: ShowcaseEntry = {
   name: "SocialPanel",
   area: "chrome",
   description:
-    "Friends-list sidebar composition: SocialHeader → FriendRequestsRow (when requestCount > 0) → scrollable group sections (FriendGroupHeader + FriendRow list). Controlled collapse state. ~250px wide, bg-blue-7, full height.",
+    "Friends-list sidebar composition: SocialHeader → FriendRequestsRow (when requestCount > 0) → scrollable group sections (FriendGroupHeader + FriendRow list). Controlled collapse state. Current-era slim rail: 224px wide, near-black navy bg (color-mix blue-7/hextech-black), 48px friend rows, full height.",
   variants: [
     {
       name: "Full replica (2 groups, one collapsed, badge, mixed availability)",

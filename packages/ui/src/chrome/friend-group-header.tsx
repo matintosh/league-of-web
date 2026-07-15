@@ -34,7 +34,7 @@ export function FriendGroupHeader({
       type="button"
       onClick={onToggle}
       aria-expanded={!collapsed}
-      className="flex w-full items-center gap-1.5 bg-grey-4/50 px-2 py-1 text-left transition-colors duration-100 hover:bg-grey-cool"
+      className="flex w-full items-center gap-1.5 bg-[color-mix(in_srgb,var(--color-grey-4)_70%,var(--color-hextech-black))] px-3 py-1 text-left transition-colors duration-100 hover:bg-grey-cool"
     >
       {/* Caret — rotates to -90° when collapsed */}
       <svg

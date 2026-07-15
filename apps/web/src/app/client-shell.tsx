@@ -331,15 +331,14 @@ const ESTIMATED_LABEL = "Estimated: 3:00";
 /**
  * Docked rail width in px.
  *
- * Measured from the real client pvp-mode-select reference (client-pvp-mode-select.jpg):
- * - Reference image is approximately 1440px wide.
- * - Rail starts at ~x=1190, ends at ~x=1440 → rail ≈ 250px on a 1440px frame.
- * - Ratio: 250/1440 ≈ 17.4% — slightly above the 15–16% spec range.
- * - At our 1280px window, 15.6% ≈ 200px (matching issue guidance and leaving
- *   ~1080px for content, which comfortably fits all railed screens).
- * - We land on 200px: content area = 1280 − 200 = 1080px.
+ * PIL-measured from the current-era reference (issue #388 / era-shift epic #384):
+ * docs/reference/client-current-home-activity-center.jpg (1280×720) — the rail
+ * spans x=1056→1280 = 224px. The modern rail's "slim" look comes from thin
+ * friend rows (48px pitch, 28px avatars) and a near-black bg, not a narrow
+ * column, so the width is close to the older client. Content area = 1280 − 224
+ * = 1056px, which still fits every railed screen.
  */
-const SOCIAL_RAIL_WIDTH = 200;
+const SOCIAL_RAIL_WIDTH = 224;
 
 // ---------------------------------------------------------------------------
 // Social rail fixtures — groups built from demoFriends (page-level values)
@@ -944,7 +943,7 @@ export function ClientShell() {
             {/* ---------------------------------------------------------------- */}
             {/* Docked social rail — in-flow right column, visible on home /      */}
             {/* mode-select / matchmaking / collection; absent on pick / loadout. */}
-            {/* Width: 200px (15.6% of 1280) — measured from pvp-mode-select ref. */}
+            {/* Width: 224px (17.5% of 1280) — measured from client-current-home-activity-center ref (#388). */}
             {/* Collapse: socialExpanded=false → display:none → content reflows.  */}
             {/* ---------------------------------------------------------------- */}
             {railVisible && socialExpanded && (
@@ -954,7 +953,7 @@ export function ClientShell() {
                 style={{ width: SOCIAL_RAIL_WIDTH }}
               >
                 {/* Zone 6 — ProfileChip heads the rail column (above SocialPanel).
-                    Width inherits from the 200px rail parent; chip is full-width. */}
+                    Width inherits from the 224px rail parent; chip is full-width. */}
                 <ProfileChip
                   summoner={demoSummoner}
                   level={demoSummoner.level}
