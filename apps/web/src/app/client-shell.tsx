@@ -858,7 +858,7 @@ export function ClientShell() {
                   aria-expanded={socialExpanded}
                   onClick={toggleSocialPanel}
                   className={[
-                    "flex h-7 w-7 cursor-pointer items-center justify-center transition-colors duration-150",
+                    "flex h-6 w-6 cursor-pointer items-center justify-center transition-colors duration-150",
                     socialExpanded ? "text-gold-2" : "text-grey-1 hover:text-gold-1",
                   ].join(" ")}
                 >
@@ -883,7 +883,7 @@ export function ClientShell() {
                   type="button"
                   aria-label="Settings"
                   onClick={() => setSettingsOpen(true)}
-                  className="flex h-7 w-7 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+                  className="flex h-6 w-6 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
                 >
                   {/* Gear icon */}
                   <svg

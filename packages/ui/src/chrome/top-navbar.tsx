@@ -136,10 +136,18 @@ export function TopNavbar({
         })}
       </div>
 
-      {/* Right region — currency + player slots; self-center to stay vertically centred */}
+      {/* Right region — currency (vertically centred) + player slot. The player
+          slot is bottom-aligned into the lower half of the band so its controls
+          clear the floating window-controls row (?─⚙✕), which occupies the top
+          ~28px at the far right in the integrated chrome (#385/#390). This
+          matches the reference, where the profile chip / rail controls sit BELOW
+          the window-controls row, not beside it (see
+          docs/reference/client-current-home-activity-center.jpg top-right). The
+          slot is `self-stretch` + `items-end` so #387's profile chip inherits the
+          same below-controls placement. */}
       <div className="flex shrink-0 items-center gap-3">
         {currencySlot}
-        {playerSlot}
+        <div className="flex h-full items-end pb-0.5">{playerSlot}</div>
       </div>
     </nav>
   );

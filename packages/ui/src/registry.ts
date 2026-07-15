@@ -16,7 +16,6 @@ import { clashScreenShowcase } from "./chrome/clash-screen.showcase";
 import { clubsEmptyStateShowcase } from "./chrome/clubs-empty-state.showcase";
 import { crestDividerShowcase } from "./chrome/crest-divider.showcase";
 import { currencyDisplayShowcase } from "./chrome/currency-display.showcase";
-import { rpTopUpButtonShowcase } from "./chrome/rp-top-up-button.showcase";
 import { filterTabsShowcase } from "./chrome/filter-tabs.showcase";
 import { findingMatchPanelShowcase } from "./chrome/finding-match-panel.showcase";
 import { friendGroupHeaderShowcase } from "./chrome/friend-group-header.showcase";
@@ -40,6 +39,7 @@ import { playerHovercardShowcase } from "./chrome/player-hovercard.showcase";
 import { profileBannerShowcase } from "./chrome/profile-banner.showcase";
 import { profileChipShowcase } from "./chrome/profile-chip.showcase";
 import { rankedQueuePanelShowcase } from "./chrome/ranked-queue-panel.showcase";
+import { rpTopUpButtonShowcase } from "./chrome/rp-top-up-button.showcase";
 import { searchInputShowcase } from "./chrome/search-input.showcase";
 import { sectionHeaderShowcase } from "./chrome/section-header.showcase";
 import { settingsModalShowcase } from "./chrome/settings-modal.showcase";
@@ -118,7 +118,6 @@ export const registry: ShowcaseEntry[] = [
   clubsEmptyStateShowcase,
   crestDividerShowcase,
   currencyDisplayShowcase,
-  rpTopUpButtonShowcase,
   filterTabsShowcase,
   findingMatchPanelShowcase,
   friendGroupHeaderShowcase,
@@ -142,6 +141,7 @@ export const registry: ShowcaseEntry[] = [
   profileBannerShowcase,
   profileChipShowcase,
   rankedQueuePanelShowcase,
+  rpTopUpButtonShowcase,
   searchInputShowcase,
   sectionHeaderShowcase,
   settingsModalShowcase,
