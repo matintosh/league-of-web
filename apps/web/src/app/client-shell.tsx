@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,8 +27,10 @@ import {
   LevelUpRewardsDetail,
   TftHubScreen,
   ClashScreen,
+  YourShopIcon,
+  YourShopScreen,
 } from "@low/ui";
-import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources } from "@low/ui";
+import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -40,6 +42,7 @@ import {
   rpIconUrl,
   blueEssenceIconUrl,
   navIconUrl,
+  yourShopIconVideoUrl,
   gameModeMapUrl,
   positionIconUrl,
   rankedEmblemUrl,
@@ -105,6 +108,30 @@ const LEAGUE_LOGO_VIDEO_SOURCES: PlayButtonMedallionVideoSources = {
   loopActive: leagueLogoVideoUrl("loop-active"),
   magic: leagueLogoVideoUrl("magic"),
 };
+
+// Your Shop navbar-icon CTA videos (issue #317/#361). Real-client webm streamed
+// from CommunityDragon via @low/fixtures — the intro→loop attention state
+// machine (120×120) plus the click burst. Defined once at module scope so the
+// object identity is stable across renders (the icon keys its video layer on it).
+const YOUR_SHOP_ICON_VIDEO_SOURCES: YourShopIconVideoSources = {
+  ctaIntro: yourShopIconVideoUrl("call-to-action-intro"),
+  ctaLoop: yourShopIconVideoUrl("call-to-action-loop"),
+  click: yourShopIconVideoUrl("click"),
+};
+
+// Your Shop personalised offers (October 2024 era) — page-level fixture values
+// (no data in @low/ui). The shell owns which cards are revealed; `revealed`,
+// `onReveal`, and `onPurchase` are attached per-render from shell state below.
+const YOUR_SHOP_CARDS: Omit<YourShopCard, "revealed" | "onReveal" | "onPurchase">[] = [
+  { id: "offer-vi-neon-strike",      artSrc: championSplashUrl("Vi", 4),      discountPct: 20, originalRpPrice: 1350, rpPrice: 1080, skinName: "Neon Strike Vi" },
+  { id: "offer-sona-arcade",         artSrc: championSplashUrl("Sona", 6),    discountPct: 50, originalRpPrice: 1350, rpPrice: 675,  skinName: "Arcade Sona" },
+  { id: "offer-jinx-project",        artSrc: championSplashUrl("Jinx", 2),    discountPct: 40, originalRpPrice: 1350, rpPrice: 810,  skinName: "PROJECT: Jinx" },
+  { id: "offer-nidalee-challenger",  artSrc: championSplashUrl("Nidalee", 3), discountPct: 50, originalRpPrice: 1350, rpPrice: 675,  skinName: "Challenger Nidalee" },
+  { id: "offer-amumu-little-knight", artSrc: championSplashUrl("Amumu", 5),   discountPct: 60, originalRpPrice: 520,  rpPrice: 208,  skinName: "Little Knight Amumu" },
+  { id: "offer-annie-goth",          artSrc: championSplashUrl("Annie", 3),   discountPct: 40, originalRpPrice: 1350, rpPrice: 810,  skinName: "Goth Annie" },
+];
+
+const YOUR_SHOP_EXPIRY = "Offers expire October 30 at 18:00 EET";
 
 const KEYART_CHAMPION = "Jinx";
 
@@ -410,6 +437,14 @@ export function ClientShell() {
    * initialTab bug where `useState(initialTab)` only reads the prop once).
    */
   const [activeStoreTab, setActiveStoreTab] = useState<StoreTab>("featured");
+  /**
+   * Your Shop overlay (issue #361). The navbar CTA icon opens `YourShopScreen`
+   * as a full-bleed overlay above the current view; close restores it. The
+   * shell owns visibility (nav-surviving) and which offers are revealed, so a
+   * closed-then-reopened overlay keeps its revealed cards.
+   */
+  const [showYourShop, setShowYourShop] = useState(false);
+  const [yourShopRevealedIds, setYourShopRevealedIds] = useState<Set<string>>(new Set());
   /** DDragon champion id chosen in the pick phase; passed to LoadoutScreen. */
   const [chosenChampionId, setChosenChampionId] = useState<string | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -462,6 +497,30 @@ export function ClientShell() {
   // rail + FindingMatchPanel). The match-found/queue widgets live only in the
   // party-lobby phase, so no queue function is lost by dropping the rail here.
   const railVisible = !champSelectActive;
+
+  // Your Shop cards with shell-owned reveal state + callbacks attached. The
+  // shell holds `yourShopRevealedIds`; each card's onReveal flips it, and
+  // onPurchase is only wired once revealed (matching the showcase demo).
+  const yourShopCards: YourShopCard[] = YOUR_SHOP_CARDS.map((base) => ({
+    ...base,
+    revealed: yourShopRevealedIds.has(base.id),
+    onReveal: () =>
+      setYourShopRevealedIds((prev) => new Set([...prev, base.id])),
+    onPurchase: yourShopRevealedIds.has(base.id)
+      ? () => console.log("your shop purchase:", base.skinName)
+      : undefined,
+  }));
+
+  // Escape closes the Your Shop overlay (same path as the ✕ button). Listener is
+  // only attached while the overlay is open, and torn down on close/unmount.
+  useEffect(() => {
+    if (!showYourShop) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowYourShop(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [showYourShop]);
 
   // Reset queue state when leaving the party-lobby view so rail reverts to PartyStatusPanel.
   // This runs synchronously with the view change so there's no flash.
@@ -622,7 +681,7 @@ export function ClientShell() {
 
   return (
     <div
-      className="overflow-hidden"
+      className="relative overflow-hidden"
       style={{ width: CLIENT_WIDTH, height: CLIENT_HEIGHT }}
     >
       <WindowFrame
@@ -669,9 +728,21 @@ export function ClientShell() {
               // Right region: icon pair (zone 3) + divider (zone 4) + stacked currency (zone 5)
               // Composed at page level so TopNavbar stays slot-agnostic.
               <div className="flex items-center gap-3">
-                {/* Zone 3 — Loot + Essence icon buttons (dead, no-op).
+                {/* Zone 3 — Your Shop CTA + Loot + Essence icon buttons.
                     Real nav icons from CommunityDragon static-assets. */}
                 <div className="flex items-center gap-1.5">
+                  {/* Your Shop entry point (issue #361). Sits at the left end of
+                      the icon cluster — left of Loot/Essence, i.e. left of the
+                      Store area — matching the real client. Sized to 28px to line
+                      up with the h-7 (28px) sibling icon buttons. The CTA video
+                      state machine (intro→loop attention + click burst) streams
+                      from @low/fixtures; static gold glyph shows under reduced
+                      motion. Activating it opens the Your Shop overlay. */}
+                  <YourShopIcon
+                    size={28}
+                    videoSources={YOUR_SHOP_ICON_VIDEO_SOURCES}
+                    onActivate={() => setShowYourShop(true)}
+                  />
                   <button
                     type="button"
                     aria-label="Loot"
@@ -943,6 +1014,39 @@ export function ClientShell() {
           </div>
         </div>
       </WindowFrame>
+
+      {/* Your Shop overlay (issue #361) — a full-window takeover opened by the
+          navbar CTA icon, matching the real client: it covers the entire client
+          content (navbar + view), and the ONLY way out is its ✕ (or Escape).
+          The SettingsModal / social toggle in the navbar are intentionally
+          unreachable while it's open — this mirrors the real client's Your Shop.
+          Shell owns visibility so it survives across nav; close restores the
+          underlying view untouched.
+
+          Positioned to start just below WindowFrame's 32px title bar (inset by
+          the frame's 1px border) so the window controls (?, minimize, close),
+          which live in that title bar above the shell content, stay clickable
+          above the overlay. z-40 sits under the fixed launch splash (z-100). */}
+      {showYourShop && (
+        <div
+          className="absolute inset-x-px bottom-px top-[33px] z-40"
+          aria-modal="true"
+          role="dialog"
+          aria-label="Your Shop"
+        >
+          <YourShopScreen
+            cards={yourShopCards}
+            expiryLabel={YOUR_SHOP_EXPIRY}
+            includesChampionNote
+            rpIconSrc={rpIconUrl()}
+            iconVideoSources={YOUR_SHOP_ICON_VIDEO_SOURCES}
+            onClose={() => setShowYourShop(false)}
+            onRevealAll={() =>
+              setYourShopRevealedIds(new Set(YOUR_SHOP_CARDS.map((c) => c.id)))
+            }
+          />
+        </div>
+      )}
 
       <SettingsModal
         open={settingsOpen}

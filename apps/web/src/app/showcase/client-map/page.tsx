@@ -260,7 +260,7 @@ export default function ClientMapPage() {
               <TreeItem node={{ label: "Accessories", status: "stub" }} />
               <TreeItem node={{ label: "Esports", status: "stub" }} />
               <TreeItem
-                node={{ label: "Your Shop", status: "showcase-only", href: "/showcase/your-shop-screen" }}
+                node={{ label: "Your Shop", status: "live", href: "/showcase/your-shop-screen" }}
                 last
               />
             </Section>
