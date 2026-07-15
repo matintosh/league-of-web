@@ -845,10 +845,25 @@ export function ClientShell() {
               </div>
             }
             playerSlot={
-              /* Controls slot — social-rail toggle + settings gear.
-                 Identity is owned solely by the rail's ProfileChip header (#146).
-                 PlayerHovercard removed here to fix the duplication (#211). */
+              /* Current-era top-right (era shift #384 / #387): the compact
+                 ProfileChip OWNS identity here (icon + name + status + bell),
+                 measured from client-current-home-activity-center.jpg. The chip
+                 sits BELOW the floating window controls (?─⚙✕) via TopNavbar's
+                 `items-end` playerSlot placement. Identity lives in ONE place
+                 (#211): the social rail no longer repeats it (chip removed from
+                 the rail column below). The social-rail toggle + settings gear
+                 controls stay alongside the chip so rail collapse / settings
+                 remain reachable. */
               <div className="flex items-center gap-2">
+                {/* Nav-band ProfileChip — local player identity, top-right. */}
+                <ProfileChip
+                  variant="navband"
+                  summoner={demoSummoner}
+                  level={demoSummoner.level}
+                  profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+                  onNotifications={() => console.log("notifications")}
+                  statusText={profileChipStatusText}
+                />
                 {/* Social toggle button — collapses/expands the docked rail.
                     aria-expanded reflects current expanded state per ARIA spec. */}
                 <button
@@ -1013,17 +1028,13 @@ export function ClientShell() {
                 className="flex shrink-0 flex-col border-l border-gold-5"
                 style={{ width: SOCIAL_RAIL_WIDTH }}
               >
-                {/* Zone 6 — ProfileChip heads the rail column (above SocialPanel).
-                    Width inherits from the 224px rail parent; chip is full-width. */}
-                <ProfileChip
-                  summoner={demoSummoner}
-                  level={demoSummoner.level}
-                  profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
-                  onNotifications={() => console.log("notifications")}
-                  statusText={profileChipStatusText}
-                />
+                {/* Identity no longer heads the rail (era shift #384 / #387):
+                    the compact ProfileChip moved to the TopNavbar band. Identity
+                    lives in ONE place (#211). The rail now opens straight into
+                    its widget zone / SocialPanel (whose SocialHeader keeps the
+                    SOCIAL label + add/groups/list/search glyphs). */}
 
-                {/* Rail widget below ProfileChip — only shown on the party-lobby view.
+                {/* Rail widget — only shown on the party-lobby view.
                     Idle: PartyStatusPanel (party info + open/closed toggle).
                     Queueing (queue|found): FindingMatchPanel (elapsed timer + ✕ cancel).
                     The shell owns which panel renders; PartyLobbyScreen notifies via
