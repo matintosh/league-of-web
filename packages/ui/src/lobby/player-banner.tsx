@@ -261,13 +261,26 @@ const BANNER_ART = {
   invited: `${CDRAGON_PARTIES}/invited-banner.png`,
 } as const;
 
-// Flag-box aspect from the real banner-filled art content bbox (963×1389 →
-// h/w ≈ 1.44). Widths stay at the established 120 (self) / 96 (teammate); heights
-// derive from the art ratio so the trim renders undistorted and the consumer's
-// side-by-side layout keeps the same footprint.
+// Flag-box aspect (deep review #378). The raw banner-filled art content bbox is
+// 964×1390 → h/w ≈ 1.44, a stubby wide shield. The real v11 client renders each
+// filled flag as a TALL column: the self panel measures ≈515px tall over a ≈115px
+// body (h/w ≈ 3.0–3.5 for the panel proper), and the invited flag art we already
+// ship is 174×514 → h/w 2.954. Rendering the filled art at its native 1.44 made
+// the seated banners noticeably shorter than the adjacent invited column in the
+// live row (findings F1/F3/L1). We stretch the flag box vertically to a column
+// aspect so the filled/self banners join the invited flag's family; widths stay
+// at the established 120 (self) / 96 (teammate) so the consumer's side-by-side
+// layout keeps the same horizontal footprint. The art itself is object-fit:fill,
+// so the small heraldic silhouette stretches with the box (its scroll trim is
+// ghosted at low opacity per L2, so mild vertical stretch of the trim reads fine).
 const SELF_W = 120;
 const TEAM_W = 96;
-const ART_RATIO = 1389 / 963;
+// Native art ratio — used for the invited flag, whose art (2.954) is already a
+// tall column and must render at its own aspect to keep its silhouette + trim.
+const INVITED_ART_RATIO = 514 / 174;
+// Filled/self column ratio — the reviewed tall-column target (bounded to keep the
+// party row composing at 1280×720 with the docked rail: 120×2.5=300, 96×2.5=240).
+const COLUMN_RATIO = 2.5;
 
 // ---------------------------------------------------------------------------
 // Crown chip icon — small gold crown SVG inline glyph
@@ -449,9 +462,10 @@ function AvatarCrest({
     return `M ${start.x} ${start.y} A ${arcR} ${arcR} 0 0 1 ${end.x} ${end.y}`;
   });
 
-  // Gem size: ~20% of the ring diameter, clamped for legibility.
-  // Self ring outer diameter = 2 * outerR ≈ size - 4. At size=56 → gemSize≈12, size=44 → gemSize≈10.
-  const gemSize = isSelf ? 16 : 14;
+  // Gem size (#378 F4): the v11 tier gem is a prominent pentagon crest at 12
+  // o'clock (~18–22px). Bumped up from the previous 16/14 so it reads clearly
+  // above the medallion in the taller reviewed column.
+  const gemSize = isSelf ? 20 : 17;
 
   return (
     // Outer wrapper is slightly taller than `size` to leave vertical room for the gem above.
@@ -711,7 +725,7 @@ export function PlayerBanner({
   // silhouette + trim in alpha).
   if (invited) {
     const invBoxW = TEAM_W;
-    const invBoxH = Math.round(invBoxW * ART_RATIO);
+    const invBoxH = Math.round(invBoxW * INVITED_ART_RATIO);
     const staticSrc = invitedFallbackSrc ?? BANNER_ART.invited;
 
     return (
@@ -803,14 +817,16 @@ export function PlayerBanner({
 
   const wingSrc = WING_SRC[wingTier];
 
-  // Flag box footprint: established widths, height from the real art aspect.
+  // Flag box footprint: established widths, height stretched to the reviewed
+  // tall-column aspect (#378 F1/F3/L1). Widths stay 120/96 so the party row keeps
+  // its horizontal footprint; the box is simply taller now.
   const boxW = isSelf ? SELF_W : TEAM_W;
-  const boxH = Math.round(boxW * ART_RATIO);
-  // The pointed double-V bottom occupies the lowest ~21% of the art (corners of
-  // the flat body sit at y≈1097/1389). Reserve that band as content padding so
-  // the crest / badges / role row / footer stay inside the flat interior and
-  // never spill over the decorative point.
-  const pointPad = Math.round(boxH * 0.2);
+  const boxH = Math.round(boxW * COLUMN_RATIO);
+  // The double-V point occupies the lowest ~13% of the stretched column (the art's
+  // native point band is ~21% of a 1.44 box, ≈12% once stretched to 2.5). Reserve
+  // that band so the crest / badges / role row / footer stay inside the flat
+  // interior and never spill over the decorative point.
+  const pointPad = Math.round(boxH * 0.13);
 
   return (
     <div
@@ -847,7 +863,14 @@ export function PlayerBanner({
         className="relative flex flex-col items-center w-full"
         style={{ height: boxH }}
       >
-        {/* Static flag art — fills the box, silhouette + trim baked into alpha */}
+        {/* Static flag art — fills the box, silhouette + trim baked into alpha.
+             Deep review #378 (F2/L2): the real v11 flag panel is a dark TRANSLUCENT
+             navy column (measured body brightness ~25–46, the lobby bg reads
+             through it) with only a faint cool-toned scroll emboss — not the bright
+             opaque warm-gold shield the native art paints. We render it at reduced
+             opacity so the panel reads translucent, and cool the self warmth so the
+             gold trim no longer dominates over the wings/medallion. Self still reads
+             a touch warmer/brighter than a teammate, just far more subtly. */}
         <img
           src={BANNER_ART.filled}
           alt=""
@@ -855,10 +878,10 @@ export function PlayerBanner({
           className="pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
           style={{
             objectFit: "fill",
-            // Self flag reads warmer/brighter than a teammate's in the client.
+            opacity: isSelf ? 0.72 : 0.55,
             filter: isSelf
-              ? "brightness(1.12) saturate(1.15)"
-              : "brightness(0.92)",
+              ? "brightness(1.02) saturate(0.9)"
+              : "brightness(0.85) saturate(0.8)",
           }}
         />
 
@@ -874,13 +897,17 @@ export function PlayerBanner({
           style={{ paddingBottom: pointPad }}
         >
           {/* Wing crest + avatar medallion.
-               Wing art is sized relative to the banner (not the avatar ring) so
-               it continues to frame the full banner width at any ring size.
-               The wing image renders at 110% of banner width so the spread
-               extends naturally beyond the shaped edges. */}
+               Deep review #378 (F5): in the v11 client the ranked wings are the
+               brightest, most-saturated element and spread wider than the panel
+               body, framing the medallion. With the flag panel now translucent
+               (F2/L2), the wings carry the banner's colour, so we scale them up and
+               raise their opacity/brightness to dominate as in the reference.
+               Wing art is sized relative to the banner (not the avatar ring) so it
+               keeps framing the full width at any ring size, spilling past the
+               shaped edges. */}
           <div
             className="relative flex items-center justify-center mt-1"
-            style={{ width: "100%", height: isSelf ? 110 : 90 }}
+            style={{ width: "100%", height: isSelf ? 120 : 100 }}
           >
             <img
               src={wingSrc}
@@ -888,15 +915,15 @@ export function PlayerBanner({
               aria-hidden="true"
               className="pointer-events-none absolute select-none"
               style={{
-                width: isSelf ? 260 : 210,
+                width: isSelf ? 300 : 240,
                 height: "auto",
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
-                opacity: isSelf ? 0.95 : 0.7,
+                opacity: isSelf ? 1 : 0.9,
                 filter: isSelf
-                  ? "drop-shadow(0 0 6px var(--color-gold-4)) brightness(1.05)"
-                  : "drop-shadow(0 0 3px var(--color-gold-5)) brightness(0.8)",
+                  ? "drop-shadow(0 0 7px var(--color-gold-4)) brightness(1.1) saturate(1.1)"
+                  : "drop-shadow(0 0 4px var(--color-gold-5)) brightness(0.95)",
               }}
             />
             <div className="relative z-10 flex flex-col items-center">
