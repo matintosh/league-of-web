@@ -32,6 +32,7 @@ import { launchSplashShowcase } from "./chrome/launch-splash.showcase";
 import { mapCrestImgShowcase } from "./chrome/map-crest-img.showcase";
 import { masteryEternalsPanelShowcase } from "./chrome/mastery-eternals-panel.showcase";
 import { modalFrameShowcase } from "./chrome/modal-frame.showcase";
+import { navProductSwitcherShowcase } from "./chrome/nav-product-switcher.showcase";
 import { newsCardShowcase } from "./chrome/news-card.showcase";
 import { partyStatusPanelShowcase } from "./chrome/party-status-panel.showcase";
 import { playButtonShowcase } from "./chrome/play-button.showcase";
@@ -134,6 +135,7 @@ export const registry: ShowcaseEntry[] = [
   mapCrestImgShowcase,
   masteryEternalsPanelShowcase,
   modalFrameShowcase,
+  navProductSwitcherShowcase,
   newsCardShowcase,
   partyStatusPanelShowcase,
   playButtonShowcase,

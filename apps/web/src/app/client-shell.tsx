@@ -8,6 +8,7 @@ import { CLIENT_WIDTH, CLIENT_HEIGHT } from "../lib/client-window";
 import {
   WindowFrame,
   TopNavbar,
+  NavProductSwitcher,
   PlayButton,
   CurrencyDisplay,
   ProfileChip,
@@ -31,7 +32,7 @@ import {
   YourShopScreen,
   RpTopUpButton,
 } from "@low/ui";
-import type { NavItem, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard } from "@low/ui";
+import type { NavItem, NavProduct, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -81,15 +82,33 @@ import { StoreScreen } from "./store-screen";
 // the FIRST champ-select beat — ACCEPT → declare → ban.
 type View = "home" | "mode-select" | "party-lobby" | "collection" | "declare" | "ban" | "pick" | "loadout" | "profile" | "store" | "tft" | "competitive";
 
-// Nav set matches the reference left→right: Home, Profile, Collection,
-// Competitive (Clash — #244), Store, Teamfight Tactics.
+// Screen-navigation tabs. Post-#403 the current-era product switcher owns the
+// left zone (LEAGUE/TFT/LoR); the switcher's LEAGUE tab routes to home and its
+// TFT tab routes to the TFT hub, so HOME and TEAMFIGHT TACTICS are dropped from
+// this text row as redundant. The remaining screen-only destinations — Profile,
+// Collection, Competitive (Clash — #244), Store — stay here so their routes are
+// preserved (the ROUTING-PRESERVATION adjudication is binding). This compresses
+// the row to fit the band between the switcher and the current-era right
+// cluster; the residual tension (the reference has NO screen-nav text row in
+// this band at all — screen access lives in an "activity center") is a #403
+// follow-up epic, documented in the PR.
 const NAV_ITEMS: NavItem[] = [
-  { id: "home",        label: "Home" },
   { id: "profile",     label: "Profile" },
   { id: "collection",  label: "Collection" },
   { id: "competitive", label: "Competitive" },
   { id: "store",       label: "Store" },
-  { id: "tft",         label: "Teamfight Tactics" },
+];
+
+// Current-era left-zone product switcher (issue #403). LEAGUE = this client
+// (active by default); TFT maps to our TFT hub view (the existing `tft`
+// destination); LoR is a disabled gold pill — Legends of Runeterra has no
+// screen in this clone, so per issue #403 it is a non-routing placeholder.
+// Screen navigation (NAV_ITEMS) is UNCHANGED — the switcher is mounted as a
+// distinct slot left of the screen tabs (option 2, pragmatic hybrid).
+const PRODUCTS: NavProduct[] = [
+  { id: "league", label: "LEAGUE" },
+  { id: "tft",    label: "TFT" },
+  { id: "lor",    label: "LoR", pill: true, disabled: true },
 ];
 
 // v8 PLAY-button magic-layer videos (issue #309). Real client webm streamed from
@@ -719,6 +738,21 @@ export function ClientShell() {
                 videoSources={PLAY_BUTTON_VIDEO_SOURCES}
                 medallionVideoSources={LEAGUE_LOGO_VIDEO_SOURCES}
                 onClick={() => { if (!playDisabled) setView("mode-select"); }}
+              />
+            }
+            productSwitcherSlot={
+              // Current-era product switcher (#403) in the left zone, right of
+              // PLAY. Active product tracks the view: the TFT hub reads as TFT,
+              // everything else in our client reads as LEAGUE. Selecting TFT
+              // routes to the existing tft view and syncs the screen-nav active
+              // id; LEAGUE returns to home. LoR is a disabled placeholder pill.
+              <NavProductSwitcher
+                products={PRODUCTS}
+                activeId={view === "tft" ? "tft" : "league"}
+                onSelect={(id) => {
+                  if (id === "tft") { setView("tft"); setActiveNavId("tft"); }
+                  else if (id === "league") { setView("home"); setActiveNavId("home"); }
+                }}
               />
             }
             navItems={NAV_ITEMS}
