@@ -39,6 +39,8 @@ export { CrestDivider } from "./chrome/crest-divider";
 export type { CrestDividerProps } from "./chrome/crest-divider";
 export { CurrencyDisplay } from "./chrome/currency-display";
 export type { CurrencyDisplayProps } from "./chrome/currency-display";
+export { RpTopUpButton } from "./chrome/rp-top-up-button";
+export type { RpTopUpButtonProps } from "./chrome/rp-top-up-button";
 export { FilterTabs } from "./chrome/filter-tabs";
 export type { FilterTabsProps } from "./chrome/filter-tabs";
 export { FindingMatchPanel } from "./chrome/finding-match-panel";

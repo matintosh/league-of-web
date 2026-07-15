@@ -27,6 +27,14 @@ export interface CurrencyDisplayProps {
    * Pass `blueEssenceIconUrl()` from `@low/fixtures` at the page level.
    */
   beIconSrc?: string;
+  /**
+   * When false, the inline "+" buy buttons are omitted from both rows. Default
+   * true (back-compat). Set false in the current-era nav band, where the RP
+   * top-up affordance is a separate `RpTopUpButton` disc and BE has none
+   * (era shift #386) — `onBuyRp`/`onBuyBe` are then unused but stay required
+   * so existing call sites are unaffected.
+   */
+  showBuyButtons?: boolean;
 }
 
 /** Formats an integer with thousands separators, e.g. 34500 → "34,500". */
@@ -98,7 +106,7 @@ const buyButtonClass =
  * `blueEssenceIconUrl()` from `@low/fixtures` at the page/showcase level).
  * When omitted, the component falls back to its inline SVG glyphs.
  */
-export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false, rpIconSrc, beIconSrc }: CurrencyDisplayProps) {
+export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false, rpIconSrc, beIconSrc, showBuyButtons = true }: CurrencyDisplayProps) {
   const rpRow = (
     <div className={["flex items-center gap-1.5", stacked ? "justify-end" : ""].join(" ")}>
       <span className={rpIconSrc ? undefined : "text-blue-2"}>
@@ -111,14 +119,16 @@ export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false, rpI
       <span className={stacked ? "font-body text-xs tabular-nums text-gold-2" : "font-body text-sm tabular-nums text-gold-1"}>
         {formatAmount(wallet.rp)}
       </span>
-      <button
-        type="button"
-        aria-label="Buy Riot Points"
-        onClick={onBuyRp}
-        className={buyButtonClass}
-      >
-        +
-      </button>
+      {showBuyButtons && (
+        <button
+          type="button"
+          aria-label="Buy Riot Points"
+          onClick={onBuyRp}
+          className={buyButtonClass}
+        >
+          +
+        </button>
+      )}
     </div>
   );
 
@@ -134,14 +144,16 @@ export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false, rpI
       <span className={stacked ? "font-body text-xs tabular-nums text-gold-2" : "font-body text-sm tabular-nums text-gold-1"}>
         {formatAmount(wallet.blueEssence)}
       </span>
-      <button
-        type="button"
-        aria-label="Buy Blue Essence"
-        onClick={onBuyBe}
-        className={buyButtonClass}
-      >
-        +
-      </button>
+      {showBuyButtons && (
+        <button
+          type="button"
+          aria-label="Buy Blue Essence"
+          onClick={onBuyBe}
+          className={buyButtonClass}
+        >
+          +
+        </button>
+      )}
     </div>
   );
 

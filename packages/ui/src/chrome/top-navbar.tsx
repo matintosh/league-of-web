@@ -103,7 +103,7 @@ export function TopNavbar({
   playerSlot,
 }: TopNavbarProps) {
   return (
-    <nav aria-label="Main navigation" className="flex h-16 w-full shrink-0 items-stretch border-b border-gold-5 bg-blue-7 px-4">
+    <nav aria-label="Main navigation" className="flex h-14 w-full shrink-0 items-stretch border-b border-gold-5 bg-blue-7 px-4">
       {/* Left region — play slot; self-center so the PLAY button stays vertically centred */}
       <div className="flex shrink-0 items-center">{playSlot}</div>
 

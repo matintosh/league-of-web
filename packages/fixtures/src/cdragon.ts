@@ -28,6 +28,9 @@ const CDRAGON_UIKIT =
 const CDRAGON_SOCIAL =
   "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-social/global/default";
 
+const CDRAGON_NAVIGATION =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-navigation/global/default";
+
 /**
  * Summoner spell icon URL via CDragon game data.
  *
@@ -115,6 +118,38 @@ export const rpIconSizedUrl = (size: 24 | 32 | 48 | 72): string =>
 export const navIconUrl = (
   name: "loot" | "collections" | "store" | "profile",
 ): string => cdragonStaticUrl(`images/nav-icon-${name}.svg`);
+
+/**
+ * Updates / notifications nav-band glyph — the player-bust badge that sits in
+ * the current-era top-nav icon cluster (era shift #384/#386). Shares the same
+ * 26×24 band canvas as the profile/collections glyphs.
+ * Source: CommunityDragon rcp-fe-lol-static-assets · images/top-nav-updates-eat-icon.svg
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const navUpdatesIconUrl = (): string =>
+  cdragonStaticUrl("images/top-nav-updates-eat-icon.svg");
+
+/**
+ * RP top-up button glyph for the current-era currency block (era shift #386) —
+ * a circular dark disc with a gold `+`, the "add RP" affordance at the right
+ * end of the RP capsule. Ships three interactive states (20×20 SVG each).
+ * Source: CommunityDragon rcp-fe-lol-static-assets · images/rp-top-up-nav-{state}.svg
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const rpTopUpIconUrl = (
+  state: "resting" | "hover" | "pressed" = "resting",
+): string => cdragonStaticUrl(`images/rp-top-up-nav-${state}.svg`);
+
+/**
+ * Missions / objectives nav glyph from the navigation plugin (era shift #386).
+ * "mission" = gold scroll/objective list, "daily" = down-arrow daily reward,
+ * "all" = grid/list rows. All 20×20 SVG, `#cdbe91`-family cream fill.
+ * Source: CommunityDragon rcp-fe-lol-navigation · {name}icon.svg
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const navMissionIconUrl = (
+  name: "mission" | "daily" | "all" = "mission",
+): string => `${CDRAGON_NAVIGATION}/${name}icon.svg`;
 
 /**
  * Position (role) icon SVG.
