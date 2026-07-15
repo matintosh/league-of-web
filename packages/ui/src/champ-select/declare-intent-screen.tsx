@@ -175,22 +175,35 @@ function RosterRow({
   const isActive = !!entry.isSelf;
   return (
     <div
-      className="relative flex items-center gap-3 py-2"
+      // ~61px pitch (h-[61px]) so rows read tall/spaced like the reference.
+      className="relative flex h-[61px] items-center gap-3 pl-4 pr-1"
       aria-current={isActive ? "true" : undefined}
     >
-      {/* Position-icon box — brighter gold frame on the active (self) row */}
+      {/* Self-row active bar — ~8px bright gold vertical bar flush at the far-
+          left edge, spanning the full row height (the reference "MID" row). */}
+      {isActive && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 w-2 bg-gold-2"
+        />
+      )}
+
+      {/* Position medallion — circular gold ring with the role icon centered.
+          The self row gets a brighter/thicker ring; ally rows a dim ring. */}
       <div
         className={[
-          "flex h-9 w-9 shrink-0 items-center justify-center border",
-          isActive ? "border-gold-2 bg-blue-6" : "border-gold-5 bg-grey-4",
+          "relative flex h-[59px] w-[59px] shrink-0 items-center justify-center rounded-full",
+          isActive
+            ? "ring-2 ring-gold-2 bg-blue-6/70"
+            : "ring-2 ring-gold-4 bg-hextech-black/50",
         ].join(" ")}
       >
         <img
           src={entry.roleIconSrc}
           alt=""
           aria-hidden="true"
-          width={22}
-          height={22}
+          width={34}
+          height={34}
           className={isActive ? "" : "opacity-80"}
         />
       </div>
@@ -504,16 +517,36 @@ export function DeclareIntentScreen({
           style={{ width: 220 }}
           aria-label="Team roles"
         >
-          <span className="mb-1 font-display text-[10px] uppercase tracking-widest text-grey-1">
+          <span className="mb-1 pl-4 font-display text-[10px] uppercase tracking-widest text-grey-1">
             First Pick
           </span>
-          <div className="divide-y divide-gold-5/60">
-            {roster.map((entry) => (
-              <RosterRow
-                key={entry.summonerName}
-                entry={entry}
-                secondsRemaining={secondsRemaining}
-              />
+          {/* Roster list with a vertical connector rail along the far-left edge
+              (x≈4, aligned with the self-row active bar): a faint gold hairline
+              with a small gold diamond node at each inter-row seam. */}
+          <div className="relative">
+            {/* Hairline rail — inset top/bottom, behind the rows. */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute top-[30px] bottom-[30px] w-px bg-gold-5/70"
+              style={{ left: 4 }}
+            />
+            {roster.map((entry, i) => (
+              <div key={entry.summonerName} className="relative">
+                {/* Diamond node at the seam above every row except the first */}
+                {i > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-0 z-10 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-gold-3/80"
+                    style={{ left: 4 }}
+                  />
+                )}
+                <div className="relative z-[1]">
+                  <RosterRow
+                    entry={entry}
+                    secondsRemaining={secondsRemaining}
+                  />
+                </div>
+              </div>
             ))}
           </div>
         </aside>
