@@ -1,6 +1,9 @@
 import type { ShowcaseEntry } from "../showcase";
 import { SocialHeader } from "./social-header";
-import { SocialHeaderActionLogDemo } from "./social-header.demo";
+import {
+  SocialHeaderActionLogDemo,
+  SocialHeaderCollapseDemo,
+} from "./social-header.demo";
 
 export const socialHeaderShowcase: ShowcaseEntry = {
   slug: "social-header",
@@ -24,6 +27,12 @@ export const socialHeaderShowcase: ShowcaseEntry = {
       notes:
         "Click any icon button — the last fired action key is shown below. Demonstrates onAction callback wiring.",
       render: () => <SocialHeaderActionLogDemo />,
+    },
+    {
+      name: "With collapse toggle",
+      notes:
+        'onToggleCollapse supplied — a leading « chevron renders before the "SOCIAL" label. This is where the social-rail collapse toggle folds into the header (#401); the reference has no beside-chip toggle. Omit onToggleCollapse and the chevron is absent (default variant above). Click it to increment the collapse counter.',
+      render: () => <SocialHeaderCollapseDemo />,
     },
   ],
 };

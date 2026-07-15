@@ -459,8 +459,24 @@ if (expandedBefore === "true") {
     // rail; when the rail is absent, the only child is the screen content.
     // We rely on the known structure: WindowFrame > flex col > (nav + content row).
     // content row = nav's next sibling.
-    const nav = document.querySelector("nav") ?? document.querySelector("header");
-    const contentRow = nav?.parentElement?.querySelector(":scope > div:last-child");
+    //
+    // #401: when collapsed the rail unmounts and a slim EXPAND affordance
+    // (button[aria-label='Expand social panel']) is appended to the content row
+    // as an ABSOLUTELY positioned sibling, so it does not consume flow width —
+    // the screen content still spans the full 1280px. `firstElementChild` is the
+    // screen content div regardless (the absolute button is a later sibling), so
+    // this measurement is unaffected. We anchor on nav.nextElementSibling for
+    // robustness rather than :scope > div:last-child (which could resolve to a
+    // trailing utility node).
+    // Anchor on the MAIN navigation nav specifically — a bare `querySelector("nav")`
+    // matches the nested "Experience switcher" nav inside HomeView first, whose
+    // sibling is not the content row (#401 fix; previously this made the width
+    // check silently skip).
+    const nav =
+      document.querySelector("nav[aria-label='Main navigation']") ??
+      document.querySelector("nav") ??
+      document.querySelector("header");
+    const contentRow = nav?.nextElementSibling ?? nav?.parentElement?.querySelector(":scope > div:last-child");
     const screenDiv = contentRow?.firstElementChild;
     if (screenDiv) {
       return { w: Math.round(screenDiv.getBoundingClientRect().width), bodyW };

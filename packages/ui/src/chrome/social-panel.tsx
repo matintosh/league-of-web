@@ -93,6 +93,15 @@ export interface SocialPanelProps {
    * field. No search UI is owned by this component.
    */
   onHeaderAction?: (action: SocialAction) => void;
+  /**
+   * Called when the SocialHeader's collapse chevron is clicked (issue #401).
+   * When provided, the header renders a leading « affordance that folds the
+   * rail-collapse toggle into the SOCIAL row (the reference has no beside-chip
+   * toggle). Omit it and no chevron renders. The matching EXPAND affordance,
+   * shown when the rail is collapsed and this whole panel is unmounted, is
+   * owned by the shell at the window edge.
+   */
+  onToggleCollapse?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -139,6 +148,7 @@ export function SocialPanel({
   width = 224,
   ambientVideoSrc,
   onHeaderAction,
+  onToggleCollapse,
 }: SocialPanelProps) {
   const showRequests = requestCount != null && requestCount > 0;
 
@@ -154,7 +164,7 @@ export function SocialPanel({
 
       {/* ── 1. Social header strip ── */}
       <div className="relative z-10">
-        <SocialHeader onAction={onHeaderAction} />
+        <SocialHeader onAction={onHeaderAction} onToggleCollapse={onToggleCollapse} />
       </div>
 
       {/* ── 2. Friend requests row (hidden when count is 0 or undefined) ── */}

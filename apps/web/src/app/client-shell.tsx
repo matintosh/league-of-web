@@ -692,6 +692,10 @@ export function ClientShell() {
         onHelp={() => console.log("help")}
         onMinimize={() => console.log("minimize")}
         onClose={() => console.log("close")}
+        // Settings gear lives in the window-control row (help → minimize →
+        // settings → close), matching the reference (#401). Passing onSettings
+        // renders the ⚙ there; the shell owns the SettingsModal open state.
+        onSettings={() => setSettingsOpen(true)}
       >
         <div className="flex h-full flex-col">
           {/* TopNavbar is hidden during champ-select phases (#341): those
@@ -845,78 +849,24 @@ export function ClientShell() {
               </div>
             }
             playerSlot={
-              /* Current-era top-right (era shift #384 / #387): the compact
-                 ProfileChip OWNS identity here (icon + name + status + bell),
-                 measured from client-current-home-activity-center.jpg. The chip
-                 sits BELOW the floating window controls (?─⚙✕) via TopNavbar's
-                 `items-end` playerSlot placement. Identity lives in ONE place
-                 (#211): the social rail no longer repeats it (chip removed from
-                 the rail column below). The social-rail toggle + settings gear
-                 controls stay alongside the chip so rail collapse / settings
-                 remain reachable. */
-              <div className="flex items-center gap-2">
-                {/* Nav-band ProfileChip — local player identity, top-right. */}
-                <ProfileChip
-                  variant="navband"
-                  summoner={demoSummoner}
-                  level={demoSummoner.level}
-                  profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
-                  onNotifications={() => console.log("notifications")}
-                  statusText={profileChipStatusText}
-                />
-                {/* Social toggle button — collapses/expands the docked rail.
-                    aria-expanded reflects current expanded state per ARIA spec. */}
-                <button
-                  type="button"
-                  aria-label={socialExpanded ? "Collapse social panel" : "Expand social panel"}
-                  aria-expanded={socialExpanded}
-                  onClick={toggleSocialPanel}
-                  className={[
-                    "flex h-6 w-6 cursor-pointer items-center justify-center transition-colors duration-150",
-                    socialExpanded ? "text-gold-2" : "text-grey-1 hover:text-gold-1",
-                  ].join(" ")}
-                >
-                  {/* People/social icon */}
-                  <svg
-                    aria-hidden="true"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="6" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.25" />
-                    <path d="M1 14c0-2.761 2.239-4 5-4s5 1.239 5 4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-                    <circle cx="12" cy="5" r="2" stroke="currentColor" strokeWidth="1.25" />
-                    <path d="M12 11c1.5.3 3 1.1 3 3" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-                  </svg>
-                </button>
-                {/* Settings modal opens at z-50 — overlays the docked rail without
-                    closing it (no coupling needed; z-50 > rail's in-flow z). */}
-                <button
-                  type="button"
-                  aria-label="Settings"
-                  onClick={() => setSettingsOpen(true)}
-                  className="flex h-6 w-6 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
-                >
-                  {/* Gear icon */}
-                  <svg
-                    aria-hidden="true"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M6.5 1h3l.4 1.6a5.1 5.1 0 0 1 1.2.7l1.6-.5 1.5 2.6-1.2 1.1c.03.33.03.67 0 1l1.2 1.1-1.5 2.6-1.6-.5c-.37.27-.77.5-1.2.7L9.5 15h-3l-.4-1.6a5.1 5.1 0 0 1-1.2-.7l-1.6.5-1.5-2.6 1.2-1.1a5.2 5.2 0 0 1 0-1L1.8 7.4l1.5-2.6 1.6.5c.37-.27.77-.5 1.2-.7L6.5 1ZM8 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
-              </div>
+              /* Current-era top-right (era shift #384 / #387, strict-fidelity
+                 #401): the compact ProfileChip OWNS identity here — icon + name
+                 + status + bell, and NOTHING else. Measured from
+                 client-current-home-activity-center.jpg, whose top-right band is
+                 chip + bell only. The settings gear moved into the window-control
+                 row (WindowFrame onSettings, #401) and the social-rail collapse
+                 toggle folded into the SOCIAL header (SocialPanel
+                 onToggleCollapse), so neither lives beside the chip anymore. The
+                 chip sits BELOW the floating window controls (?─⚙✕) via
+                 TopNavbar's `items-end` playerSlot placement. */
+              <ProfileChip
+                variant="navband"
+                summoner={demoSummoner}
+                level={demoSummoner.level}
+                profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+                onNotifications={() => console.log("notifications")}
+                statusText={profileChipStatusText}
+              />
             }
           />
           )}
@@ -924,7 +874,7 @@ export function ClientShell() {
           {/* Content row — flex row containing the screen (flex-1 min-w-0) and,
               on railed views, the docked social rail as a normal in-flow column.
               pick / loadout are full-bleed: rail is absent entirely on those views. */}
-          <div className="flex flex-1 overflow-hidden">
+          <div className="relative flex flex-1 overflow-hidden">
             {/* Screen content — fills all available width (minus rail when present) */}
             <div className="relative flex-1 min-w-0 overflow-hidden">
               {view === "competitive" ? (
@@ -1072,6 +1022,11 @@ export function ClientShell() {
                     onToggleGroup={handleToggleFriendGroup}
                     onFriendClick={(s) => console.log("friend click:", s.gameName)}
                     profileIconSrcFor={(s) => profileIconUrl(s.profileIconId)}
+                    // Collapse toggle folded into the SOCIAL header (#401) — the
+                    // « chevron there collapses the rail. The matching EXPAND
+                    // affordance (below) lives at the window edge because this
+                    // whole panel unmounts when collapsed.
+                    onToggleCollapse={toggleSocialPanel}
                   />
                 </div>
 
@@ -1082,6 +1037,47 @@ export function ClientShell() {
                   onAction={(id) => console.log("dock action:", id)}
                 />
               </div>
+            )}
+
+            {/* Collapsed-rail EXPAND affordance (#401). When the rail is
+                collapsed the SOCIAL header (which now owns the collapse « ) is
+                unmounted, so the only way back is a persistent handle at the
+                window's right edge — a slim gold-bordered strip carrying a »
+                chevron. The reference pictures only the EXPANDED rail, so the
+                collapsed state is adjudicated: keep a minimal edge affordance so
+                collapse works in BOTH directions. aria-expanded="false" here (and
+                "true" on the header chevron) means a single [aria-expanded]
+                selector resolves the toggle in either state.
+
+                It is absolutely positioned (overlays the content's right edge)
+                rather than an in-flow column, so the screen content still reflows
+                to the full 1280px when collapsed — matching the real client,
+                whose re-open handle floats over the content. Only on railed
+                views, never during champ-select. */}
+            {railVisible && !socialExpanded && (
+              <button
+                type="button"
+                aria-label="Expand social panel"
+                aria-expanded={false}
+                onClick={toggleSocialPanel}
+                className="absolute inset-y-0 right-0 z-20 flex w-7 cursor-pointer items-start justify-center border-l border-gold-5 bg-[color-mix(in_srgb,var(--color-blue-7)_22%,var(--color-hextech-black))] pt-3 text-grey-1 transition-colors duration-150 hover:text-gold-1"
+              >
+                {/* » double-chevron pointing inward (expand) */}
+                <svg
+                  aria-hidden="true"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="6,2 10,6 6,10" />
+                  <polyline points="2,2 6,6 2,10" />
+                </svg>
+              </button>
             )}
           </div>
         </div>

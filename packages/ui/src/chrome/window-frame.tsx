@@ -32,6 +32,16 @@ export interface WindowFrameProps {
   onMinimize?: () => void;
   /** Called when the user clicks the close button. */
   onClose?: () => void;
+  /**
+   * Called when the user clicks the settings (⚙) control. Additive slot
+   * (issue #401): the settings gear only renders when this handler is
+   * provided, so the LOGIN title bar and every other consumer that omits it
+   * are visually unchanged. In the current-era integrated chrome the shell
+   * passes this so the gear lives in the window-control row, matching the
+   * reference (docs/reference/client-current-home-activity-center.jpg), where
+   * the row reads help → minimize → settings → close.
+   */
+  onSettings?: () => void;
 }
 
 /** Help glyph — ? */
@@ -68,6 +78,27 @@ function MinimizeGlyph() {
       aria-hidden="true"
     >
       <rect width="10" height="2" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Settings glyph — ⚙ (8-tooth gear, matches the reference control row) */
+function SettingsGlyph() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6.5 1h3l.4 1.6a5.1 5.1 0 0 1 1.2.7l1.6-.5 1.5 2.6-1.2 1.1c.03.33.03.67 0 1l1.2 1.1-1.5 2.6-1.6-.5c-.37.27-.77.5-1.2.7L9.5 15h-3l-.4-1.6a5.1 5.1 0 0 1-1.2-.7l-1.6.5-1.5-2.6 1.2-1.1a5.2 5.2 0 0 1 0-1L1.8 7.4l1.5-2.6 1.6.5c.37-.27.77-.5 1.2-.7L6.5 1ZM8 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }
@@ -112,9 +143,18 @@ interface WindowControlsProps {
   onHelp?: () => void;
   onMinimize?: () => void;
   onClose?: () => void;
+  /** Optional settings handler; the ⚙ button only renders when provided (#401). */
+  onSettings?: () => void;
 }
 
-/** The ? ─ ✕ button cluster, shared by both chrome variants. */
+/**
+ * The window-control cluster, shared by both chrome variants.
+ *
+ * Order matches the reference (client-current-home-activity-center.jpg,
+ * measured in #401): help (?) → minimize (─) → settings (⚙) → close (✕).
+ * The settings gear is opt-in — it renders only when `onSettings` is supplied,
+ * so consumers that omit it (LOGIN title bar, etc.) keep the classic ? ─ ✕ row.
+ */
 function WindowControls({
   showHelp,
   showMinimize,
@@ -122,6 +162,7 @@ function WindowControls({
   onHelp,
   onMinimize,
   onClose,
+  onSettings,
 }: WindowControlsProps) {
   return (
     <>
@@ -143,6 +184,16 @@ function WindowControls({
           className="flex h-5 w-5 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
         >
           <MinimizeGlyph />
+        </button>
+      )}
+      {onSettings && (
+        <button
+          type="button"
+          aria-label="Settings"
+          onClick={onSettings}
+          className="flex h-5 w-5 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+        >
+          <SettingsGlyph />
         </button>
       )}
       {showClose && (
@@ -181,6 +232,7 @@ export function WindowFrame({
   onHelp,
   onMinimize,
   onClose,
+  onSettings,
 }: WindowFrameProps) {
   const controls = (
     <WindowControls
@@ -190,6 +242,7 @@ export function WindowFrame({
       onHelp={onHelp}
       onMinimize={onMinimize}
       onClose={onClose}
+      onSettings={onSettings}
     />
   );
 
@@ -225,7 +278,7 @@ export function WindowFrame({
           ) : null}
         </div>
 
-        {/* Window controls — order: ? ─ ✕ per reference */}
+        {/* Window controls — order: ? ─ (⚙) ✕ per reference (#401) */}
         <div className="flex items-center gap-1">{controls}</div>
       </div>
 
