@@ -3,12 +3,26 @@
 import { useId } from "react";
 import type { Summoner, Availability } from "@low/fixtures";
 
+/**
+ * Placement variant for ProfileChip.
+ *
+ * - `"rail"` (default) — the original social-rail header chip (#146): 48px
+ *   avatar, gold-2 name, grey status label, bordered blue-7 strip that heads
+ *   the docked rail column.
+ * - `"navband"` — the current-era compact chip that lives at the top-right of
+ *   the TopNavbar band (era shift #384 / #387). Smaller 34px avatar, cream
+ *   (gold-1) name, availability-tinted status text, and a transparent
+ *   background so it blends into the nav band. Sits BELOW the floating window
+ *   controls (?─⚙✕) per the reference — see TopNavbar's playerSlot placement.
+ */
+export type ProfileChipVariant = "rail" | "navband";
+
 export interface ProfileChipProps {
   /** The local player's summoner data. */
   summoner: Summoner;
   /** Summoner level displayed in the badge pill. */
   level: number;
-  /** Resolved URL for the circular avatar image (48px). */
+  /** Resolved URL for the circular avatar image. */
   profileIconSrc: string;
   /** Called when the bell icon is clicked. Optional; no-op when absent. */
   onNotifications?: () => void;
@@ -19,6 +33,12 @@ export interface ProfileChipProps {
    * to reflect summoner.availability. Omit to preserve current rendering.
    */
   statusText?: string;
+  /**
+   * Placement variant — `"rail"` (default) for the social-rail header, or
+   * `"navband"` for the compact current-era chip in the TopNavbar band.
+   * Defaults to `"rail"` for back-compat with existing call sites.
+   */
+  variant?: ProfileChipVariant;
 }
 
 // ---------------------------------------------------------------------------
@@ -41,6 +61,19 @@ const availabilityLabel: Record<Availability, string> = {
   "in-game": "In Game",
   "in-queue": "In Queue",
   offline: "Offline",
+};
+
+/**
+ * Status-text color token per availability — used by the `"navband"` variant,
+ * where the status line is tinted to match its dot (green "Online" in the
+ * current-era reference) rather than the muted grey label of the rail variant.
+ */
+const availabilityText: Record<Availability, string> = {
+  online: "text-status-online",
+  away: "text-gold-3",
+  "in-game": "text-blue-2",
+  "in-queue": "text-blue-3",
+  offline: "text-grey-2",
 };
 
 // ---------------------------------------------------------------------------
@@ -144,15 +177,26 @@ function OrnateRing({ size, uid }: { size: number; uid: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// BellIcon — notification bell (18px)
+// BellIcon — notification bell
 // ---------------------------------------------------------------------------
 
-function BellIcon() {
+/**
+ * Notification bell glyph.
+ *
+ * Drawn inline in tokens (currentColor) because there is NO standalone bell
+ * asset on the CommunityDragon CDN — the nearest asset,
+ * `top-nav-updates-eat-icon.svg`, is a player-bust "updates" badge, not a bell
+ * (ICON-SOURCES.md, #389/#386 asset hunt). This hand-drawn glyph is the agreed
+ * placeholder for the current-era chip's bell (follow-up #399: swap for a
+ * literal CDN bell if one is ever located). `size` lets the navband variant
+ * render a slightly smaller bell than the rail header.
+ */
+function BellIcon({ size = 16 }: { size?: number }) {
   return (
     <svg
       aria-hidden="true"
-      width="16"
-      height="16"
+      width={size}
+      height={size}
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -178,12 +222,26 @@ function BellIcon() {
 // ---------------------------------------------------------------------------
 
 /**
- * ProfileChip — local player identity header at the top of the docked social rail.
+ * ProfileChip — local player identity: avatar (ornate double gold ring + finial
+ * ticks + level badge), summoner name, availability row, and a notification
+ * bell button.
  *
- * Layout: 48px circular avatar (ornate double gold ring + finial ticks) with a
- * level badge pill overlapping the bottom center; to the right: summoner name
- * (gold-cream, text-sm) above an availability row (status dot + label); far
- * right: notification bell button.
+ * Two placement variants (see {@link ProfileChipVariant}):
+ *
+ * - `"rail"` (default) — the social-rail header chip (#146): 48px avatar,
+ *   gold-2 name, muted grey status label, bordered blue-7 strip. Used when the
+ *   chip heads the docked social rail column.
+ * - `"navband"` — the current-era compact chip that lives at the top-right of
+ *   the TopNavbar band (era shift #384 / #387). 34px avatar, cream (gold-1)
+ *   name, availability-tinted status text (green "Online" per reference), and a
+ *   transparent background so it composites into the nav band. Measured from
+ *   docs/reference/client-current-home-activity-center.jpg: avatar ≈34px at the
+ *   far top-right, name + green status to its right, bell at the far edge; the
+ *   whole chip sits BELOW the floating window controls (?─⚙✕), which TopNavbar's
+ *   playerSlot placement (`items-end`, lower half of the band) guarantees.
+ *
+ * Identity lives in ONE place (#211): the current-era shell mounts the
+ * `"navband"` chip and the social rail no longer repeats identity.
  *
  * Ornate ring uses useId() for SVG gradient/clip IDs — safe for multiple
  * instances. Availability mapping mirrors the exhaustive Record pattern from
@@ -199,6 +257,7 @@ export function ProfileChip({
   profileIconSrc,
   onNotifications,
   statusText,
+  variant = "rail",
 }: ProfileChipProps) {
   const uid = useId();
   const { gameName, availability } = summoner;
@@ -208,14 +267,26 @@ export function ProfileChip({
   // names the true availability state so screen readers get accurate status.
   const displayLabel = statusText ?? statusLabel;
 
-  const AVATAR_SIZE = 48;
-  // Inner clip radius matches OrnateRing's clipR
-  const clipR = AVATAR_SIZE * 0.5 - 1 - 3 - 1.5; // outerR - gap - 1.5 = ~17.5
+  const isNavband = variant === "navband";
+
+  // Per-variant geometry / typography.
+  const AVATAR_SIZE = isNavband ? 34 : 48;
+  // Inner clip radius matches OrnateRing's clipR (outerR - gap - 1.5).
+  const clipR = AVATAR_SIZE * 0.5 - 1 - 3 - 1.5;
+  // navband: cream name (matches reference), status tinted to its dot. rail:
+  // gold-2 name, muted grey status (unchanged #146 treatment).
+  const nameClass = isNavband ? "text-gold-1" : "text-gold-2";
+  const statusClass = isNavband ? availabilityText[availability] : "text-grey-1";
 
   return (
     <div
       data-shot="profile-chip"
-      className="flex w-full items-center gap-2.5 border-b border-gold-5 bg-blue-7 px-3 py-2 shrink-0"
+      data-variant={variant}
+      className={
+        isNavband
+          ? "flex items-center gap-2 shrink-0"
+          : "flex w-full items-center gap-2.5 border-b border-gold-5 bg-blue-7 px-3 py-2 shrink-0"
+      }
     >
       {/* ------------------------------------------------------------------ */}
       {/* Avatar — circular image with ornate gold ring overlay               */}
@@ -239,7 +310,10 @@ export function ProfileChip({
 
         {/* Level badge pill — overlaps bottom-center of avatar */}
         <span
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rounded-sm border border-gold-4 bg-grey-4 px-1 font-body text-[10px] leading-none text-gold-1 tabular-nums whitespace-nowrap"
+          className={[
+            "absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rounded-sm border border-gold-4 bg-grey-4 px-1 font-body leading-none text-gold-1 tabular-nums whitespace-nowrap",
+            isNavband ? "text-[9px]" : "text-[10px]",
+          ].join(" ")}
           style={{ zIndex: 2 }}
         >
           {level}
@@ -249,9 +323,9 @@ export function ProfileChip({
       {/* ------------------------------------------------------------------ */}
       {/* Name + availability row                                             */}
       {/* ------------------------------------------------------------------ */}
-      <div className="min-w-0 flex-1">
+      <div className={isNavband ? "min-w-0" : "min-w-0 flex-1"}>
         {/* Summoner name */}
-        <p className="truncate font-body text-sm leading-tight text-gold-2">
+        <p className={`truncate font-body leading-tight ${isNavband ? "text-sm" : "text-sm"} ${nameClass}`}>
           {gameName}
         </p>
         {/* Availability row: status dot + label (or custom statusText) */}
@@ -260,7 +334,7 @@ export function ProfileChip({
             aria-label={statusLabel}
             className={`inline-block h-2 w-2 shrink-0 rounded-full transition-colors duration-150 ${dotClass}`}
           />
-          <span className="min-w-0 truncate font-body text-xs leading-tight text-grey-1">
+          <span className={`min-w-0 truncate font-body text-xs leading-tight ${statusClass}`}>
             {displayLabel}
           </span>
         </div>
@@ -273,9 +347,12 @@ export function ProfileChip({
         type="button"
         aria-label="Notifications"
         onClick={onNotifications}
-        className="flex shrink-0 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1"
+        className={[
+          "flex shrink-0 cursor-pointer items-center justify-center text-grey-1 transition-colors duration-150 hover:text-gold-1",
+          isNavband ? "self-start pt-0.5" : "",
+        ].join(" ")}
       >
-        <BellIcon />
+        <BellIcon size={isNavband ? 15 : 16} />
       </button>
     </div>
   );

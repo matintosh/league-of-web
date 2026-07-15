@@ -95,3 +95,49 @@ export function ProfileChipStatusTextDemo() {
     </div>
   );
 }
+
+// ── navband variant — the current-era compact chip in the TopNavbar band ──
+// Rendered over bg-blue-7 to mimic the nav band it lives in.
+
+export function ProfileChipNavbandDemo() {
+  return (
+    <div className="flex justify-end bg-blue-7 px-4 py-2">
+      <ProfileChip
+        variant="navband"
+        summoner={demoSummoner}
+        level={demoSummoner.level}
+        profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+        onNotifications={() => console.log("notifications")}
+      />
+    </div>
+  );
+}
+
+export function ProfileChipNavbandInGameDemo() {
+  return (
+    <div className="flex justify-end bg-blue-7 px-4 py-2">
+      <ProfileChip
+        variant="navband"
+        summoner={inGameFriend.summoner}
+        level={inGameFriend.summoner.level}
+        profileIconSrc={profileIconUrl(inGameFriend.summoner.profileIconId)}
+        onNotifications={() => console.log("notifications")}
+      />
+    </div>
+  );
+}
+
+export function ProfileChipNavbandStatusTextDemo() {
+  return (
+    <div className="flex justify-end bg-blue-7 px-4 py-2">
+      <ProfileChip
+        variant="navband"
+        summoner={demoSummoner}
+        level={demoSummoner.level}
+        profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+        onNotifications={() => console.log("notifications")}
+        statusText="In Queue"
+      />
+    </div>
+  );
+}

@@ -93,7 +93,7 @@ export type { PlayerHovercardProps } from "./chrome/player-hovercard";
 export { ProfileBanner } from "./chrome/profile-banner";
 export type { ProfileBannerProps, ProfileBannerStat } from "./chrome/profile-banner";
 export { ProfileChip } from "./chrome/profile-chip";
-export type { ProfileChipProps } from "./chrome/profile-chip";
+export type { ProfileChipProps, ProfileChipVariant } from "./chrome/profile-chip";
 export { RankedQueuePanel } from "./chrome/ranked-queue-panel";
 export type { RankedQueuePanelProps, RankedQueue } from "./chrome/ranked-queue-panel";
 export { RpTopUpButton } from "./chrome/rp-top-up-button";
