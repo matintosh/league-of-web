@@ -156,7 +156,7 @@ function PersonGroupIcon() {
  * The crest chip uses drop-shadow glow per the Hextech drop-shadow rule for
  * overlapping elements. The header button uses aria-pressed when interactive.
  *
- * Width: inherits parent (200px rail). No internal width is set.
+ * Width: inherits parent (224px rail). No internal width is set.
  */
 export function PartyStatusPanel({
   queueLabel,

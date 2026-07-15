@@ -943,7 +943,7 @@ export function ClientShell() {
             {/* ---------------------------------------------------------------- */}
             {/* Docked social rail — in-flow right column, visible on home /      */}
             {/* mode-select / matchmaking / collection; absent on pick / loadout. */}
-            {/* Width: 200px (15.6% of 1280) — measured from pvp-mode-select ref. */}
+            {/* Width: 224px (17.5% of 1280) — measured from client-current-home-activity-center ref (#388). */}
             {/* Collapse: socialExpanded=false → display:none → content reflows.  */}
             {/* ---------------------------------------------------------------- */}
             {railVisible && socialExpanded && (
@@ -953,7 +953,7 @@ export function ClientShell() {
                 style={{ width: SOCIAL_RAIL_WIDTH }}
               >
                 {/* Zone 6 — ProfileChip heads the rail column (above SocialPanel).
-                    Width inherits from the 200px rail parent; chip is full-width. */}
+                    Width inherits from the 224px rail parent; chip is full-width. */}
                 <ProfileChip
                   summoner={demoSummoner}
                   level={demoSummoner.level}
