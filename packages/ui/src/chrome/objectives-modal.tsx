@@ -166,7 +166,7 @@ function ProgressRing({
   current: number;
   total: number;
 }) {
-  const size = 44;
+  const size = 36;
   const stroke = 3;
   const r = (size - stroke) / 2;
   const circumference = 2 * Math.PI * r;
@@ -205,7 +205,7 @@ function ProgressRing({
       </svg>
       {/* Fraction text centered in the ring */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="font-body text-xs leading-none text-gold-1">
+        <span className="font-body text-[10px] leading-none text-gold-1">
           {current}/{total}
         </span>
       </div>
@@ -219,22 +219,22 @@ function ProgressRing({
 
 function MissionRow({ mission }: { mission: ObjectiveMission }) {
   return (
-    <li className="flex items-center gap-4 border-b border-gold-5/60 px-5 py-3.5">
+    <li className="flex items-center gap-3 border-b border-gold-5/60 px-4 py-1.5">
       <ProgressRing current={mission.current} total={mission.total} />
 
       {/* Title + subtitle */}
       <div className="min-w-0 flex-1">
-        <p className="truncate font-body text-xs uppercase tracking-wide text-grey-1">
+        <p className="truncate font-body text-[11px] uppercase tracking-wide text-grey-1">
           {mission.title}
         </p>
-        <p className="mt-0.5 truncate font-display text-sm text-gold-1">
+        <p className="mt-0.5 truncate font-display text-[13px] text-gold-1">
           {mission.subtitle}
         </p>
       </div>
 
       {/* Reward tile with a quantity badge */}
       <div className="relative shrink-0">
-        <div className="h-12 w-12 overflow-hidden border border-gold-4 bg-hextech-black">
+        <div className="h-9 w-9 overflow-hidden border border-gold-4 bg-hextech-black">
           <img
             src={mission.rewardIconSrc}
             alt=""
@@ -284,7 +284,7 @@ export function ObjectivesModal({
 
   return (
     <div
-      className="absolute inset-0 z-40 flex items-center justify-center"
+      className="absolute inset-px z-40 flex items-center justify-center"
       role="dialog"
       aria-modal="true"
       aria-label="Objectives"
@@ -298,12 +298,17 @@ export function ObjectivesModal({
         className="absolute inset-0 cursor-default bg-hextech-black/70"
       />
 
-      {/* Modal card */}
+      {/* Modal card. Proportions PIL-measured from the 1920×1080 reference: the
+          card spans ≈64% width / ≈56% height (aspect ≈2.05 — wider + shorter
+          than a square). On the 1280×720 client window that's ≈820×400. Capped
+          at 840×404 so the aspect holds while the internal sizing (compact
+          banner + rings + tiles + row padding) keeps all rows visible without
+          scroll-clipping at the shorter height. */}
       <div
         className="relative flex overflow-hidden border border-gold-4 shadow-2xl"
         style={{
-          width: "min(1000px, 84%)",
-          height: "min(560px, 82%)",
+          width: "min(840px, 68%)",
+          height: "min(404px, 58%)",
           backgroundColor: "var(--color-blue-7)",
         }}
       >
@@ -396,7 +401,7 @@ export function ObjectivesModal({
         {/* ---------------------------------------------------------------- */}
         <div className="flex min-w-0 flex-1 flex-col">
           {/* Banner header */}
-          <header className="relative shrink-0 overflow-hidden" style={{ height: 96 }}>
+          <header className="relative shrink-0 overflow-hidden" style={{ height: 76 }}>
             <img
               src={header.artSrc}
               alt=""
@@ -416,13 +421,13 @@ export function ObjectivesModal({
               }}
             />
             <div className="relative flex h-full flex-col justify-center px-6">
-              <p className="font-body text-[11px] uppercase tracking-[0.2em] text-gold-2">
+              <p className="font-body text-[10px] uppercase tracking-[0.2em] text-gold-2">
                 {header.eyebrow}
               </p>
-              <h3 className="font-display text-xl uppercase tracking-wide text-gold-cream">
+              <h3 className="font-display text-lg uppercase tracking-wide text-gold-cream">
                 {header.title}
               </h3>
-              <p className="mt-0.5 font-body text-[11px] text-grey-1">
+              <p className="mt-0.5 font-body text-[10px] text-grey-1">
                 {header.freeRewardLabel}
               </p>
             </div>
@@ -442,7 +447,7 @@ export function ObjectivesModal({
 
           {/* Blue-XP progress bar row */}
           <div
-            className="flex shrink-0 items-center gap-3 border-b border-gold-5 px-6 py-2.5"
+            className="flex shrink-0 items-center gap-3 border-b border-gold-5 px-6 py-1.5"
             style={{ backgroundColor: "var(--color-blue-6)" }}
           >
             <LevelBadge level={bxp.currentLevel} />
@@ -469,7 +474,7 @@ export function ObjectivesModal({
           </div>
 
           {/* Section header */}
-          <div className="flex shrink-0 items-center justify-between border-b border-gold-5 px-5 py-2.5">
+          <div className="flex shrink-0 items-center justify-between border-b border-gold-5 px-4 py-1">
             <h4 className="font-display text-sm uppercase tracking-[0.15em] text-gold-1">
               {sectionLabel}
             </h4>

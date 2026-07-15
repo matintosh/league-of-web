@@ -1178,12 +1178,15 @@ export function ClientShell() {
       {/* Objectives modal (issue #395) — the nav-band Missions icon opens this
           centered dialog over the current view. Unlike Your Shop's full-bleed
           takeover, the reference shows a centered modal over the (still visible,
-          dimmed) lobby; the ObjectivesModal renders its own absolute inset-0
-          backdrop + centered card. It is z-40 (its internal root), so it sits
-          under the floating window controls (?─minimize─⚙─✕ at z-[60] in
-          WindowFrame) — those stay clickable above it — and under the launch
-          splash (z-100). Escape (effect above), the ✕, and the backdrop all
-          close it; the shell owns visibility so it survives nav. */}
+          dimmed) lobby; the ObjectivesModal renders its own inset-px backdrop +
+          centered card (inside the 1px gold frame border, matching the Your Shop
+          overlay). Its internal root is z-40. The floating window controls
+          (?─minimize─⚙─✕) sit at z-[60] inside WindowFrame, whose own root is
+          z-auto (no stacking context of its own), so the z-40 modal and the
+          z-[60] controls compare directly on the shared page layer — the
+          controls win and stay clickable above the modal; the launch splash
+          (z-100) stays above both. Escape (effect above), the ✕, and the
+          backdrop all close it; the shell owns visibility so it survives nav. */}
       <ObjectivesModal
         open={showObjectives}
         header={DEMO_OBJECTIVES.header}
