@@ -106,13 +106,10 @@ type CrestState = "intro" | "loop" | "outro" | "idle";
 function CrestVideoLayer({
   video,
   dismissing,
-  onOutroEnded,
 }: {
   video: HonorCheckpointCrestVideo;
   /** True once the user has dismissed — advances the machine to the outro clip. */
   dismissing: boolean;
-  /** Fires when the outro one-shot finishes (or immediately if there is none). */
-  onOutroEnded: () => void;
 }) {
   // introDone flips once the intro one-shot ends (or immediately with no intro),
   // handing the resting state to the loop.
@@ -131,12 +128,6 @@ function CrestVideoLayer({
     state = "idle";
   }
 
-  // When dismissing with no outro clip, there is nothing to wait on — signal the
-  // consumer immediately so its skip fade can proceed.
-  useEffect(() => {
-    if (dismissing && !video.outro) onOutroEnded();
-  }, [dismissing, video.outro, onOutroEnded]);
-
   // Stacked layers, each at its own opacity; only `state` is opaque. Keeping all
   // decoders warm avoids the remount stalls a single swapping <video src> hits.
   const layers: {
@@ -147,7 +138,7 @@ function CrestVideoLayer({
   }[] = [
     { key: "loop", src: video.loop, loop: true },
     { key: "intro", src: video.intro, loop: false, onEnded: () => setIntroDone(true) },
-    { key: "outro", src: video.outro, loop: false, onEnded: onOutroEnded },
+    { key: "outro", src: video.outro, loop: false },
   ];
 
   return (
@@ -208,10 +199,12 @@ export interface HonorCheckpointOverlayProps {
   backdropVideo?: string;
   /**
    * Called exactly once when the celebration is dismissed — the user clicked OK,
-   * clicked/tapped the backdrop, or pressed Escape. Fires after the outro clip
-   * (if any) and the fade-out. Under `prefers-reduced-motion` it still only fires
-   * on an explicit dismiss (the overlay has an OK button — it never auto-closes).
-   * The consumer owns visibility: it should stop rendering the overlay here.
+   * clicked/tapped the backdrop, or pressed Escape. Fires after the ~300ms
+   * fade-out. The dismiss starts the fade IMMEDIATELY; the crest outro (if any)
+   * plays underneath during the fade but never delays onFinished. Under
+   * `prefers-reduced-motion` it still only fires on an explicit dismiss (the
+   * overlay has an OK button — it never auto-closes). The consumer owns
+   * visibility: it should stop rendering the overlay here.
    */
   onFinished: () => void;
   /**
@@ -241,14 +234,15 @@ const FADE_MS = 300;
  * response to `onFinished`.
  *
  * Crest video is a state machine: `crestVideo.intro` plays once → `loop` idles →
- * on dismiss, `outro` plays once (if supplied) before the fade. `backdropVideo`
+ * on dismiss, `outro` plays once (if supplied) underneath the fade. `backdropVideo`
  * (transition_green / voting_bg) layers full-frame behind. All clips composite
  * over the gradient backdrop, so any missing/broken clip leaves the static crest
  * glyph + gradient intact.
  *
  * Dismiss is a single idempotent path: OK button, backdrop click, or Escape all
- * request the outro (if any), then fade the panel out over ~300ms, then fire
- * `onFinished` once (a skip mid-outro and the natural outro end can't double-fire).
+ * start the fade-out IMMEDIATELY (the crest advances to its outro and plays
+ * underneath during the ~300ms fade, but never delays the handoff), then fire
+ * `onFinished` once after the fade (a second Escape/click can't double-fire).
  *
  * Reduced motion: unlike a skip-on-mount celebration, this surface has an OK
  * button the user must press, so under `prefers-reduced-motion: reduce` it still
@@ -269,22 +263,18 @@ export function HonorCheckpointOverlay({
 }: HonorCheckpointOverlayProps) {
   const uid = useId();
   // dismissing flips on the first dismiss request; it advances the crest machine
-  // to its outro and, once that outro (if any) ends, triggers the fade-out.
+  // to its outro, which plays underneath the fade (it never gates the handoff).
   const [dismissing, setDismissing] = useState(false);
   // fading drives the panel opacity transition; once true it never resets.
   const [fading, setFading] = useState(false);
-  // Guards onFinished against firing twice (outro end + a second Escape/click).
+  // Guards onFinished against firing twice (e.g. OK click + a second Escape).
   const finishedRef = useRef(false);
 
-  // Begin the single dismiss path: request the crest outro. The crest layer calls
-  // back onOutroEnded (immediately if there is no outro) → we fade, then finish.
+  // Single idempotent dismiss path: advance the crest to its outro AND start the
+  // fade IMMEDIATELY (no waiting for the outro to finish), then hand off once.
   const requestDismiss = useCallback(() => {
-    setDismissing(true);
-  }, []);
-
-  // Outro finished (or none) → fade the panel, then hand off once.
-  const onOutroEnded = useCallback(() => {
     if (finishedRef.current) return;
+    setDismissing(true);
     setFading(true);
     window.setTimeout(() => {
       if (finishedRef.current) return;
@@ -352,11 +342,7 @@ export function HonorCheckpointOverlay({
         <div className="relative my-8 h-[300px] w-[280px]">
           <HonorCrestGlyph uid={uid} />
           {crestVideo && (crestVideo.intro || crestVideo.loop || crestVideo.outro) && (
-            <CrestVideoLayer
-              video={crestVideo}
-              dismissing={dismissing}
-              onOutroEnded={onOutroEnded}
-            />
+            <CrestVideoLayer video={crestVideo} dismissing={dismissing} />
           )}
         </div>
 
