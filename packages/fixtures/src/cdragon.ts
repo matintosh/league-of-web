@@ -1033,6 +1033,80 @@ export const honorTransitionVideoUrl = (): string =>
 export const honorVotingBgVideoUrl = (): string =>
   staticVideoUrl("honor/voting_bg.webm");
 
+// ---------------------------------------------------------------------------
+// Champion-mastery celebration videos (issue #370) — the mastery level-up
+// celebration overlay's magic layer.
+//
+// All live under videos/champion-mastery/. Unlike the honor crest clips (which
+// are straight-alpha 600×650 emblems), these are OPAQUE 1280×720 (yuv420p, no
+// alpha): the background is a self-contained deep-blue Hextech starfield loop,
+// and each level clip is the animated mastery crest on a BLACK field (so it
+// composites over the starfield with `mix-blend-mode: screen` — black drops
+// out). See docs/reference/VIDEO-ASSETS.md — 13 files under champion-mastery/,
+// all MIRRORED (206 video/webm).
+// ---------------------------------------------------------------------------
+
+/**
+ * Champion-mastery level union — the catalog ships one celebration clip per
+ * mastery level 1–10 (`cm-celebration-level-{N}.webm`). Each is a distinct
+ * crest: level 1 is a bare bronze crest, mid levels add a green gem + wings,
+ * level 10 is the ornate gold crest with an iridescent hex gem.
+ */
+export type MasteryCelebrationLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+
+/**
+ * Champion-mastery level-celebration crest video (issue #370) — the animated
+ * mastery crest the client plays into the celebration overlay's center slot for
+ * a given level. 1280×720 OPAQUE webm on a BLACK field (9–12s one-shot); the
+ * crest reveals, flares an aurora burst, and settles on a stable resting pose it
+ * holds on the last frame. Composite over the starfield backdrop with
+ * `mix-blend-mode: screen` so the black field drops out and only the crest adds.
+ *
+ *   masteryCelebrationVideoUrl(5)  → …/champion-mastery/cm-celebration-level-5.webm
+ *   masteryCelebrationVideoUrl(10) → …/champion-mastery/cm-celebration-level-10.webm
+ *
+ * All 10 confirmed HTTP 206 video/webm (2026-07). Feed the returned URL to the
+ * `MasteryCelebrationOverlay` crest slot; NO fetching happens here — pages
+ * supply URLs.
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/champion-mastery/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const masteryCelebrationVideoUrl = (
+  level: MasteryCelebrationLevel,
+): string =>
+  staticVideoUrl(`champion-mastery/cm-celebration-level-${level}.webm`);
+
+/**
+ * Champion-mastery celebration backdrop video (issue #370) — 1280×720 OPAQUE
+ * webm (5.0s), a seamless deep-blue Hextech starfield loop with drifting motes.
+ * Because it is opaque it fully replaces the gradient backdrop when supplied;
+ * feed to the overlay's `backdropVideo` slot (loops behind the crest clip).
+ *
+ * Confirmed HTTP 206 video/webm (2026-07).
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/champion-mastery/cm-celebration-background.webm
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const masteryCelebrationBackgroundUrl = (): string =>
+  staticVideoUrl("champion-mastery/cm-celebration-background.webm");
+
+/**
+ * Champion-mastery crest aurora glow (issue #370) — 500×500 OPAQUE webm (3.0s),
+ * a warm-gold radial aurora burst on a BLACK field. A reusable glow loop for
+ * mastery surfaces (e.g. `collection/champion-detail`); the level-celebration
+ * clips already bake in their own aurora, so the overlay does not need it. Kept
+ * here for the champion-detail mastery tab. Composite with `mix-blend-mode:
+ * screen` (black field drops out).
+ *
+ * Confirmed HTTP 206 video/webm (2026-07).
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · videos/champion-mastery/cm-crest-aurora.webm
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const masteryCrestAuroraUrl = (): string =>
+  staticVideoUrl("champion-mastery/cm-crest-aurora.webm");
+
 /*
  * MODE-SELECT BACKGROUND — CDragon asset search result (2026-07, issue #218).
  *

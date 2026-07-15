@@ -137,6 +137,8 @@ export { EmoteWheel } from "./collection/emote-wheel";
 export type { EmoteWheelProps } from "./collection/emote-wheel";
 export { HonorCheckpointOverlay } from "./collection/honor-checkpoint-overlay";
 export type { HonorCheckpointOverlayProps, HonorCheckpointCrestVideo } from "./collection/honor-checkpoint-overlay";
+export { MasteryCelebrationOverlay } from "./collection/mastery-celebration-overlay";
+export type { MasteryCelebrationOverlayProps } from "./collection/mastery-celebration-overlay";
 export { ProfileRankedScreen } from "./collection/profile-ranked-screen";
 export type { ProfileRankedScreenProps, RankedFeatureColumn, RankedMilestone, RankedSplitProgress } from "./collection/profile-ranked-screen";
 export { RankPromotionOverlay } from "./collection/rank-promotion-overlay";
