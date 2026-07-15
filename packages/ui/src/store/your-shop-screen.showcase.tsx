@@ -12,7 +12,10 @@ export const yourShopScreenShowcase: ShowcaseEntry = {
   description:
     "Full-screen overlay for the personalised skin sale (2024-era). " +
     "Shows 6 discounted skin/champion offers per player. " +
-    "Two states: unrevealed (mystery hexagon tiles) and revealed (skin art + discount badge + price). " +
+    "Two states: unrevealed (mystery hexagon tiles) and revealed (tall skin-art card + dark price band). " +
+    "Revealed cards are art-only in a tall narrow frame (aspect ≈ 0.40): no skin-name overlay and no " +
+    "per-card button — the whole card is the purchase click target (onPurchase). Discount shows as large " +
+    "gold text with a teal ▼ pointer above the struck original and final RP price. " +
     "Accessed via chest/bag icon in the top nav. Shell owns open/close and revealed state.",
   variants: [
     {
@@ -24,13 +27,13 @@ export const yourShopScreenShowcase: ShowcaseEntry = {
     {
       name: "Partially revealed — 3 revealed, 3 mystery",
       notes:
-        "First 3 cards already revealed with skin art, badges and prices; last 3 still mystery. Click remaining cards to reveal.",
+        "First 3 cards already revealed with skin art + price band; last 3 still mystery. Revealed and mystery cards share the same tall frame. Click remaining cards to reveal; click a revealed card to purchase.",
       render: () => <YourShopPartialDemo />,
     },
     {
       name: "All revealed — fully disclosed",
       notes:
-        "All 6 skin cards shown with splash art, -20% to -60% discount badges, struck-through original prices, and final RP prices.",
+        "All 6 tall art cards shown with splash art, -20% to -60% gold discount text + teal ▼ pointer, struck-through original prices, and final RP prices. No name overlay, no per-card button — clicking a card fires onPurchase.",
       render: () => <YourShopRevealedDemo />,
     },
   ],
