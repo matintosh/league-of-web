@@ -231,6 +231,51 @@ function InventorySearchBar({ onSearch }: { onSearch?: (q: string) => void }) {
 // Loot item tile
 // ---------------------------------------------------------------------------
 
+/**
+ * Circular gold "new loot" star medallion.
+ *
+ * The client marks a recently-acquired tile with a round gold ring holding a
+ * bright star, overlapping the tile's top edge (reference crop:
+ * client-loot-inventory-tile-detail.png — ~27px medallion on a 56px tile,
+ * centered on the top border). Rendered as an SVG so the ring shading and the
+ * bright star core use token CSS vars only. `useId` keeps the gradient ids
+ * unique per instance.
+ */
+function NewStarMedallion() {
+  const uid = useId().replace(/:/g, "");
+  const ringId = `${uid}nr`;
+  const starId = `${uid}ns`;
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute left-1/2 top-0 z-10 h-4 w-4 -translate-x-1/2 -translate-y-1/2"
+    >
+      <svg viewBox="0 0 24 24" width={16} height={16}>
+        <defs>
+          {/* Gold ring shading — lighter at top, darker at base for a 3D bevel */}
+          <radialGradient id={ringId} cx="50%" cy="35%" r="65%">
+            <stop offset="0%" stopColor="var(--color-gold-2)" />
+            <stop offset="100%" stopColor="var(--color-gold-4)" />
+          </radialGradient>
+          {/* Bright star core */}
+          <radialGradient id={starId} cx="50%" cy="45%" r="60%">
+            <stop offset="0%" stopColor="var(--color-gold-1)" />
+            <stop offset="100%" stopColor="var(--color-gold-cream)" />
+          </radialGradient>
+        </defs>
+        {/* Ring */}
+        <circle cx="12" cy="12" r="11" fill={`url(#${ringId})`} stroke="var(--color-gold-5)" strokeWidth="1" />
+        <circle cx="12" cy="12" r="8.5" fill="var(--color-gold-6)" />
+        {/* Star */}
+        <path
+          d="M12 5.5l1.6 3.9 4.2.3-3.2 2.7 1 4.1L12 14.9 8.4 16.6l1-4.1-3.2-2.7 4.2-.3z"
+          fill={`url(#${starId})`}
+        />
+      </svg>
+    </span>
+  );
+}
+
 function LootItemTile({
   item,
   onClick,
@@ -243,7 +288,7 @@ function LootItemTile({
     <div
       role="button"
       tabIndex={0}
-      aria-label={`${item.name} — ${item.count} owned`}
+      aria-label={`${item.name} — ${item.count} owned${item.isNew ? " (new)" : ""}`}
       onClick={() => onClick?.(item)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick?.(item); }}
       className="group relative flex-shrink-0 w-14 select-none cursor-pointer"
@@ -264,22 +309,13 @@ function LootItemTile({
           height={56}
           className="h-full w-full object-cover"
         />
-        {/* Tier badge (top-right corner) */}
-        {item.tier && (
-          <span className="absolute right-0 top-0 bg-gold-4 px-0.5 font-display text-[9px] uppercase tracking-wider text-gold-1">
-            {item.tier.slice(0, 3)}
-          </span>
-        )}
-        {/* Count badge (bottom-right corner) */}
-        <span
-          className={[
-            "absolute bottom-0 right-0 min-w-[14px] px-0.5 text-center font-display text-[10px] leading-4 font-semibold",
-            item.count > 0 ? "bg-gold-5 text-gold-1" : "bg-warning text-gold-1",
-          ].join(" ")}
-        >
+        {/* Count — plain cream text over the art, bottom-right, no pill */}
+        <span className="absolute bottom-0 right-0.5 font-display text-[10px] leading-4 font-semibold text-gold-cream [text-shadow:0_1px_2px_var(--color-hextech-black)]">
           {item.count}
         </span>
       </div>
+      {/* "New" indicator — circular star medallion overlapping the tile top edge */}
+      {item.isNew && <NewStarMedallion />}
       {/* Name label */}
       <p className="mt-0.5 truncate text-center font-body text-[9px] leading-tight text-grey-2">
         {item.name}
@@ -318,8 +354,8 @@ function LootInventoryPanel({
           <div className="flex-1 overflow-y-auto px-2 py-1">
             {lootItems.map((cat) => (
               <div key={cat.id} className="mb-2">
-                {/* Category header */}
-                <p className="mb-1 font-display text-xs uppercase tracking-widest text-gold-2">
+                {/* Category header — label with a full-width gold rule beneath */}
+                <p className="mb-1 border-b border-gold-4 pb-0.5 font-display text-xs uppercase tracking-widest text-gold-2">
                   {cat.label}
                 </p>
                 {/* Item row */}

@@ -15,7 +15,9 @@ export const lootTabShowcase: ShowcaseEntry = {
     "Left panel: sub-nav (THE SANCTUM / MYTHIC SHOP / CRAFTING), category sidebar, " +
     "search + sort, and grouped item tiles. Right panel switches on the active sub-tab: " +
     "CRAFTING → three-spoke forge wheel; MYTHIC SHOP → prestige skin 4-column grid with ME pricing; " +
-    "THE SANCTUM → Coming Soon stub. Bottom bar: key fragments, keys, loot bag counters.",
+    "THE SANCTUM → Coming Soon stub. Bottom bar: key fragments, keys, loot bag counters. " +
+    "Item tiles: plain cream count over the art (no pill), gold rule under each category header, " +
+    "and a circular gold star medallion overlapping the top edge of newly-acquired tiles.",
   variants: [
     {
       name: "Full inventory — one forge slot filled (CRAFTING reference state)",

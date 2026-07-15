@@ -55,13 +55,14 @@ export const LOOT_BAR_ICON_URLS = {
 // Demo inventory items
 // ---------------------------------------------------------------------------
 
-/** Hextech Chest — material; count: 0 (intentionally zero to show empty-badge) */
+/** Hextech Chest — material; count: 0, flagged new to show the star medallion */
 const demoHextechChest: LootItem = {
   id: "material-chest-hextech",
   name: "Hextech Chest",
   category: "material",
   count: 0,
   iconSrc: lootItemIconUrl("chest.png"),
+  isNew: true,
 };
 
 /** Hextech Key — material; count: 3 */

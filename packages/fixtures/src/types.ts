@@ -160,6 +160,11 @@ export interface LootItem {
   iconSrc: string;
   /** Optional tier/rarity label, e.g. "Legendary", "Mythic". */
   tier?: string;
+  /**
+   * Recently-acquired flag. When true the tile shows a circular gold star
+   * medallion overlapping its top edge (the client's "new loot" indicator).
+   */
+  isNew?: boolean;
 }
 
 /**
