@@ -222,29 +222,128 @@ function OverviewTab({ champion }: OverviewTabProps) {
   );
 }
 
-/** Decorative radial stat wheel — blue-2 arcs, stylised stat display. */
-function RadialStatWheel() {
-  const CX = 60;
-  const CY = 60;
-  const SIZE = 120;
+// ---------------------------------------------------------------------------
+// RadialStatWheel — filled segmented radial diagram (champion-overview target).
+//
+// Reference: docs/reference/client-champion-overview-statwheel.jpg
+//
+// The real client renders a heavy, FILLED segmented target — two concentric
+// annular bands, each divided into radial segments that alternate between a
+// bright teal and a darker teal over a dark-navy backing, with a bright teal
+// center dot and four role glyphs flanking the wheel at NW/NE/SW/SE.
+//
+// PIL re-measure of the crop (260×240, wheel centre ≈(109,105)):
+//   center dot   r0–6    rgb(0,157,179)  bright teal  → blue-3 (#0397ab)
+//   inner band   r7–24   rgb(0,151,172)  bright teal  → blue-3
+//   ring gap     r25–35  rgb(2,10,20)    dark navy    → hextech-black
+//   outer band   r36–48  rgb(3,150,168)  bright teal  → blue-3
+//   dark segments          rgb(77,126,137) darker teal → mix(blue-3 55%, black)
+// Drawn footprint ≈108px diameter → ≈120px @1280 render, matching the reference.
+//
+// Color mapping (reference rgb → token):
+//   bright segment  rgb(0,151,172)   → var(--color-blue-3)  (#0397ab)
+//   dark segment    rgb(77,126,137)  → color-mix(blue-3 52%, hextech-black)
+//   navy backing    rgb(2,10,20)     → var(--color-hextech-black) (#010a13)
+//   center dot      rgb(0,157,179)   → var(--color-blue-3)
+//   role glyphs     rgb(165,165,157) → var(--color-grey-1)  (#a09b8c)
+// ---------------------------------------------------------------------------
 
-  // Five stat arcs at different radii + angles
-  const arcs = [
-    { r: 50, start: -90, sweep: 270 },
-    { r: 42, start: -90, sweep: 200 },
-    { r: 34, start: -90, sweep: 160 },
+/** One filled annular segment (donut wedge) between two radii, two angles. */
+function annularSegment(
+  cx: number,
+  cy: number,
+  rInner: number,
+  rOuter: number,
+  startDeg: number,
+  endDeg: number,
+): string {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const p = (r: number, d: number): [number, number] => [
+    cx + r * Math.cos(toRad(d)),
+    cy + r * Math.sin(toRad(d)),
   ];
+  const [x1, y1] = p(rOuter, startDeg);
+  const [x2, y2] = p(rOuter, endDeg);
+  const [x3, y3] = p(rInner, endDeg);
+  const [x4, y4] = p(rInner, startDeg);
+  const large = endDeg - startDeg > 180 ? 1 : 0;
+  return [
+    `M ${x1} ${y1}`,
+    `A ${rOuter} ${rOuter} 0 ${large} 1 ${x2} ${y2}`,
+    `L ${x3} ${y3}`,
+    `A ${rInner} ${rInner} 0 ${large} 0 ${x4} ${y4}`,
+    "Z",
+  ].join(" ");
+}
 
-  function arcPath(cx: number, cy: number, r: number, startDeg: number, sweepDeg: number): string {
-    const toRad = (d: number) => (d * Math.PI) / 180;
-    const endDeg = startDeg + sweepDeg;
-    const x1 = cx + r * Math.cos(toRad(startDeg));
-    const y1 = cy + r * Math.sin(toRad(startDeg));
-    const x2 = cx + r * Math.cos(toRad(endDeg));
-    const y2 = cy + r * Math.sin(toRad(endDeg));
-    const large = sweepDeg > 180 ? 1 : 0;
-    return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`;
+/** Simple role glyph silhouettes traced from the reference (goblet/shield/fist/spiral). */
+function RoleGlyph({ role }: { role: "goblet" | "shield" | "fist" | "spiral" }) {
+  const common = {
+    width: 16,
+    height: 16,
+    viewBox: "0 0 16 16",
+    fill: "none" as const,
+    stroke: "currentColor",
+    "aria-hidden": true,
+  };
+  switch (role) {
+    case "goblet":
+      // Chalice / goblet — bowl on a stem and foot.
+      return (
+        <svg {...common} className="text-grey-1">
+          <path d="M4 2 H12 A4 4 0 0 1 8 8 A4 4 0 0 1 4 2 Z" strokeWidth="1.1" strokeLinejoin="round" />
+          <line x1="8" y1="8" x2="8" y2="12" strokeWidth="1.1" />
+          <line x1="5" y1="13" x2="11" y2="13" strokeWidth="1.1" strokeLinecap="round" />
+        </svg>
+      );
+    case "shield":
+      // Kite shield crest.
+      return (
+        <svg {...common} className="text-grey-1">
+          <path d="M8 2 L13 4 V8 C13 11 10.5 13.2 8 14 C5.5 13.2 3 11 3 8 V4 Z" strokeWidth="1.1" strokeLinejoin="round" />
+          <line x1="8" y1="4.5" x2="8" y2="12" strokeWidth="0.9" opacity="0.6" />
+        </svg>
+      );
+    case "fist":
+      // Gauntlet / clenched fist.
+      return (
+        <svg {...common} className="text-grey-1">
+          <path d="M4 7 V5.5 A1 1 0 0 1 6 5.5 V6.5 M6 6 V4.5 A1 1 0 0 1 8 4.5 V6 M8 5.5 A1 1 0 0 1 10 5.5 V6.5 M10 6.5 V6 A1 1 0 0 1 12 6.5 V10 A4 4 0 0 1 4 10 Z" strokeWidth="1" strokeLinejoin="round" strokeLinecap="round" />
+        </svg>
+      );
+    case "spiral":
+      // Spiral / vortex.
+      return (
+        <svg {...common} className="text-grey-1">
+          <path d="M8 8 A1.5 1.5 0 0 1 9.5 6.5 A3 3 0 0 1 6.5 9.5 A4.5 4.5 0 0 1 11 5 A6 6 0 0 1 5 11" strokeWidth="1.1" strokeLinecap="round" />
+        </svg>
+      );
   }
+}
+
+/**
+ * Decorative radial stat wheel — filled segmented concentric target with a
+ * blue-3 center dot and four role glyphs (goblet/shield/fist/spiral) flanking
+ * it. Self-contained decorative element (no props), matching the client
+ * champion-overview reference. See block comment above for measurements.
+ */
+function RadialStatWheel() {
+  const id = useId();
+  const SIZE = 132;
+  const CX = SIZE / 2;
+  const CY = SIZE / 2;
+
+  const DOT_R = 6;
+  // Two concentric bands. Radii scaled from the 108px reference footprint.
+  const bands = [
+    { rInner: 12, rOuter: 26 }, // inner band
+    { rInner: 32, rOuter: 47 }, // outer band
+  ];
+  const SEGMENTS = 12; // radial divisions per band
+  const GAP_DEG = 3; // thin navy gap between segments
+
+  const bright = "var(--color-blue-3)";
+  const dark = "color-mix(in srgb, var(--color-blue-3) 52%, var(--color-hextech-black))";
 
   return (
     <svg
@@ -252,33 +351,45 @@ function RadialStatWheel() {
       height={SIZE}
       viewBox={`0 0 ${SIZE} ${SIZE}`}
       aria-hidden="true"
+      className="shrink-0"
     >
-      {/* Background rings */}
-      {arcs.map((a, i) => (
-        <circle
-          key={`bg-${i}`}
-          cx={CX}
-          cy={CY}
-          r={a.r}
-          fill="none"
-          stroke="var(--color-grey-3)"
-          strokeWidth="1"
-        />
-      ))}
-      {/* Filled arcs */}
-      {arcs.map((a, i) => (
-        <path
-          key={`arc-${i}`}
-          d={arcPath(CX, CY, a.r, a.start, a.sweep)}
-          fill="none"
-          stroke="var(--color-blue-2)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          opacity={0.8 - i * 0.15}
-        />
-      ))}
-      {/* Center dot */}
-      <circle cx={CX} cy={CY} r={3} fill="var(--color-blue-2)" />
+      {/* Dark navy backing disc — segments and gaps sit over it */}
+      <circle cx={CX} cy={CY} r={49} fill="var(--color-hextech-black)" />
+
+      {/* Filled segmented bands */}
+      {bands.map((band, bi) =>
+        Array.from({ length: SEGMENTS }).map((_, si) => {
+          const step = 360 / SEGMENTS;
+          const start = si * step - 90 + GAP_DEG / 2;
+          const end = (si + 1) * step - 90 - GAP_DEG / 2;
+          // Alternate bright/dark; offset the outer band so bands interlock.
+          const isBright = (si + bi) % 2 === 0;
+          return (
+            <path
+              key={`${id}-seg-${bi}-${si}`}
+              d={annularSegment(CX, CY, band.rInner, band.rOuter, start, end)}
+              fill={isBright ? bright : dark}
+            />
+          );
+        }),
+      )}
+
+      {/* Center dot — bright teal (blue-3) */}
+      <circle cx={CX} cy={CY} r={DOT_R} fill="var(--color-blue-3)" />
+
+      {/* Four role glyphs flanking the wheel at NW / NE / SW / SE */}
+      <foreignObject x={2} y={4} width="16" height="16">
+        <RoleGlyph role="goblet" />
+      </foreignObject>
+      <foreignObject x={SIZE - 18} y={4} width="16" height="16">
+        <RoleGlyph role="shield" />
+      </foreignObject>
+      <foreignObject x={2} y={SIZE - 20} width="16" height="16">
+        <RoleGlyph role="fist" />
+      </foreignObject>
+      <foreignObject x={SIZE - 18} y={SIZE - 20} width="16" height="16">
+        <RoleGlyph role="spiral" />
+      </foreignObject>
     </svg>
   );
 }

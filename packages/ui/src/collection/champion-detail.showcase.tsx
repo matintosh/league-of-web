@@ -19,7 +19,7 @@ export const championDetailShowcase: ShowcaseEntry = {
     {
       name: "Overview tab",
       notes:
-        "Default tab: full-bleed splash with left gradient scrim, info panel (Damage / Style slider / Difficulty bars / decorative radial stat wheel / lore / Owned chip / Learn More link).",
+        "Default tab: full-bleed splash with left gradient scrim, info panel (Damage / Style slider / Difficulty bars / decorative radial stat wheel / lore / Owned chip / Learn More link). The stat wheel is a filled segmented concentric target (alternating blue-3 / dark-teal bands over navy) with a blue-3 center dot and four role glyphs (goblet/shield/fist/spiral) at the corners, matching the client champion-overview reference.",
       render: () => <ChampionDetailOverviewDemo />,
     },
     {
