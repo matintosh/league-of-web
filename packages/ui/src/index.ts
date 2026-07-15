@@ -81,6 +81,8 @@ export { NavProductSwitcher } from "./chrome/nav-product-switcher";
 export type { NavProductSwitcherProps, NavProduct } from "./chrome/nav-product-switcher";
 export { NewsCard } from "./chrome/news-card";
 export type { NewsCardProps } from "./chrome/news-card";
+export { ObjectivesModal } from "./chrome/objectives-modal";
+export type { ObjectivesModalProps, ObjectiveMission, ObjectiveCategory } from "./chrome/objectives-modal";
 export { PartyStatusPanel } from "./chrome/party-status-panel";
 export type { PartyStatusPanelProps } from "./chrome/party-status-panel";
 export { PlayButton } from "./chrome/play-button";
