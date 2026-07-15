@@ -12,7 +12,7 @@ export const friendRowShowcase: ShowcaseEntry = {
   name: "FriendRow",
   area: "chrome",
   description:
-    "Single row in the social sidebar friends list — circular avatar, name, and colored status line. Offline avatars are dimmed.",
+    "Single row in the social sidebar friends list — 28px circular avatar, name, and colored status line (current-era slim metrics: 48px pitch). Offline avatars are dimmed.",
   variants: [
     {
       name: "Online",
@@ -31,7 +31,7 @@ export const friendRowShowcase: ShowcaseEntry = {
     {
       name: "In Game",
       notes:
-        "Full-color avatar, grey-1 name, status text in blue-2 (teal). Faker, availability=in-game.",
+        "Full-color avatar, grey-1 name, status text in blue-3 (muted teal, matched to the current-era reference). Faker, availability=in-game.",
       render: () => (
         <div className="w-56 bg-blue-7">
           <FriendRow

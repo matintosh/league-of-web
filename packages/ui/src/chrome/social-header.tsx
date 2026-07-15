@@ -86,10 +86,10 @@ export function SocialHeader({ onAction }: SocialHeaderProps) {
   return (
     <div
       data-shot="social-header"
-      className="flex w-full items-center justify-between px-3 py-1.5"
+      className="flex w-full items-center justify-between px-3 py-2"
     >
       {/* "Social" label — natural-case in JSX, CSS uppercase */}
-      <span className="font-display text-xs uppercase tracking-widest text-grey-1">
+      <span className="font-display text-[11px] uppercase tracking-widest text-grey-1">
         Social
       </span>
 
@@ -106,8 +106,8 @@ export function SocialHeader({ onAction }: SocialHeaderProps) {
             >
               <svg
                 aria-hidden="true"
-                width="18"
-                height="18"
+                width="16"
+                height="16"
                 viewBox="0 0 18 18"
                 fill="none"
                 stroke="currentColor"

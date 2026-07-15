@@ -21,11 +21,16 @@ export interface FriendRowProps {
   onClick?: () => void;
 }
 
-/** Text color for the status line, keyed by availability. */
+/**
+ * Text color for the status line, keyed by availability. Tones matched to the
+ * current-era reference (client-current-home-activity-center.jpg): "Online"
+ * renders green, "In Game" a muted teal (blue-3, closer to the sampled
+ * rgb(64,123,134) than the brighter blue-2), away gold, offline grey.
+ */
 const statusTextColor: Record<Availability, string> = {
   online: "text-status-online",
   away: "text-gold-3",
-  "in-game": "text-blue-2",
+  "in-game": "text-blue-3",
   "in-queue": "text-blue-3",
   offline: "text-grey-2",
 };
@@ -51,9 +56,11 @@ const avatarDimmed: Record<Availability, boolean> = {
 /**
  * FriendRow — single row in the social sidebar friends list.
  *
- * Shows a 36px circular profile icon with a thin gold ring, the summoner's
+ * Shows a 28px circular profile icon with a thin gold ring, the summoner's
  * gameName, and an optional status line whose color maps to the availability
  * state. Offline friends get a dimmed avatar (brightness-50 + grayscale-[0.4]).
+ * Row metrics (28px avatar, 5px vertical padding → ~48px pitch, 13/11px text)
+ * are PIL-measured from the current-era reference — the slim modern rail.
  *
  * When `onClick` is provided the row renders as a focusable <button> with an
  * aria-label; otherwise it renders as a plain div. Presentational only — no
@@ -69,16 +76,16 @@ export function FriendRow({
   const dimmed = avatarDimmed[availability];
 
   const inner = (
-    <div className="flex w-full items-center gap-2 px-3 py-1.5">
-      {/* Circular avatar with thin gold ring */}
+    <div className="flex w-full items-center gap-2 px-3 py-[5px]">
+      {/* Circular avatar with thin gold ring — 28px, current-era measured */}
       <div className="shrink-0">
         <img
           src={profileIconSrc}
           alt={gameName}
-          width={36}
-          height={36}
+          width={28}
+          height={28}
           className={[
-            "h-9 w-9 rounded-full border border-gold-5 object-cover",
+            "h-7 w-7 rounded-full border border-gold-5 object-cover",
             dimmed ? "brightness-50 grayscale-[0.4]" : "",
           ]
             .filter(Boolean)
@@ -88,11 +95,11 @@ export function FriendRow({
 
       {/* Name + status text */}
       <div className="min-w-0 flex-1">
-        <p className={`truncate font-body text-sm leading-tight ${nameTextColor[availability]}`}>
+        <p className={`truncate font-body text-[13px] leading-tight ${nameTextColor[availability]}`}>
           {gameName}
         </p>
         {statusText != null && (
-          <p className={`truncate font-body text-xs leading-tight ${statusTextColor[availability]}`}>
+          <p className={`truncate font-body text-[11px] leading-tight ${statusTextColor[availability]}`}>
             {statusText}
           </p>
         )}

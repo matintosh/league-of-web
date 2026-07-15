@@ -16,9 +16,9 @@ export interface FriendRequestsRowProps {
 
 function RowContent({ count }: { count: number }) {
   return (
-    <div className="flex w-full items-center justify-between px-3 py-1.5">
+    <div className="flex w-full items-center justify-between px-3 py-[6px]">
       {/* Label */}
-      <span className="font-body text-sm text-gold-2">Friend Requests</span>
+      <span className="font-body text-[13px] text-gold-2">Friend Requests</span>
 
       {/* Gold count badge */}
       <span className="rounded-sm bg-gold-4 px-1 font-body text-xs text-hextech-black">

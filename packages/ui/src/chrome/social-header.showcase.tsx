@@ -12,7 +12,7 @@ export const socialHeaderShowcase: ShowcaseEntry = {
     {
       name: "Default (no callback)",
       notes:
-        'Shows the "SOCIAL" label and all four 18px icon buttons. Hover any button to see grey-1 → gold-1 colour transition. data-shot target for visual verification.',
+        'Shows the "SOCIAL" label and all four 16px icon buttons (add-friend, groups, list, search — the search glyph lives here in the current-era rail header). Hover any button to see grey-1 → gold-1 colour transition. data-shot target for visual verification.',
       render: () => (
         <div data-shot="social-header" className="w-64 bg-blue-7">
           <SocialHeader />
