@@ -23,6 +23,7 @@ import {
   gameModeMapUrl,
   championSplashUrl,
   partiesBgLoopUrl,
+  partyBannerUrl,
   staticVideoUrl,
   findMatchVideoUrl,
   bannerSweepVideoUrl,
@@ -321,6 +322,25 @@ const FIND_MATCH_VIDEOS = {
  */
 const BANNER_SWEEP_SELF_SRC = bannerSweepVideoUrl("primary");
 const BANNER_SWEEP_ALLY_SRC = bannerSweepVideoUrl("ally");
+
+// ---------------------------------------------------------------------------
+// Invited slot — a pending party member the captain has invited who has not yet
+// accepted. Consumer wiring for PlayerBanner's invited state (#350/#356).
+//
+// Placement adjudication (docs/reference/client-lobby-party-v11.png): the v11
+// reference shows a fully-filled 5-member party with no pending slot visible,
+// and the SOLO default (SHOW_DEMO_PARTY=false) matches client-lobby-solo.jpg.
+// We keep the SOLO look as the default and surface a single invited flag at the
+// first right flanker (R1, adjacent to self) — the real client shows exactly
+// this when a solo captain invites one person who hasn't accepted: that slot
+// animates the summon-ring flag while the remaining slots stay empty circles.
+//
+// invitedVideoSrc is the local "classic pulse" clip (user-extracted WAD, NOT
+// CommunityDragon-mirrored — the parties plugin ships only invited-banner.png).
+// invitedFallbackSrc is the CommunityDragon static invited PNG, shown beneath
+// the loop and as the sole visual under prefers-reduced-motion / video error.
+const INVITED_VIDEO_SRC = "/media/invited-banner/invited-banner-pulse.webm";
+const INVITED_FALLBACK_SRC = partyBannerUrl("invited");
 
 // ---------------------------------------------------------------------------
 // Queue phase type (internal to this screen)
@@ -778,7 +798,10 @@ export function PartyLobbyScreen({
           />
         </PlayerBanner>
 
-        {/* Right flankers */}
+        {/* Right flankers. R1 (i === 0) surfaces the invited flag when its slot
+            is empty — a single pending invite in the solo lobby (see
+            INVITED_VIDEO_SRC adjudication above). The invite persists across the
+            queue, so it stays the invited flag rather than the searching circle. */}
         {rightMembers.map((member, i) =>
           member ? (
             <PlayerBanner
@@ -796,6 +819,15 @@ export function PartyLobbyScreen({
                 iconSrcFor={iconSrcFor}
               />
             </PlayerBanner>
+          ) : i === 0 ? (
+            <PlayerBanner
+              key={`ri${i}`}
+              name=""
+              avatarSrc=""
+              invited
+              invitedVideoSrc={INVITED_VIDEO_SRC}
+              invitedFallbackSrc={INVITED_FALLBACK_SRC}
+            />
           ) : (
             <PlayerBanner key={`re${i}`} name="" avatarSrc="" empty queueing={isQueueing} />
           ),
