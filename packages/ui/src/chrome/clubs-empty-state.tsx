@@ -230,7 +230,7 @@ export function ClubsEmptyState({
                 <HextechDiamond />
               </div>
               {/* Column body copy */}
-              <p className="text-[12px] leading-relaxed text-grey-2">
+              <p className="text-[12px] leading-relaxed text-grey-1">
                 {col.body}
               </p>
             </div>
