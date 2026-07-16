@@ -36,6 +36,24 @@ function fmtRp(n: number): string {
   return n.toLocaleString("en-US");
 }
 
+/**
+ * Activate a `role="button"` element on Enter/Space, mirroring native button
+ * semantics. Used because the outer tile must be a <div> (it contains a nested
+ * wishlist <button>, which is invalid inside a <button> and breaks hydration).
+ */
+function handleActivateKeyDown(
+  e: React.KeyboardEvent<HTMLDivElement>,
+  activate: () => void,
+) {
+  // Ignore keys bubbling up from the nested wishlist <button> so its own
+  // Enter/Space activation doesn't also trigger the tile.
+  if (e.target !== e.currentTarget) return;
+  if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+    e.preventDefault();
+    activate();
+  }
+}
+
 /** Heart icon — filled (wishlisted) or outline. */
 function HeartIcon({ filled }: { filled: boolean }) {
   return (
@@ -200,10 +218,12 @@ function GridTile({
   rpIconSrc,
 }: Omit<StoreItemTileProps, "size">) {
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       aria-label={item.name}
       onClick={() => onClick?.(item.id)}
+      onKeyDown={(e) => handleActivateKeyDown(e, () => onClick?.(item.id))}
       className={[
         "group relative flex flex-col overflow-hidden cursor-pointer",
         "border border-gold-5 bg-blue-7",
@@ -289,7 +309,7 @@ function GridTile({
           />
         </div>
       </div>
-    </button>
+    </div>
   );
 }
 
@@ -304,10 +324,12 @@ function StripTile({
   rpIconSrc,
 }: Omit<StoreItemTileProps, "size">) {
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       aria-label={item.name}
       onClick={() => onClick?.(item.id)}
+      onKeyDown={(e) => handleActivateKeyDown(e, () => onClick?.(item.id))}
       className={[
         "group relative flex flex-col overflow-hidden cursor-pointer shrink-0",
         "border border-gold-5 bg-blue-7",
@@ -362,7 +384,7 @@ function StripTile({
           {fmtRp(item.rpPrice)}
         </span>
       </div>
-    </button>
+    </div>
   );
 }
 
