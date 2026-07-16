@@ -179,8 +179,9 @@ function TrashIcon() {
  * "All runes" swirl glyph — the leading filter control that clears the path
  * filter (selects every path). Drawn to match the reference crop: a spiral
  * swirl centered inside a rotated-square (diamond) frame, in neutral grey.
- * No DDragon/CDragon asset exists for this control (both candidate paths 404),
- * so it is SVG-drawn here.
+ * DDragon ships the real glyph (perk-images/Styles/RunesIcon.png, gold), but the
+ * reference renders it cool-grey, so it is SVG-drawn here in the neutral token
+ * (a desaturated RunesIcon.png swap is a candidate for pixel fidelity — #414).
  */
 function AllRunesIcon() {
   return (
