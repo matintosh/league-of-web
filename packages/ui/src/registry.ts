@@ -54,6 +54,7 @@ import { tabBarShowcase } from "./chrome/tab-bar.showcase";
 import { tftHubScreenShowcase } from "./chrome/tft-hub-screen.showcase";
 import { topNavbarShowcase } from "./chrome/top-navbar.showcase";
 import { trapezoidButtonShowcase } from "./chrome/trapezoid-button.showcase";
+import { updatesFlyoutShowcase } from "./chrome/updates-flyout.showcase";
 import { welcomeToSeasonModalShowcase } from "./chrome/welcome-to-season-modal.showcase";
 import { windowFrameShowcase } from "./chrome/window-frame.showcase";
 import { challengesScreenShowcase } from "./collection/challenges-screen.showcase";
@@ -158,6 +159,7 @@ export const registry: ShowcaseEntry[] = [
   tftHubScreenShowcase,
   topNavbarShowcase,
   trapezoidButtonShowcase,
+  updatesFlyoutShowcase,
   welcomeToSeasonModalShowcase,
   windowFrameShowcase,
   // login
