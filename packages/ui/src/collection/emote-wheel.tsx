@@ -7,8 +7,10 @@ import type { SlotId } from "@low/fixtures";
 // EmoteWheel — ornate emote wheel editor.
 //
 // Central circular region (~330px outer diameter) displays a double gold ring
-// with 4 quadrant arc slots (N/E/S/W) separated by gold cross-spokes, plus a
-// small center slot circle in the middle.
+// plus a separate thin outer halo ring carrying radial tick-marks, with 4
+// quadrant arc slots (N/E/S/W) separated by diagonal double-line channel
+// spokes, square bracket ornaments at the 4 spoke↔ring junctions, and a small
+// center slot circle in the middle.
 //
 // 4 satellite circles (~90px, double gold ring) are labeled:
 //   Start · First Blood · Ace · Victory (display-xs uppercase)
@@ -70,6 +72,31 @@ const INNER_RING_STROKE = 1.5;
 const RING_GAP = 6;
 
 // ---------------------------------------------------------------------------
+// Halo ring + tick decorations
+//
+// Reference (docs/reference/client-emote-wheel-frame-detail.png, 1:1 with
+// native 1920×1080): the wheel-body ring sits at native radius ≈217px and a
+// separate thin outer "halo" ring sits at native radius ≈227px — ~10px beyond
+// the body, with a dark gap carrying short radial tick-marks. Our body ring is
+// WHEEL_R = 165, so the native→render scale is 165/217 ≈ 0.760; the 10px halo
+// gap scales to ≈8px, giving a halo radius of ≈173.
+// ---------------------------------------------------------------------------
+
+/** Radial gap between the wheel-body outer ring and the halo ring (~10px native × 0.76). */
+const HALO_GAP = 8;
+/** Radius of the thin outer halo ring. */
+const HALO_R = WHEEL_R + HALO_GAP;
+/** Stroke width for the halo ring (thin, faint). */
+const HALO_STROKE = 1;
+
+/** Number of radial tick-marks around the halo arcs. */
+const TICK_COUNT = 96;
+/** Inner radius where each tick begins (just outside the wheel-body ring). */
+const TICK_INNER_R = WHEEL_R + 1;
+/** Outer radius where each tick ends (just inside the halo ring). */
+const TICK_OUTER_R = HALO_R - 1;
+
+// ---------------------------------------------------------------------------
 // SVG helpers
 // ---------------------------------------------------------------------------
 
@@ -117,27 +144,123 @@ function quadrantArcPath(
 // ---------------------------------------------------------------------------
 
 /**
- * SmallFinial — tiny diamond accent at the 4 compass points of the outer ring.
- * Approximates the ornate corner decorations on the real wheel.
+ * JunctionBracket — square bracket ornament at a spoke↔ring junction.
+ *
+ * Reference shows a small open square (▢) seated on the wheel-body ring at each
+ * of the 4 diagonal spoke junctions, with a short inward foot where the spoke
+ * channel meets it (not a rotated diamond on a compass point). The square is
+ * axis-aligned; `angleDeg` places it around the ring (0 = top, clockwise) and
+ * the foot points radially inward toward the wheel center.
+ *
+ * Native square ≈15px × 0.76 render scale ≈ 11px.
  */
-function SmallFinial({
-  cx,
-  cy,
-  size = 6,
+function JunctionBracket({
+  angleDeg,
+  size = 13,
 }: {
-  cx: number;
-  cy: number;
+  angleDeg: number;
   size?: number;
 }) {
+  // Seat the square centre just inside the body ring so it straddles the rim.
+  const seatR = WHEEL_R - RING_STROKE / 2 - size / 2 + 1;
+  const c = polar(seatR, angleDeg);
+  // Foot: a short stub from the inner edge of the square toward the centre.
+  const footOuter = polar(seatR - size / 2, angleDeg);
+  const footInner = polar(seatR - size / 2 - size * 0.5, angleDeg);
   return (
-    <rect
-      x={cx - size / 2}
-      y={cy - size / 2}
-      width={size}
-      height={size}
-      fill="var(--color-gold-3)"
-      transform={`rotate(45, ${cx}, ${cy})`}
-    />
+    <g>
+      <rect
+        x={c.x - size / 2}
+        y={c.y - size / 2}
+        width={size}
+        height={size}
+        fill="none"
+        stroke="var(--color-gold-3)"
+        strokeWidth={1.25}
+      />
+      <line
+        x1={footOuter.x}
+        y1={footOuter.y}
+        x2={footInner.x}
+        y2={footInner.y}
+        stroke="var(--color-gold-3)"
+        strokeWidth={1.25}
+      />
+    </g>
+  );
+}
+
+/**
+ * HaloTicks — short radial hash-marks filling the gap between the wheel-body
+ * ring and the outer halo ring, matching the tick decorations on the reference
+ * halo arcs. Drawn as a single ring of evenly spaced radial strokes.
+ */
+function HaloTicks() {
+  const marks = [];
+  for (let i = 0; i < TICK_COUNT; i++) {
+    const deg = (360 / TICK_COUNT) * i;
+    const a = polar(TICK_INNER_R, deg);
+    const b = polar(TICK_OUTER_R, deg);
+    marks.push(
+      <line
+        key={i}
+        x1={a.x}
+        y1={a.y}
+        x2={b.x}
+        y2={b.y}
+        stroke="var(--color-gold-4)"
+        strokeWidth={0.75}
+        opacity={0.6}
+      />
+    );
+  }
+  return <g>{marks}</g>;
+}
+
+/**
+ * ChannelSpoke — a double parallel gold line forming a dark channel/trough
+ * running along a diagonal from the center circle out to the wheel-body ring.
+ * Reference spokes are two strokes with a dark centre (not a single line),
+ * widening slightly toward the rim.
+ */
+function ChannelSpoke({ angleDeg }: { angleDeg: number }) {
+  // Perpendicular offset (px) that separates the two parallel lines. Narrow at
+  // the inner end, wider at the rim to read as a widening channel.
+  const innerHalf = 1.8;
+  const outerHalf = 4.5;
+  const innerR = INNER_ARC_R;
+  const outerR = OUTER_ARC_R;
+  const perp = angleDeg + 90;
+  const iA = polar(innerR, angleDeg);
+  const oA = polar(outerR, angleDeg);
+  // Offset endpoints along the perpendicular direction.
+  const off = (base: { x: number; y: number }, half: number, sign: number) => {
+    const a = ((perp - 90) * Math.PI) / 180;
+    return { x: base.x + sign * half * Math.cos(a), y: base.y + sign * half * Math.sin(a) };
+  };
+  const l1i = off(iA, innerHalf, +1);
+  const l1o = off(oA, outerHalf, +1);
+  const l2i = off(iA, innerHalf, -1);
+  const l2o = off(oA, outerHalf, -1);
+  return (
+    <g>
+      <line
+        x1={l1i.x}
+        y1={l1i.y}
+        x2={l1o.x}
+        y2={l1o.y}
+        stroke="var(--color-gold-4)"
+        strokeWidth={1.25}
+      />
+      <line
+        x1={l2i.x}
+        y1={l2i.y}
+        x2={l2o.x}
+        y2={l2o.y}
+        stroke="var(--color-gold-4)"
+        strokeWidth={1.25}
+      />
+    </g>
   );
 }
 
@@ -348,13 +471,19 @@ export function EmoteWheel({
     victory:       `${uid}-clip-victory`,
   };
 
-  // Quadrant arc angles (degrees, 0 = top/north)
+  // Quadrant arc angles (degrees, 0 = top/north). Arcs are centred on the four
+  // compass points (N/E/S/W) so the quadrant boundaries — and thus the spoke
+  // channels + junction brackets — fall on the diagonals, matching the
+  // reference wheel (client-emote-wheel-frame-detail.png).
   const QUADRANTS: Array<{ id: SlotId; start: number; end: number; label: string }> = [
-    { id: "wheel-n", start: -90,  end:  0,   label: slotNames["wheel-n"]     ?? "North" },
-    { id: "wheel-e", start:   0,  end:  90,  label: slotNames["wheel-e"]     ?? "East"  },
-    { id: "wheel-s", start:  90,  end: 180,  label: slotNames["wheel-s"]     ?? "South" },
-    { id: "wheel-w", start: 180,  end: 270,  label: slotNames["wheel-w"]     ?? "West"  },
+    { id: "wheel-n", start: -45,  end:  45,  label: slotNames["wheel-n"]     ?? "North" },
+    { id: "wheel-e", start:  45,  end: 135,  label: slotNames["wheel-e"]     ?? "East"  },
+    { id: "wheel-s", start: 135,  end: 225,  label: slotNames["wheel-s"]     ?? "South" },
+    { id: "wheel-w", start: 225,  end: 315,  label: slotNames["wheel-w"]     ?? "West"  },
   ];
+
+  /** Diagonal angles where the spoke channels + junction brackets sit. */
+  const SPOKE_ANGLES = [45, 135, 225, 315];
 
   const centerCx = WHEEL_R;
   const centerCy = WHEEL_R;
@@ -440,11 +569,14 @@ export function EmoteWheel({
           </defs>
 
           {/* ---- Background fill ---- */}
+          {/* Reference quadrant fill samples rgb(14,17,22) — a near-neutral
+              near-black; blue-8 (#0b0f18) is the closest token (blue-7 read
+              too blue). */}
           <circle
             cx={centerCx}
             cy={centerCy}
             r={innerGoldRingR - 1}
-            fill="var(--color-blue-6)"
+            fill="var(--color-blue-8)"
           />
 
           {/* ---- Quadrant arc fills (dark arc areas) ---- */}
@@ -455,7 +587,7 @@ export function EmoteWheel({
               fill={
                 selectedSlot === id
                   ? "var(--color-blue-5)"
-                  : "var(--color-blue-7)"
+                  : "var(--color-blue-8)"
               }
               className="transition-colors duration-150"
             />
@@ -480,25 +612,10 @@ export function EmoteWheel({
             );
           })}
 
-          {/* ---- Gold cross-spokes (horizontal + vertical lines) ---- */}
-          {/* Vertical spoke */}
-          <line
-            x1={centerCx}
-            y1={centerCy - OUTER_ARC_R}
-            x2={centerCx}
-            y2={centerCy + OUTER_ARC_R}
-            stroke="var(--color-gold-4)"
-            strokeWidth={1.5}
-          />
-          {/* Horizontal spoke */}
-          <line
-            x1={centerCx - OUTER_ARC_R}
-            y1={centerCy}
-            x2={centerCx + OUTER_ARC_R}
-            y2={centerCy}
-            stroke="var(--color-gold-4)"
-            strokeWidth={1.5}
-          />
+          {/* ---- Diagonal channel spokes (double parallel gold lines) ---- */}
+          {SPOKE_ANGLES.map((deg) => (
+            <ChannelSpoke key={`spoke-${deg}`} angleDeg={deg} />
+          ))}
 
           {/* ---- Center circle slot ---- */}
           <circle
@@ -556,11 +673,24 @@ export function EmoteWheel({
             strokeWidth={INNER_RING_STROKE}
           />
 
-          {/* ---- Diamond finials at compass points on outer ring ---- */}
-          <SmallFinial cx={centerCx}            cy={centerCy - outerRingR} />
-          <SmallFinial cx={centerCx + outerRingR} cy={centerCy}            />
-          <SmallFinial cx={centerCx}            cy={centerCy + outerRingR} />
-          <SmallFinial cx={centerCx - outerRingR} cy={centerCy}            />
+          {/* ---- Radial tick-marks in the halo gap ---- */}
+          <HaloTicks />
+
+          {/* ---- Outer halo ring (thin, ~8px beyond the body ring) ---- */}
+          <circle
+            cx={centerCx}
+            cy={centerCy}
+            r={HALO_R}
+            fill="none"
+            stroke="var(--color-gold-4)"
+            strokeWidth={HALO_STROKE}
+            opacity={0.85}
+          />
+
+          {/* ---- Square bracket ornaments at the 4 diagonal spoke junctions ---- */}
+          {SPOKE_ANGLES.map((deg) => (
+            <JunctionBracket key={`bracket-${deg}`} angleDeg={deg} />
+          ))}
 
           {/* ---- Interactive arc overlays (on top, capture clicks) ---- */}
           {QUADRANTS.map(({ id, start, end, label }) => (

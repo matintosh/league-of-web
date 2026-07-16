@@ -19,7 +19,8 @@ export const emoteWheelShowcase: ShowcaseEntry = {
   variants: [
     {
       name: "Empty wheel",
-      notes: "All slots null — shows dark fill with gold rings and diamond finials",
+      notes:
+        "All slots null — shows dark fill, double gold body ring, outer halo ring with radial tick-marks, diagonal channel spokes, and square bracket ornaments at the spoke junctions",
       render: () => <EmoteWheelEmptyDemo />,
     },
     {
