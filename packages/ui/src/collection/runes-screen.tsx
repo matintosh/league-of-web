@@ -175,6 +175,36 @@ function TrashIcon() {
   );
 }
 
+/**
+ * "All runes" swirl glyph — the leading filter control that clears the path
+ * filter (selects every path). Drawn to match the reference crop: a spiral
+ * swirl centered inside a rotated-square (diamond) frame, in neutral grey.
+ * No DDragon/CDragon asset exists for this control (both candidate paths 404),
+ * so it is SVG-drawn here.
+ */
+function AllRunesIcon() {
+  return (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+      strokeLinecap="round"
+    >
+      {/* Pointed diamond frame — sharp top/bottom points, side points at mid-height */}
+      <path d="M16 4 L25 16 L16 28 L7 16 Z" />
+      {/* Angular S-swirl coiling inward, matching the runes emblem */}
+      <path
+        d="M13 12.5 L18.5 12.5 L18.5 19.5 L12.5 19.5 L12.5 15 L16 15 L16 17"
+      />
+    </svg>
+  );
+}
+
 /** Diamond bullet used in the hover overlay rune name list */
 function DiamondBullet() {
   return (
@@ -349,6 +379,41 @@ function CreateNewCard({ onCreate }: { onCreate: () => void }) {
 // Path filter button
 // ---------------------------------------------------------------------------
 
+/**
+ * Leading "all runes" filter button — selects every path (clears the filter).
+ * Active when no specific path filter is set.
+ */
+function AllRunesFilterButton({
+  active,
+  onSelect,
+}: {
+  active: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-label="Filter by all runes"
+      aria-pressed={active}
+      className={[
+        "relative flex flex-col items-center pb-1 text-grey-1",
+        "transition-opacity duration-150",
+        active ? "opacity-100" : "opacity-55 hover:opacity-90",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+      ].join(" ")}
+    >
+      <AllRunesIcon />
+      {active && (
+        <span
+          aria-hidden="true"
+          className="absolute -bottom-0 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-gold-3"
+        />
+      )}
+    </button>
+  );
+}
+
 interface PathFilterButtonProps {
   path: RunePath;
   active: boolean;
@@ -488,8 +553,12 @@ export function RunesScreen({
           />
         </div>
 
-        {/* Path filter buttons */}
+        {/* Path filter buttons — leading "all runes" glyph, the 5 paths, then a divider */}
         <div className="flex items-center gap-3">
+          <AllRunesFilterButton
+            active={activePathFilter === null}
+            onSelect={() => onPathFilterChange?.(null)}
+          />
           {allPaths.map((path) => (
             <PathFilterButton
               key={path.id}
@@ -502,6 +571,8 @@ export function RunesScreen({
               }
             />
           ))}
+          {/* Vertical divider before the hide-presets checkbox */}
+          <span aria-hidden="true" className="ml-1 h-7 w-px bg-grey-3" />
         </div>
 
         {/* Hide preset pages checkbox — inline version matching the HextechCheckbox style */}
@@ -546,23 +617,47 @@ export function RunesScreen({
           {paddedCount} / {paddedMax}
         </span>
 
-        {/* CREATE NEW trapezoid button */}
+        {/* CREATE NEW button — straight-sided rectangle, double-gold Hextech frame */}
         <button
           type="button"
           onClick={onCreatePage}
           aria-label="Create new rune page"
           className={[
-            "px-5 py-2 font-display text-xs uppercase tracking-widest",
-            "border border-gold-3 text-gold-2 bg-transparent",
-            "transition-colors duration-150 hover:bg-gold-5 hover:text-gold-1",
-            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+            "group relative p-[3px]",
+            "border border-gold-4 bg-hextech-black",
+            "transition-colors duration-150",
+            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gold-3",
           ].join(" ")}
-          style={{ clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)" }}
         >
-          Create New
+          {/* Inner frame + label */}
+          <span
+            className={[
+              "flex items-center justify-center px-5 py-1.5",
+              "border border-gold-4 font-display text-xs uppercase tracking-widest text-gold-cream",
+              "transition-colors duration-150 group-hover:bg-gold-5 group-hover:text-gold-1",
+            ].join(" ")}
+          >
+            Create New
+          </span>
+          {/* L-shaped corner-tick accents */}
+          {(
+            [
+              "left-0 top-0 border-l border-t",
+              "right-0 top-0 border-r border-t",
+              "left-0 bottom-0 border-l border-b",
+              "right-0 bottom-0 border-r border-b",
+            ] as const
+          ).map((pos) => (
+            <span
+              key={pos}
+              aria-hidden="true"
+              className={`pointer-events-none absolute h-2 w-2 border-gold-2 ${pos}`}
+            />
+          ))}
         </button>
 
-        {/* Trash ghost button */}
+        {/* Trash control — off-state toggle-switch pill: circular trash knob on
+            the left, grey pill track extending right. */}
         <button
           type="button"
           onClick={() => selectedPageId && onDeletePage(selectedPageId)}
@@ -573,14 +668,27 @@ export function RunesScreen({
           }
           disabled={!selectedPageId}
           className={[
-            "flex items-center justify-center w-8 h-8 border transition-colors duration-150",
-            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+            "relative flex h-8 w-[58px] shrink-0 items-center rounded-full border",
+            "transition-colors duration-150",
+            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gold-3",
             selectedPageId
-              ? "border-grey-3 text-grey-1 hover:border-gold-4 hover:text-gold-2 cursor-pointer"
-              : "border-grey-3 text-grey-3 cursor-not-allowed opacity-40",
+              ? "border-grey-2 cursor-pointer group hover:border-gold-4"
+              : "border-grey-3 cursor-not-allowed opacity-40",
           ].join(" ")}
         >
-          <TrashIcon />
+          {/* Circular knob on the left with the trash icon */}
+          <span
+            aria-hidden="true"
+            className={[
+              "flex h-8 w-8 items-center justify-center rounded-full border",
+              "transition-colors duration-150",
+              selectedPageId
+                ? "border-grey-1 bg-hextech-black text-grey-1 group-hover:border-gold-4 group-hover:text-gold-2"
+                : "border-grey-3 bg-hextech-black text-grey-3",
+            ].join(" ")}
+          >
+            <TrashIcon />
+          </span>
         </button>
       </div>
 
