@@ -326,34 +326,50 @@ export function StoreItemPurchaseModal({
 function PreviewTile({
   item,
   size,
+  selected = false,
 }: {
   item: PurchaseItem;
   size: "sm" | "lg";
+  /**
+   * When true the gold frame is shown even without hover (selected state).
+   * The frame otherwise appears only on hover — non-selected tiles are
+   * borderless full-bleed art per the reference.
+   */
+  selected?: boolean;
 }) {
   const tileW = size === "lg" ? 240 : 150;
   const tileH = size === "lg" ? 200 : 140;
 
   return (
     <div
-      className="flex flex-col border border-gold-4 overflow-hidden bg-blue-6"
+      className={[
+        // Full-bleed art tile: no frame by default; gold border only on
+        // hover or when selected. `border` is always present so the box
+        // model stays stable across states — only the color transitions.
+        "group relative overflow-hidden border transition-colors duration-150 cursor-pointer",
+        selected
+          ? "border-gold-4"
+          : "border-transparent hover:border-gold-4",
+      ].join(" ")}
       style={{ width: tileW, height: tileH }}
     >
-      {/* Art */}
-      <div className="relative flex-1 overflow-hidden">
-        <img
-          src={item.artUrl}
-          alt={item.name}
-          width={tileW}
-          height={tileH - 40}
-          className="h-full w-full object-cover"
-          onError={(e) => {
-            (e.currentTarget as HTMLImageElement).style.opacity = "0";
-          }}
-        />
-      </div>
+      {/* Full-bleed art */}
+      <img
+        src={item.artUrl}
+        alt={item.name}
+        width={tileW}
+        height={tileH}
+        className="absolute inset-0 h-full w-full object-cover"
+        onError={(e) => {
+          (e.currentTarget as HTMLImageElement).style.opacity = "0";
+        }}
+      />
 
-      {/* Name + category label */}
-      <div className="flex flex-col items-center justify-center px-1 py-1.5 shrink-0 bg-blue-7/80">
+      {/* Bottom scrim — darkens the lower art so overlaid labels stay legible */}
+      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-hextech-black/85 via-hextech-black/45 to-transparent" />
+
+      {/* Name + category label — overlaid on the art */}
+      <div className="absolute inset-x-0 bottom-0 flex flex-col items-center justify-center px-1 py-2">
         <span className="font-display text-xs uppercase tracking-wide text-gold-1 text-center leading-tight line-clamp-1">
           {item.name}
         </span>
