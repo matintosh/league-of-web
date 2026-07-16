@@ -25,6 +25,17 @@ export interface RunePathFixture {
   iconUrl: string;
 }
 
+/**
+ * "All runes" glyph — DDragon's real diamond-swirl emblem (the leading
+ * clear-filter control in the runes toolbar). Verified HTTP 200 (2026-07).
+ * DDragon ships it gold; the reference renders it cool-grey, so consumers
+ * desaturate it via CSS filter (grayscale/brightness) rather than fetching a
+ * recolored asset.
+ * Source: DDragon perk-images/Styles/RunesIcon.png
+ */
+export const runesGlyphIconUrl = (): string =>
+  `${DDRAGON_PERKS}/Styles/RunesIcon.png`;
+
 /** The five Rune paths with verified DDragon icon URLs */
 export const RUNE_PATHS: Record<RunePathId, RunePathFixture> = {
   7200: {
@@ -54,6 +65,23 @@ export const RUNE_PATHS: Record<RunePathId, RunePathFixture> = {
     iconUrl: `${DDRAGON_PERKS}/Styles/7204_Resolve.png`,
   },
 };
+
+/**
+ * The five Rune paths in the toolbar's reference display order:
+ * Precision, Domination, Sorcery, Resolve, Inspiration.
+ *
+ * `RUNE_PATHS` is an id-keyed lookup, so `Object.values(RUNE_PATHS)` iterates in
+ * ascending numeric-id order (7200→7204 = Domination, Precision, Sorcery,
+ * Inspiration, Resolve) — NOT the client's order. Consumers rendering the path
+ * filter row must use this explicit array to match the reference.
+ */
+export const RUNE_PATHS_ORDERED: RunePathFixture[] = [
+  RUNE_PATHS[7201], // Precision
+  RUNE_PATHS[7200], // Domination
+  RUNE_PATHS[7202], // Sorcery
+  RUNE_PATHS[7204], // Resolve
+  RUNE_PATHS[7203], // Inspiration
+];
 
 // ---------------------------------------------------------------------------
 // Demo rune pages (3 preset pages, matching reference screenshot)
