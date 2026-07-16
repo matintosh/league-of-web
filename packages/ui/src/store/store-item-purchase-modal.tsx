@@ -48,6 +48,46 @@ function fmtRp(n: number): string {
   return n.toLocaleString("en-US");
 }
 
+/**
+ * Close button chrome — a gold double-ring Hextech circle with a thin ×,
+ * seated on the panel's border via two short connector stubs pointing toward
+ * the panel corner (down + left). Rings brighten to gold-4 on hover via the
+ * parent button's `group` class.
+ */
+function CloseRingIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="36"
+      height="36"
+      viewBox="0 0 36 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="text-gold-5 group-hover:text-gold-4 transition-colors duration-150"
+    >
+      {/* Connector stubs into the panel border (down + left) */}
+      <path
+        d="M18 32.5V36M3.5 18H0"
+        stroke="currentColor"
+        strokeWidth="1.25"
+      />
+      {/* Dark interior fill */}
+      <circle cx="18" cy="18" r="13" fill="var(--color-hextech-black)" />
+      {/* Outer ring */}
+      <circle cx="18" cy="18" r="13.5" stroke="currentColor" strokeWidth="1" />
+      {/* Inner ring */}
+      <circle cx="18" cy="18" r="11" stroke="currentColor" strokeWidth="1" />
+      {/* Thin × */}
+      <path
+        d="M14 14l8 8M22 14l-8 8"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 /** Heart icon outline (wishlist). */
 function HeartIcon() {
   return (
@@ -146,20 +186,20 @@ export function StoreItemPurchaseModal({
       >
         {/* ---------------------------------------------------------------- */}
         {/* Zone 4 — Close button (top-right corner of panel)                */}
+        {/* Gold double-ring Hextech circle: thin outer + inner ring with a  */}
+        {/* thin ×, seated on the panel border via short connector stubs.    */}
         {/* ---------------------------------------------------------------- */}
         <button
           type="button"
           aria-label="Close purchase modal"
           onClick={onClose}
           className={[
-            "absolute -top-4 -right-4 z-10",
-            "flex h-8 w-8 items-center justify-center rounded-full",
-            "bg-gold-5/40 border border-gold-5 text-gold-1",
-            "hover:bg-gold-4/60 hover:border-gold-4 transition-colors duration-150 cursor-pointer",
-            "font-display text-base",
+            "group absolute -top-4 -right-4 z-10",
+            "flex h-9 w-9 items-center justify-center",
+            "transition-colors duration-150 cursor-pointer",
           ].join(" ")}
         >
-          ×
+          <CloseRingIcon />
         </button>
 
         {/* ---------------------------------------------------------------- */}
@@ -216,10 +256,10 @@ export function StoreItemPurchaseModal({
           {/* Price row */}
           {originalPrice !== null && discountPct !== null ? (
             <div className="flex items-center gap-2 mb-3">
-              <span className="font-body text-sm text-grey-1">
+              <span className="font-body text-sm text-riot-red">
                 -{discountPct}%
               </span>
-              <span className="font-display text-sm text-grey-2 line-through">
+              <span className="font-display text-sm text-riot-red line-through">
                 {fmtRp(originalPrice)}
               </span>
             </div>

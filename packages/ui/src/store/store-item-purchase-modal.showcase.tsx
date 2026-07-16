@@ -16,7 +16,7 @@ export const storeItemPurchaseModalShowcase: ShowcaseEntry = {
     {
       name: "Can afford — discounted bundle",
       notes:
-        "Purchase button is active (gold border). Strikethrough original price + -22% badge shown. 2×2 preview grid with Champion, Skin, Ward Skin, Icon tiles.",
+        "Purchase button is active (gold border). Riot-red -22% badge + riot-red strikethrough original price. 2×2 preview grid with Champion, Skin, Ward Skin, Icon tiles.",
       render: () => <StoreItemPurchaseModalCanAffordDemo />,
     },
     {
