@@ -59,7 +59,7 @@ export interface TabBarProps {
  */
 export function TabBar({ tabs, activeId, onSelect, label = "Tab navigation", trailing }: TabBarProps) {
   return (
-    <div className="flex h-10 w-full shrink-0 items-end overflow-hidden border-b border-gold-5 bg-blue-6 px-4">
+    <div className="flex h-10 w-full shrink-0 items-end overflow-hidden px-4">
       <div
         role="tablist"
         aria-label={label}
@@ -88,7 +88,7 @@ export function TabBar({ tabs, activeId, onSelect, label = "Tab navigation", tra
                   isDisabled
                     ? "border-transparent text-grey-2 cursor-default"
                     : isActive
-                    ? "border-gold-3 text-gold-2 cursor-pointer"
+                    ? "border-gold-3 text-gold-1 cursor-pointer"
                     : "border-transparent text-grey-1 hover:text-gold-1 cursor-pointer",
                 ].join(" ")}
               >

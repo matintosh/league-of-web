@@ -12,7 +12,7 @@ export const tabBarShowcase: ShowcaseEntry = {
   name: "Tab Bar",
   area: "chrome",
   description:
-    "Secondary in-screen tab navigation (e.g. Collection: Champions / Skins / Emotes / Ward Skins). Sits below the TopNavbar as a sub-header strip.",
+    "Secondary in-screen tab navigation (e.g. Collection: Champions / Skins / Emotes / Ward Skins). Sits below the TopNavbar as a sub-header strip. Transparent band (atmospheric bg shows through, no opaque fill and no full-width rule); the active tab carries a near-white label (text-gold-1) and a localized gold underline.",
   variants: [
     {
       name: "Default",
@@ -33,7 +33,8 @@ export const tabBarShowcase: ShowcaseEntry = {
     },
     {
       name: "Empty",
-      notes: "No tabs provided — renders the bar shell with an empty tablist.",
+      notes:
+        "No tabs provided — renders the transparent bar shell with an empty tablist (no opaque band, no full-width rule).",
       render: () => <TabBarEmptyDemo />,
     },
     {
