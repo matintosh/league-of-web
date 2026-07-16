@@ -32,8 +32,9 @@ import {
   YourShopScreen,
   RpTopUpButton,
   ObjectivesModal,
+  UpdatesFlyout,
 } from "@low/ui";
-import type { NavItem, NavProduct, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard } from "@low/ui";
+import type { NavItem, NavProduct, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard, UpdateNotification } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -64,6 +65,7 @@ import {
   DEMO_DAILY_PLAY_REWARDS,
   DEMO_LEVEL_REWARD_CARDS,
   DEMO_OBJECTIVES,
+  DEMO_UPDATES,
 } from "@low/fixtures";
 import type { ClashScoutingPlayer } from "@low/fixtures";
 import type { NewsArticle } from "@low/ui";
@@ -480,6 +482,21 @@ export function ClientShell() {
   const [objectivesCategoryId, setObjectivesCategoryId] = useState(
     DEMO_OBJECTIVES.activeCategoryId,
   );
+  /**
+   * Updates / notifications flyout (issue #396). The nav-band Updates icon
+   * toggles a compact anchored flyout (UpdatesFlyout) below the icon; the shell
+   * owns visibility AND the notification list (so mark-read / dismiss mutate
+   * here and the icon's unread badge stays in sync). CONVENTION-BASED: no
+   * dedicated reference screenshot — the surface follows the real client's
+   * anchored-dropdown convention (see the UpdatesFlyout JSDoc). Unlike the
+   * Objectives centered modal, this closes on outside-click as well as Escape,
+   * matching a lightweight dropdown; the shell wires both since the anchored
+   * flyout can't own listeners for its own trigger.
+   */
+  const [showUpdates, setShowUpdates] = useState(false);
+  const [updateItems, setUpdateItems] = useState<UpdateNotification[]>(DEMO_UPDATES);
+  const updatesAnchorRef = useRef<HTMLDivElement | null>(null);
+  const unreadUpdatesCount = updateItems.filter((n) => n.unread).length;
   /** DDragon champion id chosen in the pick phase; passed to LoadoutScreen. */
   const [chosenChampionId, setChosenChampionId] = useState<string | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -567,6 +584,27 @@ export function ClientShell() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [showObjectives]);
+
+  // Escape + outside-click close the Updates flyout. Listeners are only
+  // attached while it's open, torn down on close/unmount. The pointerdown
+  // handler ignores clicks inside the anchor wrapper (the icon + the flyout) so
+  // toggling via the icon and interacting with rows don't self-close.
+  useEffect(() => {
+    if (!showUpdates) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowUpdates(false);
+    };
+    const onPointerDown = (e: PointerEvent) => {
+      const anchor = updatesAnchorRef.current;
+      if (anchor && !anchor.contains(e.target as Node)) setShowUpdates(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [showUpdates]);
 
   // Reset queue state when leaving the party-lobby view so rail reverts to PartyStatusPanel.
   // This runs synchronously with the view change so there's no flash.
@@ -841,19 +879,54 @@ export function ClientShell() {
                     {/* Real nav-icon-loot.svg — hardcoded gold fills, no filter needed */}
                     <img src={navIconUrl("loot")} alt="" aria-hidden="true" width={22} height={22} />
                   </button>
-                  {/* Updates/notifications — no notifications surface exists yet, so
-                      DISABLED placeholder per #386. Uses the real static-assets
-                      top-nav-updates-eat-icon.svg (player-bust badge).
-                      TODO(#396): wire to a notifications/updates panel when built. */}
-                  <button
-                    type="button"
-                    aria-label="Updates"
-                    aria-disabled
-                    className="flex h-7 w-7 cursor-default items-center justify-center opacity-40"
-                  >
-                    {/* Real top-nav-updates-eat-icon.svg — updates/notif bust badge */}
-                    <img src={navUpdatesIconUrl()} alt="" aria-hidden="true" width={22} height={20} />
-                  </button>
+                  {/* Updates/notifications — wired to the UpdatesFlyout (issue
+                      #396, previously a #386 disabled placeholder). Uses the real
+                      static-assets top-nav-updates-eat-icon.svg (player-bust
+                      badge). Enabled: activating it toggles a compact anchored
+                      flyout below the icon (right-aligned to the window edge); the
+                      shell owns open state, the notification list, and outside-
+                      click / Escape dismissal. An unread-count badge (gold pill)
+                      sits over the icon when any item is unread. The relative
+                      wrapper anchors the absolutely-positioned flyout, and the
+                      outside-click guard ignores clicks inside this ref. */}
+                  <div ref={updatesAnchorRef} className="relative">
+                    <button
+                      type="button"
+                      aria-label="Updates"
+                      aria-haspopup="dialog"
+                      aria-expanded={showUpdates}
+                      className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
+                      onClick={() => setShowUpdates((v) => !v)}
+                    >
+                      {/* Real top-nav-updates-eat-icon.svg — updates/notif bust badge */}
+                      <img src={navUpdatesIconUrl()} alt="" aria-hidden="true" width={22} height={20} />
+                    </button>
+                    {/* Unread badge — small gold pill over the icon's top-right,
+                        shown only when there are unread items. Caps display at 9+. */}
+                    {unreadUpdatesCount > 0 && (
+                      <span
+                        aria-label={`${unreadUpdatesCount} unread updates`}
+                        className="pointer-events-none absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-gold-4 bg-hextech-black px-1 font-body text-[10px] leading-none text-gold-1"
+                      >
+                        {unreadUpdatesCount > 9 ? "9+" : unreadUpdatesCount}
+                      </span>
+                    )}
+                    <UpdatesFlyout
+                      open={showUpdates}
+                      notifications={updateItems}
+                      onItemClick={(id) =>
+                        setUpdateItems((prev) =>
+                          prev.map((n) => (n.id === id ? { ...n, unread: false } : n)),
+                        )
+                      }
+                      onDismiss={(id) =>
+                        setUpdateItems((prev) => prev.filter((n) => n.id !== id))
+                      }
+                      onMarkAllRead={() =>
+                        setUpdateItems((prev) => prev.map((n) => ({ ...n, unread: false })))
+                      }
+                    />
+                  </div>
                   <button
                     type="button"
                     aria-label="Store"

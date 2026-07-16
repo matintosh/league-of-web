@@ -126,6 +126,8 @@ export { TopNavbar } from "./chrome/top-navbar";
 export type { TopNavbarProps, NavItem } from "./chrome/top-navbar";
 export { TrapezoidButton } from "./chrome/trapezoid-button";
 export type { TrapezoidButtonProps, TrapLayer } from "./chrome/trapezoid-button";
+export { UpdatesFlyout } from "./chrome/updates-flyout";
+export type { UpdatesFlyoutProps, UpdateNotification } from "./chrome/updates-flyout";
 export { WelcomeToSeasonModal } from "./chrome/welcome-to-season-modal";
 export type { WelcomeToSeasonModalProps } from "./chrome/welcome-to-season-modal";
 export { WindowFrame } from "./chrome/window-frame";
