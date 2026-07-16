@@ -935,7 +935,7 @@ export function CollectionScreen() {
       <div
         role="tablist"
         aria-label="Collection tabs"
-        className="flex h-10 w-full shrink-0 items-end overflow-hidden border-b border-gold-5 bg-blue-6 px-4 gap-6"
+        className="flex h-10 w-full shrink-0 items-end overflow-hidden px-4 gap-6"
       >
         {TABS.map((tab) => {
           const isActive = tab.id === activeTab;
@@ -955,7 +955,7 @@ export function CollectionScreen() {
                 isDead
                   ? "border-transparent text-grey-3 cursor-default"
                   : isActive
-                  ? "border-gold-3 text-gold-2 cursor-pointer"
+                  ? "border-gold-3 text-gold-1 cursor-pointer"
                   : "border-transparent text-grey-1 hover:text-gold-1 cursor-pointer",
               ].join(" ")}
             >
