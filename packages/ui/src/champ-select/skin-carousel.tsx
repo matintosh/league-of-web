@@ -9,7 +9,7 @@ import { useId } from "react";
 export interface SkinOption {
   /** Display name of the skin. */
   name: string;
-  /** URL for the small thumbnail shown in the strip (~90×50). */
+  /** URL for the thumbnail shown in the strip (~90×50 unselected, ~118×66 selected). */
   thumbSrc: string;
   /** URL for the large splash shown in the circular/rectangular frame. */
   splashSrc: string;
@@ -56,39 +56,123 @@ export interface SkinThumbStripProps {
 }
 
 // ---------------------------------------------------------------------------
-// Style maps
+// Thumb geometry
 // ---------------------------------------------------------------------------
 
-/** Thumb border: selected = gold-3, default = transparent */
-const THUMB_BORDER: Record<"selected" | "default", string> = {
-  selected: "border-2 border-gold-3",
-  default: "border-2 border-transparent",
-};
+/**
+ * Thumb art-tile dimensions.
+ *
+ * Measured from the reference loadout strip (docs/reference/
+ * client-loadout-skin-thumb-strip-detail.png, native scale): the SELECTED
+ * thumb renders in a bright double-gold frame ~171×98px while an unselected
+ * art tile is ~108×73px — the selected tile grows ≈1.6× wide and ≈1.35× tall
+ * and pops forward. We keep our unselected base at 90×50 and scale the selected
+ * tile proportionally, capped so the framed footprint fits the loadout tray's
+ * 77px strip row (bottom bar height 130 − 52px action bar − 1px rule).
+ */
+const THUMB_SIZE = {
+  default: { w: 90, h: 50 },
+  selected: { w: 118, h: 66 },
+} as const;
 
 // ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
 
-/** Diamond lock badge for locked thumbs — inlined from SkinCard's LockBadge. */
+/**
+ * Gold padlock badge for locked thumbs — shackle arc + body silhouette,
+ * bottom-centre of the tile. Replaces the earlier rotated-diamond badge to
+ * match the reference (a plain gold padlock at each locked thumb's lower edge).
+ */
 function LockBadge() {
   return (
     <div className="absolute bottom-1 left-1/2 -translate-x-1/2 pointer-events-none">
-      <svg width="18" height="18" viewBox="0 0 22 22" aria-hidden="true">
-        {/* Gold outline diamond */}
-        <rect
-          x="4" y="4" width="14" height="14"
+      <svg width="16" height="18" viewBox="0 0 16 18" aria-hidden="true">
+        {/* Shackle: rounded arc rising from the body */}
+        <path
+          d="M4.5 8 V5.5 A3.5 3.5 0 0 1 11.5 5.5 V8"
           fill="none"
-          stroke="var(--color-gold-3)"
-          strokeWidth="1.5"
-          transform="rotate(45, 11, 11)"
+          stroke="var(--color-gold-2)"
+          strokeWidth="1.6"
         />
-        {/* Lock body */}
-        <rect x="8" y="12" width="6" height="4" rx="0.5" fill="var(--color-gold-3)" />
-        {/* Lock shackle */}
-        <path d="M9 12 V10 A2 2 0 0 1 13 10 V12" fill="none" stroke="var(--color-gold-3)" strokeWidth="1.2" />
+        {/* Body: rounded rectangle */}
+        <rect
+          x="2.5" y="8" width="11" height="8" rx="1.5"
+          fill="var(--color-gold-3)"
+          stroke="var(--color-gold-2)"
+          strokeWidth="0.75"
+        />
+        {/* Keyhole */}
+        <circle cx="8" cy="11.5" r="1.1" fill="var(--color-gold-5)" />
+        <rect x="7.4" y="11.5" width="1.2" height="2.6" rx="0.4" fill="var(--color-gold-5)" />
       </svg>
       <span className="sr-only">locked</span>
     </div>
+  );
+}
+
+/**
+ * SkinThumb — a single thumbnail button in the strip. Shared by SkinCarousel's
+ * inline strip and the standalone SkinThumbStrip so both stay identical.
+ *
+ * Selected: enlarged tile + heavy double-gold frame (bright gold-2 outer ring
+ * with a darker gold-4 inner rule). Locked: dimmed (art stays readable) + gold
+ * padlock badge; click no-ops. The button footprint reserves the selected width
+ * always so the row does not reflow when selection moves.
+ */
+function SkinThumb({
+  skin,
+  isSelected,
+  onSelect,
+}: {
+  skin: SkinOption;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
+  const isLocked = !!skin.locked;
+  const size = isSelected ? THUMB_SIZE.selected : THUMB_SIZE.default;
+
+  return (
+    <button
+      type="button"
+      onClick={() => { if (!isLocked) onSelect(); }}
+      aria-label={skin.name}
+      aria-pressed={isSelected}
+      aria-disabled={isLocked}
+      className={[
+        "relative shrink-0 flex items-center justify-center",
+        "transition-transform duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
+        isLocked ? "cursor-default" : "cursor-pointer",
+      ].join(" ")}
+      // Reserve the selected footprint width so neighbours don't shift on select.
+      style={{ width: THUMB_SIZE.selected.w, height: THUMB_SIZE.selected.h }}
+    >
+      <span
+        className={[
+          "relative block overflow-hidden transition-[width,height] duration-150",
+          isSelected
+            // Heavy double-gold frame: bright outer border + darker inner rule.
+            ? "border-2 border-gold-2 ring-1 ring-inset ring-gold-4 shadow-[0_0_6px_rgba(0,0,0,0.6)]"
+            : "border-2 border-transparent",
+        ].join(" ")}
+        style={{ width: size.w, height: size.h }}
+      >
+        <img
+          src={skin.thumbSrc}
+          alt={skin.name}
+          width={size.w}
+          height={size.h}
+          className={[
+            "object-cover w-full h-full transition-[filter] duration-150",
+            isLocked
+              ? "brightness-[0.65]"
+              : isSelected ? "" : "hover:brightness-110",
+          ].join(" ")}
+          draggable={false}
+        />
+        {isLocked && <LockBadge />}
+      </span>
+    </button>
   );
 }
 
@@ -121,8 +205,8 @@ function ChevronRight() {
  * + dashed tick circle, circular-clipped splash). Skin name appears below in
  * font-display italic gold-1. Pagination dots (6px, active=blue-2,
  * inactive=grey-3) sit below the name. A horizontal thumb strip lets the user
- * browse; selected thumb has a gold-3 border; locked thumbs are dimmed with a
- * diamond lock badge.
+ * browse; the selected thumb is enlarged with a heavy double-gold frame; locked
+ * thumbs are dimmed (art stays readable) with a gold padlock badge.
  *
  * Chevron arrows (<, >) navigate to the next UNLOCKED skin in that direction,
  * skipping over any locked entries. Navigation is clamped — no wrap-around.
@@ -315,39 +399,14 @@ export function SkinCarousel({
 
           {/* Thumbnails */}
           <div className="flex items-center gap-2">
-            {skins.map((skin, i) => {
-              const isSelected = i === selectedIndex;
-              const isLocked = !!skin.locked;
-
-              return (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => {
-                    if (!isLocked) onSelect(i);
-                  }}
-                  aria-label={skin.name}
-                  aria-pressed={isSelected}
-                  aria-disabled={isLocked}
-                  className={[
-                    "relative overflow-hidden transition-[border-color,filter] duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
-                    isSelected ? THUMB_BORDER.selected : THUMB_BORDER.default,
-                    isLocked ? "brightness-50 cursor-default" : "cursor-pointer hover:brightness-110",
-                  ].join(" ")}
-                  style={{ width: 90, height: 50 }}
-                >
-                  <img
-                    src={skin.thumbSrc}
-                    alt={skin.name}
-                    width={90}
-                    height={50}
-                    className="object-cover w-full h-full"
-                    draggable={false}
-                  />
-                  {isLocked && <LockBadge />}
-                </button>
-              );
-            })}
+            {skins.map((skin, i) => (
+              <SkinThumb
+                key={i}
+                skin={skin}
+                isSelected={i === selectedIndex}
+                onSelect={() => onSelect(i)}
+              />
+            ))}
           </div>
 
           {/* Right chevron */}
@@ -380,8 +439,9 @@ export function SkinCarousel({
  * extracted as a standalone component for layouts (like the loadout screen
  * bottom bar) that need to place it separately from the circular frame.
  *
- * Shares all interaction semantics with SkinCarousel: locked thumbs are
- * dimmed + badge; chevrons skip locked skins; navigation is clamped.
+ * Shares all interaction semantics AND the SkinThumb renderer with SkinCarousel:
+ * the selected thumb is enlarged with a double-gold frame; locked thumbs are
+ * dimmed + gold padlock badge; chevrons skip locked skins; navigation is clamped.
  *
  * Controlled: parent owns `selectedIndex`; `onSelect` is called with new index.
  */
@@ -416,36 +476,14 @@ export function SkinThumbStrip({ skins, selectedIndex, onSelect }: SkinThumbStri
       </button>
 
       <div className="flex items-center gap-2">
-        {skins.map((skin, i) => {
-          const isSelected = i === selectedIndex;
-          const isLocked = !!skin.locked;
-          return (
-            <button
-              key={i}
-              type="button"
-              onClick={() => { if (!isLocked) onSelect(i); }}
-              aria-label={skin.name}
-              aria-pressed={isSelected}
-              aria-disabled={isLocked}
-              className={[
-                "relative overflow-hidden transition-[border-color,filter] duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
-                isSelected ? THUMB_BORDER.selected : THUMB_BORDER.default,
-                isLocked ? "brightness-50 cursor-default" : "cursor-pointer hover:brightness-110",
-              ].join(" ")}
-              style={{ width: 90, height: 50 }}
-            >
-              <img
-                src={skin.thumbSrc}
-                alt={skin.name}
-                width={90}
-                height={50}
-                className="object-cover w-full h-full"
-                draggable={false}
-              />
-              {isLocked && <LockBadge />}
-            </button>
-          );
-        })}
+        {skins.map((skin, i) => (
+          <SkinThumb
+            key={i}
+            skin={skin}
+            isSelected={i === selectedIndex}
+            onSelect={() => onSelect(i)}
+          />
+        ))}
       </div>
 
       <button

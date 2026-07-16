@@ -9,7 +9,7 @@ export const skinThumbStripShowcase: ShowcaseEntry = {
   name: "Skin Thumb Strip",
   area: "champ-select",
   description:
-    "Standalone thumb strip companion to SkinCarousel — chevron arrows + ~90×50 skin thumbs with gold-3 selected border and diamond lock badges on locked entries. Extracted so screens can place the strip in a different layout zone than the splash frame (the loadout screen renders it in the bottom bar via SkinCarousel's showThumbStrip={false}). Same interaction contract as the carousel: chevrons skip locked skins (clamped, no wrap), locked thumbs no-op.",
+    "Standalone thumb strip companion to SkinCarousel — chevron arrows + skin thumbs. The selected thumb enlarges (~118×66 vs ~90×50) with a heavy double-gold frame; locked thumbs are dimmed (art stays readable) with a gold padlock badge. Extracted so screens can place the strip in a different layout zone than the splash frame (the loadout screen renders it in the bottom bar via SkinCarousel's showThumbStrip={false}). Same interaction contract as the carousel: chevrons skip locked skins (clamped, no wrap), locked thumbs no-op.",
   variants: [
     {
       name: "Default — Feral Warwick selected, two locked",
