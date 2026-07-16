@@ -30,7 +30,8 @@ import {
   championSplashUrl,
   warwickDetail,
   warwickMastery,
-  RUNE_PATHS,
+  RUNE_PATHS_ORDERED,
+  runesGlyphIconUrl,
   SUMMONER_SPELLS,
 } from "@low/fixtures";
 import type { SelectOption, TierEntry } from "@low/ui";
@@ -1093,7 +1094,8 @@ export function CollectionScreen() {
         {activeTab === "runes" && (
           <div className="h-full min-h-0 flex flex-col">
             <RunesScreen
-              paths={Object.values(RUNE_PATHS)}
+              paths={RUNE_PATHS_ORDERED}
+              allRunesGlyphSrc={runesGlyphIconUrl()}
               pages={runePages}
               maxPages={3}
               selectedPageId={runeSelectedPageId}

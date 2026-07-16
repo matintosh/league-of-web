@@ -89,6 +89,13 @@ export interface RunesScreenProps {
    * (back-compat).
    */
   paths?: RunePath[];
+  /**
+   * DDragon "all runes" glyph URL (the leading clear-filter control), e.g.
+   * `runesGlyphIconUrl()`. When provided, the real diamond-swirl emblem is
+   * rendered desaturated to the reference's cool-grey; when omitted, a
+   * hand-drawn SVG fallback is used (back-compat).
+   */
+  allRunesGlyphSrc?: string;
   /** Active path filter (string-form of numeric id), or null = all paths */
   activePathFilter?: string | null;
   onPathFilterChange?: (pathId: string | null) => void;
@@ -176,14 +183,27 @@ function TrashIcon() {
 }
 
 /**
- * "All runes" swirl glyph — the leading filter control that clears the path
- * filter (selects every path). Drawn to match the reference crop: a spiral
- * swirl centered inside a rotated-square (diamond) frame, in neutral grey.
- * DDragon ships the real glyph (perk-images/Styles/RunesIcon.png, gold), but the
- * reference renders it cool-grey, so it is SVG-drawn here in the neutral token
- * (a desaturated RunesIcon.png swap is a candidate for pixel fidelity — #414).
+ * "All runes" glyph — the leading filter control that clears the path filter
+ * (selects every path). Prefers DDragon's real diamond-swirl emblem
+ * (perk-images/Styles/RunesIcon.png, supplied via `allRunesGlyphSrc`),
+ * desaturated to the reference's cool-grey with a CSS filter (DDragon ships it
+ * gold). Falls back to a hand-drawn SVG when no `src` is provided (back-compat).
  */
-function AllRunesIcon() {
+function AllRunesIcon({ src }: { src?: string }) {
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt=""
+        aria-hidden="true"
+        width={32}
+        height={32}
+        // Desaturate DDragon's gold glyph to the reference's cool-grey.
+        // CSS filters govern rendering, not palette tokens — allowed here.
+        className="[filter:grayscale(1)_brightness(1.35)_contrast(0.9)]"
+      />
+    );
+  }
   return (
     <svg
       width="32"
@@ -387,9 +407,11 @@ function CreateNewCard({ onCreate }: { onCreate: () => void }) {
 function AllRunesFilterButton({
   active,
   onSelect,
+  glyphSrc,
 }: {
   active: boolean;
   onSelect: () => void;
+  glyphSrc?: string;
 }) {
   return (
     <button
@@ -404,7 +426,7 @@ function AllRunesFilterButton({
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
       ].join(" ")}
     >
-      <AllRunesIcon />
+      <AllRunesIcon src={glyphSrc} />
       {active && (
         <span
           aria-hidden="true"
@@ -482,6 +504,7 @@ export function RunesScreen({
   hidePresets = false,
   onHidePresetsChange,
   paths,
+  allRunesGlyphSrc,
   activePathFilter = null,
   onPathFilterChange,
 }: RunesScreenProps) {
@@ -559,6 +582,7 @@ export function RunesScreen({
           <AllRunesFilterButton
             active={activePathFilter === null}
             onSelect={() => onPathFilterChange?.(null)}
+            glyphSrc={allRunesGlyphSrc}
           />
           {allPaths.map((path) => (
             <PathFilterButton
