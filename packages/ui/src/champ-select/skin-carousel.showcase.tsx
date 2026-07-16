@@ -11,7 +11,7 @@ export const skinCarouselShowcase: ShowcaseEntry = {
   name: "Skin Carousel",
   area: "champ-select",
   description:
-    "Champ-select skin picker: circular ornate frame (double gold SVG ring + dashed tick circle, circular-clipped splash), italic font-display skin name in gold-1, pagination dots (6px, blue-2 active / grey-3 inactive), and a horizontal thumb strip with gold-3 selected border. Locked skins show a dimmed thumb + diamond lock badge; clicking them is a no-op. Chevron arrows skip locked skins (clamped, no wrap).",
+    "Champ-select skin picker: circular ornate frame (double gold SVG ring + dashed tick circle, circular-clipped splash), italic font-display skin name in gold-1, pagination dots (6px, blue-2 active / grey-3 inactive), and a horizontal thumb strip whose selected thumb enlarges with a heavy double-gold frame. Locked skins show a dimmed (still-readable) thumb + gold padlock badge; clicking them is a no-op. Chevron arrows skip locked skins (clamped, no wrap).",
   referenceImage: "client-champ-select-loadout.jpg",
   referenceNote: "docs/reference/client-champ-select-loadout.jpg — live client champ-select skin loadout panel",
   variants: [
