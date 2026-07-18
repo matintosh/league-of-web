@@ -220,12 +220,19 @@ function LeagueGlyph({ size, gradId, greyed }: { size: number; gradId: string; g
 // Medallion — v3-proven disc + ring + glyph (or real emblem image)
 // ---------------------------------------------------------------------------
 
-function Medallion({ size, greyed, discId, glyphId, swirlId, emblemSrc, emblemHeight }: {
+function Medallion({ size, greyed, discId, glyphId, swirlId, emblemSrc, emblemHeight, emblemHidden }: {
   size: number; greyed?: boolean; discId: string; glyphId: string; swirlId: string;
   /** When set, renders the real LoL emblem image instead of the abstract glyph. */
   emblemSrc?: string;
   /** Rendered height for the emblem image (px). Width scales proportionally via object-contain. */
   emblemHeight?: number;
+  /**
+   * Swap-not-stack (issue #423): the league-logo socket video carries its own
+   * complete L medallion, so when the video layer is active the static
+   * emblem/glyph must hide or the logo doubles. `motion-reduce:flex` keeps the
+   * static emblem for reduced-motion users, where the video layer is hidden.
+   */
+  emblemHidden?: boolean;
 }) {
   const r = size / 2;
   const sw = size >= 60 ? 2.5 : 1.5;
@@ -302,7 +309,13 @@ function Medallion({ size, greyed, discId, glyphId, swirlId, emblemSrc, emblemHe
           style={greyed ? undefined : { mixBlendMode: "color-dodge" }}
         />
       </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div
+        className={
+          emblemHidden
+            ? "absolute inset-0 hidden motion-reduce:flex items-center justify-center"
+            : "absolute inset-0 flex items-center justify-center"
+        }
+      >
         {emblemSrc ? (
           /* Real LoL emblem: explicit dimensions prevent layout shift.
              Source is 497×474 — always downscaling; object-contain preserves ratio. */
@@ -609,6 +622,11 @@ function MedallionVideoLayer({
     <div
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-[1] motion-reduce:hidden"
+      /* #423: the league-logo art sits ~1.5px left / ~1.1px low of its frame
+         center (measured from decoded frames + 4× render sampling), so the
+         cover-fitted video lands off the socket ring center. Percent translate
+         (of the socket-sized layer) re-centers it at every size variant. */
+      style={{ transform: "translate(2.9%, -2.1%)" }}
     >
       {layers.map(({ key, src, loop, onEnded }) =>
         src ? (
@@ -921,10 +939,12 @@ export function PlayButton({
             swirlId={swirlId}
             emblemSrc={emblemSrc}
             emblemHeight={totalH}
+            emblemHidden={hasMedallionVideo}
           />
           {/* Real-client league-logo socket video (v8, issue #309, from #316).
-              Sits over the static emblem, clipped to the circle by this shell.
-              loop-active engages while the button is hovered. */}
+              REPLACES the static emblem while active (#423 — the video carries
+              its own L, stacking doubled the logo); clipped to the circle by
+              this shell. loop-active engages while the button is hovered. */}
           {hasMedallionVideo && medallionVideoSources && (
             <MedallionVideoLayer
               sources={medallionVideoSources}
