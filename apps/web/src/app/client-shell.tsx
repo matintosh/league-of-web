@@ -96,8 +96,9 @@ type View = "home" | "mode-select" | "party-lobby" | "collection" | "declare" | 
 // cluster; the residual tension (the reference has NO screen-nav text row in
 // this band at all — screen access lives in an "activity center") is a #403
 // follow-up epic, documented in the PR.
+// Profile has NO nav tab (#425) — the real client opens the profile screen
+// from the top-right avatar chip (ProfileChip onOpenProfile below).
 const NAV_ITEMS: NavItem[] = [
-  { id: "profile",     label: "Profile" },
   { id: "collection",  label: "Collection" },
   { id: "competitive", label: "Competitive" },
   { id: "store",       label: "Store" },
@@ -822,7 +823,6 @@ export function ClientShell() {
             onNavigate={(id) => {
               setActiveNavId(id);
               if (id === "collection") setView("collection");
-              else if (id === "profile") setView("profile");
               else if (id === "store") { setActiveStoreTab("featured"); setView("store"); }
               else if (id === "tft") setView("tft");
               else if (id === "competitive") setView("competitive");
@@ -996,6 +996,12 @@ export function ClientShell() {
                 level={demoSummoner.level}
                 profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
                 onNotifications={() => console.log("notifications")}
+                onOpenProfile={() => {
+                  // "profile" is absent from NAV_ITEMS, so no tab highlights
+                  // while the profile screen is open (same pattern as home/tft).
+                  setActiveNavId("profile");
+                  setView("profile");
+                }}
                 statusText={profileChipStatusText}
               />
             }
