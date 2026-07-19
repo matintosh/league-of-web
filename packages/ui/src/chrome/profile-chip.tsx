@@ -1,6 +1,7 @@
 "use client";
 
 import { useId } from "react";
+import type { ReactNode } from "react";
 import type { Summoner, Availability } from "@low/fixtures";
 
 /**
@@ -26,6 +27,14 @@ export interface ProfileChipProps {
   profileIconSrc: string;
   /** Called when the bell icon is clicked. Optional; no-op when absent. */
   onNotifications?: () => void;
+  /**
+   * Called when the identity area (avatar + name block) is clicked. In the
+   * real client the profile screen has NO main-nav tab — it opens from this
+   * chip (issue #425). When provided, the identity area renders as a button
+   * with pointer/hover affordance; the bell keeps its own separate handler
+   * and never double-fires. Omit for a non-interactive chip (back-compat).
+   */
+  onOpenProfile?: () => void;
   /**
    * Optional override for the availability label text. When provided, replaces
    * the default availability label (e.g. "Online") with this string, truncated
@@ -218,6 +227,25 @@ function BellIcon({ size = 16 }: { size?: number }) {
 }
 
 // ---------------------------------------------------------------------------
+// IdentityArea — avatar + name wrapper; <button> only when interactive so
+// non-interactive chips keep plain-div semantics (no phantom tab stop).
+// ---------------------------------------------------------------------------
+
+function IdentityArea({ interactive, onClick, className, children }: {
+  interactive: boolean;
+  onClick?: () => void;
+  className: string;
+  children: ReactNode;
+}) {
+  if (!interactive) return <div className={className}>{children}</div>;
+  return (
+    <button type="button" aria-label="Open profile" onClick={onClick} className={className}>
+      {children}
+    </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // ProfileChip
 // ---------------------------------------------------------------------------
 
@@ -256,6 +284,7 @@ export function ProfileChip({
   level,
   profileIconSrc,
   onNotifications,
+  onOpenProfile,
   statusText,
   variant = "rail",
 }: ProfileChipProps) {
@@ -288,6 +317,24 @@ export function ProfileChip({
           : "flex w-full items-center gap-2.5 border-b border-gold-5 bg-blue-7 px-3 py-2 shrink-0"
       }
     >
+      {/* ------------------------------------------------------------------ */}
+      {/* Identity area — avatar + name block. Renders as a button when       */}
+      {/* onOpenProfile is provided: the real client opens the profile screen */}
+      {/* from this chip, not from a main-nav tab (#425). The bell below stays */}
+      {/* outside so notification clicks never double-fire.                   */}
+      {/* ------------------------------------------------------------------ */}
+      <IdentityArea
+        interactive={!!onOpenProfile}
+        onClick={onOpenProfile}
+        className={[
+          isNavband
+            ? "flex min-w-0 items-center gap-2 text-left"
+            : "flex min-w-0 flex-1 items-center gap-2.5 text-left",
+          onOpenProfile
+            ? "cursor-pointer transition-[filter] duration-150 hover:brightness-110"
+            : "",
+        ].join(" ")}
+      >
       {/* ------------------------------------------------------------------ */}
       {/* Avatar — circular image with ornate gold ring overlay               */}
       {/* ------------------------------------------------------------------ */}
@@ -339,6 +386,7 @@ export function ProfileChip({
           </span>
         </div>
       </div>
+      </IdentityArea>
 
       {/* ------------------------------------------------------------------ */}
       {/* Bell icon button — notifications                                    */}

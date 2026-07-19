@@ -108,6 +108,7 @@ export function ProfileChipNavbandDemo() {
         level={demoSummoner.level}
         profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
         onNotifications={() => console.log("notifications")}
+        onOpenProfile={() => console.log("open profile")}
       />
     </div>
   );
