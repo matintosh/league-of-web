@@ -56,7 +56,16 @@ export function HomeContentRail({
       data-shot="home-content-rail"
       role="tablist"
       aria-orientation="vertical"
-      className="flex h-full w-full min-w-[230px] max-w-[260px] flex-col bg-hextech-black py-6"
+      className="flex h-full w-full min-w-[230px] max-w-[260px] flex-col py-6"
+      // #503: SEMI-TRANSPARENT scrim (was opaque `bg-hextech-black`) so the
+      // featured splash + flames bleed through behind the rail, matching the
+      // reference. Left-heavier gradient: denser hextech-black near the far-left
+      // edge for label/bullet legibility, thinning toward the seam so the art
+      // stays faintly visible. Overall ~62% opacity — art readable, text crisp.
+      style={{
+        background:
+          "linear-gradient(to right, color-mix(in srgb, var(--color-hextech-black) 72%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 62%, transparent) 60%, color-mix(in srgb, var(--color-hextech-black) 52%, transparent) 100%)",
+      }}
     >
       <div className="flex flex-1 flex-col gap-1">
         {items.map((item) => (
