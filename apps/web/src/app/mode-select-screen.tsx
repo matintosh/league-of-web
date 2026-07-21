@@ -1,286 +1,109 @@
 "use client";
 
-import { useState, useId } from "react";
+import { useState } from "react";
 import { GameModeCard, QueueTypeList, HextechButton, TabBar, MapCrestImg } from "@low/ui";
+import type { QueueOption } from "@low/ui";
 import { gameModeMapUrl, lobbyButtonVideoUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
-// Crest SVGs — duplicated from game-mode-card.demo.tsx (page-level content).
-// Extract to a shared demo-assets module in apps/web if a third consumer emerges.
-// ---------------------------------------------------------------------------
-
-/** Diamond-square crest — Summoner's Rift (square rotated ~15°, inner slash). */
-function SummonersRiftCrest() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="130"
-      height="130"
-      viewBox="0 0 130 130"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* Outer rotated square frame — thick gold band, dark navy interior */}
-      <rect
-        x="24"
-        y="24"
-        width="82"
-        height="82"
-        rx="3"
-        stroke="currentColor"
-        strokeWidth="7"
-        fill="var(--color-blue-7)"
-        transform="rotate(15 65 65)"
-      />
-      {/* Inner thin frame line */}
-      <rect
-        x="34"
-        y="34"
-        width="62"
-        height="62"
-        rx="1"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-        transform="rotate(15 65 65)"
-        opacity="0.7"
-      />
-      {/* Thick diagonal slash — top-left to bottom-right */}
-      <line
-        x1="43"
-        y1="34"
-        x2="94"
-        y2="89"
-        stroke="currentColor"
-        strokeWidth="4"
-        transform="rotate(15 65 65)"
-      />
-      {/* Edge tab notches (left/right of the frame, like the client crest) */}
-      <rect x="16" y="60" width="10" height="10" fill="currentColor" transform="rotate(15 65 65)" />
-      <rect x="104" y="60" width="10" height="10" fill="currentColor" transform="rotate(15 65 65)" />
-    </svg>
-  );
-}
-
-/** Hourglass crest — Twisted Treeline (hourglass shape with blue glowing core). */
-function TwistedTreelineCrest() {
-  const id = useId();
-  const glowId = `${id}-blue-glow`;
-  return (
-    <svg
-      aria-hidden="true"
-      width="130"
-      height="130"
-      viewBox="0 0 130 130"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <defs>
-        <filter id={glowId} x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="6" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      {/* Upper hourglass bulb — thick gold band, dark navy interior */}
-      <path
-        d="M26 16 L104 16 L104 26 Q104 40 65 58 Q26 40 26 26 Z"
-        stroke="currentColor"
-        strokeWidth="6"
-        fill="var(--color-blue-7)"
-        strokeLinejoin="round"
-      />
-      {/* Lower hourglass bulb */}
-      <path
-        d="M26 114 L104 114 L104 104 Q104 90 65 72 Q26 90 26 104 Z"
-        stroke="currentColor"
-        strokeWidth="6"
-        fill="var(--color-blue-7)"
-        strokeLinejoin="round"
-      />
-      {/* Blue glowing core at the waist */}
-      <ellipse
-        cx="65"
-        cy="65"
-        rx="18"
-        ry="11"
-        fill="var(--color-blue-3)"
-        filter={`url(#${glowId})`}
-      />
-      <ellipse
-        cx="65"
-        cy="65"
-        rx="18"
-        ry="11"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        fill="none"
-      />
-      {/* Blue inner highlight */}
-      <ellipse cx="60" cy="62" rx="7" ry="4" fill="var(--color-blue-2)" opacity="0.8" />
-    </svg>
-  );
-}
-
-/** Parallelogram crest — ARAM (skewed rhombus, inner slash). */
-function AramCrest() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="130"
-      height="130"
-      viewBox="0 0 130 130"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* Outer parallelogram — thick gold band, dark navy interior */}
-      <path
-        d="M44 18 L102 18 L86 112 L28 112 Z"
-        stroke="currentColor"
-        strokeWidth="7"
-        fill="var(--color-blue-7)"
-        strokeLinejoin="round"
-      />
-      {/* Inner thin frame line */}
-      <path
-        d="M51 28 L94 28 L79 102 L36 102 Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-        opacity="0.7"
-      />
-      {/* Thick diagonal slash */}
-      <line
-        x1="46"
-        y1="34"
-        x2="86"
-        y2="94"
-        stroke="currentColor"
-        strokeWidth="4"
-      />
-      {/* Corner notch accent — top-left */}
-      <path d="M44 18 L56 18 L52 28 L51 28 Z" fill="currentColor" />
-    </svg>
-  );
-}
-
-/** Shield crest — Teamfight Tactics (shield with stylized "A" emblem). */
-function TftCrest() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="130"
-      height="130"
-      viewBox="0 0 130 130"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* Outer shield — flat top with clipped corners, thick gold band, dark navy interior */}
-      <path
-        d="M32 16 L98 16 L108 26 L108 68 Q108 102 65 116 Q22 102 22 68 L22 26 Z"
-        stroke="currentColor"
-        strokeWidth="7"
-        fill="var(--color-blue-7)"
-        strokeLinejoin="round"
-      />
-      {/* Inner thin frame line */}
-      <path
-        d="M36 26 L94 26 L100 32 L100 66 Q100 94 65 106 Q30 94 30 66 L30 32 Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-        opacity="0.7"
-      />
-      {/* Stylized "A" emblem — thick strokes */}
-      <line x1="49" y1="92" x2="65" y2="40" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
-      <line x1="81" y1="92" x2="65" y2="40" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
-      <line x1="54" y1="76" x2="76" y2="76" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// CdragonMapCrest — real map crest img from CommunityDragon parties plugin.
-// The CDN PNGs are vertical two-frame atlases: active (lit) frame on top,
-// inactive (dark) frame below. A fixed-size overflow-hidden container crops
-// to one frame: the img is stretched to 200% height, top-anchored for the
-// active frame, bottom-anchored for the inactive one. The active frame is
-// shown when the card is selected or hovered (GameModeCard's root carries
-// `group`; this crest renders as a descendant, so group-hover applies).
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// CdragonMapCrest — mode-select active/inactive swap via stacked MapCrestImg.
-// The outer span is the 128×128 crop container. Two absolutely-positioned
-// wrappers each hold one MapCrestImg frame; opacity classes toggle on
-// selection/hover. The group-hover classes work because GameModeCard's root
-// carries `group` — descendant group-hover selectors apply normally.
+// CdragonMapCrest — real map crest img from the CommunityDragon parties plugin.
+//
+// The CDN PNGs are vertical two-frame atlases: active (gold, lit) frame on top,
+// inactive (grey) frame below. Per the current client (2025 reference,
+// docs/reference/client-current-mode-select-2025.png) ALL cards show the GOLD
+// (active) frame — unselected emblems are gold-lit, not grey (#467). We always
+// render the active frame and distinguish the SELECTED card with extra
+// brightness plus a subtle blue glow; unselected cards are gently dimmed and
+// brighten on hover (GameModeCard's root carries `group`, so group-hover
+// applies to this descendant).
 // ---------------------------------------------------------------------------
 
 function CdragonMapCrest({
   map,
   active,
 }: {
-  map: "sr" | "ha" | "tft" | "tt";
+  map: "sr" | "ha" | "tft" | "21";
   active: boolean;
 }) {
-  const src = gameModeMapUrl(map);
   return (
-    <span
-      aria-hidden="true"
-      className="relative block h-32 w-32"
-    >
-      {/* Inactive (dark) frame */}
-      <span
-        className={[
-          "absolute inset-0 transition-opacity duration-150",
-          active ? "opacity-0" : "opacity-100 group-hover:opacity-0",
-        ].join(" ")}
-      >
-        <MapCrestImg src={src} frame="inactive" size={128} />
-      </span>
-      {/* Active (lit) frame */}
-      <span
-        className={[
-          "absolute inset-0 transition-opacity duration-150",
-          active ? "opacity-100" : "opacity-0 group-hover:opacity-100",
-        ].join(" ")}
-      >
-        <MapCrestImg src={src} frame="active" size={128} />
-      </span>
-    </span>
+    <MapCrestImg
+      src={gameModeMapUrl(map)}
+      frame="active"
+      size={128}
+      className={[
+        "transition-[filter,opacity] duration-150",
+        active
+          ? // Selected: brightened + a soft blue drop-shadow glow (token var).
+            "brightness-125 [filter:drop-shadow(0_0_10px_color-mix(in_srgb,var(--color-blue-2)_45%,transparent))]"
+          : // Unselected: gold-lit but slightly dimmed; brighten on hover.
+            "opacity-80 group-hover:opacity-100 group-hover:brightness-110",
+      ].join(" ")}
+    />
   );
 }
 
 // ---------------------------------------------------------------------------
-// Mode data — page-level fixtures.
-// Icons are real CommunityDragon map crests (parties plugin PNGs).
-// ARAM maps to "ha" (Howling Abyss) in the parties CDN.
+// Mode data — page-level fixtures (VALUES here; the QueueOption *type* is
+// imported from @low/ui). Icons are real CommunityDragon map crests (parties
+// plugin PNGs): ARAM → "ha" (Howling Abyss), Arena → "21", per the current
+// client lineup (docs/reference/client-current-mode-select-2025.png):
+// Summoner's Rift · ARAM · Arena · Teamfight Tactics, with ARAM selected.
 // ---------------------------------------------------------------------------
 
-type ModeKey = "sr" | "tt" | "aram" | "tft";
+type ModeKey = "sr" | "aram" | "arena" | "tft";
 
-const MODES = [
-  { key: "sr" as ModeKey, countLabel: "5v5", name: "Summoner's Rift", map: "sr" as const },
-  { key: "tt" as ModeKey, countLabel: "3v3", name: "Twisted Treeline", map: "tt" as const },
-  { key: "aram" as ModeKey, countLabel: "5v5", name: "ARAM", map: "ha" as const },
-  { key: "tft" as ModeKey, countLabel: "FFA", name: "Teamfight Tactics", map: "tft" as const },
+const MODES: Array<{
+  key: ModeKey;
+  /** Player-count chip. Empty for Arena (2v2v2v2 FFA shows no chip in-client). */
+  countLabel: string;
+  name: string;
+  map: "sr" | "ha" | "21" | "tft";
+}> = [
+  { key: "sr", countLabel: "5v5", name: "Summoner's Rift", map: "sr" },
+  { key: "aram", countLabel: "5v5", name: "ARAM", map: "ha" },
+  // Arena is 2v2v2v2 FFA — the client shows no count chip. A non-breaking space
+  // reserves the chip line height so "ARENA" stays vertically aligned with its
+  // siblings while displaying nothing.
+  { key: "arena", countLabel: " ", name: "Arena", map: "21" },
+  { key: "tft", countLabel: "FFA", name: "Teamfight Tactics", map: "tft" },
 ];
 
-
+// Per-mode description body — matches the client's official mode-blurb tone.
+// ARAM copy is verbatim from the reference (docs/reference/…mode-select-2025.png).
 const MODE_DESCRIPTIONS: Record<ModeKey, string> = {
-  sr: "5v5 — Battle on the classic three-lane map. Destroy the enemy Nexus to win.",
-  tt: "3v3 — Battle as a team of three to capture altars and siege the enemy nexus in this fast-paced game mode.",
-  aram: "5v5 — All Random All Mid. One lane, random champions, non-stop teamfights.",
-  tft: "FFA — Draft, position, and battle with champions and items in this auto-battler.",
+  sr: "Two teams of five battle across three lanes and the jungle to push through the enemy defenses and destroy their Nexus.",
+  aram: "Ten randomly-selected champions assemble on a narrow bridge. Cross to the other side and destroy everything in your path.",
+  arena: "Team up two-by-two and fight through a gauntlet of 2v2v2v2 rounds, upgrading with Augments until one duo is left standing.",
+  tft: "Draft a squad of champions, arrange them on a board, and watch them auto-battle seven other players in a free-for-all last-one-standing race.",
 };
 
-const QUEUE_OPTIONS = [
-  { id: "blind", label: "Blind Pick" },
-  { id: "ranked-flex", label: "Ranked Flex", disabled: true, warning: true },
-];
+// Per-mode featured queues (VALUES). The list is mode-specific, not a fixed
+// global Blind/Ranked pair — the load-bearing case is ARAM's MAYHEM/ARAM pair
+// (#468). First entry of each list is the default-selected queue on mode switch.
+const MODE_QUEUES: Record<ModeKey, QueueOption[]> = {
+  sr: [
+    { id: "sr-draft", label: "Draft Pick" },
+    { id: "sr-solo", label: "Ranked Solo/Duo" },
+    { id: "sr-flex", label: "Ranked Flex" },
+    { id: "sr-quick", label: "Quick Play" },
+  ],
+  aram: [
+    { id: "aram-mayhem", label: "ARAM: Mayhem" },
+    { id: "aram", label: "ARAM" },
+  ],
+  arena: [{ id: "arena", label: "Arena" }],
+  tft: [
+    { id: "tft-ranked", label: "Ranked TFT" },
+    { id: "tft-normal", label: "Normal TFT" },
+    { id: "tft-hyper", label: "Hyper Roll" },
+    { id: "tft-double", label: "Double Up" },
+  ],
+};
+
+/** Default (first) featured-queue id for a mode. Every list is non-empty. */
+function defaultQueueId(mode: ModeKey): string {
+  return MODE_QUEUES[mode][0]!.id;
+}
 
 const TABS = [
   { id: "pvp", label: "PVP" },
@@ -337,17 +160,22 @@ export interface ModeSelectScreenProps {
  * ModeSelectScreen — PvP game mode selection step.
  *
  * Sits between the home screen and the matchmaking lobby.
- * The user picks a game mode (Summoner's Rift, Twisted Treeline, ARAM, TFT)
- * and a queue type, then confirms to proceed to matchmaking.
+ * The user picks a game mode (Summoner's Rift, ARAM, Arena, Teamfight Tactics)
+ * and a featured queue, then confirms to proceed to matchmaking. ARAM is the
+ * default-selected mode, matching the current client.
  *
  * CO-OP VS AI and TRAINING tabs are "coming soon" — activeTab is always "pvp".
- *
- * Crest SVGs are duplicated from game-mode-card.demo.tsx (page-level content).
- * Extract to a shared demo-assets module in apps/web if a third consumer emerges.
  */
 export function ModeSelectScreen({ onConfirm, onBack }: ModeSelectScreenProps) {
-  const [selectedMode, setSelectedMode] = useState<ModeKey>("sr");
-  const [selectedQueue, setSelectedQueue] = useState("blind");
+  const [selectedMode, setSelectedMode] = useState<ModeKey>("aram");
+  // Featured queue is mode-specific — default to the first queue of the mode.
+  const [selectedQueue, setSelectedQueue] = useState(defaultQueueId("aram"));
+
+  // Switching mode adopts that mode's first (default) featured queue.
+  function handleSelectMode(mode: ModeKey) {
+    setSelectedMode(mode);
+    setSelectedQueue(defaultQueueId(mode));
+  }
 
   // CO-OP / TRAINING are coming soon — activeTab is always "pvp"
   const activeTab = "pvp";
@@ -527,24 +355,30 @@ export function ModeSelectScreen({ onConfirm, onBack }: ModeSelectScreenProps) {
               countLabel={mode.countLabel}
               name={mode.name}
               selected={selectedMode === mode.key}
-              onSelect={() => setSelectedMode(mode.key)}
+              onSelect={() => handleSelectMode(mode.key)}
             />
           ))}
         </div>
 
-        {/* Separator line — thin gold-5 horizontal line */}
+        {/* Separator line — thin gold-5 horizontal line under the card row */}
         <div className="w-full max-w-3xl border-t border-gold-5 mb-6" />
 
-        {/* Description + QueueTypeList — left-aligned under center cards */}
+        {/*
+         * Description + featured-queue rows — left-aligned under center cards.
+         * Per-mode body copy, then a thin gold rule, then the mode's featured
+         * queues (e.g. ARAM: MAYHEM / ARAM) — matches the current client.
+         */}
         <div className="w-full max-w-3xl">
           <p className="font-body text-sm text-grey-1 mb-4">
             {MODE_DESCRIPTIONS[selectedMode]}
           </p>
+          {/* Gold rule between body and featured-queue rows */}
+          <div className="border-t border-gold-5 mb-4" />
           <QueueTypeList
-            options={QUEUE_OPTIONS}
+            options={MODE_QUEUES[selectedMode]}
             selectedId={selectedQueue}
             onSelect={setSelectedQueue}
-            label="Queue type"
+            label="Featured queues"
           />
         </div>
       </div>
