@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { warwickDetail, warwickMastery } from "@low/fixtures";
+import { warwickDetail, warwickMastery, CHAMPION_STAT_WHEEL_ART } from "@low/fixtures";
 import { ChampionDetail } from "./champion-detail";
 
 // Shared wrapper gives the overlay a fixed height matching the content area.
@@ -21,6 +21,7 @@ export function ChampionDetailOverviewDemo() {
         champion={warwickDetail}
         onClose={() => undefined}
         initialTab="overview"
+        statWheelArt={CHAMPION_STAT_WHEEL_ART}
       />
     </OverlayWrapper>
   );
@@ -120,6 +121,7 @@ export function ChampionDetailInteractiveDemo() {
         champion={warwickDetail}
         mastery={warwickMastery}
         onClose={() => setOpen(false)}
+        statWheelArt={CHAMPION_STAT_WHEEL_ART}
       />
     </OverlayWrapper>
   );

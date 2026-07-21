@@ -5,6 +5,23 @@ import type { ChampionDetail, AbilityEntry, ChampionMastery } from "@low/fixture
 import { championSplashUrl, loadingArtUrl } from "@low/fixtures";
 import { SkinCard } from "./skin-card";
 
+/**
+ * Resolved CDN art for the Overview `RadialStatWheel`. All URLs are supplied by
+ * the caller (component contract: URLs in, no fetching). When omitted, the wheel
+ * falls back to a token-styled hand-drawn target so nothing breaks offline.
+ *
+ * Shape matches `CHAMPION_STAT_WHEEL_ART` from `@low/fixtures`.
+ */
+export interface StatWheelArt {
+  /** Backing plate — concentric target with grey role glyphs baked at corners. */
+  backing: string;
+  /**
+   * Filled teal arc-fan overlays, one per rating tier (index 0 = l1 … 2 = l3).
+   * The wheel selects `segments[difficulty - 1]` to fill that many rings.
+   */
+  segments: readonly string[];
+}
+
 // ---------------------------------------------------------------------------
 // Tab union + tab definitions
 // ---------------------------------------------------------------------------
@@ -57,6 +74,12 @@ export interface ChampionDetailProps {
    * "Not yet ranked" placeholder state.
    */
   mastery?: ChampionMastery;
+  /**
+   * Resolved CDN art for the Overview stat wheel (`CHAMPION_STAT_WHEEL_ART`
+   * from `@low/fixtures`). When omitted, the wheel renders a token-styled
+   * hand-drawn fallback — the component never fetches these itself.
+   */
+  statWheelArt?: StatWheelArt;
 }
 
 // ---------------------------------------------------------------------------
@@ -98,9 +121,10 @@ function CrestGlyph() {
 
 interface OverviewTabProps {
   champion: ChampionDetail;
+  statWheelArt?: StatWheelArt;
 }
 
-function OverviewTab({ champion }: OverviewTabProps) {
+function OverviewTab({ champion, statWheelArt }: OverviewTabProps) {
   const FILLED_SEGS = champion.difficulty;
   const TOTAL_SEGS = 3;
 
@@ -190,7 +214,7 @@ function OverviewTab({ champion }: OverviewTabProps) {
 
           {/* Right column: RadialStatWheel */}
           <div className="shrink-0">
-            <RadialStatWheel />
+            <RadialStatWheel difficulty={champion.difficulty} art={statWheelArt} />
           </div>
         </div>
 
@@ -227,20 +251,23 @@ function OverviewTab({ champion }: OverviewTabProps) {
 //
 // Reference: docs/reference/client-champion-overview-statwheel.jpg
 //
-// The real client renders a heavy, FILLED segmented target — two concentric
-// annular bands, each divided into radial segments that alternate between a
-// bright teal and a darker teal over a dark-navy backing, with a bright teal
-// center dot and four role glyphs flanking the wheel at NW/NE/SW/SE.
+// The real client composites TWO CDN images from the champion-details plugin
+// (issue #438), supplied as resolved URLs via the `art` prop:
+//   1. `cdp_graph_backing.png` (800×800) — the dark concentric target plate,
+//      with the four grey generic role glyphs (goblet/shield/fist/spiral) and
+//      the bright-teal centre dot already baked in at NW/NE/SW/SE.
+//   2. `cdp-graph-segment-l{1,2,3}.png` (800×800) — the filled teal "signal
+//      fan" overlay, centred on the plate; the tier (l1/l2/l3) maps 1:1 to the
+//      champion `difficulty` rating (1 → l1 … 3 → l3), lighting that many rings.
+// Both are transparent PNGs pre-tinted to the exact client teal, so no CSS
+// color is applied — the tokens rule is about CSS colors, not asset URLs.
 //
-// PIL re-measure of the crop (260×240, wheel centre ≈(109,105)):
-//   center dot   r0–6    rgb(0,157,179)  bright teal  → blue-3 (#0397ab)
-//   inner band   r7–24   rgb(0,151,172)  bright teal  → blue-3
-//   ring gap     r25–35  rgb(2,10,20)    dark navy    → hextech-black
-//   outer band   r36–48  rgb(3,150,168)  bright teal  → blue-3
-//   dark segments          rgb(77,126,137) darker teal → mix(blue-3 55%, black)
-// Drawn footprint ≈108px diameter → ≈120px @1280 render, matching the reference.
+// FALLBACK (art absent): a token-styled hand-drawn target — two concentric
+// annular bands alternating blue-3 / dark-teal over a hextech-black backing,
+// a blue-3 centre dot, and hand-traced grey role glyphs at the corners. This
+// keeps the showcase and offline renders from breaking with no layout shift.
 //
-// Color mapping (reference rgb → token):
+// Fallback color mapping (reference rgb → token):
 //   bright segment  rgb(0,151,172)   → var(--color-blue-3)  (#0397ab)
 //   dark segment    rgb(77,126,137)  → color-mix(blue-3 52%, hextech-black)
 //   navy backing    rgb(2,10,20)     → var(--color-hextech-black) (#010a13)
@@ -322,12 +349,66 @@ function RoleGlyph({ role }: { role: "goblet" | "shield" | "fist" | "spiral" }) 
 }
 
 /**
- * Decorative radial stat wheel — filled segmented concentric target with a
- * blue-3 center dot and four role glyphs (goblet/shield/fist/spiral) flanking
- * it. Self-contained decorative element (no props), matching the client
- * champion-overview reference. See block comment above for measurements.
+ * Radial stat wheel — the champion-overview target diagram.
+ *
+ * When `art` is supplied, composites the real client CDN images: the
+ * `cdp_graph_backing` plate with the `cdp-graph-segment-l{difficulty}` teal
+ * fan layered on top (center-aligned). When `art` is absent, renders a
+ * token-styled hand-drawn fallback (see `RadialStatWheelFallback`).
+ *
+ * @param difficulty Rating 1–3; selects the l1/l2/l3 segment overlay.
+ * @param art Resolved CDN URLs; omit for the hand-drawn fallback.
  */
-function RadialStatWheel() {
+function RadialStatWheel({
+  difficulty,
+  art,
+}: {
+  difficulty: 1 | 2 | 3;
+  art?: StatWheelArt;
+}) {
+  const SIZE = 132;
+
+  // Real CDN art path — backing plate + the matching-tier teal segment fan.
+  const segmentSrc = art?.segments[difficulty - 1];
+  if (art) {
+    return (
+      <div
+        className="relative shrink-0"
+        style={{ width: SIZE, height: SIZE }}
+        aria-hidden="true"
+      >
+        {/* Backing plate (grey role glyphs + centre dot baked in) */}
+        <img
+          src={art.backing}
+          alt=""
+          width={SIZE}
+          height={SIZE}
+          className="absolute inset-0 h-full w-full object-contain"
+        />
+        {/* Filled teal segment fan for this difficulty tier, centred over it */}
+        {segmentSrc && (
+          <img
+            src={segmentSrc}
+            alt=""
+            width={SIZE}
+            height={SIZE}
+            className="absolute inset-0 h-full w-full object-contain"
+          />
+        )}
+      </div>
+    );
+  }
+
+  return <RadialStatWheelFallback />;
+}
+
+/**
+ * Token-styled hand-drawn stat wheel — the offline fallback when no CDN art is
+ * supplied. Filled segmented concentric target with a blue-3 center dot and
+ * four traced role glyphs at the corners. See block comment above for the
+ * reference color mapping.
+ */
+function RadialStatWheelFallback() {
   const id = useId();
   const SIZE = 132;
   const CX = SIZE / 2;
@@ -837,7 +918,7 @@ function SkinsTab({ champion }: SkinsTabProps) {
  *
  * Presentational only — props in, callbacks out. No data fetching.
  */
-export function ChampionDetail({ champion, onClose, initialTab = "overview", mastery }: ChampionDetailProps) {
+export function ChampionDetail({ champion, onClose, initialTab = "overview", mastery, statWheelArt }: ChampionDetailProps) {
   const [activeTab, setActiveTab] = useState<DetailTab>(initialTab);
   const headingId = useId();
 
@@ -914,7 +995,7 @@ export function ChampionDetail({ champion, onClose, initialTab = "overview", mas
       {/* Tab content                                                        */}
       {/* ------------------------------------------------------------------ */}
       <div className="relative flex-1 min-h-0">
-        {activeTab === "overview" && <OverviewTab champion={champion} />}
+        {activeTab === "overview" && <OverviewTab champion={champion} statWheelArt={statWheelArt} />}
         {activeTab === "abilities" && (
           <AbilitiesTab abilities={champion.abilities} champId={champion.id} />
         )}
