@@ -85,6 +85,8 @@ export type {
 } from "./chrome/journey-tab";
 export { LaunchSplash } from "./chrome/launch-splash";
 export type { LaunchSplashProps } from "./chrome/launch-splash";
+export { LeagueHomeScreen } from "./chrome/league-home-screen";
+export type { LeagueHomeScreenProps, LeagueHomeFeatured, LeagueHomeSkin } from "./chrome/league-home-screen";
 export { MapCrestImg } from "./chrome/map-crest-img";
 export type { MapCrestImgProps } from "./chrome/map-crest-img";
 export { MasteryEternalsPanel } from "./chrome/mastery-eternals-panel";

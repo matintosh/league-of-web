@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { CLIENT_WIDTH, CLIENT_HEIGHT } from "../lib/client-window";
 import { useSound } from "../lib/use-sound";
@@ -19,8 +18,9 @@ import {
   SettingsRow,
   LaunchSplash,
   HextechToggle,
-  NewsCard,
   HomeNewsScreen,
+  HomeContentRail,
+  LeagueHomeScreen,
   SocialPanel,
   SocialDock,
   ArcadeEventTab,
@@ -35,7 +35,7 @@ import {
   ObjectivesModal,
   UpdatesFlyout,
 } from "@low/ui";
-import type { NavItem, NavProduct, SettingsSection, NewsCardProps, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard, UpdateNotification } from "@low/ui";
+import type { NavItem, NavProduct, SettingsSection, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard, UpdateNotification } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -74,7 +74,7 @@ import {
   uikitSoundUrl,
 } from "@low/fixtures";
 import type { ClashScoutingPlayer } from "@low/fixtures";
-import type { NewsArticle } from "@low/ui";
+import type { NewsArticle, HomeContentRailItem, LeagueHomeFeatured, LeagueHomeSkin } from "@low/ui";
 import { BanPhaseScreen } from "./ban-phase-screen";
 import { DeclarePhaseScreen } from "./declare-phase-screen";
 import { CollectionScreen } from "./collection-screen";
@@ -167,7 +167,6 @@ const YOUR_SHOP_CARDS: Omit<YourShopCard, "revealed" | "onReveal" | "onPurchase"
 
 const YOUR_SHOP_EXPIRY = "Offers expire October 30 at 18:00 EET";
 
-const KEYART_CHAMPION = "Jinx";
 
 // ---------------------------------------------------------------------------
 // TFT Hub fixtures — page-level values (no fetching in @low/ui)
@@ -312,42 +311,6 @@ const CLASH_OPPONENTS: ClashScoutingPlayer[] = [
     ],
   },
 ];
-
-// ---------------------------------------------------------------------------
-// Fixture news items — 3 entries (page-level, no data fetching)
-// ---------------------------------------------------------------------------
-const NEWS_ITEMS: NewsCardProps[] = [
-  {
-    category: "GAME UPDATES",
-    date: "7/10/2026",
-    title: "Patch 26.14 Notes — Midseason Balance Pass",
-    imageSrc: championSplashUrl("Ahri"),
-    onOpen: () => console.log("open: Patch 26.14 Notes"),
-  },
-  {
-    category: "ESPORTS",
-    date: "7/8/2026",
-    title: "MSI 2026: Group Stage Results and Highlights",
-    imageSrc: championSplashUrl("Jinx"),
-    onOpen: () => console.log("open: MSI 2026 Group Stage"),
-  },
-  {
-    category: "EVENT",
-    date: "7/5/2026",
-    title: "Void Awakening Event — Missions & Rewards Now Live",
-    imageSrc: championSplashUrl("Khazix"),
-    onOpen: () => console.log("open: Void Awakening Event"),
-  },
-];
-
-// ---------------------------------------------------------------------------
-// Diagonal split constants (1280×720 viewport)
-// Left panel: ~38% = 486px. Diagonal: top of art starts ~80px right of panel
-// edge, bottom flush with panel edge — clip polygon on art container.
-// Panel width px: Math.round(1280 * 0.38) = 486
-// ---------------------------------------------------------------------------
-const PANEL_WIDTH = 486; // px — ~38% of 1280
-const DIAGONAL_OFFSET = 80; // px — how much the top edge is inset further right
 
 // ---------------------------------------------------------------------------
 // Social rail constants (page-level, not hardcoded hex)
@@ -1143,7 +1106,9 @@ export function ClientShell() {
                   onBack={() => { setView("home"); setActiveNavId("home"); }}
                 />
               ) : (
-                <HomeView newsItems={NEWS_ITEMS} />
+                <HomeView
+                  onGoToStore={() => { setActiveStoreTab("featured"); setView("store"); setActiveNavId("store"); }}
+                />
               )}
             </div>
 
@@ -1390,23 +1355,6 @@ const HOME_TABS: HomeTab[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Skin promo fixtures — two compact cards for the media row (issue #145)
-// Using DDragon loading art (308×560 crop) for the portrait tiles.
-// ---------------------------------------------------------------------------
-
-interface SkinPromo {
-  championId: string;
-  skin: number;
-  name: string;
-  price: number;
-}
-
-const SKIN_PROMOS: SkinPromo[] = [
-  { championId: "Garen",  skin: 6, name: "Demacia Vice Garen",  price: 1350 },
-  { championId: "Lucian", skin: 8, name: "Demacia Vice Lucian", price: 1350 },
-];
-
-// ---------------------------------------------------------------------------
 // Arcade 2019 skin fixtures — page-level values fed to ArcadeEventTab
 // ---------------------------------------------------------------------------
 
@@ -1513,18 +1461,79 @@ const NEWS_SIDE: NewsArticle[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// LeagueHomeScreen fixtures — page-level values (no fetching in @low/ui)
+// The current-era OVERVIEW landing: content-link rail + featured splash/copy +
+// skins strip. Rail selection lives in HomeView; each rail id maps to a
+// featured copy/splash/skins block below.
+// ---------------------------------------------------------------------------
+
+const HOME_RAIL_ITEMS: HomeContentRailItem[] = [
+  { id: "mvp-mf", label: "MVP T1\nMISS FORTUNE", thumbnailSrc: championSquareUrl("MissFortune") },
+  { id: "world-champions", label: "WORLD\nCHAMPIONS: 2025\nSKINS" },
+  { id: "ranked", label: "RANKED" },
+  { id: "mordekaiser", label: "SAHN-UZAL\nMORDEKAISER", thumbnailSrc: championSquareUrl("Mordekaiser") },
+  { id: "diana", label: "ECLIPSE ETERNAL\nASPECT DIANA", thumbnailSrc: championSquareUrl("Diana") },
+  { id: "season", label: "SEASON:\nPANDEMONIUM" },
+];
+
+const HOME_RAIL_PINNED = { id: "patch-notes", label: "PATCH NOTES" };
+
+const HOME_FEATURED_DEFAULT: LeagueHomeFeatured = {
+  eyebrow: "NEW SKIN",
+  title: "MVP T1\nMISS FORTUNE",
+  body: "Celebrate 2025 Worlds Winners with new skins and the 'Together as 1' Nexus Finisher.",
+  splashSrc: championSplashUrl("MissFortune"),
+};
+
+const HOME_FEATURED: Record<string, LeagueHomeFeatured> = {
+  "mvp-mf": HOME_FEATURED_DEFAULT,
+  mordekaiser: {
+    eyebrow: "NEW SKIN",
+    title: "SAHN-UZAL\nMORDEKAISER",
+    body: "The fallen general returns. Wield the ascended armor of Sahn-Uzal in this legendary skin.",
+    splashSrc: championSplashUrl("Mordekaiser"),
+  },
+  diana: {
+    eyebrow: "NEW SKIN",
+    title: "ECLIPSE ETERNAL\nASPECT DIANA",
+    body: "Embrace the moonfall. Diana ascends as an Eternal Aspect in this shimmering new skin line.",
+    splashSrc: championSplashUrl("Diana"),
+  },
+};
+
+const HOME_SKINS_DEFAULT: LeagueHomeSkin[] = [
+  { id: "mvp-mf-skin", name: "MVP T1 Miss Fortune", artSrc: loadingArtUrl("MissFortune", 0), owned: true },
+  { id: "together-as-1", name: "'Together as 1' Nexus Finisher", artSrc: championSplashUrl("MissFortune", 4) },
+];
+
+const HOME_SKINS: Record<string, LeagueHomeSkin[]> = {
+  "mvp-mf": HOME_SKINS_DEFAULT,
+  mordekaiser: [
+    { id: "sahn-uzal", name: "Sahn-Uzal Mordekaiser", artSrc: loadingArtUrl("Mordekaiser", 0) },
+    { id: "morde-border", name: "Sahn-Uzal Signature Border", artSrc: championSplashUrl("Mordekaiser", 1) },
+  ],
+  diana: [
+    { id: "eclipse-diana", name: "Eclipse Eternal Aspect Diana", artSrc: loadingArtUrl("Diana", 0) },
+    { id: "diana-chroma", name: "Aspect Diana Chroma Bundle", artSrc: championSplashUrl("Diana", 3) },
+  ],
+};
+
+// ---------------------------------------------------------------------------
 // HomeView — wraps the sub-tab strip + content for the home route.
 // Sub-nav is a narrow bar (~32px) across the full content width.
 // OVERVIEW and ARCADE 2019 are live; NEWS and PATCH NOTES remain dead.
 // ---------------------------------------------------------------------------
 
 interface HomeViewProps {
-  newsItems: NewsCardProps[];
+  /** Routes the shell to the store view (GO TO STORE pill on the OVERVIEW landing). */
+  onGoToStore: () => void;
 }
 
 /** Renders the home sub-tab strip and the active sub-tab content. */
-function HomeView({ newsItems }: HomeViewProps) {
+function HomeView({ onGoToStore }: HomeViewProps) {
   const [activeTabId, setActiveTabId] = useState<string>("overview");
+  // OVERVIEW content-link rail selection — drives the featured splash/copy/skins.
+  const [homeRailId, setHomeRailId] = useState<string>("mvp-mf");
   // Arcade skin selection state — lifted here so it persists across tab switches.
   const [selectedSkinId, setSelectedSkinId] = useState<string>("battle-boss-yasuo");
   // Battle Pass: selected level index (undefined = chapter overview view)
@@ -1651,218 +1660,27 @@ function HomeView({ newsItems }: HomeViewProps) {
             onSeeAllNews={() => console.log("news: see all")}
           />
         ) : (
-          <HomeLanding newsItems={newsItems} />
+          // OVERVIEW — current-era featured-content landing (#455): content-link
+          // rail + full-bleed featured splash + skins strip + GO TO STORE. Rail
+          // items without a dedicated featured block fall back to MVP MF.
+          <LeagueHomeScreen
+            featured={HOME_FEATURED[homeRailId] ?? HOME_FEATURED_DEFAULT}
+            railSlot={
+              <HomeContentRail
+                items={HOME_RAIL_ITEMS}
+                activeId={homeRailId}
+                onSelect={setHomeRailId}
+                pinnedItem={HOME_RAIL_PINNED}
+              />
+            }
+            skins={HOME_SKINS[homeRailId] ?? HOME_SKINS_DEFAULT}
+            onSelectSkin={(id) => console.log("home: select skin", id)}
+            onGoToStore={onGoToStore}
+            onToggleMute={() => console.log("home: toggle mute")}
+          />
         )}
       </div>
     </div>
   );
 }
 
-// ---------------------------------------------------------------------------
-// HomeLanding — diagonal-split layout per issue #37 / Figma node 50-583
-//
-// CTA decision (superseded by issue #139): The PlayButton now lives permanently
-// in TopNavbar (enabled on home, disabled elsewhere). The home content panel
-// no longer has its own PlayButton CTA.
-// ---------------------------------------------------------------------------
-
-interface HomeLandingProps {
-  newsItems: NewsCardProps[];
-}
-
-function HomeLanding({ newsItems }: HomeLandingProps) {
-  // Art container clip: top-left starts at PANEL_WIDTH + DIAGONAL_OFFSET px,
-  // bottom-left starts at PANEL_WIDTH px. Right side is full width.
-  // polygon: top-left, top-right, bottom-right, bottom-left
-  const artClip = `polygon(${PANEL_WIDTH + DIAGONAL_OFFSET}px 0%, 100% 0%, 100% 100%, ${PANEL_WIDTH}px 100%)`;
-
-  // Gold seam: 2px wide sliver along the diagonal — same clip as art but
-  // shifted 2px left so it peeks out behind the art as a gold stripe.
-  const seamClip = `polygon(${PANEL_WIDTH + DIAGONAL_OFFSET - 2}px 0%, ${PANEL_WIDTH + DIAGONAL_OFFSET + 2}px 0%, ${PANEL_WIDTH + 2}px 100%, ${PANEL_WIDTH - 2}px 100%)`;
-
-  return (
-    <div className="relative h-full w-full bg-hextech-black">
-      {/* ------------------------------------------------------------------ */}
-      {/* RIGHT — keyart with diagonal clip                                    */}
-      {/* ------------------------------------------------------------------ */}
-      <div
-        className="absolute inset-0"
-        style={{ clipPath: artClip }}
-      >
-        <Image
-          src={championSplashUrl(KEYART_CHAMPION)}
-          alt={`${KEYART_CHAMPION} splash art`}
-          fill
-          priority
-          className="object-cover object-center"
-        />
-        {/* Subtle vignette on the left edge of the art so it blends with the panel */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(to right, color-mix(in srgb, var(--color-hextech-black) 60%, transparent) 0%, transparent 35%)`,
-          }}
-        />
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* FREE CHAMPION ROTATION chip — top-right of content area (issue #145) */}
-      {/* Dead control: aria-disabled, no-op click. Hover lightens border.    */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="absolute top-3 right-3 z-10">
-        <button
-          type="button"
-          aria-label="Free Champion Rotation — view this week's free champions"
-          aria-disabled="true"
-          disabled
-          className={[
-            "cursor-default px-3 py-1",
-            "border border-gold-5 bg-grey-4",
-            "font-display text-xs uppercase tracking-widest text-gold-cream",
-            "transition-colors duration-150 hover:border-gold-1",
-          ].join(" ")}
-        >
-          Free Champion Rotation
-        </button>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* MEDIA ROW — gradient scrim + mixed card row, lower-right (issue #145) */}
-      {/* 1 wide NewsCard (LEC Mic Check) + 2 compact skin promo cards.       */}
-      {/* Replaces the previous 3-card news feed; news items now unused here  */}
-      {/* (kept in NewsItems fixture for future use / showcase reuse).        */}
-      {/* ------------------------------------------------------------------ */}
-      <div
-        className="absolute bottom-0 right-0 flex flex-col justify-end"
-        style={{
-          left: PANEL_WIDTH + DIAGONAL_OFFSET,
-          paddingBottom: 20,
-          paddingLeft: 20,
-          paddingRight: 20,
-        }}
-      >
-        {/* Gradient scrim — upward from hextech-black */}
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0"
-          style={{
-            height: 260,
-            background: `linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 90%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 50%, transparent) 55%, transparent 100%)`,
-          }}
-        />
-
-        {/* Card row — wide NewsCard + 2 compact skin promos */}
-        <div className="relative flex items-end gap-3" style={{ zIndex: 1 }}>
-          {/* Wide media card: "LEC Mic Check: Week 5 ↗" — reuse NewsCard */}
-          <div className="flex-[2] min-w-0">
-            <NewsCard
-              category="ESPORTS"
-              date="7/8/2026"
-              title="LEC Mic Check: Week 5 ↗"
-              imageSrc={championSplashUrl("Jinx")}
-              onOpen={() => console.log("open: LEC Mic Check")}
-            />
-          </div>
-
-          {/* 2 compact skin promo cards — page-level markup, no new @low/ui component */}
-          {SKIN_PROMOS.map((promo) => (
-            <div
-              key={promo.championId}
-              className="shrink-0 flex flex-col bg-blue-7/60 border border-grey-4"
-              style={{ width: 110 }}
-            >
-              {/* Loading art portrait — 308×560 source, cropped to card width */}
-              <div className="relative overflow-hidden" style={{ height: 120 }}>
-                <img
-                  src={loadingArtUrl(promo.championId, promo.skin)}
-                  alt={promo.name}
-                  className="absolute inset-0 w-full h-full object-cover object-top"
-                />
-              </div>
-
-              {/* Price row + caption */}
-              <div className="flex flex-col gap-0.5 p-2">
-                {/* RP glyph + price — aria-hidden icon copy per issue guidance */}
-                <div className="flex items-center gap-1">
-                  {/* Inline RP glyph (aria-hidden copy — not exported from CurrencyDisplay) */}
-                  <svg
-                    aria-hidden="true"
-                    width="12"
-                    height="12"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="text-blue-2 shrink-0"
-                  >
-                    <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M5 4h2.5a2 2 0 0 1 0 4H5V4Z" fill="currentColor" />
-                    <line x1="5" y1="8" x2="5" y2="10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="7" y1="8" x2="9" y2="10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                  <span className="font-body text-xs text-gold-cream tabular-nums">
-                    {promo.price}
-                  </span>
-                </div>
-                {/* Skin name caption */}
-                <span className="font-body text-xs text-gold-2 leading-tight line-clamp-2">
-                  {promo.name}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* GOLD SEAM — 2px diagonal strip between panel and art                */}
-      {/* drop-shadow lives on an unclipped parent; seam itself is clipped.   */}
-      {/* ------------------------------------------------------------------ */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          filter: "drop-shadow(0 0 4px var(--color-gold-3))",
-        }}
-      >
-        <div
-          className="absolute inset-0 bg-gold-3"
-          style={{ clipPath: seamClip }}
-        />
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* LEFT PANEL — hextech-black, ~38% width                              */}
-      {/* ------------------------------------------------------------------ */}
-      <div
-        className="absolute inset-y-0 left-0 flex flex-col bg-hextech-black"
-        style={{ width: PANEL_WIDTH }}
-      >
-        {/* Wordmark — vertically centered in the panel */}
-        <div className="flex flex-1 flex-col items-start justify-center px-12">
-          {/* Stacked wordmark lockup */}
-          <div className="mb-8 flex flex-col gap-0">
-            <span className="font-display text-5xl uppercase leading-none tracking-widest text-gold-1">
-              League
-            </span>
-            <span className="font-display text-5xl uppercase leading-none tracking-widest text-gold-1">
-              of Web
-            </span>
-          </div>
-
-          {/* Thin gold divider under wordmark */}
-          <div className="h-px w-32 bg-gold-4" />
-          {/* PlayButton CTA removed: superseded by issue #139 — PLAY now lives
-              permanently in TopNavbar (enabled on home, disabled elsewhere). */}
-        </div>
-
-        {/* Footer caption — bottom-left */}
-        <div className="px-12 pb-6">
-          <p className="font-body text-xs text-grey-2">
-            A 1:1 web recreation of the League of Legends client.
-          </p>
-          <p className="font-body text-xs text-grey-2">
-            {demoSummoner.gameName} — Ready to play
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
