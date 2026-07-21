@@ -1371,22 +1371,41 @@ export type SfxId =
   | "login-fail"
   | "suggested-tab-click";
 
-/** Broad grouping used to organize the sound library UI into labelled sections. */
-export type SoundCategory = "UI" | "Notification" | "Social";
+/**
+ * Broad grouping used to organize the sound library UI into labelled sections.
+ * Spans both catalogs: the friend-finder set ({@link FRIEND_FINDER_SFX}) uses
+ * "UI"/"Notification"/"Social"; the uikit set ({@link UIKIT_SFX}, #439) adds
+ * "Button"/"Input"/"Generic"/"Celebrate". The `SoundLibrary` component groups
+ * rows by this string, so the union stays open to whichever catalog it renders.
+ */
+export type SoundCategory =
+  | "UI"
+  | "Notification"
+  | "Social"
+  | "Button"
+  | "Input"
+  | "Generic"
+  | "Celebrate";
 
 /**
  * One catalog entry describing a single client SFX. Presentational components
  * (e.g. `SoundLibrary`) import this TYPE from `@low/fixtures` and receive the
  * VALUES from pages/showcase — never fetching or constructing URLs themselves.
+ *
+ * Shared across catalogs: `id` is the catalog's own stable slug, resolved to a
+ * streaming URL by that catalog's resolver — {@link soundUrl} for the
+ * friend-finder set ({@link SfxId}), {@link uikitSoundUrl} for the uikit set
+ * ({@link UikitSfxId}, #439). Kept `string` here so one type serves both id
+ * spaces; each catalog's resolver keeps its own exhaustive, typed id union.
  */
 export interface SoundEntry {
-  /** Stable id — feed to {@link soundUrl} to resolve the streaming URL. */
-  id: SfxId;
+  /** Stable id — feed to the catalog's resolver (`soundUrl`/`uikitSoundUrl`). */
+  id: string;
   /** Human-readable label shown in the library row (e.g. "Generic UI Click"). */
   label: string;
   /** Group the clip belongs to — drives the library's section grouping. */
   category: SoundCategory;
-  /** The `.ogg` filename under {@link CDRAGON_SOUND} (without the base path). */
+  /** The `.ogg` filename (without the base path) under the catalog's base. */
   filename: string;
 }
 
@@ -1809,3 +1828,161 @@ export const postgameAssetUrl = (filename: string): string =>
  */
 export const masteryBannerUrl = (level: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7): string =>
   postgameAssetUrl(`banner-mastery-small-lvl${level === 0 ? "empty" : level}.png`);
+
+// ---------------------------------------------------------------------------
+// UIKIT SOUND (.ogg) HELPERS — issue #439 (sound system v2, uikit SFX)
+//
+// An additive extension of the #432 sound system: the client-wide GENERIC
+// interaction SFX (button click/hover, checkbox, radio, dropdown, purchase,
+// nav-text, generic clicks) plus a couple of celebration stingers. These live
+// in a DIFFERENT plugin from the friend-finder set — the uikit plugin — and,
+// unlike friend-finder (whose clips sit under a sounds/ subdir), they sit at
+// the plugin ROOT (confirmed 200 at the root, 404 under sounds/). So this
+// needs its own base + resolver; #432's soundUrl/CDRAGON_SOUND stay untouched.
+//
+// All confirmed HTTP 200 audio/ogg (~12 KB each) at:
+//   https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-uikit/global/default/
+// (probed 2026-07, issue #439 — 20/20 200 audio/ogg, none under sounds/)
+//
+// Same 7.5 pin as the friend-finder SFX (#432) and lock-in videos (#428): the
+// uikit chrome is timeless and also resolves at `latest`, but 7.5 is pinned to
+// match the rest of the sound/video corpus. Audio playback is a SIDE EFFECT and
+// must NOT live in @low/ui — these helpers only build URLs; the app's useSound
+// hook drives an HTMLAudioElement and playback stays user-gesture-initiated.
+// ---------------------------------------------------------------------------
+
+/**
+ * Base URL for the CommunityDragon uikit SFX set.
+ *
+ * PINNED to patch 7.5 (same rationale as {@link CDRAGON_SOUND} / the lock-in
+ * videos). NOTE the shape difference from the friend-finder base: these clips
+ * live at the PLUGIN ROOT (`…/rcp-fe-lol-uikit/global/default/<file>.ogg`), NOT
+ * under a `sounds/` subdir — confirmed 200 at the root, 404 under sounds/. Do
+ * not add a `sounds/` segment here.
+ *
+ * Fan-content policy: https://www.riotgames.com/en/legal (fan-made, non-commercial).
+ */
+const CDRAGON_UIKIT_SOUND =
+  "https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-uikit/global/default";
+
+/**
+ * Typed id union for the uikit SFX catalog. Each id is a stable slug used as the
+ * {@link SoundEntry.id} and consumed by {@link uikitSoundUrl}. Keeping this a
+ * union (rather than `string`) means playing an unknown clip is a compile error
+ * and {@link uikitSoundUrl}'s filename map stays exhaustive — the same guard
+ * {@link SfxId} gives the friend-finder set.
+ */
+export type UikitSfxId =
+  // Button
+  | "button-gold-click"
+  | "button-gold-hover"
+  | "button-circlegold-hover"
+  | "button-circlex-click"
+  | "button-locked-click"
+  | "magic-button-click"
+  | "magic-button-hover"
+  | "arrow-button-click"
+  | "arrow-button-hover"
+  | "purchase-button-click"
+  | "purchase-button-hover"
+  | "nav-button-text-click"
+  // Input
+  | "checkbox-click"
+  | "radio-click"
+  | "dropdown-click"
+  | "dropdown-select"
+  // Generic
+  | "click-generic"
+  | "generic-click-small"
+  // Celebrate
+  | "celebrate-notif-intro"
+  | "celebrate-receive-generic";
+
+/**
+ * uikit SFX streaming URL for a given {@link UikitSfxId}. Mirrors the
+ * {@link soundUrl} house style: a `Record<UikitSfxId, string>` filename map (so
+ * a new id fails typecheck instead of silently 404-ing) resolved against the
+ * pinned patch-7.5 uikit base ({@link CDRAGON_UIKIT_SOUND}).
+ *
+ * Parallel to `soundUrl` but a SEPARATE resolver because the uikit set lives in
+ * a different plugin whose clips sit at the plugin ROOT (no `sounds/` subdir).
+ * Feed the returned URL to an `HTMLAudioElement` in the APP layer (see the
+ * `useSound` hook). NO fetching or playback happens here — this only builds a
+ * URL, and audio playback must stay user-gesture-initiated.
+ *
+ * All 20 confirmed HTTP 200 audio/ogg (2026-07, issue #439):
+ *   uikitSoundUrl("button-gold-click") → …/default/sfx-uikit-button-gold-click.ogg
+ *   uikitSoundUrl("checkbox-click")    → …/default/sfx-uikit-checkbox-click.ogg
+ *   uikitSoundUrl("dropdown-select")   → …/default/sfx-uikit-dropdown-select.ogg
+ *
+ * Source: CommunityDragon rcp-fe-lol-uikit (patch 7.5) · global/default/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const uikitSoundUrl = (id: UikitSfxId): string => {
+  const FILE: Record<UikitSfxId, string> = {
+    // Button
+    "button-gold-click":       "sfx-uikit-button-gold-click.ogg",
+    "button-gold-hover":       "sfx-uikit-button-gold-hover.ogg",
+    "button-circlegold-hover": "sfx-uikit-button-circlegold-hover.ogg",
+    "button-circlex-click":    "sfx-uikit-button-circlex-click.ogg",
+    "button-locked-click":     "sfx-uikit-button-locked-click.ogg",
+    "magic-button-click":      "sfx-uikit-magic-button-click.ogg",
+    "magic-button-hover":      "sfx-uikit-magic-button-hover.ogg",
+    "arrow-button-click":      "sfx-uikit-arrow-button-click.ogg",
+    "arrow-button-hover":      "sfx-uikit-arrow-button-hover.ogg",
+    "purchase-button-click":   "sfx-purchase-button-click.ogg",
+    "purchase-button-hover":   "sfx-purchase-button-hover.ogg",
+    "nav-button-text-click":   "sfx-nav-button-text-click.ogg",
+    // Input
+    "checkbox-click":          "sfx-uikit-checkbox-click.ogg",
+    "radio-click":             "sfx-uikit-radio-click.ogg",
+    "dropdown-click":          "sfx-uikit-dropdown-click.ogg",
+    "dropdown-select":         "sfx-uikit-dropdown-select.ogg",
+    // Generic
+    "click-generic":           "sfx-uikit-click-generic.ogg",
+    "generic-click-small":     "sfx-uikit-generic-click-small.ogg",
+    // Celebrate
+    "celebrate-notif-intro":     "sfx-celebrate-notif-intro.ogg",
+    "celebrate-receive-generic": "sfx-celebrate-receive-generic.ogg",
+  };
+  return `${CDRAGON_UIKIT_SOUND}/${FILE[id]}`;
+};
+
+/**
+ * The uikit SFX catalog (issue #439) — the ~20 generic client-wide interaction
+ * clips the real client plays across buttons, inputs, dropdowns, and reward
+ * celebrations. Zero overlap with {@link FRIEND_FINDER_SFX} (the social layer);
+ * this is the generic UI layer. Ordered Button → Input → Generic → Celebrate so
+ * the `SoundLibrary` groups read top-to-bottom in that order. Pages/showcase
+ * pass this to the `SoundLibrary` component; components import only the
+ * {@link SoundEntry} TYPE, never this value.
+ *
+ * Resolve each entry's streaming URL with `uikitSoundUrl(entry.id)` — the uikit
+ * resolver, NOT `soundUrl` (different plugin/base; see {@link uikitSoundUrl}).
+ */
+export const UIKIT_SFX: readonly SoundEntry[] = [
+  // Button
+  { id: "button-gold-click",       label: "Gold Button Click",        category: "Button",    filename: "sfx-uikit-button-gold-click.ogg" },
+  { id: "button-gold-hover",       label: "Gold Button Hover",        category: "Button",    filename: "sfx-uikit-button-gold-hover.ogg" },
+  { id: "button-circlegold-hover", label: "Circle Gold Button Hover", category: "Button",    filename: "sfx-uikit-button-circlegold-hover.ogg" },
+  { id: "button-circlex-click",    label: "Circle X Button Click",    category: "Button",    filename: "sfx-uikit-button-circlex-click.ogg" },
+  { id: "button-locked-click",     label: "Locked Button Click",      category: "Button",    filename: "sfx-uikit-button-locked-click.ogg" },
+  { id: "magic-button-click",      label: "Magic Button Click",       category: "Button",    filename: "sfx-uikit-magic-button-click.ogg" },
+  { id: "magic-button-hover",      label: "Magic Button Hover",       category: "Button",    filename: "sfx-uikit-magic-button-hover.ogg" },
+  { id: "arrow-button-click",      label: "Arrow Button Click",       category: "Button",    filename: "sfx-uikit-arrow-button-click.ogg" },
+  { id: "arrow-button-hover",      label: "Arrow Button Hover",       category: "Button",    filename: "sfx-uikit-arrow-button-hover.ogg" },
+  { id: "purchase-button-click",   label: "Purchase Button Click",    category: "Button",    filename: "sfx-purchase-button-click.ogg" },
+  { id: "purchase-button-hover",   label: "Purchase Button Hover",    category: "Button",    filename: "sfx-purchase-button-hover.ogg" },
+  { id: "nav-button-text-click",   label: "Nav Text Button Click",    category: "Button",    filename: "sfx-nav-button-text-click.ogg" },
+  // Input
+  { id: "checkbox-click",          label: "Checkbox Click",           category: "Input",     filename: "sfx-uikit-checkbox-click.ogg" },
+  { id: "radio-click",             label: "Radio Click",              category: "Input",     filename: "sfx-uikit-radio-click.ogg" },
+  { id: "dropdown-click",          label: "Dropdown Open",            category: "Input",     filename: "sfx-uikit-dropdown-click.ogg" },
+  { id: "dropdown-select",         label: "Dropdown Select",          category: "Input",     filename: "sfx-uikit-dropdown-select.ogg" },
+  // Generic
+  { id: "click-generic",           label: "Generic Click",            category: "Generic",   filename: "sfx-uikit-click-generic.ogg" },
+  { id: "generic-click-small",     label: "Generic Click (Small)",    category: "Generic",   filename: "sfx-uikit-generic-click-small.ogg" },
+  // Celebrate
+  { id: "celebrate-notif-intro",     label: "Celebration Intro",      category: "Celebrate", filename: "sfx-celebrate-notif-intro.ogg" },
+  { id: "celebrate-receive-generic", label: "Celebration Receive",    category: "Celebrate", filename: "sfx-celebrate-receive-generic.ogg" },
+];
