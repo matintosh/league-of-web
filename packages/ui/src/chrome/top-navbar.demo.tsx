@@ -169,11 +169,12 @@ export function TopNavbarCurrentEraDemo() {
           </div>
         </div>
       }
-      // #531: seat the player slot in a right-aligned column matched to the
+      // #531/#541: seat the player slot in a fixed column matched to the
       // social-panel width (224px) so it sits ABOVE the docked social panel and
       // the currency block ends with a clear gap before that column. The player
-      // slot fills the column: identity toward the social LEFT edge, bell toward
-      // the RIGHT edge — mirroring the live client-shell ProfileChip band.
+      // slot FILLS the column (w-full justify-between): identity pinned to the
+      // column's LEFT edge (= social-panel left edge), bell at the RIGHT edge
+      // (= social-panel right edge) — mirroring the live client-shell chip band.
       playerColumnWidth={224}
       playerSlot={
         <div className="flex w-full items-center justify-between">
