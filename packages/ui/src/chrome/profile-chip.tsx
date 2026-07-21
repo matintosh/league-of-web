@@ -583,9 +583,10 @@ export function ProfileChip({
             // TopNavbar player column (playerColumnWidth = social-panel width),
             // the identity area (avatar + name) pins to the column's LEFT edge
             // (= social-panel left edge) and the bell sits at the RIGHT edge
-            // (= social-panel right edge), matching reference Image #21. In an
-            // unconstrained parent (showcase) w-full collapses to content width,
-            // so the compact cluster is preserved there.
+            // (= social-panel right edge), matching reference Image #21. The chip
+            // therefore expects a WIDTH-CONSTRAINED parent (the 224px player
+            // column in-app; a 224px card in the showcase demo) — w-full fills
+            // that column so the avatar/bell reach its two edges.
             "flex w-full items-center justify-between gap-2 shrink-0"
           : "flex w-full items-center gap-2.5 border-b border-gold-5 bg-blue-7 px-3 py-2 shrink-0"
       }

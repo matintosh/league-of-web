@@ -127,11 +127,15 @@ export function ProfileChipRailBorderDemo() {
 }
 
 // ── navband variant — the current-era compact chip in the TopNavbar band ──
-// Rendered over bg-blue-7 to mimic the nav band it lives in.
+// Rendered over bg-blue-7 to mimic the nav band it lives in, inside a 224px
+// wrapper (= SOCIAL_RAIL_WIDTH, the live player-column width) so the chip fills
+// its real in-app column: avatar pinned LEFT, bell at the RIGHT edge (#541).
+// The width is what lets the chip's `w-full justify-between` render at its true
+// app width instead of stretching to fill an unconstrained parent.
 
 export function ProfileChipNavbandDemo() {
   return (
-    <div className="flex justify-end bg-blue-7 px-4 py-2">
+    <div className="w-[224px] bg-blue-7 py-2">
       <ProfileChip
         variant="navband"
         summoner={demoSummoner}
@@ -147,7 +151,7 @@ export function ProfileChipNavbandDemo() {
 
 export function ProfileChipNavbandInGameDemo() {
   return (
-    <div className="flex justify-end bg-blue-7 px-4 py-2">
+    <div className="w-[224px] bg-blue-7 py-2">
       <ProfileChip
         variant="navband"
         summoner={inGameFriend.summoner}
@@ -162,7 +166,7 @@ export function ProfileChipNavbandInGameDemo() {
 
 export function ProfileChipNavbandStatusTextDemo() {
   return (
-    <div className="flex justify-end bg-blue-7 px-4 py-2">
+    <div className="w-[224px] bg-blue-7 py-2">
       <ProfileChip
         variant="navband"
         summoner={demoSummoner}

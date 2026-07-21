@@ -226,12 +226,13 @@ export function TopNavbar({
           overlapping into the social column. The `gap-6` is that gap between the
           currency and the profile column.
 
-          #541: the column is `justify-stretch` (not the pre-#541 `justify-end`)
-          and the player slot fills its width, so the navband chip can pin its
-          AVATAR to the column's LEFT edge (= social-panel left edge) with the
-          bell pushed to the column's RIGHT edge (= social-panel right edge),
-          matching the reference where the avatar hugs the social panel's left
-          boundary. Without a fixed column the slot stays its natural width. */}
+          #541: the column no longer right-packs its content (the pre-#541
+          `justify-end` is dropped) and the player slot fills its width, so the
+          navband chip can pin its AVATAR to the column's LEFT edge (= social-
+          panel left edge) with the bell pushed to the column's RIGHT edge
+          (= social-panel right edge), matching the reference where the avatar
+          hugs the social panel's left boundary. Without a fixed column the slot
+          stays its natural width. */}
       <div className="flex shrink-0 items-center gap-6">
         {currencySlot}
         {/* #541: `-mr-4` cancels the nav's own `px-4` right padding for the
