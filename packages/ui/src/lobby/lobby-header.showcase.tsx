@@ -7,6 +7,11 @@ import {
   LobbyHeaderLongTitleDemo,
   LobbyHeaderSegmentedDemo,
   LobbyHeaderSegmentsNoCMDemo,
+  LobbyHeader2025DefaultDemo,
+  LobbyHeader2025PartyOpenDemo,
+  LobbyHeader2025InvitePermissionDemo,
+  LobbyHeader2025InteractiveDemo,
+  LobbyHeader2025LongDemo,
 } from "./lobby-header.demo";
 
 export const lobbyHeaderShowcase: ShowcaseEntry = {
@@ -14,8 +19,38 @@ export const lobbyHeaderShowcase: ShowcaseEntry = {
   name: "Lobby Header",
   area: "lobby",
   description:
-    "Strip beneath the top navbar in the pre-game lobby. Left: gold back-chevron · optional queue-crest · queue title · info-circle. Right: party-visibility pill toggle (check + person glyphs, controlled, aria-pressed).",
+    "Strip beneath the top navbar in the pre-game lobby. 2025 look (supply `breadcrumb`): bold gold « back · mode gem · middot breadcrumb · info circle; right cluster of copy + stats icons and a joined green toggle pair (party-privacy + invite-permission). Legacy look (no breadcrumb): ◆ segments + optional Change Mode button + single pill toggle, kept for un-migrated callers.",
   variants: [
+    {
+      name: "2025 — default breadcrumb",
+      notes:
+        "breadcrumb=['SR','RANKED SOLO/DUO','DRAFT'] with · middots, mode gem, (i). Right: copy + stats icons + joined green toggle pair (both off). NO Change Mode button.",
+      render: () => <LobbyHeader2025DefaultDemo />,
+    },
+    {
+      name: "2025 — party privacy on",
+      notes:
+        "partyOpen=true — left half of the green toggle pair fills status-online green with the checkmark. aria-pressed='true'.",
+      render: () => <LobbyHeader2025PartyOpenDemo />,
+    },
+    {
+      name: "2025 — invite permission on",
+      notes:
+        "invitePermission=true — right (person) half of the green toggle pair fills green. Independent from party privacy.",
+      render: () => <LobbyHeader2025InvitePermissionDemo />,
+    },
+    {
+      name: "2025 — interactive toggles",
+      notes:
+        "Live controlled demo — click either half of the green pair to toggle party privacy / invite permission independently.",
+      render: () => <LobbyHeader2025InteractiveDemo />,
+    },
+    {
+      name: "2025 — long breadcrumb (truncate)",
+      notes:
+        "Narrow container — middle breadcrumb segment truncates with ellipsis; right cluster never overflows.",
+      render: () => <LobbyHeader2025LongDemo />,
+    },
     {
       name: "Default (party closed)",
       notes:
