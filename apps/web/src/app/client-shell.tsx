@@ -43,7 +43,6 @@ import {
   blueEssenceIconUrl,
   lorArrowUrl,
   notificationBellUrl,
-  avatarBorderUrl,
   rpTopUpIconUrl,
   yourShopIconVideoUrl,
   gameModeMapUrl,
@@ -1081,7 +1080,6 @@ export function ClientShell() {
                 summoner={demoSummoner}
                 level={demoSummoner.level}
                 profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
-                avatarBorderSrc={avatarBorderUrl(3)}
                 notificationBellSrc={notificationBellUrl()}
                 onNotifications={() => console.log("notifications")}
                 onOpenProfile={() => {
