@@ -177,12 +177,15 @@ export const positionIconUrl = (
 /**
  * Game mode map crest PNG from the parties plugin.
  * Maps: "sr" = Summoner's Rift | "ha" = Howling Abyss (ARAM) |
- *        "tft" = Teamfight Tactics | "tt" = Twisted Treeline | "rgm" = RGM/misc.
+ *        "tft" = Teamfight Tactics | "tt" = Twisted Treeline | "rgm" = RGM/misc |
+ *        "21" = Arena (the gold flask-with-blue-liquid emblem, map id 21).
+ * Each is a vertical two-frame atlas (lit/active top, grey/inactive bottom).
+ * Confirmed HTTP 200 image/png under `latest` (2026-07): map_21.png resolves.
  * Source: CommunityDragon rcp-fe-lol-parties · map_{map}.png
  * License: Riot fan-content policy (non-commercial fan use).
  */
 export const gameModeMapUrl = (
-  map: "sr" | "ha" | "tft" | "tt" | "rgm",
+  map: "sr" | "ha" | "tft" | "tt" | "rgm" | "21",
 ): string => cdragonPartiesUrl(`map_${map}.png`);
 
 /**
