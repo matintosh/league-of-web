@@ -219,17 +219,31 @@ export function TopNavbar({
           a separate layer at the top-right corner, so they don't collide.
 
           #531: when `playerColumnWidth` is set, the player slot gets its own
-          fixed-width column right-aligned to that width so the profile chip
-          seats ABOVE the docked social panel (per reference Image #21) —
-          avatar toward the social LEFT edge, bell toward the social RIGHT edge.
-          Giving the player a dedicated column also pushes the CURRENCY left, so
-          the currency block ends with a clear gap BEFORE the social panel's
-          left edge instead of overlapping into the social column. The `gap-6`
-          is that gap between the currency and the profile column. */}
+          fixed-width column sized to that width so the profile chip seats ABOVE
+          the docked social panel (per reference Image #21). Giving the player a
+          dedicated column also pushes the CURRENCY left, so the currency block
+          ends with a clear gap BEFORE the social panel's left edge instead of
+          overlapping into the social column. The `gap-6` is that gap between the
+          currency and the profile column.
+
+          #541: the column is `justify-stretch` (not the pre-#541 `justify-end`)
+          and the player slot fills its width, so the navband chip can pin its
+          AVATAR to the column's LEFT edge (= social-panel left edge) with the
+          bell pushed to the column's RIGHT edge (= social-panel right edge),
+          matching the reference where the avatar hugs the social panel's left
+          boundary. Without a fixed column the slot stays its natural width. */}
       <div className="flex shrink-0 items-center gap-6">
         {currencySlot}
+        {/* #541: `-mr-4` cancels the nav's own `px-4` right padding for the
+            player column ONLY, so the column's RIGHT edge reaches the true
+            window edge (x=1280) — where the docked social panel ends (the
+            content row has no right padding). With the column width == the
+            social-panel width, its LEFT edge then lands exactly on the social
+            panel's left edge, so the left-pinned avatar aligns to that boundary.
+            Applied only when `playerColumnWidth` is set (the seat-above-social
+            feature); the natural-width cluster keeps the standard px-4 inset. */}
         <div
-          className="flex h-full items-center justify-end"
+          className={playerColumnWidth ? "-mr-4 flex h-full items-center" : "flex h-full items-center"}
           style={playerColumnWidth ? { width: playerColumnWidth } : undefined}
         >
           {playerSlot}
