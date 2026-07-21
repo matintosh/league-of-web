@@ -56,6 +56,14 @@ export interface LeagueHomeScreenProps {
   onToggleMute?: () => void;
   /** Whether the featured audio is muted (drives the mute-disc glyph). */
   muted?: boolean;
+  /**
+   * Pixels by which the featured splash + scrims extend ABOVE this screen's top
+   * edge, so the key-art bleeds up behind a transparent nav band overlaying the
+   * content (issue #501 — the MF splash shows through the nav). Only the splash
+   * layer bleeds up; the rail, copy, and skins strip stay inside the screen box
+   * (which the page pads down to clear the band). 0 (default) = no bleed.
+   */
+  splashBleedTop?: number;
 }
 
 /**
@@ -79,6 +87,7 @@ export function LeagueHomeScreen({
   onGoToStore,
   onToggleMute,
   muted = false,
+  splashBleedTop = 0,
 }: LeagueHomeScreenProps) {
   return (
     <div
@@ -93,33 +102,44 @@ export function LeagueHomeScreen({
       {/* ---------------------------------------------------------------- */}
       {/* RIGHT — full-bleed featured splash + overlays                     */}
       {/* ---------------------------------------------------------------- */}
-      <div className="relative min-w-0 flex-1 overflow-hidden">
-        {/* Splash — object-cover fills the region, top-anchored on the face */}
-        <img
-          src={featured.splashSrc}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover object-top"
-        />
+      <div className="relative min-w-0 flex-1 overflow-visible">
+        {/* Splash bleed layer (#501) — the splash + its scrims extend UP by
+            `splashBleedTop` above this screen's top edge so the key-art fills
+            behind the transparent nav band overlaying the content. The layer is
+            positioned from `-splashBleedTop` to the bottom; `overflow-hidden`
+            here (not on the parent) keeps the object-cover crop clean while the
+            parent stays `overflow-visible` so the art can escape upward. */}
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden"
+          style={{ top: -splashBleedTop }}
+        >
+          {/* Splash — object-cover fills the region, top-anchored on the face */}
+          <img
+            src={featured.splashSrc}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-top"
+          />
 
-        {/* Scrim — darkens the left + bottom edges so the rail seam and the
-            copy block stay legible over the splash. Same color-mix technique
-            as the legacy HomeLanding vignette. */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to right, var(--color-hextech-black) 0%, color-mix(in srgb, var(--color-hextech-black) 55%, transparent) 22%, transparent 55%)",
-          }}
-        />
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0"
-          style={{
-            height: "62%",
-            background:
-              "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 92%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 45%, transparent) 48%, transparent 100%)",
-          }}
-        />
+          {/* Scrim — darkens the left + bottom edges so the rail seam and the
+              copy block stay legible over the splash. Same color-mix technique
+              as the legacy HomeLanding vignette. */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to right, var(--color-hextech-black) 0%, color-mix(in srgb, var(--color-hextech-black) 55%, transparent) 22%, transparent 55%)",
+            }}
+          />
+          <div
+            className="absolute inset-x-0 bottom-0"
+            style={{
+              height: "62%",
+              background:
+                "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 92%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 45%, transparent) 48%, transparent 100%)",
+            }}
+          />
+        </div>
 
         {/* -------------------------------------------------------------- */}
         {/* MUTE DISC — top-right, presentational (static glyph)            */}

@@ -148,75 +148,103 @@ const YOUR_SHOP_EXPIRY = "Offers expire October 30 at 18:00 EET";
 
 
 // ---------------------------------------------------------------------------
-// Right nav-cluster glyphs (#463) — the 2025 reference right cluster reads as
-// two groups of three split by a divider: A(hand"2", cards"10", crest) |
-// B(mail•, crossed-swords, coins). No clean CommunityDragon nav asset matches
-// the hand / crest / crossed-swords shapes, so per the #386 placeholder rule
-// these are faithful inline token-filled glyphs (currentColor → gold via the
-// parent's text-gold class). ~22px on a 24px canvas, matching the icon pitch.
+// Right nav-cluster glyphs (#463/#500) — the 2025 reference right cluster reads
+// as two groups of three split by a divider:
+//   A: cupped OPEN HANDS "2" · fanned LOOT CARDS "10" · RUNE-LEAF crest
+//   | divider |
+//   B: BRIEFCASE/satchel• · crossed HEXTECH BLADES · stacked COINS
+// #500: these were redrawn to trace the reference crop (scratchpad/navpolish/
+// ref-cluster.png). The real client renders them as SOLID cream SILHOUETTES
+// (filled, not stroked outlines), so these are filled `currentColor` paths — the
+// nav-icon-* CDN assets (loot pickaxe / vault chest / three-coins) are the older
+// era and don't match these 2025 shapes, so per the #386 placeholder rule they
+// stay faithful inline glyphs. 22px on a 24px canvas, matching the icon pitch.
 // ---------------------------------------------------------------------------
 
-/** Open hand / summon glyph — group-A slot 1 (badge "2"). */
+/** Cupped open hands (gift/receive) — group-A slot 1 (badge "2"). Two open
+ *  palms angled toward each other with spread fingers, as in the reference. */
 function HandGlyph() {
   return (
-    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
-      <path d="M8 11V5.5a1.3 1.3 0 0 1 2.6 0V10m0 0V4.2a1.3 1.3 0 0 1 2.6 0V10m0 0V5a1.3 1.3 0 0 1 2.6 0v6m0 0V7.5a1.3 1.3 0 0 1 2.6 0V14c0 3.9-2.6 6.5-6 6.5-2.2 0-3.7-.9-4.9-2.6l-2.5-3.6a1.4 1.4 0 0 1 2.1-1.8L8 14.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      {/* Open palm — rounded palm with four fingers + a thumb, fingers spread
+          up-and-out (a receiving/summon hand, matching the reference). */}
+      <path d="M8.05 12.1 6.2 9.55c-.32-.44-.94-.53-1.38-.2-.42.32-.5.92-.2 1.35l3.02 4.25c.28.85.83 1.62 1.62 2.2 1.1.8 2.35 1.05 3.5.82.62.35 1.4.5 2.2.35 1.5-.28 2.55-1.5 2.62-2.9l.62-6.35c.05-.55-.34-1.05-.9-1.12-.55-.06-1.05.33-1.12.88l-.4 3.55.35-4.9c.04-.56-.38-1.05-.94-1.09-.55-.03-1.03.38-1.07.94l-.32 4.6.16-5.35c.02-.56-.42-1.03-.98-1.05-.55-.02-1.02.42-1.04.98l-.2 5.28-.55-4.55c-.06-.55-.56-.95-1.12-.88-.55.06-.94.56-.88 1.12l.6 4.9-1.5-2.5c-.28-.48-.9-.63-1.38-.35-.46.28-.62.88-.36 1.36l.99 1.71Z" />
     </svg>
   );
 }
 
-/** Stacked cards / loot glyph — group-A slot 2 (badge "10"). */
+/** Fanned loot cards — group-A slot 2 (badge "10"). Two overlapping rounded
+ *  cards, the front one tilted, matching the reference loot glyph. */
 function CardsGlyph() {
   return (
-    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
-      <rect x="4" y="8" width="9" height="12" rx="1.2" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M8 6.5 15.5 4.8a1.2 1.2 0 0 1 1.45.9l2.4 10.5a1.2 1.2 0 0 1-.9 1.45L15 18.7" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      {/* Back card — upright rounded rectangle */}
+      <rect x="9" y="4.5" width="9.5" height="13" rx="1.6" />
+      {/* Front card — tilted, overlapping to the lower-left (cut out from back
+          via the mask so the fan reads as two distinct cards) */}
+      <g transform="rotate(-16 8 12)">
+        <rect x="3" y="7" width="9.5" height="13" rx="1.6" stroke="var(--color-hextech-black)" strokeWidth="1.4" />
+      </g>
+      {/* Small swap arrow at the top-right corner of the back card */}
+      <path d="M15.5 3.2l2.6 1-.9 2.5" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-/** Crest / trophy-flame emblem — group-A slot 3 (no badge). */
+/** Rune-leaf crest — group-A slot 3 (no badge). A pointed leaf with a flame
+ *  crown and a rounded seed body, matching the reference emblem. */
 function CrestGlyph() {
   return (
-    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
-      <path d="M12 3c.9 1.6.6 2.9-.4 3.9C10.4 8 10 9.2 11 10.4c.5-.7 1-1 1-1 .3 1.2 1.2 1.6 1.2 3 0 1.3-1 2.2-2.2 2.2S8.8 13.7 8.8 12.4c0-.5.1-.9.3-1.3-1.6 1-1.8 3.1-.6 4.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M6.5 6.5V11c0 3.4 2.4 5.6 5.5 6.8 3.1-1.2 5.5-3.4 5.5-6.8V6.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M9.5 18.5h5M10 20.5h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      {/* Flame / leaf tip crowning the seed */}
+      <path d="M12 2.4c1.6 1.7 2.4 3.3 2.4 4.9 0 .9-.25 1.7-.7 2.45.55-.2 1-.55 1.35-1.05.35 1 .1 2.05-.75 3.05l-.5-.3c.35-.6.45-1.2.3-1.75-.5.75-1.2 1.2-2.1 1.35V9.9c.75-.65 1.15-1.5 1.15-2.5 0-1-.4-1.95-1.15-2.85-.75.9-1.15 1.85-1.15 2.85 0 1 .4 1.85 1.15 2.5v1.85c-.9-.15-1.6-.6-2.1-1.35-.15.55-.05 1.15.3 1.75l-.5.3c-.85-1-1.1-2.05-.75-3.05.35.5.8.85 1.35 1.05-.45-.75-.7-1.55-.7-2.45 0-1.6.8-3.2 2.4-4.9Z" />
+      {/* Shield / seed body cupping the leaf */}
+      <path d="M12 20.6c-1.75 0-3.15-1.4-3.15-3.15 0-1.05.5-1.95 1.3-2.55-1.6-1.35-2.75-3.35-3.2-5.85 1.15.65 2.35.9 3.55.75-.55.7-.85 1.55-.85 2.45 0 1.35 1.05 2.45 2.4 2.45s2.4-1.1 2.4-2.45c0-.9-.3-1.75-.85-2.45 1.2.15 2.4-.1 3.55-.75-.45 2.5-1.6 4.5-3.2 5.85.8.6 1.3 1.5 1.3 2.55 0 1.75-1.4 3.15-3.15 3.15Z" />
     </svg>
   );
 }
 
-/** Satchel / mail bag — group-B slot 4 (carries a small notification dot). */
+/** Briefcase / satchel — group-B slot 4 (carries a small notification dot).
+ *  A rounded bag with a top handle and a horizontal flap seam, per the ref. */
 function SatchelGlyph() {
   return (
-    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
-      <path d="M6 9h12l1 10.5a1 1 0 0 1-1 1.1H6a1 1 0 0 1-1-1.1L6 9Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-      <path d="M8.5 9V7.5a3.5 3.5 0 0 1 7 0V9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      <path d="M5.2 13.5h13.6" stroke="currentColor" strokeWidth="1.4" />
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      {/* Top handle — a flat arch clear of the case body */}
+      <path d="M9 8V6.7A3 3 0 0 1 15 6.7V8h-1.5V6.7a1.5 1.5 0 0 0-3 0V8H9Z" />
+      {/* Case body — wide rounded rectangle with a horizontal lid seam + a small
+          latch tab, reading clearly as a briefcase (not a padlock). */}
+      <path d="M4.6 9.4c0-.55.45-1 1-1h12.8c.55 0 1 .45 1 1v8.9c0 .72-.58 1.3-1.3 1.3H5.9c-.72 0-1.3-.58-1.3-1.3V9.4Zm.9 3.3h13v-.8h-13v.8Zm5.7 0h2.6v1.5a.6.6 0 0 1-.6.6h-1.4a.6.6 0 0 1-.6-.6v-1.5Z" fillRule="evenodd" clipRule="evenodd" />
     </svg>
   );
 }
 
-/** Crossed sword + pickaxe — group-B slot 5. */
+/** Crossed hextech blades — group-B slot 5. A sword crossed with a wand,
+ *  with a spark burst, matching the reference X-shape. */
 function CrossedSwordsGlyph() {
   return (
-    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
-      <path d="M5 5l9 9m0-9-9 9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M14 4.5 19.5 4.5 19.5 10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M4.5 14 4.5 19.5 10 19.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="m14 14 5.5 5.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      {/* Blade 1 — top-left to bottom-right, tapered point + short guard/hilt */}
+      <path d="M4.6 4.2 6 3.9l11.4 12.7 1.4 2.7-2.7-1.3L4.7 5.5l-.1-1.3ZM16.4 17.8l2.4 2.2-.6.6-2.3-2.3.5-.5Z" fillRule="evenodd" clipRule="evenodd" />
+      {/* Blade 2 — top-right to bottom-left (wand), tapered */}
+      <path d="M19.4 4.2 18 3.9 6.6 16.6l-1.4 2.7 2.7-1.3L19.3 5.5l.1-1.3ZM7.6 17.8 5.2 20l.6.6 2.3-2.3-.5-.5Z" fillRule="evenodd" clipRule="evenodd" />
+      {/* Spark burst at the crossing */}
+      <path d="M12 8.2l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z" />
     </svg>
   );
 }
 
-/** Stacked coins — group-B slot 6 (opens Your Shop). */
+/** Stacked coins — group-B slot 6 (opens Your Shop). A small cluster of disc
+ *  coins piled left + a taller stack right, per the reference. */
 function CoinsGlyph() {
   return (
-    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
-      <ellipse cx="12" cy="7" rx="6" ry="2.4" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M6 7v3.5c0 1.3 2.7 2.4 6 2.4s6-1.1 6-2.4V7" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M6 10.5V14c0 1.3 2.7 2.4 6 2.4s6-1.1 6-2.4v-3.5" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M6 14v3.5c0 1.3 2.7 2.4 6 2.4s6-1.1 6-2.4V14" stroke="currentColor" strokeWidth="1.4" />
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      {/* Left short stack — two coins */}
+      <ellipse cx="8.5" cy="14" rx="3.6" ry="1.6" />
+      <path d="M4.9 14v2.3c0 .88 1.6 1.6 3.6 1.6s3.6-.72 3.6-1.6V14c0 .88-1.6 1.6-3.6 1.6S4.9 14.88 4.9 14Z" />
+      {/* Right tall stack — three coins */}
+      <ellipse cx="15.5" cy="9.5" rx="3.6" ry="1.6" />
+      <path d="M11.9 9.5v2.2c0 .88 1.6 1.6 3.6 1.6s3.6-.72 3.6-1.6V9.5c0 .88-1.6 1.6-3.6 1.6s-3.6-.72-3.6-1.6Z" />
+      <path d="M11.9 11.7v2.2c0 .88 1.6 1.6 3.6 1.6s3.6-.72 3.6-1.6v-2.2c0 .88-1.6 1.6-3.6 1.6s-3.6-.72-3.6-1.6Z" />
     </svg>
   );
 }
@@ -846,12 +874,20 @@ export function ClientShell() {
         // renders the ⚙ there; the shell owns the SettingsModal open state.
         onSettings={() => setSettingsOpen(true)}
       >
-        <div className="flex h-full flex-col">
+        <div className="relative flex h-full flex-col">
           {/* TopNavbar is hidden during champ-select phases (#341): those
               screens are a full-screen takeover. Window controls stay because
               they float in WindowFrame's integrated chrome (a sibling above
-              this content column, #385), not in the navbar. */}
+              this content column, #385), not in the navbar.
+
+              #501: the band is an ABSOLUTE overlay (top-0 inset-x-0 z-30) rather
+              than an in-flow shrink-0 sibling, so its transparent gradient reveals
+              whatever the content paints beneath it — on home that's the featured
+              splash, which bleeds up to y=0 behind the band (splashBleedTop). The
+              content row is padded down by the band height (pt-22) so no screen's
+              own chrome hides under the band. */}
           {!champSelectActive && (
+          <div className="absolute inset-x-0 top-0 z-30">
           <TopNavbar
             playSlot={
               // PlayButton lives permanently in the navbar (zone 1).
@@ -1092,14 +1128,24 @@ export function ClientShell() {
               />
             }
           />
+          </div>
           )}
 
           {/* Content row — flex row containing the screen (flex-1 min-w-0) and,
               on railed views, the docked social rail as a normal in-flow column.
-              pick / loadout are full-bleed: rail is absent entirely on those views. */}
-          <div className="relative flex flex-1 overflow-hidden">
+              pick / loadout are full-bleed: rail is absent entirely on those views.
+
+              #501: padded down by the nav-band height (pt-22 = 88px) whenever the
+              band is shown, since the band is now an absolute overlay (above) and
+              no longer reserves flow space. Champ-select hides the band, so no
+              padding there. The home view's splash bleeds UP into this padding
+              (behind the band) via LeagueHomeScreen's splashBleedTop — so the
+              screen-content wrapper is overflow-visible ONLY on home to let the
+              art escape up; every other screen keeps overflow-hidden (its own
+              chrome sits fully below the band, nothing to bleed). */}
+          <div className={`relative flex flex-1 overflow-hidden${champSelectActive ? "" : " pt-22"}`}>
             {/* Screen content — fills all available width (minus rail when present) */}
-            <div className="relative flex-1 min-w-0 overflow-hidden">
+            <div className={`relative flex-1 min-w-0 ${view === "home" ? "overflow-visible" : "overflow-hidden"}`}>
               {view === "competitive" ? (
                 <ClashScreen
                   tournament={CLASH_TOURNAMENT}
@@ -1507,6 +1553,9 @@ function HomeView({ onGoToStore }: HomeViewProps) {
       onSelectSkin={(id) => console.log("home: select skin", id)}
       onGoToStore={onGoToStore}
       onToggleMute={() => console.log("home: toggle mute")}
+      // #501: the nav band (h-22 = 88px) is an absolute transparent overlay; the
+      // splash bleeds up 88px behind it so the MF key-art shows through the band.
+      splashBleedTop={88}
     />
   );
 }
