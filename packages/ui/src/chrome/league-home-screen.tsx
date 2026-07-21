@@ -50,7 +50,7 @@ export interface LeagueHomeScreenProps {
   skins: LeagueHomeSkin[];
   /** Fired with a skin's id when its thumbnail card is clicked. */
   onSelectSkin?: (id: string) => void;
-  /** Fired when the GO TO STORE pill is clicked; the page routes to the store. */
+  /** Fired when the GO TO STORE button is clicked; the page routes to the store. */
   onGoToStore?: () => void;
   /** Fired when the mute disc is clicked. Presentational — no audio plays. */
   onToggleMute?: () => void;
@@ -73,7 +73,7 @@ export interface LeagueHomeScreenProps {
  * full-bleed champion splash filling the remainder. Over the splash: a gold
  * eyebrow + display title + body copy anchored lower-left (behind a left/bottom
  * hextech-black scrim so the copy and rail stay legible), a mute disc top-right,
- * and a SKINS thumbnail strip + GO TO STORE pill anchored bottom-right.
+ * and a SKINS thumbnail strip + GO TO STORE button anchored bottom-right.
  *
  * Presentational: props in, callbacks out. No fetching — splash and skin art
  * arrive as `src` strings from the page. The rail is a child slot, so this
@@ -192,16 +192,30 @@ export function LeagueHomeScreen({
             </div>
           </div>
 
-          {/* #507: SOLID GOLD FILLED PILL — no outline. A filled gold pill with
-              dark text (was an outline: border + gold text), matching the
-              reference. `border-gold-4` gives only a subtle darker-gold edge on
-              the fill; `rounded-full` makes the pill shape. */}
+          {/* #534: HEXTECH BRONZE RECTANGLE — the standard store button. Sharp
+              square corners (no rounded), a bright gold-4 outline, cream serif
+              label, and a vertical dark antique bronze-gold fill: a warm
+              brown-gold at top darkening to deep brown at the bottom. The fill
+              is built from gold tokens via color-mix (gold-5 warmed with gold-4
+              up top, gold-5 dropped toward hextech-black at the bottom) so no
+              raw hex leaks in. Hover lightens the fill and brightens the border
+              toward gold-2. A faint top-edge sheen sits in the upper third via a
+              1px inset highlight overlay. */}
           <button
             type="button"
             onClick={onGoToStore}
-            className="cursor-pointer rounded-full border border-gold-4 bg-gold-3 px-6 py-1.5 font-display text-xs uppercase tracking-[0.2em] text-hextech-black transition-colors duration-150 hover:border-gold-3 hover:bg-gold-2"
+            className="group/store relative cursor-pointer overflow-hidden border border-gold-4 px-6 py-2 font-display text-xs uppercase tracking-[0.14em] text-gold-1 transition-colors duration-150 hover:border-gold-2 [background:linear-gradient(to_bottom,color-mix(in_srgb,var(--color-gold-5)_82%,var(--color-gold-4))_0%,color-mix(in_srgb,var(--color-gold-5)_58%,var(--color-hextech-black))_100%)] hover:[background:linear-gradient(to_bottom,color-mix(in_srgb,var(--color-gold-4)_70%,var(--color-gold-5))_0%,color-mix(in_srgb,var(--color-gold-5)_70%,var(--color-hextech-black))_100%)]"
           >
-            Go to Store
+            {/* Metallic sheen — faint warm highlight over the upper third. */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 h-1/3"
+              style={{
+                background:
+                  "linear-gradient(to bottom, color-mix(in srgb, var(--color-gold-2) 22%, transparent) 0%, transparent 100%)",
+              }}
+            />
+            <span className="relative">Go to Store</span>
           </button>
         </div>
       </div>

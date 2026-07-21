@@ -9,7 +9,7 @@ export const leagueHomeScreenShowcase: ShowcaseEntry = {
   name: "League Home Screen",
   area: "chrome",
   description:
-    "Current-era LEAGUE HOME featured-content landing — the content-link rail (from #456) beside a full-bleed champion splash with a gold eyebrow/title/body copy block, a mute disc, a SKINS thumbnail strip, and a GO TO STORE pill. Presentational: the rail arrives as a slot; splash/skin art arrive as src strings.",
+    "Current-era LEAGUE HOME featured-content landing — the content-link rail (from #456) beside a full-bleed champion splash with a gold eyebrow/title/body copy block, a mute disc, a SKINS thumbnail strip, and a Hextech bronze GO TO STORE button (sharp-cornered bronze-gradient rectangle, gold border, cream serif label). Presentational: the rail arrives as a slot; splash/skin art arrive as src strings.",
   referenceImage: "client-current-home-2025-mf.png",
   referenceNote:
     "docs/reference/client-current-home-2025-mf.png — MVP T1 Miss Fortune featured: rail left, MF splash filling center/right, eyebrow/title/body lower-left, SKINS strip + GO TO STORE bottom-right.",
