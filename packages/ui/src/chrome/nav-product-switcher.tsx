@@ -72,6 +72,32 @@ function ExternalLinkGlyph() {
 }
 
 /**
+ * Full-height darker CELL behind the active product tab (#523). The 2025 client
+ * (ref-nav/active-tab.png) renders the active LEAGUE tab inside a subtle
+ * vertical-gradient panel spanning the ENTIRE band height — darker at the top
+ * (where the gold chevron notches over it) and lifting slightly toward the
+ * bottom — rather than a small centred pill backing. Inactive tabs (TFT) have no
+ * cell; the LoR gold pill keeps its own treatment.
+ *
+ * The panel is a translucent hextech-black wash (color-mix over the token, so
+ * the Miss Fortune splash still bleeds faintly through) with a barely-there
+ * gold-4 lift at the bottom edge to echo the warm key-art. It sits UNDER the
+ * label + chevron (both raised above it via `relative`) so text stays legible.
+ */
+function ActiveCell() {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute inset-0"
+      style={{
+        backgroundImage:
+          "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 55%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 30%, transparent) 78%, color-mix(in srgb, var(--color-gold-4) 10%, transparent) 100%)",
+      }}
+    />
+  );
+}
+
+/**
  * Gold down-chevron that drops from the band's top edge, centered over the
  * active product tab (#462). Reuses the `ActiveChevron` geometry from
  * top-navbar.tsx (20×14 gold-3 double-V) so the switcher's active indicator
@@ -162,7 +188,12 @@ export function NavProductSwitcher({
     <div
       role="tablist"
       aria-label="Product switcher"
-      className="flex items-center gap-4"
+      /* #523: `items-stretch` + `self-stretch` so the switcher fills the band's
+         full height (the band is items-stretch at h-22). This lets the active
+         product tab render a FULL-HEIGHT darker cell reaching the gold top border
+         where the chevron notches, matching the reference LEAGUE treatment
+         (ref-nav active-tab.png). Non-active tabs stay vertically centred. */
+      className="flex items-stretch self-stretch gap-4"
     >
       {products.map((product) => {
         const isActive = product.id === activeId;
@@ -208,17 +239,17 @@ export function NavProductSwitcher({
         }
 
         return (
-          /* Non-pill product tab. `relative` so the active-tab down-chevron can
-             anchor to the band's top edge above it. The active tab also gets a
-             faint raised backing panel (#462) matching the reference LEAGUE
-             treatment. `-top-4` lifts the chevron from the vertically-centred
-             switcher up to the band top edge (~16px above the 24px-tall tab). */
-          <span key={product.id} className="relative flex items-center">
-            {isActive && (
-              <span className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2">
-                <ActiveChevron />
-              </span>
-            )}
+          /* Non-pill product tab. `self-stretch` (#523) makes the tab span the
+             band's full height so the active LEAGUE tab reads as a full-height
+             CELL (per ref-nav active-tab.png), not a small centred chip. `relative`
+             anchors the full-height cell layer + the down-chevron, which now sits
+             at the band's top edge (top-0) where it notches down over the cell. */
+          <span
+            key={product.id}
+            className="relative flex items-center self-stretch"
+          >
+            {isActive && <ActiveCell />}
+            {isActive && <ActiveChevron />}
             <button
               type="button"
               role="tab"
@@ -226,11 +257,11 @@ export function NavProductSwitcher({
               aria-disabled={isDisabled ? true : undefined}
               onClick={isDisabled ? undefined : () => onSelect(product.id)}
               className={[
-                "rounded-sm px-2 py-1 font-display text-sm uppercase tracking-widest transition-colors duration-150",
+                "relative px-3 py-1 font-display text-sm uppercase tracking-widest transition-colors duration-150",
                 isDisabled
                   ? "cursor-default text-grey-2 pointer-events-none"
                   : isActive
-                  ? "cursor-pointer bg-gold-5/25 text-gold-1"
+                  ? "cursor-pointer text-gold-1"
                   : "cursor-pointer text-grey-1 hover:text-gold-1",
               ].join(" ")}
             >
