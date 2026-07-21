@@ -18,15 +18,10 @@ import {
   SettingsRow,
   LaunchSplash,
   HextechToggle,
-  HomeNewsScreen,
   HomeContentRail,
   LeagueHomeScreen,
   SocialPanel,
   SocialDock,
-  ArcadeEventTab,
-  BattlePassScreen,
-  JourneyTab,
-  LevelUpRewardsDetail,
   TftHubScreen,
   ClashScreen,
   YourShopScreen,
@@ -34,7 +29,7 @@ import {
   ObjectivesModal,
   UpdatesFlyout,
 } from "@low/ui";
-import type { NavItem, NavProduct, SettingsSection, FriendGroup, DockButton, EventSkinCard, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard, UpdateNotification } from "@low/ui";
+import type { NavItem, NavProduct, SettingsSection, FriendGroup, DockButton, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard, UpdateNotification } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -58,13 +53,6 @@ import {
   playButtonVideoUrl,
   buttonParticlesVideoUrl,
   leagueLogoVideoUrl,
-  demoBattlePassChapters,
-  demoBattlePassLevelRewards,
-  DEMO_STARTER_PACK,
-  DEMO_AWAKENING_MISSIONS,
-  DEMO_LEVEL_UP_REWARDS,
-  DEMO_DAILY_PLAY_REWARDS,
-  DEMO_LEVEL_REWARD_CARDS,
   DEMO_OBJECTIVES,
   DEMO_UPDATES,
   poroUrl,
@@ -73,7 +61,7 @@ import {
   uikitSoundUrl,
 } from "@low/fixtures";
 import type { ClashScoutingPlayer } from "@low/fixtures";
-import type { NewsArticle, HomeContentRailItem, LeagueHomeFeatured, LeagueHomeSkin } from "@low/ui";
+import type { HomeContentRailItem, LeagueHomeFeatured, LeagueHomeSkin } from "@low/ui";
 import { BanPhaseScreen } from "./ban-phase-screen";
 import { DeclarePhaseScreen } from "./declare-phase-screen";
 import { CollectionScreen } from "./collection-screen";
@@ -91,23 +79,16 @@ import { StoreScreen } from "./store-screen";
 // the FIRST champ-select beat — ACCEPT → declare → ban.
 type View = "home" | "mode-select" | "party-lobby" | "collection" | "declare" | "ban" | "pick" | "loadout" | "profile" | "store" | "tft" | "competitive";
 
-// Screen-navigation tabs. Post-#403 the current-era product switcher owns the
-// left zone (LEAGUE/TFT/LoR); the switcher's LEAGUE tab routes to home and its
-// TFT tab routes to the TFT hub, so HOME and TEAMFIGHT TACTICS are dropped from
-// this text row as redundant. The remaining screen-only destinations — Profile,
-// Collection, Competitive (Clash — #244), Store — stay here so their routes are
-// preserved (the ROUTING-PRESERVATION adjudication is binding). This compresses
-// the row to fit the band between the switcher and the current-era right
-// cluster; the residual tension (the reference has NO screen-nav text row in
-// this band at all — screen access lives in an "activity center") is a #403
-// follow-up epic, documented in the PR.
-// Profile has NO nav tab (#425) — the real client opens the profile screen
-// from the top-right avatar chip (ProfileChip onOpenProfile below).
-const NAV_ITEMS: NavItem[] = [
-  { id: "collection",  label: "Collection" },
-  { id: "competitive", label: "Competitive" },
-  { id: "store",       label: "Store" },
-];
+// Screen-navigation text tabs — REMOVED (#491). The 2025 reference has NO
+// center text-tab row in the nav band; every screen destination is reached
+// through the current-era right icon cluster instead:
+//   crest → collection · coins → Your Shop · cards → loot · crossed-swords → store
+// (the #486 wiring, preserved below). Competitive/Clash has no glyph in the
+// reference cluster, so dropping it here follows the reference. Profile already
+// had no tab (#425 — it opens from the top-right avatar chip). The band keeps
+// the LEAGUE/TFT/LoR product switcher (left) but renders no center tabs, so
+// `NAV_ITEMS` is now empty and TopNavbar draws a clean, tab-free center zone.
+const NAV_ITEMS: NavItem[] = [];
 
 // Current-era left-zone product switcher (issue #403). LEAGUE = this client
 // (active by default); TFT maps to our TFT hub view (the existing `tft`
@@ -917,14 +898,12 @@ export function ClientShell() {
             }
             navItems={NAV_ITEMS}
             activeId={activeNavId}
-            onNavigate={(id) => {
-              setActiveNavId(id);
-              if (id === "collection") setView("collection");
-              else if (id === "store") { setActiveStoreTab("featured"); setView("store"); }
-              else if (id === "tft") setView("tft");
-              else if (id === "competitive") setView("competitive");
-              else if (id === "home") setView("home");
-            }}
+            // #491: the center text-tab row is gone (NAV_ITEMS empty), so no
+            // nav-item button ever fires this. Screen navigation now lives in
+            // the right icon cluster (below) + the product switcher; this
+            // handler stays only to satisfy TopNavbar's required prop and just
+            // tracks the active id defensively.
+            onNavigate={setActiveNavId}
             currencySlot={
               // Current-era right region (era shift #384 / #386): a menu-access
               // ICON CLUSTER, then the gold Your Shop CTA, a divider, and the
@@ -1434,135 +1413,6 @@ export function ClientShell() {
 }
 
 // ---------------------------------------------------------------------------
-// Sub-tab strip data — tabs under the home navbar (issue #145)
-// Overview is the only live tab; others are dead (aria-disabled).
-// ---------------------------------------------------------------------------
-
-/** Tab descriptor for the home sub-nav strip. */
-interface HomeTab {
-  id: string;
-  label: string;
-  disabled?: boolean;
-  /** Decorative gold dot badge (notification marker, per reference). */
-  dot?: boolean;
-}
-
-const HOME_TABS: HomeTab[] = [
-  { id: "overview",     label: "OVERVIEW" },
-  { id: "arcade",       label: "ARCADE 2019", dot: true },
-  { id: "battle-pass",  label: "BATTLE PASS", dot: true },
-  { id: "journey",      label: "JOURNEY" },
-  { id: "news",         label: "NEWS" },
-  { id: "patch-notes",  label: "PATCH NOTES", disabled: true },
-];
-
-// ---------------------------------------------------------------------------
-// Arcade 2019 skin fixtures — page-level values fed to ArcadeEventTab
-// ---------------------------------------------------------------------------
-
-const ARCADE_SKINS: EventSkinCard[] = [
-  {
-    id: "demacia-vice-garen",
-    championName: "Garen",
-    skinName: "Demacia Vice",
-    rpPrice: 1350,
-    splashUrl: loadingArtUrl("Garen", 6),
-  },
-  {
-    id: "demacia-vice-lucian",
-    championName: "Lucian",
-    skinName: "Demacia Vice",
-    rpPrice: 1350,
-    splashUrl: loadingArtUrl("Lucian", 8),
-  },
-  {
-    id: "battle-boss-yasuo",
-    championName: "Yasuo",
-    skinName: "Battle Boss",
-    rpPrice: 1350,
-    splashUrl: loadingArtUrl("Yasuo", 17),
-  },
-  {
-    id: "arcade-kaisa",
-    championName: "Kai'Sa",
-    skinName: "Arcade",
-    rpPrice: 1350,
-    splashUrl: loadingArtUrl("Kaisa", 17),
-  },
-];
-
-// ---------------------------------------------------------------------------
-// HomeNewsScreen fixtures — page-level values (no fetching in @low/ui)
-// ---------------------------------------------------------------------------
-
-const NEWS_HERO: NewsArticle = {
-  id: "euphoria-origen",
-  title: "EUPHORIA | ORIGEN",
-  description:
-    "Drakos and Froskvinn talk to Kold and Guilhoto about Origen's latest performance.",
-  category: "ESPORTS / TRIVIA",
-  thumbnailUrl: championSplashUrl("Jhin"),
-  externalUrl: "#",
-};
-
-const NEWS_PROMOS: NewsArticle[] = [
-  {
-    id: "beemo-plush",
-    title: "Beemo Plush",
-    thumbnailUrl: loadingArtUrl("Teemo", 8),
-    externalUrl: "#",
-  },
-  {
-    id: "eu-masters",
-    title: "EU Masters returns for ESL Summer 2019",
-    thumbnailUrl: championSplashUrl("Jinx"),
-    externalUrl: "#",
-  },
-];
-
-const NEWS_SIDE: NewsArticle[] = [
-  {
-    id: "play-lucian",
-    title: "Play Lucian like Hans Sama",
-    description:
-      "Hans Sama gives us the lowdown on how best to play The Purifier.",
-    thumbnailUrl: championSplashUrl("Lucian"),
-    externalUrl: "#",
-  },
-  {
-    id: "arcade-compensation",
-    title: "Compensation tokens for ARCADE pass...",
-    description: "A bug caused some rewards to go afk.",
-    thumbnailUrl: loadingArtUrl("MissFortune", 9),
-    externalUrl: "#",
-  },
-  {
-    id: "week5-picks",
-    title: "Week 5's top five picks",
-    description:
-      "With Week 5 done and dusted, these were the five players — and their...",
-    thumbnailUrl: championSplashUrl("Yasuo"),
-    externalUrl: "#",
-  },
-  {
-    id: "excel-g2",
-    title: "Excel vs G2: Nothing to lose",
-    description:
-      "Excel finally have their first win of the Summer Split and will be hoping to...",
-    thumbnailUrl: championSplashUrl("Garen"),
-    externalUrl: "#",
-  },
-  {
-    id: "lec-mic-check",
-    title: "LEC Mic Check: Week 4",
-    description:
-      "Listen to the comms around Caps' surprise pick in this week's #LEC Mic...",
-    thumbnailUrl: championSplashUrl("Ahri"),
-    externalUrl: "#",
-  },
-];
-
-// ---------------------------------------------------------------------------
 // LeagueHomeScreen fixtures — page-level values (no fetching in @low/ui)
 // The current-era OVERVIEW landing: content-link rail + featured splash/copy +
 // skins strip. Rail selection lives in HomeView; each rail id maps to a
@@ -1623,168 +1473,43 @@ const HOME_SKINS: Record<string, LeagueHomeSkin[]> = {
 };
 
 // ---------------------------------------------------------------------------
-// HomeView — wraps the sub-tab strip + content for the home route.
-// Sub-nav is a narrow bar (~32px) across the full content width.
-// OVERVIEW and ARCADE 2019 are live; NEWS and PATCH NOTES remain dead.
+// HomeView — the home route content (#491). The OVERVIEW/ARCADE/BATTLE PASS/
+// JOURNEY/NEWS/PATCH NOTES sub-tab strip was REMOVED: the 2025 reference home
+// has no such strip (its featured items live in the LeagueHomeScreen content
+// rail). LeagueHomeScreen (the former OVERVIEW body) is now the sole home
+// content and fills the entire content area under the taller nav band.
 // ---------------------------------------------------------------------------
 
 interface HomeViewProps {
-  /** Routes the shell to the store view (GO TO STORE pill on the OVERVIEW landing). */
+  /** Routes the shell to the store view (GO TO STORE pill on the landing). */
   onGoToStore: () => void;
 }
 
-/** Renders the home sub-tab strip and the active sub-tab content. */
+/** Renders the current-era featured-content home landing (#455/#491). */
 function HomeView({ onGoToStore }: HomeViewProps) {
-  const [activeTabId, setActiveTabId] = useState<string>("overview");
-  // OVERVIEW content-link rail selection — drives the featured splash/copy/skins.
+  // Content-link rail selection — drives the featured splash/copy/skins.
   const [homeRailId, setHomeRailId] = useState<string>("mvp-mf");
-  // Arcade skin selection state — lifted here so it persists across tab switches.
-  const [selectedSkinId, setSelectedSkinId] = useState<string>("battle-boss-yasuo");
-  // Battle Pass: selected level index (undefined = chapter overview view)
-  const [battlePassLevelIdx, setBattlePassLevelIdx] = useState<number | undefined>(undefined);
-  // Journey: active sub-view ("overview" | "level-rewards") and selected level (1-based)
-  const [journeyView, setJourneyView] = useState<"overview" | "level-rewards">("overview");
-  const [journeySelectedLevel, setJourneySelectedLevel] = useState<number>(1);
 
   return (
-    <div className="flex h-full flex-col">
-      {/* ------------------------------------------------------------------ */}
-      {/* Sub-tab strip — full content width, ~32px tall (issue #145)         */}
-      {/* Sits just below the TopNavbar; uses same bottom-border treatment as  */}
-      {/* Profile / Collection sub-navs for visual consistency.               */}
-      {/* ------------------------------------------------------------------ */}
-      <div
-        role="tablist"
-        aria-label="Home sections"
-        className="flex shrink-0 items-end border-b border-gold-5 bg-hextech-black"
-        style={{ height: 32 }}
-      >
-        {HOME_TABS.map((tab) => {
-          const isActive = tab.id === activeTabId;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              aria-disabled={tab.disabled ? true : undefined}
-              disabled={tab.disabled}
-              onClick={
-                !tab.disabled
-                  ? () => {
-                      setActiveTabId(tab.id);
-                      // Reset battle-pass level-detail on tab navigation so the
-                      // user never gets trapped in LevelView when re-entering.
-                      if (tab.id !== "battle-pass") setBattlePassLevelIdx(undefined);
-                      // Reset journey sub-view and level selection on any tab click,
-                      // including a re-click of JOURNEY itself (re-click = return to overview).
-                      setJourneyView("overview");
-                      setJourneySelectedLevel(1);
-                    }
-                  : undefined
-              }
-              className={[
-                "relative flex h-full shrink-0 items-center gap-1.5 px-4",
-                "font-display text-xs uppercase tracking-widest transition-colors duration-150",
-                "border-b-2",
-                tab.disabled
-                  ? "cursor-default opacity-50"
-                  : "cursor-pointer",
-                isActive
-                  ? "border-gold-4 text-gold-1"
-                  : tab.disabled
-                  ? "border-transparent text-gold-cream"
-                  : "border-transparent text-gold-cream hover:text-gold-2",
-              ].join(" ")}
-            >
-              {tab.label}
-              {/* Decorative gold dot notification marker on Arcade 2019 tab */}
-              {tab.dot && (
-                <span
-                  aria-hidden="true"
-                  className="inline-block h-1.5 w-1.5 rounded-full bg-gold-3 mb-0.5"
-                />
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Tab content area — fills remaining height */}
-      <div className="relative flex-1 min-h-0">
-        {activeTabId === "arcade" ? (
-          <ArcadeEventTab
-            skins={ARCADE_SKINS}
-            selectedSkinId={selectedSkinId}
-            onSkinSelect={setSelectedSkinId}
-            onLearnMore={() => console.log("arcade: learn more")}
-            onTrailerClick={() => console.log("arcade: trailer")}
-            onNewChampionClick={() => console.log("arcade: new champion")}
-            newChampionSplashUrl={championSplashUrl("Qiyana")}
-          />
-        ) : activeTabId === "battle-pass" ? (
-          <BattlePassScreen
-            eventName="Welcome to Noxus: Act 2"
-            endsIn="Ends in 6 weeks"
-            chapters={demoBattlePassChapters}
-            activeChapterIndex={3}
-            currentXp={400}
-            totalXp={500}
-            playerLevel={30}
-            selectedLevelIndex={battlePassLevelIdx}
-            levelRewards={demoBattlePassLevelRewards}
-            onSelectLevel={setBattlePassLevelIdx}
-            onClaim={() => console.log("battle-pass: claim")}
-            onPurchasePass={() => console.log("battle-pass: purchase pass")}
-          />
-        ) : activeTabId === "journey" && journeyView === "level-rewards" ? (
-          <LevelUpRewardsDetail
-            levels={DEMO_LEVEL_REWARD_CARDS}
-            selectedLevel={journeySelectedLevel}
-            onSelectLevel={setJourneySelectedLevel}
-            onBack={() => setJourneyView("overview")}
-          />
-        ) : activeTabId === "journey" ? (
-          <JourneyTab
-            starterPack={DEMO_STARTER_PACK}
-            awakeningMissions={DEMO_AWAKENING_MISSIONS}
-            levelUpRewards={DEMO_LEVEL_UP_REWARDS}
-            dailyPlayRewards={DEMO_DAILY_PLAY_REWARDS}
-            onViewLevelRewards={() => {
-              setJourneySelectedLevel(1);
-              setJourneyView("level-rewards");
-            }}
-          />
-        ) : activeTabId === "news" ? (
-          <HomeNewsScreen
-            heroArticle={NEWS_HERO}
-            promoTiles={NEWS_PROMOS}
-            sideArticles={NEWS_SIDE}
-            onArticleClick={(a) => console.log("news: article click", a.id)}
-            onSeeAllNews={() => console.log("news: see all")}
-          />
-        ) : (
-          // OVERVIEW — current-era featured-content landing (#455): content-link
-          // rail + full-bleed featured splash + skins strip + GO TO STORE. Rail
-          // items without a dedicated featured block fall back to MVP MF.
-          <LeagueHomeScreen
-            featured={HOME_FEATURED[homeRailId] ?? HOME_FEATURED_DEFAULT}
-            railSlot={
-              <HomeContentRail
-                items={HOME_RAIL_ITEMS}
-                activeId={homeRailId}
-                onSelect={setHomeRailId}
-                pinnedItem={HOME_RAIL_PINNED}
-              />
-            }
-            skins={HOME_SKINS[homeRailId] ?? HOME_SKINS_DEFAULT}
-            onSelectSkin={(id) => console.log("home: select skin", id)}
-            onGoToStore={onGoToStore}
-            onToggleMute={() => console.log("home: toggle mute")}
-          />
-        )}
-      </div>
-    </div>
+    // OVERVIEW — current-era featured-content landing (#455): content-link rail
+    // + full-bleed featured splash + skins strip + GO TO STORE. Rail items
+    // without a dedicated featured block fall back to MVP MF. Fills the whole
+    // home content area (no sub-tab strip — #491).
+    <LeagueHomeScreen
+      featured={HOME_FEATURED[homeRailId] ?? HOME_FEATURED_DEFAULT}
+      railSlot={
+        <HomeContentRail
+          items={HOME_RAIL_ITEMS}
+          activeId={homeRailId}
+          onSelect={setHomeRailId}
+          pinnedItem={HOME_RAIL_PINNED}
+        />
+      }
+      skins={HOME_SKINS[homeRailId] ?? HOME_SKINS_DEFAULT}
+      onSelectSkin={(id) => console.log("home: select skin", id)}
+      onGoToStore={onGoToStore}
+      onToggleMute={() => console.log("home: toggle mute")}
+    />
   );
 }
 
