@@ -28,6 +28,14 @@ export interface ProfileChipProps {
   /** Called when the bell icon is clicked. Optional; no-op when absent. */
   onNotifications?: () => void;
   /**
+   * Resolved URL for the notification bell mask glyph — supply
+   * `notificationBellUrl()` from `@low/fixtures`. The 72×72 monochrome-on-
+   * transparent raster is rendered via CSS `mask-image` over a token-colored
+   * box so the bell inherits the button's grey-1 → gold-1 color states. When
+   * omitted, the chip falls back to a hand-drawn inline SVG bell (back-compat).
+   */
+  notificationBellSrc?: string;
+  /**
    * Called when the identity area (avatar + name block) is clicked. In the
    * real client the profile screen has NO main-nav tab — it opens from this
    * chip (issue #425). When provided, the identity area renders as a button
@@ -192,15 +200,39 @@ function OrnateRing({ size, uid }: { size: number; uid: string }) {
 /**
  * Notification bell glyph.
  *
- * Drawn inline in tokens (currentColor) because there is NO standalone bell
- * asset on the CommunityDragon CDN — the nearest asset,
- * `top-nav-updates-eat-icon.svg`, is a player-bust "updates" badge, not a bell
- * (ICON-SOURCES.md, #389/#386 asset hunt). This hand-drawn glyph is the agreed
- * placeholder for the current-era chip's bell (follow-up #399: swap for a
- * literal CDN bell if one is ever located). `size` lets the navband variant
- * render a slightly smaller bell than the rail header.
+ * When `src` is supplied (the real client's `notifications_button_icon.png`
+ * located at #399 — a 72×72 monochrome-on-transparent raster), the bell renders
+ * as a CSS `mask-image` on a `bg-current` box so it inherits the button's token
+ * text color and its grey-1 → gold-1 hover transition — no baked color. This
+ * matches the friend-finder mask-glyph pattern (SocialHeader / #434) and is more
+ * faithful than a hand-drawn outline (the client glyph is a FILLED bell).
+ *
+ * Without `src`, falls back to the hand-drawn inline SVG (currentColor) that
+ * predated the located asset — kept for back-compat with call sites that don't
+ * pass a bell URL. `size` lets the navband variant render a slightly smaller
+ * bell (15px) than the rail header (16px).
  */
-function BellIcon({ size = 16 }: { size?: number }) {
+function BellIcon({ size = 16, src }: { size?: number; src?: string }) {
+  if (src) {
+    return (
+      <span
+        aria-hidden="true"
+        className="block bg-current"
+        style={{
+          width: size,
+          height: size,
+          maskImage: `url(${src})`,
+          WebkitMaskImage: `url(${src})`,
+          maskSize: "contain",
+          WebkitMaskSize: "contain",
+          maskRepeat: "no-repeat",
+          WebkitMaskRepeat: "no-repeat",
+          maskPosition: "center",
+          WebkitMaskPosition: "center",
+        }}
+      />
+    );
+  }
   return (
     <svg
       aria-hidden="true"
@@ -284,6 +316,7 @@ export function ProfileChip({
   level,
   profileIconSrc,
   onNotifications,
+  notificationBellSrc,
   onOpenProfile,
   statusText,
   variant = "rail",
@@ -400,7 +433,7 @@ export function ProfileChip({
           isNavband ? "self-start pt-0.5" : "",
         ].join(" ")}
       >
-        <BellIcon size={isNavband ? 15 : 16} />
+        <BellIcon size={isNavband ? 15 : 16} src={notificationBellSrc} />
       </button>
     </div>
   );

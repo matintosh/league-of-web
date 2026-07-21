@@ -1,8 +1,13 @@
 "use client";
 
 import { ProfileChip } from "./profile-chip";
-import { demoSummoner, demoFriends, profileIconUrl } from "@low/fixtures";
+import { demoSummoner, demoFriends, profileIconUrl, notificationBellUrl } from "@low/fixtures";
 import type { Summoner } from "@low/fixtures";
+
+// Real-client notification bell glyph (#399) — resolved once, passed to the
+// navband chips (the current-era chip that owns the bell). CSS mask-image tints
+// it to the button's token color so it keeps the grey-1 → gold-1 hover.
+const BELL_SRC = notificationBellUrl();
 
 // Showcase helpers — derive availability-variant summoners from fixtures
 const awayFriend   = demoFriends[2]!; // Baus — away
@@ -107,6 +112,7 @@ export function ProfileChipNavbandDemo() {
         summoner={demoSummoner}
         level={demoSummoner.level}
         profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+        notificationBellSrc={BELL_SRC}
         onNotifications={() => console.log("notifications")}
         onOpenProfile={() => console.log("open profile")}
       />
@@ -122,6 +128,7 @@ export function ProfileChipNavbandInGameDemo() {
         summoner={inGameFriend.summoner}
         level={inGameFriend.summoner.level}
         profileIconSrc={profileIconUrl(inGameFriend.summoner.profileIconId)}
+        notificationBellSrc={BELL_SRC}
         onNotifications={() => console.log("notifications")}
       />
     </div>
@@ -136,6 +143,7 @@ export function ProfileChipNavbandStatusTextDemo() {
         summoner={demoSummoner}
         level={demoSummoner.level}
         profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+        notificationBellSrc={BELL_SRC}
         onNotifications={() => console.log("notifications")}
         statusText="In Queue"
       />

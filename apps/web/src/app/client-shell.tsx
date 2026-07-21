@@ -49,6 +49,7 @@ import {
   navIconUrl,
   navUpdatesIconUrl,
   navMissionIconUrl,
+  notificationBellUrl,
   rpTopUpIconUrl,
   yourShopIconVideoUrl,
   gameModeMapUrl,
@@ -1007,6 +1008,7 @@ export function ClientShell() {
                 summoner={demoSummoner}
                 level={demoSummoner.level}
                 profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+                notificationBellSrc={notificationBellUrl()}
                 onNotifications={() => console.log("notifications")}
                 onOpenProfile={() => {
                   // "profile" is absent from NAV_ITEMS, so no tab highlights

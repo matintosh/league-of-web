@@ -54,7 +54,7 @@ export const profileChipShowcase: ShowcaseEntry = {
     {
       name: "Navband — Online",
       notes:
-        "variant='navband': the current-era compact chip that sits at the top-right of the TopNavbar band (#387). 34px avatar, cream (gold-1) name, green 'Online' status, transparent background. Shown over bg-blue-7 to mimic the nav band.",
+        "variant='navband': the current-era compact chip that sits at the top-right of the TopNavbar band (#387). 34px avatar, cream (gold-1) name, green 'Online' status, transparent background. Bell uses the real-client `notifications_button_icon` mask glyph (#399) via `notificationBellSrc={notificationBellUrl()}` — tinted through CSS mask-image so it keeps the grey-1 → gold-1 hover. Shown over bg-blue-7 to mimic the nav band.",
       render: () => <ProfileChipNavbandDemo />,
     },
     {
