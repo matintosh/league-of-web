@@ -848,6 +848,11 @@ export function ClientShell() {
           {!champSelectActive && (
           <div className="absolute inset-x-0 top-0 z-30">
           <TopNavbar
+            // #531: seat the profile chip ABOVE the docked social panel by
+            // giving the player slot a right-aligned column matched to the
+            // social-rail width; this also pushes the currency left so it ends
+            // with a clear gap BEFORE the social panel instead of overlapping.
+            playerColumnWidth={SOCIAL_RAIL_WIDTH}
             playSlot={
               // PlayButton lives permanently in the navbar (zone 1).
               // On home: enabled → click → mode-select.

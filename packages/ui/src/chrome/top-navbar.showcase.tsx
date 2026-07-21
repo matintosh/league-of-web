@@ -20,7 +20,7 @@ export const topNavbarShowcase: ShowcaseEntry = {
     {
       name: "Current Era (icon cluster + RP top-up)",
       notes:
-        "The #386 rework: right-side menu-access icon cluster (collections/missions/loot/updates/store — real CommunityDragon nav SVGs; missions/updates disabled placeholders), divider, stacked currency + 3-state RP top-up disc. Matches the live client-shell band.",
+        "The #386 rework: right-side menu-access icon cluster (collections/missions/loot/updates/store — real CommunityDragon nav SVGs; missions/updates disabled placeholders), divider, stacked currency + 3-state RP top-up disc. #531: the player slot sits in a right-aligned 224px column (= social-panel width) so the profile seats above the docked social panel; the currency ends with a clear gap before that column. Matches the live client-shell band.",
       render: () => <TopNavbarCurrentEraDemo />,
     },
     {

@@ -39,6 +39,17 @@ export interface TopNavbarProps {
    * is always-on (the rail's ProfileChip header owns identity per #146).
    */
   playerSlot: ReactNode;
+  /**
+   * Width in px of the right-aligned column that holds the player slot, so the
+   * profile chip seats ABOVE the docked social panel (avatar near the social
+   * left edge, bell near the social right edge) per reference Image #21 (#531).
+   * Callers pass their social-panel width (SOCIAL_RAIL_WIDTH in client-shell,
+   * default 224 in social-panel.tsx). Giving the player its own fixed column
+   * also pushes the currency LEFT so the currency block ends with a clear gap
+   * BEFORE the social panel's left edge instead of overlapping into the social
+   * column. Omit to keep the pre-#531 natural-width right cluster.
+   */
+  playerColumnWidth?: number;
 }
 
 /**
@@ -118,6 +129,7 @@ export function TopNavbar({
   onNavigate,
   currencySlot,
   playerSlot,
+  playerColumnWidth,
 }: TopNavbarProps) {
   return (
     <nav
@@ -204,10 +216,24 @@ export function TopNavbar({
           "misplaced". Centering the chip seats the 85px frame inside the 88px
           band (frame ≈ y3.5→88.5) and aligns the profile with the currency. The
           window-controls (?─⚙✕) float in the window chrome (window-frame.tsx),
-          a separate layer at the top-right corner, so they don't collide. */}
-      <div className="flex shrink-0 items-center gap-3">
+          a separate layer at the top-right corner, so they don't collide.
+
+          #531: when `playerColumnWidth` is set, the player slot gets its own
+          fixed-width column right-aligned to that width so the profile chip
+          seats ABOVE the docked social panel (per reference Image #21) —
+          avatar toward the social LEFT edge, bell toward the social RIGHT edge.
+          Giving the player a dedicated column also pushes the CURRENCY left, so
+          the currency block ends with a clear gap BEFORE the social panel's
+          left edge instead of overlapping into the social column. The `gap-6`
+          is that gap between the currency and the profile column. */}
+      <div className="flex shrink-0 items-center gap-6">
         {currencySlot}
-        <div className="flex h-full items-center">{playerSlot}</div>
+        <div
+          className="flex h-full items-center justify-end"
+          style={playerColumnWidth ? { width: playerColumnWidth } : undefined}
+        >
+          {playerSlot}
+        </div>
       </div>
     </nav>
   );
