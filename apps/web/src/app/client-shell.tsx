@@ -43,7 +43,6 @@ import {
   blueEssenceIconUrl,
   lorArrowUrl,
   notificationBellUrl,
-  avatarBorderUrl,
   rpTopUpIconUrl,
   yourShopIconVideoUrl,
   navIconUrl,
@@ -1097,11 +1096,10 @@ export function ClientShell() {
                 level={demoSummoner.level}
                 profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
                 notificationBellSrc={notificationBellUrl()}
-                /* theme-3 — the gold double-ring with a teal crescent accent +
-                   compact footprint that matches the reference avatar frame
-                   (#509). Rendered compact in navband so only tiny clasps
-                   overflow, never reaching the currency/name. */
-                avatarBorderSrc={avatarBorderUrl(3)}
+                /* navband draws its own custom gold-ring + teal-crescent frame
+                   (#533) to match the current-era reference — no themed-border
+                   raster (all carry gold wing-clasps that read wrong), so no
+                   avatarBorderSrc here. */
                 onNotifications={() => console.log("notifications")}
                 onOpenProfile={() => {
                   // "profile" is absent from NAV_ITEMS, so no tab highlights

@@ -208,6 +208,121 @@ function OrnateRing({ size, uid }: { size: number; uid: string }) {
 }
 
 // ---------------------------------------------------------------------------
+// NavbandAvatarFrame — custom gold ring + teal crescent (SVG), matches the
+// current-era navband reference (issue #533)
+// ---------------------------------------------------------------------------
+
+/**
+ * The navband avatar frame, drawn to match the current-era client reference
+ * (docs/reference / issue #533): a CLEAN thin gold ring around the profile
+ * icon, a bright teal/cyan CRESCENT glow hugging the ring's outer edge on the
+ * lower-RIGHT (sweeping ~1 o'clock → ~5 o'clock), and a smaller teal accent on
+ * the upper-LEFT. NO horizontal gold wing-clasps.
+ *
+ * This replaces the raster themed-border ({@link AvatarBorder} / theme-3) for
+ * the `"navband"` variant — every 512×512 themed frame carries prominent gold
+ * wings that protrude past the ring and read as a busier, different border than
+ * the reference (the #509/#521/#522/#527 "still off" class). Drawing the ring +
+ * crescent directly gives an exact, wingless match with pointer-events-none
+ * decorative art and no overflow to clip off the name/currency siblings.
+ *
+ * Geometry is expressed on a 100×100 viewBox and scaled to `ringOuter` px so the
+ * visible gold ring lands at the reference diameter (~54px) around the ~34px
+ * avatar. The box is centred on the avatar; the crescent's soft glow flares only
+ * a few px past the ring (well inside the old ~25.65px wing overhang), so no
+ * horizontal clip is needed — the frame footprint clears both siblings on its
+ * own. Colours are all tokens (gold-2/3/4 ring, cyan-1 → blue-2 → blue-3
+ * crescent), matching the sampled reference (bright cyan-green glow → teal).
+ *
+ * IDs are namespaced with `uid` (useId) so multiple chips on one page don't
+ * collide on gradient/filter defs. aria-hidden — purely decorative; the avatar
+ * image and level plate are the chip's own elements and sit above/inside it.
+ */
+function NavbandAvatarFrame({
+  size,
+  ringOuter,
+  uid,
+}: {
+  size: number;
+  ringOuter: number;
+  uid: string;
+}) {
+  const box = ringOuter;
+  const offset = (box - size) / 2;
+  const goldId = `${uid}-fg`;
+  const tealId = `${uid}-ft`;
+  const glowId = `${uid}-fglow`;
+  return (
+    <svg
+      width={box}
+      height={box}
+      viewBox="0 0 100 100"
+      aria-hidden="true"
+      className="absolute max-w-none pointer-events-none"
+      style={{ left: -offset, top: -offset, zIndex: 1, overflow: "visible" }}
+    >
+      <defs>
+        {/* Gold ring gradient — cream top → deep gold bottom (lit-from-above). */}
+        <linearGradient id={goldId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--color-gold-2)" />
+          <stop offset="55%" stopColor="var(--color-gold-3)" />
+          <stop offset="100%" stopColor="var(--color-gold-4)" />
+        </linearGradient>
+        {/* Teal crescent gradient — bright cyan (top) → teal → deeper teal. */}
+        <linearGradient id={tealId} x1="0.2" y1="0" x2="0.8" y2="1">
+          <stop offset="0%" stopColor="var(--color-cyan-1)" />
+          <stop offset="45%" stopColor="var(--color-blue-2)" />
+          <stop offset="100%" stopColor="var(--color-blue-3)" />
+        </linearGradient>
+        {/* Soft glow so the crescent reads as energy, not a flat stroke. */}
+        <filter id={glowId} x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="1.05" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* Teal crescent — thick arc hugging the ring's outer edge on the lower-
+          RIGHT, from ~1 o'clock (top-right) sweeping down to ~5–6 o'clock. Endpoints
+          are on r≈42.3 so the band touches the gold ring's ~42.7 outer edge. */}
+      <path
+        d="M 63.1 9.8 A 42.3 42.3 0 0 1 63.1 90.2"
+        fill="none"
+        stroke={`url(#${tealId})`}
+        strokeWidth={4.3}
+        strokeLinecap="round"
+        filter={`url(#${glowId})`}
+        opacity={0.97}
+      />
+      {/* Small teal accent on the upper-LEFT edge (~10–11 o'clock). */}
+      <path
+        d="M 34.0 12.2 A 42.3 42.3 0 0 0 19.8 24.0"
+        fill="none"
+        stroke={`url(#${tealId})`}
+        strokeWidth={2.8}
+        strokeLinecap="round"
+        filter={`url(#${glowId})`}
+        opacity={0.7}
+      />
+
+      {/* Gold ring — clean double stroke, no wings. */}
+      <circle cx={50} cy={50} r={41} fill="none" stroke={`url(#${goldId})`} strokeWidth={3.4} />
+      <circle
+        cx={50}
+        cy={50}
+        r={37.5}
+        fill="none"
+        stroke="var(--color-gold-4)"
+        strokeWidth={1}
+        strokeOpacity={0.6}
+      />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // AvatarBorder — the REAL client themed-border frame (raster) around the avatar
 // ---------------------------------------------------------------------------
 
@@ -439,23 +554,18 @@ export function ProfileChip({
 
   // Per-variant geometry / typography.
   const AVATAR_SIZE = isNavband ? 34 : 48;
-  // navband: render the themed border COMPACT — the visible gold ring lands at
-  // ~54px (measured off the reference: ring outer ≈55–57px around the ~34px
-  // avatar) via AvatarBorder's ringOuter path. The border box is 85.3px
-  // (54/BORDER_RING_RATIO), so its side wing-tips flare ~25.65px past each side
-  // of the 34px avatar box and — since the frame is an absolutely-centred z-1
-  // element — paint over BOTH siblings (name on the right, currency on the
-  // left). We clip the frame's painted footprint to ±28px from the avatar centre
-  // (clipHalfWidth) so the wing-tips can't reach either sibling, while keeping
-  // the full ~54px ring (needs ±27px) + bottom crescent/gem + level plate. The
-  // name block is also offset (ml-[18px]) for extra clearance on the right. This
-  // fixes the #492/#499 occlusion class on both sides (#521). rail keeps the
-  // generous inner-hole sizing (undefined ringOuter, no clip).
+  // navband: the custom NavbandAvatarFrame draws the visible gold ring at ~54px
+  // (measured off the reference: ring outer ≈55–57px around the ~34px avatar).
+  // Its SVG box is EXACTLY ringOuter (no wings), centred on the avatar, so it
+  // flares only ~10px per side and the teal crescent's glow stays inside the
+  // ring — it never reaches the name (right) or currency (left). That retires
+  // the wing-overhang class the raster theme-3 needed a ±28px clip + 18px name
+  // push to survive (#521/#522/#533). rail keeps the raster themed-border via
+  // AvatarBorder's inner-hole sizing (undefined ringOuter, no clip).
   const ringOuter = isNavband ? 54 : undefined;
-  // Half-width of the frame's allowed painted band, measured from the avatar
-  // centre. 28px > the ring's 27px radius (ring stays intact) but < the 42.66px
-  // box half-width, so only the outer wing-tips get trimmed.
-  const frameClipHalfWidth = isNavband ? 28 : undefined;
+  // Rail-only: AvatarBorder wing-clip half-width. undefined in navband now that
+  // the custom frame has no wings to trim; the rail raster path leaves it off.
+  const frameClipHalfWidth = undefined;
   // Inner clip radius matches OrnateRing's clipR (outerR - gap - 1.5).
   const clipR = AVATAR_SIZE * 0.5 - 1 - 3 - 1.5;
   // navband: cream name (matches reference), status tinted to its dot. rail:
@@ -508,9 +618,15 @@ export function ProfileChip({
           style={{ borderRadius: "50%", clipPath: `circle(${Math.round(clipR)}px at center)` }}
         />
 
-        {/* Avatar frame — the real client themed-border raster when a src is    */}
-        {/* supplied (#489), else the hand-drawn ornate double ring (back-compat) */}
-        {avatarBorderSrc ? (
+        {/* Avatar frame — three paths:                                          */}
+        {/*  • navband → the custom gold-ring + teal-crescent SVG (#533), an      */}
+        {/*    exact wingless match for the current-era reference; the raster     */}
+        {/*    themed borders all carry gold wing-clasps that read wrong.         */}
+        {/*  • rail w/ src → the real client themed-border raster (#489).         */}
+        {/*  • else → the hand-drawn ornate double ring (back-compat).            */}
+        {isNavband ? (
+          <NavbandAvatarFrame size={AVATAR_SIZE} ringOuter={ringOuter ?? AVATAR_SIZE} uid={uid} />
+        ) : avatarBorderSrc ? (
           <AvatarBorder
             size={AVATAR_SIZE}
             src={avatarBorderSrc}
@@ -540,16 +656,14 @@ export function ProfileChip({
       {/* ------------------------------------------------------------------ */}
       {/* Name + availability row                                             */}
       {/*                                                                     */}
-      {/* navband: the compact themed frame's visible ring lands at ~54px,    */}
-      {/* but its right clasp/wing art flares ~25.65px past the 34px avatar    */}
-      {/* box ((85.3−34)/2). The IdentityArea gap-2 (8px) alone left ~17.7px   */}
-      {/* of clasp painting over the name start (the #492/#499 regression,     */}
-      {/* #521). We clear the name by pushing it a further 18px right, so the  */}
-      {/* name origin sits 26px (8px gap + 18px) from the avatar edge — just   */}
-      {/* past the ~25.65px overhang, landing the clasp in empty space. The    */}
-      {/* frame stays untouched (reference-matched ring), only the name moves. */}
+      {/* navband: the custom frame's 54px ring box is centred on the 34px     */}
+      {/* avatar, so the ring flares only ~10px past the avatar box on each     */}
+      {/* side (no wings, unlike the old raster). With the IdentityArea gap-2   */}
+      {/* (8px) the ring's right edge nearly meets the name origin, so a small  */}
+      {/* ml-1 (4px) push seats the name just clear of the ring — down from the */}
+      {/* ml-[18px] the ~25.65px wing overhang used to need (#521 → #533).      */}
       {/* ------------------------------------------------------------------ */}
-      <div className={isNavband ? "ml-[18px] min-w-0" : "min-w-0 flex-1"}>
+      <div className={isNavband ? "ml-1 min-w-0" : "min-w-0 flex-1"}>
         {/* Summoner name — navband uses the Marcellus display serif (matches the
             reference, which renders the name in the client's serif face, not the
             body sans) at a compact 13px cream, sized so the name cap-height is

@@ -137,7 +137,6 @@ export function ProfileChipNavbandDemo() {
         summoner={demoSummoner}
         level={demoSummoner.level}
         profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
-        avatarBorderSrc={BORDER_SRC}
         notificationBellSrc={BELL_SRC}
         onNotifications={() => console.log("notifications")}
         onOpenProfile={() => console.log("open profile")}
@@ -154,7 +153,6 @@ export function ProfileChipNavbandInGameDemo() {
         summoner={inGameFriend.summoner}
         level={inGameFriend.summoner.level}
         profileIconSrc={profileIconUrl(inGameFriend.summoner.profileIconId)}
-        avatarBorderSrc={BORDER_SRC}
         notificationBellSrc={BELL_SRC}
         onNotifications={() => console.log("notifications")}
       />
@@ -170,7 +168,6 @@ export function ProfileChipNavbandStatusTextDemo() {
         summoner={demoSummoner}
         level={demoSummoner.level}
         profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
-        avatarBorderSrc={BORDER_SRC}
         notificationBellSrc={BELL_SRC}
         onNotifications={() => console.log("notifications")}
         statusText="In Queue"
