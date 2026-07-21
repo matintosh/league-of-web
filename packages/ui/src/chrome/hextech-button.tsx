@@ -1,7 +1,12 @@
 "use client";
 
-import { useId } from "react";
+import { useCallback, useId, useState } from "react";
 import type { ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
+import {
+  LobbyButtonVideoLayer,
+  hasLobbyVideo,
+  type LobbyButtonVideoSources,
+} from "./lobby-button-video-layer";
 
 // ---------------------------------------------------------------------------
 // Variant union — exhaustive Record maps will catch any missing member at build time.
@@ -272,6 +277,28 @@ export interface HextechButtonProps extends ButtonHTMLAttributes<HTMLButtonEleme
    * Rendered aria-hidden, overlaps the left edge ~4 px.
    */
   medallion?: ReactNode;
+  /**
+   * Real-client lobby (CONFIRM) button state videos (issue #454) — the native
+   * rcp-fe-lol-patcher lobby-button webms (CDragon patch 7.5). When provided, the
+   * matching clips drive a state machine over the button: `intro` plays once on
+   * mount → settled idle; `hoverIntro`/`hoverLoop` crossfade in while the pointer
+   * is over and `hoverOutro` plays on leave; `release`/`magicRelease` fire once on
+   * press-release; `disabledIntro` plays once while `disabled`.
+   *
+   * DOUBLED-ART (issue #423): these clips carry the FULL button face (opaque dark
+   * fill + their own concave-left arrow frame), so the button SWAPS its CSS teal
+   * frame for the video while the layer is active rather than stacking (which
+   * would double the frame). A plain dark backing is painted beneath so the
+   * frame-only hover-loop reads as a solid button. The label composites on top;
+   * the medallion (if any) stays to the left.
+   *
+   * PRIMARY VARIANT ONLY — the lobby-button silhouette is the chevron face. Omit
+   * entirely (or per-state) to keep the pure-CSS button; existing call sites are
+   * unaffected. Fully suppressed under `prefers-reduced-motion: reduce`.
+   *
+   * Pages/showcase supply these from `@low/fixtures` (`lobbyButtonVideoUrl`).
+   */
+  lobbyVideoSources?: LobbyButtonVideoSources;
 }
 
 // ---------------------------------------------------------------------------
@@ -285,6 +312,8 @@ interface InnerProps {
   icon?: ReactNode;
   /** Optional medallion badge — primary/slanted only; ignored by SecondaryButton. */
   medallion?: ReactNode;
+  /** Optional lobby-button state videos — ChevronButton (primary) only; ignored elsewhere. */
+  lobbyVideoSources?: LobbyButtonVideoSources;
   disabled?: boolean;
   children?: ReactNode;
   className?: string;
@@ -431,16 +460,52 @@ interface TealFrameProps {
   clipPath: string;
   height: number;
   disabled?: boolean;
+  /**
+   * Swap-not-stack (issue #454): when true the frame's COLORED border/fill layers
+   * render transparent so a video overlay can supply the button face, while the
+   * nested padding boxes stay in place so the bar WIDTH is unchanged. Under
+   * `prefers-reduced-motion` the video layer is hidden, so the frame restores its
+   * colors here via `motion-reduce:` so the static CSS button still shows.
+   */
+  frameHidden?: boolean;
   children: ReactNode;
 }
 
-function TealFrame({ clipPath, height, disabled, children }: TealFrameProps) {
+function TealFrame({ clipPath, height, disabled, frameHidden, children }: TealFrameProps) {
   const clipStyle = { clipPath };
+
+  // Swap (issue #454): when `frameHidden`, each colored layer drops its fill to
+  // transparent so the video overlay supplies the face, while its padding box
+  // still occupies space (bar width unchanged). `motion-reduce:` restores every
+  // color so the static CSS button shows when the video layer is suppressed under
+  // prefers-reduced-motion. Each layer picks between two COMPLETE class literals
+  // (normal vs swapped) — written out in full so Tailwind's source scan keeps the
+  // motion-reduce restore variants (interpolated class fragments would be
+  // tree-shaken).
+  const L = frameHidden
+    ? {
+        goldOuter: "bg-transparent group-hover/hb:bg-transparent motion-reduce:bg-gold-4 motion-reduce:group-hover/hb:bg-gold-2",
+        gap: "bg-transparent motion-reduce:bg-blue-6",
+        tealOuter: "bg-transparent group-hover/hb:bg-transparent motion-reduce:bg-blue-3 motion-reduce:group-hover/hb:bg-blue-2",
+        tealInner: "bg-transparent group-hover/hb:bg-transparent motion-reduce:bg-blue-2 motion-reduce:group-hover/hb:bg-blue-1",
+        surface: "bg-transparent group-hover/hb:bg-transparent motion-reduce:bg-grey-4 motion-reduce:group-hover/hb:bg-grey-cool",
+        disOuter: "bg-transparent motion-reduce:bg-grey-3",
+        disInner: "bg-transparent motion-reduce:bg-grey-4",
+      }
+    : {
+        goldOuter: "bg-gold-4 group-hover/hb:bg-gold-2",
+        gap: "bg-blue-6",
+        tealOuter: "bg-blue-3 group-hover/hb:bg-blue-2",
+        tealInner: "bg-blue-2 group-hover/hb:bg-blue-1",
+        surface: "bg-grey-4 group-hover/hb:bg-grey-cool",
+        disOuter: "bg-grey-3",
+        disInner: "bg-grey-4",
+      };
 
   if (disabled) {
     return (
-      <div className="p-px bg-grey-3 transition-colors duration-150" style={clipStyle}>
-        <div className="p-[6px] bg-grey-4" style={clipStyle}>
+      <div className={`p-px ${L.disOuter} transition-colors duration-150`} style={clipStyle}>
+        <div className={`p-[6px] ${L.disInner}`} style={clipStyle}>
           <div style={{ ...clipStyle, height: height - TEAL_FRAME_INSET }}>{children}</div>
         </div>
       </div>
@@ -449,17 +514,17 @@ function TealFrame({ clipPath, height, disabled, children }: TealFrameProps) {
 
   return (
     <div
-      className="bg-gold-4 group-hover/hb:bg-gold-2 transition-colors duration-150"
+      className={`${L.goldOuter} transition-colors duration-150`}
       style={{ ...clipStyle, padding: "1px" }}
     >
-      <div className="bg-blue-6" style={{ ...clipStyle, padding: "2px" }}>
+      <div className={L.gap} style={{ ...clipStyle, padding: "2px" }}>
         <div
-          className="bg-blue-3 group-hover/hb:bg-blue-2 transition-colors duration-150"
+          className={`${L.tealOuter} transition-colors duration-150`}
           style={{ ...clipStyle, padding: "2px" }}
         >
-          <div className="bg-blue-6" style={{ ...clipStyle, padding: "1px" }}>
+          <div className={L.gap} style={{ ...clipStyle, padding: "1px" }}>
             <div
-              className="bg-blue-2 group-hover/hb:bg-blue-1 transition-colors duration-150"
+              className={`${L.tealInner} transition-colors duration-150`}
               style={{ ...clipStyle, padding: "1px" }}
             >
               {/* Surface with inner top-edge highlight (item 7) + pressed darkening (item 9).
@@ -468,7 +533,7 @@ function TealFrame({ clipPath, height, disabled, children }: TealFrameProps) {
                   on the outer wrapper means box-shadow inset is clipped — gradient is the
                   correct approach per the drop-shadow rule. */}
               <div
-                className="relative bg-grey-4 group-hover/hb:bg-grey-cool transition-colors duration-150"
+                className={`relative ${L.surface} transition-colors duration-150`}
                 style={clipStyle}
               >
                 {/* Pressed-state inner shadow gradient overlay — fades dark-to-transparent
@@ -495,10 +560,33 @@ function TealFrame({ clipPath, height, disabled, children }: TealFrameProps) {
 // Primary (chevron) button
 // ---------------------------------------------------------------------------
 
-function ChevronButton({ cfg, medallion, disabled, children, className, buttonProps }: InnerProps) {
+function ChevronButton({ cfg, medallion, lobbyVideoSources, disabled, children, className, buttonProps }: InnerProps) {
   const clip = chevronPolygon(cfg.height);
   // Medallion overlaps the bar by 4px on the left
   const medalOverlap = medallion ? 4 : 0;
+
+  // Lobby (CONFIRM) button state videos (issue #454). Only mount the layer when
+  // at least one source is supplied. Unlike the enabled-only PlayButton frame
+  // layer, this one also activates while `disabled` (to play the disabled-intro
+  // one-shot), mirroring LockInButtonVideoLayer. The CSS button always renders
+  // beneath, so with no sources — or under reduced motion — the exact static
+  // look is preserved.
+  const hasVideo = hasLobbyVideo(lobbyVideoSources);
+
+  // Pointer/press state — drives the video crossfades only (the CSS path keeps
+  // using :hover / :active). Off entirely when there is no video layer.
+  const [hovered, setHovered] = useState(false);
+  // Bumped on each genuine press-release to (re)fire the release/magic one-shots.
+  const [releaseTick, setReleaseTick] = useState(0);
+  const pressedRef = useState(() => ({ down: false }))[0];
+
+  const onEnter = useCallback(() => { if (hasVideo) setHovered(true); }, [hasVideo]);
+  const onLeave = useCallback(() => { if (hasVideo) { setHovered(false); pressedRef.down = false; } }, [hasVideo, pressedRef]);
+  const onDown = useCallback(() => { if (hasVideo && !disabled) pressedRef.down = true; }, [hasVideo, disabled, pressedRef]);
+  const onUp = useCallback(() => {
+    if (hasVideo && !disabled && pressedRef.down) setReleaseTick((t) => t + 1);
+    pressedRef.down = false;
+  }, [hasVideo, disabled, pressedRef]);
 
   return (
     <div
@@ -517,6 +605,10 @@ function ChevronButton({ cfg, medallion, disabled, children, className, buttonPr
       ]
         .filter(Boolean)
         .join(" ")}
+      onPointerEnter={hasVideo ? onEnter : undefined}
+      onPointerLeave={hasVideo ? onLeave : undefined}
+      onPointerDown={hasVideo ? onDown : undefined}
+      onPointerUp={hasVideo ? onUp : undefined}
     >
       {/* Medallion — z-10 so it overlaps the bar frame left edge */}
       {medallion && (
@@ -525,31 +617,65 @@ function ChevronButton({ cfg, medallion, disabled, children, className, buttonPr
         </div>
       )}
 
-      <TealFrame clipPath={clip} height={cfg.height} disabled={disabled}>
-        <button
-          type="button"
-          disabled={disabled}
-          {...buttonProps}
-          className={[
-            "flex cursor-pointer items-center justify-center",
-            "font-display uppercase tracking-widest",
-            "transition-colors duration-150",
-            "focus-visible:outline-none",
-            "disabled:cursor-not-allowed",
-            cfg.textClass,
-            disabled ? "text-grey-2" : "text-gold-1 hover:text-gold-2 active:text-gold-3",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          style={{
-            height: cfg.height - TEAL_FRAME_INSET,
-            paddingLeft: medalOverlap + 32,
-            paddingRight: 32 + cfg.height / 2, // right padding accounts for the tip depth
-          }}
-        >
-          {children}
-        </button>
-      </TealFrame>
+      {/* Bar cell (relative host for the swap video overlay). The TealFrame +
+          button stay intact so the button's padding/text still drive the bar
+          WIDTH and hold the label. When the lobby video swaps in, TealFrame's
+          COLORED frame/fill layers go transparent (`frameHidden`) — the padding
+          boxes stay, so width is unchanged — and the video (whose opaque intro/
+          release clips carry their OWN dark fill + arrow frame) paints the face
+          behind the transparent frame, with the label composited on top. No
+          separate CSS backing chevron is drawn, so exactly ONE button silhouette
+          shows — the video's (issue #423 swap-not-stack). Reduced-motion hides
+          the video (motion-reduce:hidden) and `frameHidden` restores the CSS
+          frame's colors, so the static CSS button shows. */}
+      <div className="relative inline-flex">
+        {/* Lobby (CONFIRM) button video state machine (issue #454) — the swapped
+            face. Sits at z-[1] BEHIND the frame/label context (z-[2]); the frame
+            is transparent while the video is active, so the video shows through
+            and the label paints on top. pointer-events-none + motion-reduce:hidden
+            inside the layer. */}
+        {hasVideo && lobbyVideoSources && (
+          <div className="absolute inset-0 z-[1]">
+            <LobbyButtonVideoLayer
+              sources={lobbyVideoSources}
+              disabled={!!disabled}
+              hovered={hovered}
+              releaseTick={releaseTick}
+            />
+          </div>
+        )}
+
+        {/* Frame + label context — z-[2] so it sits above the video. With
+            frameHidden the frame colors are transparent (video shows through) but
+            the label stays opaque and legible on top. */}
+        <div className={hasVideo ? "relative z-[2]" : undefined}>
+          <TealFrame clipPath={clip} height={cfg.height} disabled={disabled} frameHidden={hasVideo}>
+            <button
+              type="button"
+              disabled={disabled}
+              {...buttonProps}
+              className={[
+                "flex cursor-pointer items-center justify-center",
+                "font-display uppercase tracking-widest",
+                "transition-colors duration-150",
+                "focus-visible:outline-none",
+                "disabled:cursor-not-allowed",
+                cfg.textClass,
+                disabled ? "text-grey-2" : "text-gold-1 hover:text-gold-2 active:text-gold-3",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              style={{
+                height: cfg.height - TEAL_FRAME_INSET,
+                paddingLeft: medalOverlap + 32,
+                paddingRight: 32 + cfg.height / 2, // right padding accounts for the tip depth
+              }}
+            >
+              {children}
+            </button>
+          </TealFrame>
+        </div>
+      </div>
     </div>
   );
 }
@@ -635,6 +761,7 @@ export function HextechButton({
   size = "default",
   icon,
   medallion,
+  lobbyVideoSources,
   className,
   disabled,
   children,
@@ -648,6 +775,7 @@ export function HextechButton({
       cfg={cfg}
       icon={icon}
       medallion={medallion}
+      lobbyVideoSources={lobbyVideoSources}
       disabled={disabled}
       className={className}
       buttonProps={props}

@@ -1,5 +1,22 @@
+import { lobbyButtonVideoUrl } from "@low/fixtures";
 import type { ShowcaseEntry } from "../showcase";
 import { CrossMedallion, HextechButton } from "./hextech-button";
+
+// Real-client lobby (CONFIRM) button state videos (issue #454) — resolved from
+// @low/fixtures at module scope (server-safe: plain URL strings, no fetching, no
+// state). Passed as the HextechButton `lobbyVideoSources` prop, which drives the
+// intro→idle / hover / release / disabled state machine (SWAP-not-stack over the
+// CSS chevron; issue #423). The static CSS button renders when omitted or under
+// prefers-reduced-motion.
+const LOBBY_VIDEO_SOURCES = {
+  intro: lobbyButtonVideoUrl("intro"),
+  hoverIntro: lobbyButtonVideoUrl("hoverIntro"),
+  hoverLoop: lobbyButtonVideoUrl("hoverLoop"),
+  hoverOutro: lobbyButtonVideoUrl("hoverOutro"),
+  release: lobbyButtonVideoUrl("release"),
+  magicRelease: lobbyButtonVideoUrl("magicRelease"),
+  disabledIntro: lobbyButtonVideoUrl("disabledIntro"),
+};
 
 // ---------------------------------------------------------------------------
 // Inline icon helpers for demo purposes
@@ -355,6 +372,43 @@ export const hextechButtonShowcase: ShowcaseEntry = {
         <HextechButton variant="primary" disabled>
           Find Match
         </HextechButton>
+      ),
+    },
+
+    // ---- Lobby (CONFIRM) button video state machine (issue #454) ----
+    {
+      name: "Primary — CONFIRM with lobby video (issue #454)",
+      notes:
+        "lobbyVideoSources — the native rcp-fe-lol-patcher lobby-button webms (CDragon patch 7.5). intro plays once on mount → settled idle; hover engages the frame shimmer machine (hover-intro → hover-loop ↔ hover-outro); release fires a one-shot on click. SWAP-not-stack (issue #423): the clips carry the FULL button face, so the CSS teal frame is swapped for the video (dark backing beneath) — exactly ONE button shape. Hover/click in /showcase to drive the machine. Suppressed under prefers-reduced-motion (static CSS chevron shows).",
+      render: () => (
+        <div data-shot="confirm-lobby-video" style={{ display: "inline-block", padding: 16 }}>
+          <HextechButton
+            variant="primary"
+            size="large"
+            medallion={<CrossMedallion size={56} />}
+            lobbyVideoSources={LOBBY_VIDEO_SOURCES}
+          >
+            Confirm
+          </HextechButton>
+        </div>
+      ),
+    },
+    {
+      name: "Primary — CONFIRM lobby video, disabled",
+      notes:
+        "disabled + lobbyVideoSources — the disabled-intro one-shot plays once, then the grey CSS disabled face shows cleanly through the transparent overlay (enabled clips never play while disabled).",
+      render: () => (
+        <div data-shot="confirm-lobby-video-disabled" style={{ display: "inline-block", padding: 16 }}>
+          <HextechButton
+            variant="primary"
+            size="large"
+            medallion={<CrossMedallion size={56} disabled />}
+            lobbyVideoSources={LOBBY_VIDEO_SOURCES}
+            disabled
+          >
+            Confirm
+          </HextechButton>
+        </div>
       ),
     },
 
