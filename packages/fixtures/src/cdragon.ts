@@ -2098,3 +2098,108 @@ export const lobbyButtonVideoUrl = (state: LobbyButtonVideoState): string => {
   };
   return `${CDRAGON_PATCHER_VIDEOS_75}/${FILE[state]}`;
 };
+
+// ---------------------------------------------------------------------------
+// Regalia banners (issue #475) — the 2025 ornate rank-frame backdrop art.
+//
+// NOTE: unlike every other helper in this file, the regalia banners live under
+// the `game/assets/` CDragon tree (NOT `/plugins/`), because they are game
+// loadout assets rather than a client-plugin's bundled UI art. Base:
+//   https://raw.communitydragon.org/latest/game/assets/loadouts/regalia/banners/
+//
+// Each banner is a 512×512 straight-alpha PNG that carries BOTH the tall dark
+// backdrop panel AND its tier-coloured ornate wreath foot baked into one image
+// (e.g. challenger = blue/gold winged wreath, gold = a simpler gold V-point).
+// So a single <img> supplies the frame's backdrop + wreath in one layer; the
+// PlayerBanner (issue #471) composites the champion splash, crest/crown,
+// signature, name, title, and mastery medallions ON TOP.
+//
+// The ranked tier files use mixed naming: a two-digit `NN_` numeric prefix for
+// most tiers, but `emerald_banner.png` has NO prefix (emerald was inserted
+// between gold(04) and platinum(05) after the numbering was set, so it kept a
+// bare slug). All 11 confirmed HTTP 200 image/png at `latest` (2026-07-21).
+// The set is evergreen (present at both patch 16.9 and latest), so we pin
+// `latest`. License: Riot fan-content policy (non-commercial fan use).
+// ---------------------------------------------------------------------------
+
+const CDRAGON_REGALIA_BANNERS =
+  "https://raw.communitydragon.org/latest/game/assets/loadouts/regalia/banners";
+
+/**
+ * Ranked tier for a regalia banner. Ordered iron → challenger with `unranked`
+ * as the no-rank fallback. Mirrors the real client's ranked ladder; `emerald`
+ * sits between `gold` and `platinum` (a 2023-season insertion) — see the file
+ * naming caveat in {@link regaliaBannerUrl}.
+ */
+export type RankedTier =
+  | "unranked"
+  | "iron"
+  | "bronze"
+  | "silver"
+  | "gold"
+  | "emerald"
+  | "platinum"
+  | "diamond"
+  | "master"
+  | "grandmaster"
+  | "challenger";
+
+/**
+ * Regalia banner PNG (512×512, straight alpha) for a ranked tier — the ornate
+ * 2025 rank-frame backdrop the current client paints behind the self/profile
+ * banner. Each file carries the tall dark panel PLUS its tier-coloured ornate
+ * wreath foot baked in, so one <img> supplies both (see the section header for
+ * the `game/assets/` tree note and the file-naming caveat).
+ *
+ * Tier → file:
+ *   unranked    → 00_unranked_banner.png
+ *   iron        → 01_iron_banner.png
+ *   bronze      → 02_bronze_banner.png
+ *   silver      → 03_silver_banner.png
+ *   gold        → 04_gold_banner.png
+ *   emerald     → emerald_banner.png        (NO numeric prefix — see caveat)
+ *   platinum    → 05_platinum_banner.png
+ *   diamond     → 06_diamond_banner.png
+ *   master      → 07_master_banner.png
+ *   grandmaster → 08_grandmaster_banner.png
+ *   challenger  → 09_challenger_banner.png
+ *
+ * CAVEAT: `emerald` breaks the `NN_` numbering — it was added between gold(04)
+ * and platinum(05) after the prefixes were assigned, so it ships as a bare
+ * `emerald_banner.png` while platinum kept `05_`. The FILE map below encodes
+ * this exactly; do not "fix" the ordering by renumbering.
+ *
+ * Prestige/event regalia banners (Arcane Jinx, Exalted Sett, …) exist under the
+ * same directory keyed by raw id rather than tier — pass a raw filename slug via
+ * the string overload for those (e.g. `regaliaBannerUrl("11_arcanejinx_banner")`
+ * — the caller owns the exact slug, this helper just prefixes the base path).
+ *
+ * All 11 tier files confirmed HTTP 200 image/png at `latest` (2026-07-21).
+ * Pass the returned URL as an <img> `src`. NO fetching happens here — pages /
+ * components supply the resolved URL. Tokens rule applies to CSS colours, not
+ * asset URLs.
+ *
+ * Source: CommunityDragon game/assets/loadouts/regalia/banners/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export function regaliaBannerUrl(tier: RankedTier): string;
+export function regaliaBannerUrl(rawBannerFile: string): string;
+export function regaliaBannerUrl(tierOrFile: RankedTier | string): string {
+  const FILE: Record<RankedTier, string> = {
+    unranked: "00_unranked_banner",
+    iron: "01_iron_banner",
+    bronze: "02_bronze_banner",
+    silver: "03_silver_banner",
+    gold: "04_gold_banner",
+    emerald: "emerald_banner",
+    platinum: "05_platinum_banner",
+    diamond: "06_diamond_banner",
+    master: "07_master_banner",
+    grandmaster: "08_grandmaster_banner",
+    challenger: "09_challenger_banner",
+  };
+  // A known RankedTier maps to its numbered file; any other string is treated as
+  // a raw banner slug (prestige/event banners) and prefixed with the base path.
+  const slug = (FILE as Record<string, string>)[tierOrFile] ?? tierOrFile;
+  return `${CDRAGON_REGALIA_BANNERS}/${slug}.png`;
+}
