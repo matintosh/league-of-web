@@ -56,16 +56,13 @@ export function HomeContentRail({
       data-shot="home-content-rail"
       role="tablist"
       aria-orientation="vertical"
-      className="flex h-full w-full min-w-[230px] max-w-[260px] flex-col py-6"
-      // #503: SEMI-TRANSPARENT scrim (was opaque `bg-hextech-black`) so the
-      // featured splash + flames bleed through behind the rail, matching the
-      // reference. Left-heavier gradient: denser hextech-black near the far-left
-      // edge for label/bullet legibility, thinning toward the seam so the art
-      // stays faintly visible. Overall ~62% opacity — art readable, text crisp.
-      style={{
-        background:
-          "linear-gradient(to right, color-mix(in srgb, var(--color-hextech-black) 72%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 62%, transparent) 60%, color-mix(in srgb, var(--color-hextech-black) 52%, transparent) 100%)",
-      }}
+      // #506: NO background at all — the rail is fully transparent so the
+      // featured splash + flames bleed through completely (the #503 scrim is
+      // gone). A single 1px RIGHT border is the only chrome: a subtle vertical
+      // divider separating the rail from the main splash region, matching the
+      // reference. Legibility over the busy splash comes from a MINIMAL per-text
+      // shadow on the labels/bullets (see ContentRailRow), not a rail panel.
+      className="flex h-full w-full min-w-[230px] max-w-[260px] flex-col border-r border-gold-5/40 py-6"
     >
       <div className="flex flex-1 flex-col gap-1">
         {items.map((item) => (
@@ -119,12 +116,18 @@ function ContentRailRow({ item, isActive, onSelect }: ContentRailRowProps) {
           className="h-8 w-8 shrink-0 rounded-sm border border-gold-5 object-cover"
         />
       ) : (
-        <GemBullet className="h-4 w-4 shrink-0" />
+        // #506: subtle dark drop-shadow so the gem stays crisp over the splash
+        // now that the rail has no scrim panel behind it.
+        <GemBullet className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_1px_color-mix(in_srgb,var(--color-hextech-black)_75%,transparent))]" />
       )}
 
       <span
+        // #506: MINIMAL per-text shadow (behind the label only, not a rail
+        // panel) keeps the gold label legible over the busy splash now that the
+        // #503 scrim is gone — matching the reference, which relies on the
+        // splash reading darker at the far-left.
         className={[
-          "whitespace-pre-line font-display text-[13px] uppercase leading-tight tracking-wide",
+          "whitespace-pre-line font-display text-[13px] uppercase leading-tight tracking-wide [text-shadow:0_1px_3px_color-mix(in_srgb,var(--color-hextech-black)_80%,transparent)]",
           isActive ? "font-semibold" : "",
         ].join(" ")}
       >
