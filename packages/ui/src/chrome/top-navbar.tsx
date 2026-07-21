@@ -115,15 +115,23 @@ export function TopNavbar({
   return (
     <nav
       aria-label="Main navigation"
-      /* #460: the band is a dark warm SCRIM over the home key-art, not a flat
-         navy fill — the splash bleeds through a ~88% hextech-black wash (via
-         color-mix so it stays token-derived), and a bright gold-4 hairline
-         caps the bottom edge (the old dim gold-5 read as invisible navy). */
+      /* #460/#491: the band is a dark warm SCRIM over the home key-art, not a
+         flat navy fill — the Miss Fortune splash BLEEDS THROUGH it. #491 tuned
+         the wash more transparent to match the 2025 reference: a bottom-heavier
+         vertical gradient (lighter at the top edge, denser toward the bottom
+         hairline) so the splash reads clearly through the band while text/icons
+         stay legible. Both stops are token-derived via color-mix. A bright
+         gold-4 hairline caps the bottom edge. */
       style={{
-        backgroundColor:
-          "color-mix(in srgb, var(--color-hextech-black) 88%, transparent)",
+        backgroundImage:
+          "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 42%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 68%, transparent) 100%)",
       }}
-      className="flex h-14 w-full shrink-0 items-stretch border-b border-gold-4 px-4"
+      /* #491: band raised to ~88px (h-22 = 88px) to match the 2025 reference,
+         where content/rail start ~y88. The play medallion, product switcher,
+         icon cluster, currency, and profile chip all sit vertically centred in
+         this taller band; the window-control row still floats top-right in the
+         integrated chrome (WindowFrame), above this nav. */
+      className="flex h-22 w-full shrink-0 items-stretch border-b border-gold-4 px-4"
     >
       {/* Left region — play slot; self-center so the PLAY button stays vertically centred */}
       <div className="flex shrink-0 items-center">{playSlot}</div>
