@@ -62,7 +62,7 @@ export const socialDockShowcase: ShowcaseEntry = {
     {
       name: "Current-era replica (boxed cells, badges, clock)",
       notes:
-        "Matches the current-era reference (client-current-home-2025-mf.png) bottom dock: chat (badge '3'), party (badge '31'), microphone, then the client clock '26.14', settings — each glyph in its own gold-outlined cell. Hover a cell to see the grey-1 → gold-1 / border-gold-4 transition.",
+        "Matches the current-era reference (client-current-home-2025-mf.png) bottom dock: chat (badge '3'), party (badge '31'), microphone, then the client clock '26.14', settings — each glyph in its own gold-outlined cell. Glyphs render gold-2 at rest (#515); hover a cell to see the gold-2 → gold-1 / border-gold-4 transition.",
       render: () => (
         <div data-shot="social-dock" className="w-64">
           <SocialDock

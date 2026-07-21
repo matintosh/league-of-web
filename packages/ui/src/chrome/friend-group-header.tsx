@@ -16,8 +16,9 @@ export interface FriendGroupHeaderProps {
 /**
  * FriendGroupHeader — collapsible social group header row.
  *
- * Renders a full-width button band with a caret, uppercase group name, and
- * online/total count. The caret rotates -90° when `collapsed` is true.
+ * Renders a full-width button row (transparent over the panel bg, subtle
+ * grey-cool highlight on hover) with a caret, gold uppercase group name, and a
+ * grey online/total count. The caret rotates -90° when `collapsed` is true.
  * Controlled component — no internal state; caller owns `collapsed`.
  *
  * Reference: "▾ GENERAL (0/0)" band in the LoL client social sidebar.
@@ -34,7 +35,7 @@ export function FriendGroupHeader({
       type="button"
       onClick={onToggle}
       aria-expanded={!collapsed}
-      className="flex w-full items-center gap-1.5 bg-[color-mix(in_srgb,var(--color-grey-4)_70%,var(--color-hextech-black))] px-3 py-1 text-left transition-colors duration-100 hover:bg-grey-cool"
+      className="flex w-full items-center gap-1.5 px-3 py-1 text-left transition-colors duration-100 hover:bg-grey-cool"
     >
       {/* Caret — rotates to -90° when collapsed */}
       <svg
@@ -52,8 +53,8 @@ export function FriendGroupHeader({
         <path d="M5 7 L1 3 L9 3 Z" />
       </svg>
 
-      {/* Group name — CSS uppercase, tracking-widest, grey-1 */}
-      <span className="font-body text-xs uppercase tracking-widest text-grey-1">
+      {/* Group name — CSS uppercase, tracking-widest, gold-2 (matches ref) */}
+      <span className="font-body text-xs uppercase tracking-widest text-gold-2">
         {name}
       </span>
 

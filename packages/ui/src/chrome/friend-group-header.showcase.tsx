@@ -12,12 +12,12 @@ export const friendGroupHeaderShowcase: ShowcaseEntry = {
   name: "FriendGroupHeader",
   area: "chrome",
   description:
-    "Collapsible social group header row — caret, uppercase name, and online/total count. Full-row button toggles collapsed state.",
+    "Collapsible social group header row — caret, uppercase gold name, and grey online/total count on a transparent band (grey-cool hover highlight). Full-row button toggles collapsed state.",
   variants: [
     {
       name: "Expanded",
       notes:
-        "Caret points down (▾, 0° rotation), group name uppercase grey-1, count grey-2. Mirrors the reference '▾ GENERAL (0/0)' band.",
+        "Caret points down (▾, 0° rotation), group name uppercase gold-2, count grey-2, transparent background. Mirrors the reference '▾ GENERAL (0/0)' row (#514).",
       render: () => <FriendGroupHeaderExpandedDemo />,
     },
     {

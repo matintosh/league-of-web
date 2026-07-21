@@ -44,7 +44,7 @@ export interface SocialDockProps {
  * segmented, framed look rather than flat inline icons on a single band. The
  * clock readout stays unboxed at the far end.
  *
- * Button states: text-grey-1 default, hover:text-gold-1, focus-visible ring gold-3.
+ * Button states: text-gold-2 default (#515), hover:text-gold-1, focus-visible ring gold-3.
  * Badge: absolute top-right overlay on the cell, bg-gold-4 text-hextech-black.
  * Clock text: text-xs text-grey-2 at the end of the band.
  *
@@ -63,7 +63,7 @@ export function SocialDock({ buttons, clockLabel, onAction }: SocialDockProps) {
             type="button"
             aria-label={label}
             onClick={() => onAction?.(id)}
-            className="relative flex h-7 w-7 items-center justify-center border border-gold-5 text-grey-1 transition-colors duration-150 hover:border-gold-4 hover:text-gold-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-3"
+            className="relative flex h-7 w-7 items-center justify-center border border-gold-5 text-gold-2 transition-colors duration-150 hover:border-gold-4 hover:text-gold-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-3"
           >
             {icon}
             {badge != null && (
