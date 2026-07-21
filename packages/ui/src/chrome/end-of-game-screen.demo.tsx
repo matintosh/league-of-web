@@ -30,6 +30,13 @@ const OBJECTIVE_ICONS: ObjectiveIconMap = {
   herald: { blue: objectiveIconUrl("herald", "blue"), red: objectiveIconUrl("herald", "red") },
   tower: { blue: objectiveIconUrl("tower", "blue"), red: objectiveIconUrl("tower", "red") },
   inhibitor: { blue: objectiveIconUrl("inhibitor", "blue"), red: objectiveIconUrl("inhibitor", "red") },
+  drakes: {
+    fire: { blue: objectiveIconUrl("fire", "blue"), red: objectiveIconUrl("fire", "red") },
+    water: { blue: objectiveIconUrl("water", "blue"), red: objectiveIconUrl("water", "red") },
+    air: { blue: objectiveIconUrl("air", "blue"), red: objectiveIconUrl("air", "red") },
+    earth: { blue: objectiveIconUrl("earth", "blue"), red: objectiveIconUrl("earth", "red") },
+    elder: { blue: objectiveIconUrl("elder", "blue"), red: objectiveIconUrl("elder", "red") },
+  },
 };
 
 const CHAMPION_FRAME_SRC = matchHistoryIconUrl("champion_frame.png");

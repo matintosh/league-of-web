@@ -22,7 +22,6 @@
  * URLs in, no fetch). Presentational — props in, callbacks out.
  */
 
-import { useId } from "react";
 import type {
   EndOfGameResult,
   ScoreboardTeam,
@@ -66,16 +65,34 @@ export interface EndOfGameScreenProps {
   onClose?: () => void;
 }
 
+/** Both team-side tints for a single objective icon. */
+export interface ObjectiveIconSides {
+  blue: string;
+  red: string;
+}
+
+/**
+ * The elemental drakes the strip can render individually (from a team's
+ * `dragonKinds`). Mirrors the drake element union carried by `TeamObjectives`.
+ */
+export type DrakeKind = NonNullable<TeamObjectives["dragonKinds"]>[number];
+
 /**
  * Resolved objective-strip icon URLs. The strip renders one icon per row, tinted
  * for the winning-count side; both tints are provided so either team can lead.
+ *
+ * `drakes` holds the per-element drake art (fire/water/air/earth/elder), each
+ * with both side tints, so the dragons row can show the SPECIFIC drakes a team
+ * took (via `dragonKinds`). When a team has no `dragonKinds`, the generic
+ * `dragon` icon repeats as the fallback.
  */
 export interface ObjectiveIconMap {
-  dragon: { blue: string; red: string };
-  baron: { blue: string; red: string };
-  herald: { blue: string; red: string };
-  tower: { blue: string; red: string };
-  inhibitor: { blue: string; red: string };
+  dragon: ObjectiveIconSides;
+  baron: ObjectiveIconSides;
+  herald: ObjectiveIconSides;
+  tower: ObjectiveIconSides;
+  inhibitor: ObjectiveIconSides;
+  drakes: Record<DrakeKind, ObjectiveIconSides>;
 }
 
 // ---------------------------------------------------------------------------
@@ -589,7 +606,7 @@ interface ObjectivesStripProps {
 }
 
 const OBJECTIVE_ROWS: {
-  key: keyof ObjectiveIconMap;
+  key: Exclude<keyof ObjectiveIconMap, "drakes">;
   label: string;
   field: keyof Omit<TeamObjectives, "dragonKinds">;
 }[] = [
@@ -601,21 +618,23 @@ const OBJECTIVE_ROWS: {
 ];
 
 function ObjectivesStrip({ ally, enemy, allySide, enemySide, icons }: ObjectivesStripProps) {
-  const glowId = useId();
   const allyTint = SIDE_TINT[allySide];
   const enemyTint = SIDE_TINT[enemySide];
 
   return (
     <div className="flex items-stretch justify-center gap-6 border-y border-gold-5 bg-blue-8/70 px-6 py-3">
-      {/* Decorative diamond divider seed (unique per instance) */}
-      <span id={glowId} className="hidden" aria-hidden="true" />
-
       {OBJECTIVE_ROWS.map((row) => {
         const allyCount = ally[row.field];
         const enemyCount = enemy[row.field];
         // Tint the shared icon toward whichever side leads (ally on ties).
         const leadSide = enemyCount > allyCount ? enemySide : allySide;
-        const iconSrc = icons[row.key][leadSide];
+
+        // Dragons row: when either team named its drakes, show the SPECIFIC
+        // elemental drake icons (per side tint) instead of the generic dragon.
+        const isDragon = row.key === "dragon";
+        const allyDrakes = isDragon ? ally.dragonKinds ?? [] : [];
+        const enemyDrakes = isDragon ? enemy.dragonKinds ?? [] : [];
+        const showDrakes = allyDrakes.length > 0 || enemyDrakes.length > 0;
 
         return (
           <div key={row.key} className="flex flex-col items-center gap-1">
@@ -626,13 +645,40 @@ function ObjectivesStrip({ ally, enemy, allySide, enemySide, icons }: Objectives
               >
                 {allyCount}
               </span>
-              <img
-                src={iconSrc}
-                alt={row.label}
-                width={30}
-                height={30}
-                className="object-contain"
-              />
+              {showDrakes ? (
+                <div className="flex items-center gap-1">
+                  <DrakeRow kinds={allyDrakes} side={allySide} icons={icons} />
+                  {/* A team with drakes but no named kinds falls back to the
+                      generic drake; a team with zero drakes shows nothing. */}
+                  {allyDrakes.length === 0 && allyCount > 0 && (
+                    <img
+                      src={icons.dragon[allySide]}
+                      alt={row.label}
+                      width={22}
+                      height={22}
+                      className="object-contain"
+                    />
+                  )}
+                  <DrakeRow kinds={enemyDrakes} side={enemySide} icons={icons} />
+                  {enemyDrakes.length === 0 && enemyCount > 0 && (
+                    <img
+                      src={icons.dragon[enemySide]}
+                      alt={row.label}
+                      width={22}
+                      height={22}
+                      className="object-contain"
+                    />
+                  )}
+                </div>
+              ) : (
+                <img
+                  src={icons[row.key][leadSide]}
+                  alt={row.label}
+                  width={30}
+                  height={30}
+                  className="object-contain"
+                />
+              )}
               <span
                 className="w-6 text-left font-display text-lg tabular-nums leading-none"
                 style={{ color: enemyTint.accent }}
@@ -646,6 +692,33 @@ function ObjectivesStrip({ ally, enemy, allySide, enemySide, icons }: Objectives
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/** Renders a team's specific elemental drakes, side-tinted, in take order. */
+function DrakeRow({
+  kinds,
+  side,
+  icons,
+}: {
+  kinds: readonly DrakeKind[];
+  side: TeamSide;
+  icons: ObjectiveIconMap;
+}) {
+  if (kinds.length === 0) return null;
+  return (
+    <div className="flex items-center gap-0.5">
+      {kinds.map((kind, i) => (
+        <img
+          key={`${kind}-${i}`}
+          src={icons.drakes[kind][side]}
+          alt={`${kind} drake`}
+          width={24}
+          height={24}
+          className="object-contain"
+        />
+      ))}
     </div>
   );
 }

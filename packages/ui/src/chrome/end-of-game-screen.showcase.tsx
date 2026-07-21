@@ -16,7 +16,7 @@ export const endOfGameScreenShowcase: ShowcaseEntry = {
     {
       name: "Victory — ranked 5v5",
       notes:
-        "Local player's blue team wins. Gold VICTORY banner + sr-victory glyph. Local row (isMe) highlighted with a blue accent bar. Blue leads dragons/baron/towers.",
+        "Local player's blue team wins. Gold VICTORY banner + sr-victory glyph. Local row (isMe) highlighted with a blue accent bar. Blue leads dragons/baron/towers — the dragons cell shows the SPECIFIC elemental drakes taken (fire/air/water/earth) via each team's dragonKinds, blue-tinted for the ally and red-tinted for the enemy's single drake.",
       render: () => <EndOfGameVictoryDemo />,
     },
     {
