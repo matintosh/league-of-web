@@ -20,11 +20,14 @@ export interface SocialDockProps {
   /** Ordered list of icon buttons to render in the dock. */
   buttons: DockButton[];
   /**
-   * Version string displayed at the far end of the band (e.g. "V9.14").
-   * Rendered as text-xs text-grey-2. Omitted entirely when undefined.
-   * Note: `{version && …}` is safe here — version is `string | undefined`.
+   * Static client-clock readout shown at the far end of the band (e.g. "26.14"),
+   * rendered greyed (text-grey-2). This is a presentational readout — a
+   * pre-formatted string supplied by the caller, NOT a live ticking timer.
+   * Omitted entirely when undefined. Matches the current-era reference, whose
+   * dock carries a running-time readout (not a patch/version string) right of
+   * the icon cells (issue #457).
    */
-  version?: string;
+  clockLabel?: string;
   /** Called with the button's `id` when it is clicked. */
   onAction?: (id: string) => void;
 }
@@ -33,28 +36,34 @@ export interface SocialDockProps {
  * SocialDock — bottom toolbar of the social rail.
  *
  * Dark band (bg-hextech-black) containing a row of icon buttons and an optional
- * version string. Each button uses the icon ReactNode supplied by the caller;
- * the component does not own an icon set.
+ * client-clock readout. Each button uses the icon ReactNode supplied by the
+ * caller; the component does not own an icon set.
+ *
+ * Current-era styling (issue #458): each control sits in its OWN gold-outlined
+ * cell (border-gold-5 default → border-gold-4 on hover), giving the bar a
+ * segmented, framed look rather than flat inline icons on a single band. The
+ * clock readout stays unboxed at the far end.
  *
  * Button states: text-grey-1 default, hover:text-gold-1, focus-visible ring gold-3.
- * Badge: absolute top-right overlay, bg-gold-4 text-hextech-black rounded-sm px-1 text-xs.
- * Version text: text-xs text-grey-2 at the end of the band.
+ * Badge: absolute top-right overlay on the cell, bg-gold-4 text-hextech-black.
+ * Clock text: text-xs text-grey-2 at the end of the band.
  *
- * Reference: bottom strip in the LoL client right-sidebar (chat, multi-chat+badge,
- * download, settings icons + "V9.14" text).
+ * Reference (docs/reference/client-current-home-2025-mf.png): bottom strip in
+ * the LoL client right-sidebar — chat, party+badge, microphone, client clock
+ * "26.14", settings — each glyph in a boxed gold cell.
  */
-export function SocialDock({ buttons, version, onAction }: SocialDockProps) {
+export function SocialDock({ buttons, clockLabel, onAction }: SocialDockProps) {
   return (
     <div className="flex w-full items-center justify-between bg-hextech-black px-3 py-1.5">
-      {/* Icon buttons */}
-      <div className="flex items-center gap-1">
+      {/* Icon buttons — each in its own gold-outlined cell (segmented look) */}
+      <div className="flex items-center gap-1.5">
         {buttons.map(({ id, icon, label, badge }) => (
           <button
             key={id}
             type="button"
             aria-label={label}
             onClick={() => onAction?.(id)}
-            className="relative text-grey-1 transition-colors duration-150 hover:text-gold-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-3"
+            className="relative flex h-7 w-7 items-center justify-center border border-gold-5 text-grey-1 transition-colors duration-150 hover:border-gold-4 hover:text-gold-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-3"
           >
             {icon}
             {badge != null && (
@@ -66,9 +75,9 @@ export function SocialDock({ buttons, version, onAction }: SocialDockProps) {
         ))}
       </div>
 
-      {/* Version text — only rendered when version is provided */}
-      {version && (
-        <span className="font-body text-xs text-grey-2">{version}</span>
+      {/* Client-clock readout — only rendered when clockLabel is provided */}
+      {clockLabel && (
+        <span className="font-body text-xs text-grey-2">{clockLabel}</span>
       )}
     </div>
   );

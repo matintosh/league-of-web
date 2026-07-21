@@ -23,15 +23,17 @@ export interface FriendRowProps {
 
 /**
  * Text color for the status line, keyed by availability. Tones matched to the
- * current-era reference (client-current-home-activity-center.jpg): "Online"
- * renders green, "In Game" a muted teal (blue-3, closer to the sampled
- * rgb(64,123,134) than the brighter blue-2), away gold, offline grey.
+ * current-era reference (client-current-home-2025-mf.png): "Online" renders
+ * green, "In Game" / "In Queue" a bright cyan — the reference measures
+ * rgb(21,194,221), so we use blue-2 (#0ac8b9 = rgb(10,200,185)), the closest
+ * in-palette token; blue-3 (#0397ab = rgb(3,151,171)) read noticeably duller
+ * and darker (issue #459). Away/busy gold, offline grey.
  */
 const statusTextColor: Record<Availability, string> = {
   online: "text-status-online",
   away: "text-gold-3",
-  "in-game": "text-blue-3",
-  "in-queue": "text-blue-3",
+  "in-game": "text-blue-2",
+  "in-queue": "text-blue-2",
   offline: "text-grey-2",
 };
 
