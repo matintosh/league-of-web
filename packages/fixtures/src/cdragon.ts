@@ -152,6 +152,17 @@ export const navMissionIconUrl = (
 ): string => `${CDRAGON_NAVIGATION}/${name}icon.svg`;
 
 /**
+ * The small up-right external-link arrow the current client draws immediately
+ * right of the LoR product pill (Legends of Runeterra launches an external
+ * product). An 8×8 SVG with a `#F0E6D2` cream ↗ glyph — reads gold on our dark
+ * band without filtering.
+ * Source: CommunityDragon rcp-fe-lol-navigation · button-lor-arrow.svg
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const lorArrowUrl = (): string =>
+  `${CDRAGON_NAVIGATION}/button-lor-arrow.svg`;
+
+/**
  * Position (role) icon SVG.
  *
  * The default variant uses Hextech gold fills (#c8aa6e / #785a28) — readable

@@ -29,7 +29,6 @@ import {
   LevelUpRewardsDetail,
   TftHubScreen,
   ClashScreen,
-  YourShopIcon,
   YourShopScreen,
   RpTopUpButton,
   ObjectivesModal,
@@ -46,9 +45,7 @@ import {
   loadingArtUrl,
   rpIconUrl,
   blueEssenceIconUrl,
-  navIconUrl,
-  navUpdatesIconUrl,
-  navMissionIconUrl,
+  lorArrowUrl,
   notificationBellUrl,
   rpTopUpIconUrl,
   yourShopIconVideoUrl,
@@ -119,7 +116,7 @@ const NAV_ITEMS: NavItem[] = [
 const PRODUCTS: NavProduct[] = [
   { id: "league", label: "LEAGUE" },
   { id: "tft",    label: "TFT" },
-  { id: "lor",    label: "LoR", pill: true, disabled: true },
+  { id: "lor",    label: "LoR", pill: true, disabled: true, external: true },
 ];
 
 // v8 PLAY-button magic-layer videos (issue #309). Real client webm streamed from
@@ -166,6 +163,81 @@ const YOUR_SHOP_CARDS: Omit<YourShopCard, "revealed" | "onReveal" | "onPurchase"
 ];
 
 const YOUR_SHOP_EXPIRY = "Offers expire October 30 at 18:00 EET";
+
+
+// ---------------------------------------------------------------------------
+// Right nav-cluster glyphs (#463) — the 2025 reference right cluster reads as
+// two groups of three split by a divider: A(hand"2", cards"10", crest) |
+// B(mail•, crossed-swords, coins). No clean CommunityDragon nav asset matches
+// the hand / crest / crossed-swords shapes, so per the #386 placeholder rule
+// these are faithful inline token-filled glyphs (currentColor → gold via the
+// parent's text-gold class). ~22px on a 24px canvas, matching the icon pitch.
+// ---------------------------------------------------------------------------
+
+/** Open hand / summon glyph — group-A slot 1 (badge "2"). */
+function HandGlyph() {
+  return (
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      <path d="M8 11V5.5a1.3 1.3 0 0 1 2.6 0V10m0 0V4.2a1.3 1.3 0 0 1 2.6 0V10m0 0V5a1.3 1.3 0 0 1 2.6 0v6m0 0V7.5a1.3 1.3 0 0 1 2.6 0V14c0 3.9-2.6 6.5-6 6.5-2.2 0-3.7-.9-4.9-2.6l-2.5-3.6a1.4 1.4 0 0 1 2.1-1.8L8 14.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Stacked cards / loot glyph — group-A slot 2 (badge "10"). */
+function CardsGlyph() {
+  return (
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      <rect x="4" y="8" width="9" height="12" rx="1.2" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M8 6.5 15.5 4.8a1.2 1.2 0 0 1 1.45.9l2.4 10.5a1.2 1.2 0 0 1-.9 1.45L15 18.7" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Crest / trophy-flame emblem — group-A slot 3 (no badge). */
+function CrestGlyph() {
+  return (
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      <path d="M12 3c.9 1.6.6 2.9-.4 3.9C10.4 8 10 9.2 11 10.4c.5-.7 1-1 1-1 .3 1.2 1.2 1.6 1.2 3 0 1.3-1 2.2-2.2 2.2S8.8 13.7 8.8 12.4c0-.5.1-.9.3-1.3-1.6 1-1.8 3.1-.6 4.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6.5 6.5V11c0 3.4 2.4 5.6 5.5 6.8 3.1-1.2 5.5-3.4 5.5-6.8V6.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9.5 18.5h5M10 20.5h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Satchel / mail bag — group-B slot 4 (carries a small notification dot). */
+function SatchelGlyph() {
+  return (
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      <path d="M6 9h12l1 10.5a1 1 0 0 1-1 1.1H6a1 1 0 0 1-1-1.1L6 9Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M8.5 9V7.5a3.5 3.5 0 0 1 7 0V9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M5.2 13.5h13.6" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}
+
+/** Crossed sword + pickaxe — group-B slot 5. */
+function CrossedSwordsGlyph() {
+  return (
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      <path d="M5 5l9 9m0-9-9 9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 4.5 19.5 4.5 19.5 10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4.5 14 4.5 19.5 10 19.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="m14 14 5.5 5.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Stacked coins — group-B slot 6 (opens Your Shop). */
+function CoinsGlyph() {
+  return (
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
+      <ellipse cx="12" cy="7" rx="6" ry="2.4" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M6 7v3.5c0 1.3 2.7 2.4 6 2.4s6-1.1 6-2.4V7" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M6 10.5V14c0 1.3 2.7 2.4 6 2.4s6-1.1 6-2.4v-3.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M6 14v3.5c0 1.3 2.7 2.4 6 2.4s6-1.1 6-2.4V14" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}
 
 
 // ---------------------------------------------------------------------------
@@ -781,6 +853,9 @@ export function ClientShell() {
     >
       <WindowFrame
         chrome="integrated"
+        // Leading amber status dot in the window-control row (● ? ─ ⚙ ✕),
+        // matching the 2025 reference (#464). Integrated chrome only.
+        showStatusDot
         onHelp={() => console.log("help")}
         onMinimize={() => console.log("minimize")}
         onClose={() => console.log("close")}
@@ -827,6 +902,7 @@ export function ClientShell() {
               // id; LEAGUE returns to home. LoR is a disabled placeholder pill.
               <NavProductSwitcher
                 products={PRODUCTS}
+                externalLinkSrc={lorArrowUrl()}
                 activeId={view === "tft" ? "tft" : "league"}
                 onSelect={(id) => {
                   // Dropdown-select SFX (#439) — the product switcher is the
@@ -858,56 +934,66 @@ export function ClientShell() {
               // lives in the rail ProfileChip (#146) and the reserved top-right
               // profile-chip slot is #387's scope (handoff below).
               <div className="flex items-center gap-3">
-                {/* Menu-access icon cluster — real CommunityDragon nav-band SVGs.
-                    Order matches the reference left→right: collections, missions,
-                    loot, updates, store. cursor-default (nav glyphs are not text
-                    links); opacity hover lift matches the client's icon feedback. */}
+                {/* Menu-access icon cluster (#463) — the 2025 reference reads as
+                    TWO groups of three split by a vertical divider:
+                      A: hand "2" (missions) · cards "10" (loot) · crest (collection)
+                      | divider |
+                      B: satchel• (updates) · crossed-swords (store) · coins (shop)
+                    Glyphs are faithful inline token-filled SVGs (no clean CDN nav
+                    asset matches these exact shapes — #386 placeholder rule). The
+                    existing entry points (objectives, loot, collection, updates
+                    flyout, store, Your Shop) are preserved, remapped onto the
+                    reference glyphs/order. opacity hover lift matches the client. */}
                 <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    aria-label="Collection"
-                    className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
-                    onClick={() => { setView("collection"); setActiveNavId("collection"); }}
-                  >
-                    {/* Real nav-icon-collections.svg — stacked cards, gold fills */}
-                    <img src={navIconUrl("collections")} alt="" aria-hidden="true" width={22} height={20} />
-                  </button>
-                  {/* Missions/objectives — opens the ObjectivesModal (issue #395,
-                      previously a #386 disabled placeholder). Uses the real
-                      navigation-plugin missionicon.svg. Enabled: activating it
-                      opens the centered Objectives dialog over the current view. */}
+                  {/* Group A */}
                   <button
                     type="button"
                     aria-label="Missions"
-                    className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
+                    className="relative flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
                     onClick={() => setShowObjectives(true)}
                   >
-                    {/* Real missionicon.svg (navigation plugin) — gold scroll */}
-                    <img src={navMissionIconUrl("mission")} alt="" aria-hidden="true" width={20} height={20} />
+                    <HandGlyph />
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -right-1 -top-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-[3px] bg-gold-3 px-0.5 font-body text-[9px] font-bold leading-none text-hextech-black"
+                    >
+                      2
+                    </span>
                   </button>
                   <button
                     type="button"
                     aria-label="Loot"
-                    className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
+                    className="relative flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
                     onClick={() => {
                       setActiveStoreTab("loot");
                       setView("store");
                       setActiveNavId("store");
                     }}
                   >
-                    {/* Real nav-icon-loot.svg — hardcoded gold fills, no filter needed */}
-                    <img src={navIconUrl("loot")} alt="" aria-hidden="true" width={22} height={22} />
+                    <CardsGlyph />
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -right-1.5 -top-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-[3px] bg-gold-3 px-0.5 font-body text-[9px] font-bold leading-none text-hextech-black"
+                    >
+                      10
+                    </span>
                   </button>
-                  {/* Updates/notifications — wired to the UpdatesFlyout (issue
-                      #396, previously a #386 disabled placeholder). Uses the real
-                      static-assets top-nav-updates-eat-icon.svg (player-bust
-                      badge). Enabled: activating it toggles a compact anchored
-                      flyout below the icon (right-aligned to the window edge); the
-                      shell owns open state, the notification list, and outside-
-                      click / Escape dismissal. An unread-count badge (gold pill)
-                      sits over the icon when any item is unread. The relative
-                      wrapper anchors the absolutely-positioned flyout, and the
-                      outside-click guard ignores clicks inside this ref. */}
+                  <button
+                    type="button"
+                    aria-label="Collection"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
+                    onClick={() => { setView("collection"); setActiveNavId("collection"); }}
+                  >
+                    <CrestGlyph />
+                  </button>
+
+                  {/* Divider between group A and group B */}
+                  <div className="mx-1 h-5 w-px bg-gold-5 shrink-0" aria-hidden="true" />
+
+                  {/* Group B — updates satchel with the anchored UpdatesFlyout
+                      (issue #396). The relative wrapper anchors the flyout; the
+                      outside-click guard ignores clicks inside this ref. The gold
+                      notification dot shows when there are unread items. */}
                   <div ref={updatesAnchorRef} className="relative">
                     <button
                       type="button"
@@ -917,18 +1003,15 @@ export function ClientShell() {
                       className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
                       onClick={() => setShowUpdates((v) => !v)}
                     >
-                      {/* Real top-nav-updates-eat-icon.svg — updates/notif bust badge */}
-                      <img src={navUpdatesIconUrl()} alt="" aria-hidden="true" width={22} height={20} />
+                      <SatchelGlyph />
                     </button>
-                    {/* Unread badge — small gold pill over the icon's top-right,
-                        shown only when there are unread items. Caps display at 9+. */}
+                    {/* Unread notification dot — small gold disc at the icon's
+                        top-right, shown only when there are unread items. */}
                     {unreadUpdatesCount > 0 && (
                       <span
                         aria-label={`${unreadUpdatesCount} unread updates`}
-                        className="pointer-events-none absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-gold-4 bg-hextech-black px-1 font-body text-[10px] leading-none text-gold-1"
-                      >
-                        {unreadUpdatesCount > 9 ? "9+" : unreadUpdatesCount}
-                      </span>
+                        className="pointer-events-none absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-gold-3"
+                      />
                     )}
                     <UpdatesFlyout
                       open={showUpdates}
@@ -952,22 +1035,19 @@ export function ClientShell() {
                     className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
                     onClick={() => { setActiveStoreTab("featured"); setView("store"); setActiveNavId("store"); }}
                   >
-                    {/* Real nav-icon-store.svg — three stacked coins, #f0e6d2 fill */}
-                    <img src={navIconUrl("store")} alt="" aria-hidden="true" width={20} height={19} />
+                    <CrossedSwordsGlyph />
                   </button>
-
-                  {/* Your Shop gold CTA — sits at the RIGHT end of the glyph
-                      cluster, immediately before the currency block (matching the
-                      reference). Sized to 28px to line up with the h-7 siblings.
-                      The CTA video state machine (intro→loop attention + click
-                      burst) streams from @low/fixtures; static gold glyph shows
-                      under reduced motion. Activating it opens the Your Shop
-                      overlay (issue #361/#364). */}
-                  <YourShopIcon
-                    size={28}
-                    videoSources={YOUR_SHOP_ICON_VIDEO_SOURCES}
-                    onActivate={() => setShowYourShop(true)}
-                  />
+                  {/* Coins → Your Shop. The 2025 reference has no gold chest in
+                      this row (that CTA was retired here); the coins glyph opens
+                      the same Your Shop overlay (issue #361/#364). */}
+                  <button
+                    type="button"
+                    aria-label="Your Shop"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
+                    onClick={() => setShowYourShop(true)}
+                  >
+                    <CoinsGlyph />
+                  </button>
                 </div>
 
                 {/* 1px vertical divider between the icon cluster and currency */}
@@ -980,20 +1060,26 @@ export function ClientShell() {
                     to CurrencyDisplay's inline `+` (kept for the BE row / non-nav
                     call sites) — the visible top-up here is the RpTopUpButton. */}
                 <div className="flex items-center gap-2">
+                  {/* RP row framed as a capsule (#464) — the `＋` top-up disc
+                      lives INSIDE the capsule via rpTrailingSlot; BE stays
+                      unframed below. */}
                   <CurrencyDisplay
                     wallet={demoWallet}
                     onBuyRp={() => console.log("buy rp")}
                     onBuyBe={() => console.log("buy be")}
                     stacked
+                    capsule
                     showBuyButtons={false}
                     rpIconSrc={rpIconUrl()}
                     beIconSrc={blueEssenceIconUrl()}
-                  />
-                  <RpTopUpButton
-                    restingSrc={rpTopUpIconUrl("resting")}
-                    hoverSrc={rpTopUpIconUrl("hover")}
-                    pressedSrc={rpTopUpIconUrl("pressed")}
-                    onClick={() => console.log("buy rp")}
+                    rpTrailingSlot={
+                      <RpTopUpButton
+                        restingSrc={rpTopUpIconUrl("resting")}
+                        hoverSrc={rpTopUpIconUrl("hover")}
+                        pressedSrc={rpTopUpIconUrl("pressed")}
+                        onClick={() => console.log("buy rp")}
+                      />
+                    }
                   />
                 </div>
               </div>

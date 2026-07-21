@@ -42,6 +42,13 @@ export interface WindowFrameProps {
    * the row reads help → minimize → settings → close.
    */
   onSettings?: () => void;
+  /**
+   * When true, a small amber status dot (●) renders at the LEADING edge of the
+   * window-control row, before the help glyph — the connection/status indicator
+   * in the 2025 reference (#464). Opt-in (default off) so the LOGIN title bar
+   * and other consumers are unaffected.
+   */
+  showStatusDot?: boolean;
 }
 
 /** Help glyph — ? */
@@ -145,6 +152,8 @@ interface WindowControlsProps {
   onClose?: () => void;
   /** Optional settings handler; the ⚙ button only renders when provided (#401). */
   onSettings?: () => void;
+  /** When true, a leading amber status dot renders before the help glyph (#464). */
+  showStatusDot?: boolean;
 }
 
 /**
@@ -163,9 +172,18 @@ function WindowControls({
   onMinimize,
   onClose,
   onSettings,
+  showStatusDot,
 }: WindowControlsProps) {
   return (
     <>
+      {/* Leading amber status dot (#464) — opt-in; precedes the help glyph in
+          the current-era integrated chrome (● ? ─ ⚙ ✕). */}
+      {showStatusDot && (
+        <span
+          aria-hidden="true"
+          className="mr-1 h-1.5 w-1.5 shrink-0 rounded-full bg-gold-3"
+        />
+      )}
       {showHelp && (
         <button
           type="button"
@@ -233,6 +251,7 @@ export function WindowFrame({
   onMinimize,
   onClose,
   onSettings,
+  showStatusDot = false,
 }: WindowFrameProps) {
   const controls = (
     <WindowControls
@@ -243,6 +262,7 @@ export function WindowFrame({
       onMinimize={onMinimize}
       onClose={onClose}
       onSettings={onSettings}
+      showStatusDot={showStatusDot}
     />
   );
 

@@ -12,7 +12,7 @@ export const topNavbarShowcase: ShowcaseEntry = {
   name: "Top Navbar",
   area: "chrome",
   description:
-    "The slim top navigation bar — play CTA on the left, nav items in the center, currency and controls on the right. Current era (#384/#386): the right side carries a menu-access icon cluster + Your Shop CTA + stacked currency with an RP top-up disc. Player identity lives in the social-rail ProfileChip / top-right profile chip, not in the band.",
+    "The slim top navigation bar — play CTA on the left, nav items in the center, currency and controls on the right. The band is a dark art-bleed scrim (translucent hextech-black letting the home key-art show through) capped by a bright gold hairline (#460), not a flat navy fill. Current era (#384/#386): the right side carries a menu-access icon cluster + stacked currency with an RP top-up disc. Player identity lives in the social-rail ProfileChip / top-right profile chip, not in the band.",
   referenceImage: "client-current-home-activity-center.jpg",
   referenceNote:
     "docs/reference/client-current-home-activity-center.jpg — current-era home; nav band is the ~56px top strip (PLAY left, LEAGUE/TFT tabs, right-side icon cluster + currency)",

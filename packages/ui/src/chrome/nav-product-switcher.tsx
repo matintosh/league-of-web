@@ -18,6 +18,13 @@ export interface NavProduct {
    * mark those disabled. Interactive by default.
    */
   disabled?: boolean;
+  /**
+   * When true, a small up-right external-link arrow (↗) renders immediately
+   * right of the tab — the affordance the client draws next to the LoR pill
+   * because Legends of Runeterra launches an external product (#462). The glyph
+   * comes from `externalLinkSrc` when supplied, else a faithful inline ↗.
+   */
+  external?: boolean;
 }
 
 export interface NavProductSwitcherProps {
@@ -30,6 +37,79 @@ export interface NavProductSwitcherProps {
   activeId: string;
   /** Called with a product id when a non-disabled tab is clicked. */
   onSelect: (id: string) => void;
+  /**
+   * Optional URL for the external-link ↗ glyph rendered right of any product
+   * flagged `external` (#462). Pass `lorArrowUrl()` from `@low/fixtures` at the
+   * page level. When omitted, a faithful inline token-filled ↗ is drawn.
+   */
+  externalLinkSrc?: string;
+}
+
+/**
+ * Small up-right external-link arrow (↗), token-filled fallback for when no
+ * `externalLinkSrc` asset URL is supplied. Matches the ~8×8 client glyph
+ * (button-lor-arrow.svg) drawn right of the LoR pill.
+ */
+function ExternalLinkGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="9"
+      height="9"
+      viewBox="0 0 8 8"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="text-gold-2"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6.3 0H1.8V0.9H5.4L0 6.3V7.2H0.9L6.3 1.8V5.4H7.2V0H6.3Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Gold down-chevron that drops from the band's top edge, centered over the
+ * active product tab (#462). Reuses the `ActiveChevron` geometry from
+ * top-navbar.tsx (20×14 gold-3 double-V) so the switcher's active indicator
+ * matches the screen-nav row exactly.
+ */
+function ActiveChevron() {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2"
+    >
+      <svg
+        width="20"
+        height="14"
+        viewBox="0 0 20 14"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="text-gold-3"
+      >
+        <polyline
+          points="1,1 10,8 19,1"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+        />
+        <polyline
+          points="4,7 10,13 16,7"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+        />
+      </svg>
+    </span>
+  );
 }
 
 /**
@@ -76,6 +156,7 @@ export function NavProductSwitcher({
   products,
   activeId,
   onSelect,
+  externalLinkSrc,
 }: NavProductSwitcherProps) {
   return (
     <div
@@ -89,47 +170,73 @@ export function NavProductSwitcher({
 
         if (product.pill) {
           return (
+            <div key={product.id} className="flex items-center gap-2">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-disabled={isDisabled ? true : undefined}
+                onClick={isDisabled ? undefined : () => onSelect(product.id)}
+                className={[
+                  "flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-display text-xs tracking-wide transition-colors duration-150",
+                  isDisabled
+                    ? "cursor-default border-gold-4 bg-gold-5 text-gold-2 opacity-70 pointer-events-none"
+                    : isActive
+                    ? "cursor-pointer border-gold-3 bg-gold-5 text-gold-1"
+                    : "cursor-pointer border-gold-4 bg-gold-5 text-gold-2 hover:border-gold-3 hover:text-gold-1",
+                ].join(" ")}
+              >
+                <RuneterraGlyph />
+                {product.label}
+              </button>
+              {/* External-link ↗ (#462) — real button-lor-arrow.svg when a URL
+                  is supplied, else a token-filled inline fallback. */}
+              {product.external &&
+                (externalLinkSrc ? (
+                  <img
+                    src={externalLinkSrc}
+                    alt=""
+                    aria-hidden="true"
+                    width={9}
+                    height={9}
+                  />
+                ) : (
+                  <ExternalLinkGlyph />
+                ))}
+            </div>
+          );
+        }
+
+        return (
+          /* Non-pill product tab. `relative` so the active-tab down-chevron can
+             anchor to the band's top edge above it. The active tab also gets a
+             faint raised backing panel (#462) matching the reference LEAGUE
+             treatment. `-top-4` lifts the chevron from the vertically-centred
+             switcher up to the band top edge (~16px above the 24px-tall tab). */
+          <span key={product.id} className="relative flex items-center">
+            {isActive && (
+              <span className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2">
+                <ActiveChevron />
+              </span>
+            )}
             <button
-              key={product.id}
               type="button"
               role="tab"
               aria-selected={isActive}
               aria-disabled={isDisabled ? true : undefined}
               onClick={isDisabled ? undefined : () => onSelect(product.id)}
               className={[
-                "flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-display text-xs tracking-wide transition-colors duration-150",
+                "rounded-sm px-2 py-1 font-display text-sm uppercase tracking-widest transition-colors duration-150",
                 isDisabled
-                  ? "cursor-default border-gold-4 bg-gold-5 text-gold-2 opacity-70 pointer-events-none"
+                  ? "cursor-default text-grey-2 pointer-events-none"
                   : isActive
-                  ? "cursor-pointer border-gold-3 bg-gold-5 text-gold-1"
-                  : "cursor-pointer border-gold-4 bg-gold-5 text-gold-2 hover:border-gold-3 hover:text-gold-1",
+                  ? "cursor-pointer bg-gold-5/25 text-gold-1"
+                  : "cursor-pointer text-grey-1 hover:text-gold-1",
               ].join(" ")}
             >
-              <RuneterraGlyph />
               {product.label}
             </button>
-          );
-        }
-
-        return (
-          <button
-            key={product.id}
-            type="button"
-            role="tab"
-            aria-selected={isActive}
-            aria-disabled={isDisabled ? true : undefined}
-            onClick={isDisabled ? undefined : () => onSelect(product.id)}
-            className={[
-              "font-display text-sm uppercase tracking-widest transition-colors duration-150",
-              isDisabled
-                ? "cursor-default text-grey-2 pointer-events-none"
-                : isActive
-                ? "cursor-pointer text-gold-1"
-                : "cursor-pointer text-grey-1 hover:text-gold-1",
-            ].join(" ")}
-          >
-            {product.label}
-          </button>
+          </span>
         );
       })}
     </div>
