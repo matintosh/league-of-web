@@ -71,6 +71,7 @@ import {
   poroUrl,
   friendFinderImageUrl,
   socialMaskUrl,
+  uikitSoundUrl,
 } from "@low/fixtures";
 import type { ClashScoutingPlayer } from "@low/fixtures";
 import type { NewsArticle } from "@low/ui";
@@ -522,6 +523,12 @@ export function ClientShell() {
   // @low/ui. Wired to a few existing component callbacks below; every call is
   // user-gesture-initiated (no autoplay).
   const { play: playSfx } = useSound();
+  // Generic uikit interaction SFX (#439) — a second audio channel resolved via
+  // uikitSoundUrl (uikit plugin root, not the friend-finder sounds/ base). Wired
+  // to a few existing chrome-primitive callbacks below (PlayButton press,
+  // settings toggles, product-switcher select); every call is user-gesture-
+  // initiated (no autoplay) and a missing clip degrades to a no-op.
+  const { play: playUikit } = useSound(uikitSoundUrl);
 
   // Party open/closed toggle — wired to PartyStatusPanel header when in lobby.
   // Defaults to open (true) matching the reference; toggling reflects both the
@@ -709,14 +716,22 @@ export function ClientShell() {
           <SettingsRow label="Mute all sound" description="Silence all audio in the client.">
             <HextechToggle
               checked={masterMute}
-              onChange={setMasterMute}
+              onChange={(v) => {
+                // Checkbox/toggle click SFX (#439) — the settings toggle is the
+                // client's checkbox primitive; play the toggle stinger.
+                playUikit("checkbox-click");
+                setMasterMute(v);
+              }}
               label="Mute all sound"
             />
           </SettingsRow>
           <SettingsRow label="Music" description="Play background music in the client.">
             <HextechToggle
               checked={musicEnabled}
-              onChange={setMusicEnabled}
+              onChange={(v) => {
+                playUikit("checkbox-click");
+                setMusicEnabled(v);
+              }}
               label="Music"
             />
           </SettingsRow>
@@ -726,7 +741,10 @@ export function ClientShell() {
           >
             <HextechToggle
               checked={soundEffectsEnabled}
-              onChange={setSoundEffectsEnabled}
+              onChange={(v) => {
+                playUikit("checkbox-click");
+                setSoundEffectsEnabled(v);
+              }}
               label="Sound effects"
             />
           </SettingsRow>
@@ -816,7 +834,13 @@ export function ClientShell() {
                 // stream from CommunityDragon via @low/fixtures (no repo commits).
                 videoSources={PLAY_BUTTON_VIDEO_SOURCES}
                 medallionVideoSources={LEAGUE_LOGO_VIDEO_SOURCES}
-                onClick={() => { if (!playDisabled) setView("mode-select"); }}
+                onClick={() => {
+                  if (!playDisabled) {
+                    // Gold-button press SFX (#439) — the primary CTA click.
+                    playUikit("button-gold-click");
+                    setView("mode-select");
+                  }
+                }}
               />
             }
             productSwitcherSlot={
@@ -829,6 +853,9 @@ export function ClientShell() {
                 products={PRODUCTS}
                 activeId={view === "tft" ? "tft" : "league"}
                 onSelect={(id) => {
+                  // Dropdown-select SFX (#439) — the product switcher is the
+                  // client's league/TFT/LoR selector; play the select stinger.
+                  playUikit("dropdown-select");
                   if (id === "tft") { setView("tft"); setActiveNavId("tft"); }
                   else if (id === "league") { setView("home"); setActiveNavId("home"); }
                 }}
