@@ -778,6 +778,15 @@ function SelfRankFrame({
   const WREATH_BAND = Math.round(FRAME_W * 0.36);
   const sigText = signature ?? name;
 
+  // Force any tier hue (blue/teal diamond barbs, gold plate…) to the reference's
+  // deep-red regalia wreath: grayscale→sepia warms everything, then saturate +
+  // hue-rotate push it to crimson (a steeper −24° hue-rotate + lower brightness
+  // lean the tone off orange-red toward deep crimson, per #495). Applied to BOTH
+  // foot wreath layers so wherever the regalia base protrudes past the wing
+  // overlay it reads red too — one coherent wreath, no blue/teal bleed (#496).
+  const WREATH_RED =
+    "grayscale(1) sepia(1) saturate(6.5) hue-rotate(-24deg) brightness(0.86)";
+
   return (
     <div
       data-shot="player-banner-self"
@@ -919,11 +928,14 @@ function SelfRankFrame({
         </div>
       </div>
 
-      {/* Red winged wreath foot (#494) — the tier wings, enlarged + red-tinted so
-           the wreath reads prominently across the badge foot, matching the
-           reference's bold red regalia wreath. The regalia banner supplies ONLY
-           its gold-edged wreath base: we anchor its bottom to the badge foot and
-           show just that band (its tall dark panel is clipped above the foot).
+      {/* Red winged wreath foot (#494/#496) — the tier wings, enlarged + red-
+           tinted so the wreath reads prominently across the badge foot, matching
+           the reference's bold red regalia wreath. The regalia banner supplies
+           the gold-edged wreath base beneath: we anchor its bottom to the badge
+           foot and show just that band (its tall dark panel is clipped above the
+           foot). Both layers get the SAME WREATH_RED forcing filter so the base's
+           tier-coloured (blue/teal diamond) barbs can never bleed a second,
+           clashing wreath silhouette past the overlay — they read red too (#496).
            z-[4]/[5]: over the splash, under the content text above. */}
       <div
         aria-hidden="true"
@@ -943,7 +955,7 @@ function SelfRankFrame({
           alt=""
           aria-hidden="true"
           className="absolute left-0 w-full select-none"
-          style={{ bottom: 0, height: "auto" }}
+          style={{ bottom: 0, height: "auto", filter: WREATH_RED }}
         />
       </div>
       <img
@@ -959,11 +971,9 @@ function SelfRankFrame({
           width: FRAME_W * 0.94,
           height: "auto",
           objectFit: "contain",
-          // Force the (blue/tier) wings to the reference's bold red regardless of
-          // source hue: grayscale→sepia warms everything, then saturate + a small
-          // hue-rotate pushes it to red; a ban-red drop-shadow deepens the glow.
-          filter:
-            "grayscale(1) sepia(1) saturate(6) hue-rotate(-18deg) brightness(0.92) drop-shadow(0 0 7px color-mix(in srgb, var(--color-ban-red-2) 75%, transparent))",
+          // Same red-forcing pipeline as the base (WREATH_RED), plus a ban-red
+          // drop-shadow to deepen the wreath's glow.
+          filter: `${WREATH_RED} drop-shadow(0 0 7px color-mix(in srgb, var(--color-ban-red-2) 75%, transparent))`,
         }}
       />
       {/* Red gem at wreath centre */}
