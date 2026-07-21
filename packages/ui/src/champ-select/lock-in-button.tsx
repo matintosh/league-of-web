@@ -384,6 +384,7 @@ type LIBVideoState =
   | "activeOut"
   | "release"
   | "disabledIntro"
+  | "disabledIdle"   // terminal no-op: all layers opacity 0; CSS grey fill shows cleanly
   | "changeChamp"
   | "magicExpell";
 
@@ -482,9 +483,12 @@ function LockInButtonVideoLayer({
   } else if (releasePlaying && sources.release) {
     state = "release";
   } else if (disabled) {
-    state = disabledIntroDone ? "activeIdle" : "disabledIntro";
-    // After disabledIntro, fall through to idle (which simply has no video if
-    // not provided — CSS disabled state shows through the transparent overlay).
+    // When disabled, only disabledIntro may play (once); after it ends the layer
+    // resolves to the terminal `disabledIdle` no-op state — no active video, all
+    // layers at opacity 0 — so the CSS grey disabled fill shows cleanly through
+    // the transparent overlay. The enabled shimmer (activeIdle) must NEVER play
+    // while disabled, even at 22% opacity.
+    state = disabledIntroDone ? "disabledIdle" : "disabledIntro";
   } else if (!introDone && sources.activeIntro) {
     state = "activeIntro";
   } else if (hovered && sources.activeHover) {
