@@ -1248,6 +1248,64 @@ export const lockInVideoUrl = (state: LockInVideoState): string => {
 export const lockInDisabledPngUrl = (): string =>
   `${CDRAGON_LOCKIN}/lock-in-button-disabled-idle.png`;
 
+// ---------------------------------------------------------------------------
+// CHAMPION-RING splash frame art (issue #437) — the ornate circular frame the
+// real champ-select loadout paints around the selected skin's splash.
+//
+// The client composes the ring from dedicated art (NOT drawn SVG): an authentic
+// dashed tick-ring plus a pair of ornamental gold arcs authored as LEFT halves
+// (mirror horizontally to complete the right side). Unlike the lock-in videos
+// (#428) these images exist at BOTH patch 7.5 and `latest`, so we pin `latest`
+// for longevity — the current-era set is coherent with the rest of the ring.
+//
+// All 3 confirmed HTTP 200 image/png at:
+//   https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-champ-select/global/default/images/champion-ring/
+// (probed 2026-07, issue #437)
+// ---------------------------------------------------------------------------
+
+/**
+ * Piece of the champ-select champion-ring frame art.
+ *   "dashed"      → ring-splash-dashed.png       (2392×2392) — the full authentic
+ *                   dashed tick-ring (replaces the drawn `strokeDasharray` ticks).
+ *   "inner-left"  → ring-splash-inner-left.png   (332×1618)  — inner ornamental
+ *                   gold arc, LEFT half only (mirror horizontally for the right).
+ *   "outer-left"  → ring-splash-outer-left.png   (300×1610)  — outer ornamental
+ *                   gold arc, LEFT half only (mirror horizontally for the right).
+ */
+export type ChampionRingPiece = "dashed" | "inner-left" | "outer-left";
+
+/**
+ * Champ-select champion-ring frame art URL (issue #437) — the ornamental circular
+ * frame the live client wraps around the selected skin's splash in the loadout
+ * panel. Three straight-alpha PNGs compose the ring: the full `dashed` tick-ring
+ * plus the `inner-left` / `outer-left` gold arcs (authored as LEFT halves — the
+ * consumer mirrors them with `scaleX(-1)` to form the right side).
+ *
+ * CURRENT-ERA: unlike the lock-in set ({@link lockInVideoUrl}, pinned 7.5), these
+ * exist at `latest`, so we pin `latest` for longevity — coherent with the rest of
+ * the current champ-select ring.
+ *
+ * All 3 confirmed HTTP 200 image/png (2026-07, issue #437):
+ *   championRingUrl("dashed")     → …/images/champion-ring/ring-splash-dashed.png
+ *   championRingUrl("inner-left") → …/images/champion-ring/ring-splash-inner-left.png
+ *   championRingUrl("outer-left") → …/images/champion-ring/ring-splash-outer-left.png
+ *
+ * Feed the returned URLs to `SkinCarousel` (`ringDashedSrc` / `ringInnerLeftSrc`
+ * / `ringOuterLeftSrc`); NO fetching happens in `@low/ui` — pages/showcase supply
+ * URLs from `@low/fixtures`. Tokens rule applies to CSS colors, not asset URLs.
+ *
+ * Source: CommunityDragon rcp-fe-lol-champ-select · images/champion-ring/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const championRingUrl = (piece: ChampionRingPiece): string => {
+  const FILE: Record<ChampionRingPiece, string> = {
+    dashed:       "ring-splash-dashed.png",
+    "inner-left": "ring-splash-inner-left.png",
+    "outer-left": "ring-splash-outer-left.png",
+  };
+  return `${CDRAGON_CHAMP_SELECT}/images/champion-ring/${FILE[piece]}`;
+};
+
 /*
  * MODE-SELECT BACKGROUND — CDragon asset search result (2026-07, issue #218).
  *

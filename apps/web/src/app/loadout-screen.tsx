@@ -20,6 +20,7 @@ import {
   championSquareUrl,
   DEFAULT_PICK_CHAMPION_ID,
   summonerSpellIconUrl,
+  championRingUrl,
 } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -325,6 +326,9 @@ export function LoadoutScreen({ onComplete, chosenChampionId }: LoadoutScreenPro
             onSelect={setSelectedSkinIndex}
             showThumbStrip={false}
             ringRadius={140}
+            ringDashedSrc={championRingUrl("dashed")}
+            ringInnerLeftSrc={championRingUrl("inner-left")}
+            ringOuterLeftSrc={championRingUrl("outer-left")}
           />
         </main>
       </div>

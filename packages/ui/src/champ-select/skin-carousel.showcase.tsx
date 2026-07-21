@@ -3,6 +3,8 @@ import {
   SkinCarouselReferenceSnapshot,
   SkinCarouselAllUnlockedSnapshot,
   SkinCarouselLockedAdjacentSnapshot,
+  SkinCarouselLargeRadiusSnapshot,
+  SkinCarouselNoRingArtSnapshot,
   SkinCarouselDemo,
 } from "./skin-carousel.demo";
 
@@ -11,7 +13,7 @@ export const skinCarouselShowcase: ShowcaseEntry = {
   name: "Skin Carousel",
   area: "champ-select",
   description:
-    "Champ-select skin picker: circular ornate frame (double gold SVG ring + dashed tick circle, circular-clipped splash), italic font-display skin name in gold-1, pagination dots (6px, blue-2 active / grey-3 inactive), and a horizontal thumb strip whose selected thumb enlarges with a heavy double-gold frame. Locked skins show a dimmed (still-readable) thumb + gold padlock badge; clicking them is a no-op. Chevron arrows skip locked skins (clamped, no wrap).",
+    "Champ-select skin picker: circular ornate frame using the authentic champion-ring art (dashed tick-ring + mirrored inner/outer gold filigree arcs) layered over a circular-clipped splash, italic font-display skin name in gold-1, pagination dots (6px, blue-2 active / grey-3 inactive), and a horizontal thumb strip whose selected thumb enlarges with a heavy double-gold frame. Locked skins show a dimmed (still-readable) thumb + gold padlock badge; clicking them is a no-op. Chevron arrows skip locked skins (clamped, no wrap). Ring art is sourced via championRingUrl() from @low/fixtures; the component stays presentational and degrades gracefully when art is absent.",
   referenceImage: "client-champ-select-loadout.jpg",
   referenceNote: "docs/reference/client-champ-select-loadout.jpg — live client champ-select skin loadout panel",
   variants: [
@@ -32,6 +34,18 @@ export const skinCarouselShowcase: ShowcaseEntry = {
       notes:
         "Index 0 selected; next chevron will skip index 1 (locked) and land on index 3 (Feral Warwick) — demonstrated in the interactive demo.",
       render: () => <SkinCarouselLockedAdjacentSnapshot />,
+    },
+    {
+      name: "Large ring radius (190) — concentric at max",
+      notes:
+        "ringRadius=190 (up from the 130 default). Confirms the champion-ring art (dashed ring + inner/outer gold arcs) scales with the prop and stays centered/concentric with the clipped splash at a large radius. Thumb strip hidden to isolate the frame.",
+      render: () => <SkinCarouselLargeRadiusSnapshot />,
+    },
+    {
+      name: "Graceful fallback — no ring art supplied",
+      notes:
+        "The ring art props (ringDashedSrc / ringInnerLeftSrc / ringOuterLeftSrc) are omitted. The circular-clipped splash and skin name still render with no layout break — the frame simply shows without the ornamental ring.",
+      render: () => <SkinCarouselNoRingArtSnapshot />,
     },
     {
       name: "Interactive demo — click thumbs, dots, and chevrons",

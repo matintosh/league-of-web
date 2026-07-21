@@ -42,6 +42,24 @@ export interface SkinCarouselProps {
    * Defaults to 130. Override to fit tighter containers.
    */
   ringRadius?: number;
+  /**
+   * Authentic champ-select champion-ring frame art (issue #437). Three
+   * straight-alpha PNGs from `rcp-fe-lol-champ-select/images/champion-ring/`,
+   * resolved by pages/showcase via `championRingUrl()` in `@low/fixtures`
+   * (component stays presentational — URLs in, no fetching):
+   *   - `ringDashedSrc`    the full dashed tick-ring (`championRingUrl("dashed")`)
+   *   - `ringInnerLeftSrc` the inner ornamental gold arc, LEFT half
+   *                        (`championRingUrl("inner-left")`) — mirrored for the right
+   *   - `ringOuterLeftSrc` the outer ornamental gold arc, LEFT half
+   *                        (`championRingUrl("outer-left")`) — mirrored for the right
+   *
+   * All three are optional and layered behind the circular-clipped splash,
+   * centered/concentric with the clip at any `ringRadius`. When omitted (or an
+   * image fails to load) the splash + name still render with no layout break.
+   */
+  ringDashedSrc?: string;
+  ringInnerLeftSrc?: string;
+  ringOuterLeftSrc?: string;
 }
 
 /**
@@ -201,8 +219,9 @@ function ChevronRight() {
 /**
  * SkinCarousel — the skin picker in the champ-select loadout panel.
  *
- * Selected skin is displayed in an ornate circular frame (double gold SVG ring
- * + dashed tick circle, circular-clipped splash). Skin name appears below in
+ * Selected skin is displayed in an ornate circular frame — the authentic
+ * champ-select champion-ring art (dashed tick-ring + mirrored inner/outer gold
+ * filigree arcs) layered behind a circular-clipped splash. Skin name appears in
  * font-display italic gold-1. Pagination dots (6px, active=blue-2,
  * inactive=grey-3) sit below the name. A horizontal thumb strip lets the user
  * browse; the selected thumb is enlarged with a heavy double-gold frame; locked
@@ -229,10 +248,12 @@ export function SkinCarousel({
   onSelect,
   showThumbStrip = true,
   ringRadius = 130,
+  ringDashedSrc,
+  ringInnerLeftSrc,
+  ringOuterLeftSrc,
 }: SkinCarouselProps) {
   const uid = useId();
   const clipId = `${uid}-clip`;
-  const outerRingId = `${uid}-outer-ring`;
 
   const selected = skins[selectedIndex];
 
@@ -260,91 +281,154 @@ export function SkinCarousel({
   // Circular frame dimensions — driven by ringRadius prop (default 130).
   const FRAME_R = ringRadius;
   const FRAME_SIZE = FRAME_R * 2;
+  const CANVAS = FRAME_SIZE + 48; // 24px ornament margin each side
+
+  // Authentic champion-ring art geometry (issue #437). Everything below scales
+  // off `FRAME_R` so the dashed ring and both gold arcs stay concentric with the
+  // splash clip at ANY ringRadius.
+  //
+  // The dashed tick-ring is a full circle — rendered as a centered square whose
+  // diameter sits just outside the clip (concentric by construction).
+  //
+  // The `-left` gold arcs are the LEFT crescent of the ring: opaque pixels span
+  // the full strip HEIGHT, bulging to the LEFT at mid-height (the ring's left
+  // extreme) and tapering back to the strip's RIGHT edge at top and bottom. So
+  // each half is anchored by its LEFT edge at the ring's left extreme (bulge on
+  // the clip edge) and its native aspect ratio sets the width (undistorted). The
+  // mirror (scaleX(-1)) forms the right crescent about the same center. The arcs
+  // frame the ring slightly proud of the dashed ticks (INNER just outside, OUTER
+  // a touch wider) — all keyed to FRAME_R, so raising ringRadius scales them in
+  // lockstep with the clip.
+  const RING_D = 2 * (FRAME_R + 6); // dashed tick-ring diameter (just outside clip)
+  const INNER_H = 2 * (FRAME_R + 10); // inner gold arc height (span of the crescent)
+  const OUTER_H = 2 * (FRAME_R + 16); // outer gold arc height
+  const INNER_AR = 83 / 406; // ring-splash-inner-left.png native w/h (crescent bulge ratio)
+  const OUTER_AR = 75 / 404; // ring-splash-outer-left.png native w/h
+  const INNER_W = INNER_H * INNER_AR;
+  const OUTER_W = OUTER_H * OUTER_AR;
+  // Left edge (bulge) of each crescent, measured from the canvas center: sit the
+  // bulge just outside the clip so the crescent hugs the ring's outer edge.
+  const INNER_BULGE = FRAME_R + 4;
+  const OUTER_BULGE = FRAME_R + 9;
 
   return (
     <div className="flex flex-col items-center gap-3 select-none">
       {/* ── Circular splash frame ── */}
-      <div className="relative" style={{ width: FRAME_SIZE + 48, height: FRAME_SIZE + 48 }}>
-        {/* Outer decorative gold ring SVG (double ring + dashed tick circle) */}
-        <svg
-          id={outerRingId}
-          width={FRAME_SIZE + 48}
-          height={FRAME_SIZE + 48}
-          viewBox={`0 0 ${FRAME_SIZE + 48} ${FRAME_SIZE + 48}`}
-          className="absolute inset-0 pointer-events-none"
-          aria-hidden="true"
-        >
-          {/* Clip path for circular splash */}
-          <defs>
-            <clipPath id={clipId}>
-              <circle
-                cx={(FRAME_SIZE + 48) / 2}
-                cy={(FRAME_SIZE + 48) / 2}
-                r={FRAME_R}
-              />
-            </clipPath>
-          </defs>
-
-          {/* Outer gold ring (thick) */}
-          <circle
-            cx={(FRAME_SIZE + 48) / 2}
-            cy={(FRAME_SIZE + 48) / 2}
-            r={FRAME_R + 18}
-            fill="none"
-            stroke="var(--color-gold-3)"
-            strokeWidth="3"
-          />
-          {/* Inner gold ring (thin, just outside clip) */}
-          <circle
-            cx={(FRAME_SIZE + 48) / 2}
-            cy={(FRAME_SIZE + 48) / 2}
-            r={FRAME_R + 8}
-            fill="none"
-            stroke="var(--color-gold-4)"
-            strokeWidth="1.5"
-          />
-          {/* Dashed tick circle between the two rings */}
-          <circle
-            cx={(FRAME_SIZE + 48) / 2}
-            cy={(FRAME_SIZE + 48) / 2}
-            r={FRAME_R + 13}
-            fill="none"
-            stroke="var(--color-gold-4)"
-            strokeWidth="1"
-            strokeDasharray="2 6"
-            strokeLinecap="round"
-          />
-        </svg>
-
-        {/* Circular-clipped splash image */}
+      <div className="relative" style={{ width: CANVAS, height: CANVAS }}>
+        {/* Circular-clipped splash image (rendered first; ring art layers over) */}
         {selected && (
           <svg
-            width={FRAME_SIZE + 48}
-            height={FRAME_SIZE + 48}
-            viewBox={`0 0 ${FRAME_SIZE + 48} ${FRAME_SIZE + 48}`}
+            width={CANVAS}
+            height={CANVAS}
+            viewBox={`0 0 ${CANVAS} ${CANVAS}`}
             className="absolute inset-0"
             aria-label={selected.name}
           >
             <defs>
               <clipPath id={`${clipId}-img`}>
-                <circle
-                  cx={(FRAME_SIZE + 48) / 2}
-                  cy={(FRAME_SIZE + 48) / 2}
-                  r={FRAME_R}
-                />
+                <circle cx={CANVAS / 2} cy={CANVAS / 2} r={FRAME_R} />
               </clipPath>
             </defs>
             <image
               href={selected.splashSrc}
               x="0"
               y="-30"
-              width={FRAME_SIZE + 48}
-              height={FRAME_SIZE + 72}
+              width={CANVAS}
+              height={CANVAS + 24}
               preserveAspectRatio="xMidYMid slice"
               clipPath={`url(#${clipId}-img)`}
             />
           </svg>
         )}
+
+        {/* ── Authentic champion-ring art (issue #437) ──
+            Layered over the splash edge: the dashed tick-ring plus the inner/
+            outer ornamental gold arcs (each a LEFT half mirrored to complete the
+            right). All centered/concentric with the clip; pointer-events-none so
+            they never intercept clicks. If any image is absent or fails to load,
+            the splash + name still render — no layout break (the wrappers reserve
+            no flow space; each <img> simply shows nothing). */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          {/* Dashed tick-ring — full circle, centered square, concentric */}
+          {ringDashedSrc && (
+            <img
+              src={ringDashedSrc}
+              alt=""
+              draggable={false}
+              className="absolute max-w-none"
+              style={{
+                width: RING_D,
+                height: RING_D,
+                left: CANVAS / 2 - RING_D / 2,
+                top: CANVAS / 2 - RING_D / 2,
+              }}
+            />
+          )}
+
+          {/* Inner ornamental gold crescent — LEFT half + mirrored right half.
+              Left half: left edge (bulge) at center − INNER_BULGE. Right half:
+              the same art mirrored, its bulge at center + INNER_BULGE. */}
+          {ringInnerLeftSrc && (
+            <>
+              <img
+                src={ringInnerLeftSrc}
+                alt=""
+                draggable={false}
+                className="absolute max-w-none"
+                style={{
+                  width: INNER_W,
+                  height: INNER_H,
+                  left: CANVAS / 2 - INNER_BULGE,
+                  top: CANVAS / 2 - INNER_H / 2,
+                }}
+              />
+              <img
+                src={ringInnerLeftSrc}
+                alt=""
+                draggable={false}
+                className="absolute max-w-none"
+                style={{
+                  width: INNER_W,
+                  height: INNER_H,
+                  left: CANVAS / 2 + INNER_BULGE - INNER_W,
+                  top: CANVAS / 2 - INNER_H / 2,
+                  transform: "scaleX(-1)",
+                }}
+              />
+            </>
+          )}
+
+          {/* Outer ornamental gold crescent — LEFT half + mirrored right half. */}
+          {ringOuterLeftSrc && (
+            <>
+              <img
+                src={ringOuterLeftSrc}
+                alt=""
+                draggable={false}
+                className="absolute max-w-none"
+                style={{
+                  width: OUTER_W,
+                  height: OUTER_H,
+                  left: CANVAS / 2 - OUTER_BULGE,
+                  top: CANVAS / 2 - OUTER_H / 2,
+                }}
+              />
+              <img
+                src={ringOuterLeftSrc}
+                alt=""
+                draggable={false}
+                className="absolute max-w-none"
+                style={{
+                  width: OUTER_W,
+                  height: OUTER_H,
+                  left: CANVAS / 2 + OUTER_BULGE - OUTER_W,
+                  top: CANVAS / 2 - OUTER_H / 2,
+                  transform: "scaleX(-1)",
+                }}
+              />
+            </>
+          )}
+        </div>
       </div>
 
       {/* ── Skin name ── */}
