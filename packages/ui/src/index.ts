@@ -39,6 +39,16 @@ export { CrestDivider } from "./chrome/crest-divider";
 export type { CrestDividerProps } from "./chrome/crest-divider";
 export { CurrencyDisplay } from "./chrome/currency-display";
 export type { CurrencyDisplayProps } from "./chrome/currency-display";
+export { EndOfGameScreen } from "./chrome/end-of-game-screen";
+export type {
+  EndOfGameScreenProps,
+  ObjectiveIconMap,
+  EndOfGameResult,
+  ScoreboardTeam,
+  ScoreboardPlayer,
+  TeamObjectives,
+  TeamSide,
+} from "./chrome/end-of-game-screen";
 export { FilterTabs } from "./chrome/filter-tabs";
 export type { FilterTabsProps } from "./chrome/filter-tabs";
 export { FindingMatchPanel } from "./chrome/finding-match-panel";
