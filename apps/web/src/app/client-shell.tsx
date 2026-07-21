@@ -68,6 +68,9 @@ import {
   DEMO_LEVEL_REWARD_CARDS,
   DEMO_OBJECTIVES,
   DEMO_UPDATES,
+  poroUrl,
+  friendFinderImageUrl,
+  socialMaskUrl,
 } from "@low/fixtures";
 import type { ClashScoutingPlayer } from "@low/fixtures";
 import type { NewsArticle } from "@low/ui";
@@ -1177,6 +1180,19 @@ export function ClientShell() {
                       console.log("friend click:", s.gameName);
                     }}
                     profileIconSrcFor={(s) => profileIconUrl(s.profileIconId)}
+                    // Real-client SOCIAL header mask glyphs, threaded live (#444).
+                    // #434 add-friend + #440 groups/list/search — forwarded through
+                    // SocialPanel to SocialHeader so the running client's rail shows
+                    // the authentic grey→gold mask glyphs, not the fallback SVGs.
+                    addIconSrc={friendFinderImageUrl("add_person_mask")}
+                    groupsIconSrc={socialMaskUrl("add_folder_mask")}
+                    listIconSrc={socialMaskUrl("sort_mask")}
+                    searchIconSrc={socialMaskUrl("search_mask")}
+                    // Poro empty state (#433) — shows the "?" mascot live when the
+                    // friends list is empty. Non-empty demo data won't trigger it,
+                    // but wiring the resolver makes an empty rail render the poro.
+                    emptyStatePoro="question"
+                    poroSrcFor={poroUrl}
                     // Collapse toggle folded into the SOCIAL header (#401) — the
                     // « chevron there collapses the rail. The matching EXPAND
                     // affordance (below) lives at the window edge because this
