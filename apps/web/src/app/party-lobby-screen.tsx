@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import {
-  AmbientVideoLayer,
   LobbyHeader,
   PlayerBanner,
   RoleSlotRow,
@@ -24,7 +23,6 @@ import {
   championSplashUrl,
   regaliaBannerUrl,
   masteryCrestUrl,
-  partiesBgLoopUrl,
   partiesBackgroundUrl,
   partyBannerUrl,
   staticVideoUrl,
@@ -709,17 +707,13 @@ export function PartyLobbyScreen({
       />
 
       {/*
-       * Ambient "magic" loop — the client's animated party-status backdrop
-       * (party-status-bg-loop.webm) layered subtly OVER the static gradient
-       * above. Additive: a blocked / reduced-motion video falls back to the
-       * gradient with no regression. Sits behind the edge-legibility gradients
-       * and all content (z-0). URL supplied here, not built in @low/ui.
+       * (#484) The green party-status "magic" loop (party-status-bg-loop.webm)
+       * was previously layered full-screen here — but that green ambient belongs
+       * to the QUEUE INDICATOR (FindingMatchPanel / PartyStatusPanel in the social
+       * rail), NOT the whole lobby backdrop. The real idle lobby is just the
+       * classic-SR parties-background.jpg (#461) + scrim. Removed the full-screen
+       * AmbientVideoLayer to stop the green overlay leaking across the lobby.
        */}
-      <AmbientVideoLayer
-        src={partiesBgLoopUrl("party-status")}
-        opacity={0.35}
-        objectFit="cover"
-      />
 
       {/* Top-edge dark gradient — ensures LobbyHeader subbar text stays legible */}
       <div
