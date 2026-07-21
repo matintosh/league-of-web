@@ -1986,3 +1986,26 @@ export const UIKIT_SFX: readonly SoundEntry[] = [
   { id: "celebrate-notif-intro",     label: "Celebration Intro",      category: "Celebrate", filename: "sfx-celebrate-notif-intro.ogg" },
   { id: "celebrate-receive-generic", label: "Celebration Receive",    category: "Celebrate", filename: "sfx-celebrate-receive-generic.ogg" },
 ];
+
+/**
+ * Party/lobby full-bleed background art (issue #461) — the dark forested
+ * Summoner's Rift backdrop the live client paints behind the party lobby banner
+ * grid. Each game mode ships its own under the game-data `gamemodeassets` tree
+ * (`gamemodeassets/<mode>/img/parties-background.jpg`); `classic_sru` is the
+ * default 5v5 SR. Pass the returned URL as an <img> `src` (or CSS
+ * `background-image`) full-bleed behind the lobby content — keep a vignette /
+ * scrim over it for text legibility. NO fetching happens here; pages supply the
+ * resolved URL. Tokens rule applies to CSS colors, not asset URLs.
+ *
+ * The `latest` pin is evergreen: confirmed HTTP 200 image/jpeg at BOTH the 7.5
+ * snapshot and `latest` (2026-07, issue #461), so `latest` tracks the current
+ * live art without a version bump.
+ *
+ *   partiesBackgroundUrl()             → …/gamemodeassets/classic_sru/img/parties-background.jpg
+ *   partiesBackgroundUrl("classic_sru") → same (default mode)
+ *
+ * Source: CommunityDragon rcp-be-lol-game-data · content/src/leagueclient/gamemodeassets/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const partiesBackgroundUrl = (mode = "classic_sru"): string =>
+  `${CDRAGON_GAME_DATA}/content/src/leagueclient/gamemodeassets/${mode}/img/parties-background.jpg`;
