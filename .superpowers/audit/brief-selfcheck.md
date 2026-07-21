@@ -35,6 +35,19 @@ NEVER material-gated and always eligible for LIGHT cycles.
    ancestor).
 5. **Scale artifacts.** Art rendered >1.5× its native size (video
    videoWidth/Height vs getBoundingClientRect), blurry upscales.
+6. **Containment / band-seating.** Decorative art (avatar frames, medallions,
+   badges) that OVERFLOWS its intended container and spills into a
+   neighboring region — measure the art's getBoundingClientRect vs its host
+   band/box: art bottom > band bottom or art top < band top = spill. AND
+   slot mis-seating: within a fixed-height band (the top-nav h-22, a lobby
+   header, a footer), each slot's content should be vertically centered
+   unless the design says otherwise — measure content-center-y vs
+   band-center-y; a slot dropped to the top/bottom edge (Δ>8px from band
+   center) while its siblings are centered is a finding. This is what let
+   #527 through: a bottom-aligned profile slot + an 85px frame spilled 24px
+   below the nav band. When a band contains an oversized decorative element,
+   always check both its containment (no spill) and its slot alignment
+   (centered vs siblings).
 
 ## Method (binding)
 
