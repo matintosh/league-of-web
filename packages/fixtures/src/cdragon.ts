@@ -1142,6 +1142,112 @@ export const masteryCelebrationBackgroundUrl = (): string =>
 export const masteryCrestAuroraUrl = (): string =>
   staticVideoUrl("champion-mastery/cm-crest-aurora.webm");
 
+// ---------------------------------------------------------------------------
+// LOCK IN button videos (issue #428) — official champ-select lock-in art.
+//
+// All 8 webms + the disabled PNG live ONLY at patch 7.5 of the champ-select
+// plugin. The `latest` lock-in/ directory contains only the disabled PNG (the
+// animated webms were removed/renamed in later patches). Patch 7.5 is pinned
+// deliberately: it is the only version with the full animated set AND its
+// disabled PNG matches the button shape used by TrapezoidButton (#427).
+//
+// All 8 webms + PNG confirmed HTTP 200 at:
+//   https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-champ-select/global/default/video/lock-in/
+// (probed 2026-07, issue #428 team-lead comment)
+// ---------------------------------------------------------------------------
+
+/**
+ * Base URL for the official CommunityDragon lock-in button asset set.
+ *
+ * PINNED to patch 7.5 — the `latest` mirror's lock-in/ dir only carries the
+ * disabled PNG; the animated webms are absent. Patch 7.5 ships all 8 webms +
+ * the disabled PNG and the trapezoid geometry matches the shape used in
+ * TrapezoidButton (#427). Do not change this to `latest` without confirming
+ * the full webm set exists at the target patch.
+ *
+ * Fan-content policy: https://www.riotgames.com/en/legal (fan-made, non-commercial).
+ */
+const CDRAGON_LOCKIN =
+  "https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-champ-select/global/default/video/lock-in";
+
+/**
+ * State machine keys for the real-client lock-in button animated videos.
+ *
+ * Sequence:
+ *   `activeIntro` (once on mount) → `activeIdle` (loop)
+ *   `activeHover` (loop while pointer over) ← → `activeOut` (one-shot on leave)
+ *   `release` (one-shot on click/press)
+ *   `disabledIntro` (once when disabled) — then fallback to the disabled PNG
+ *
+ * One-shot accents (no natural trigger in this component — exposed for callers
+ * that have a signal):
+ *   `changeChamp` — accent played when the champion selection changes
+ *   `magicExpell` — gold magic burst accent (analogous to the PlayButton "magic" accent)
+ */
+export type LockInVideoState =
+  | "activeIntro"
+  | "activeIdle"
+  | "activeHover"
+  | "activeOut"
+  | "changeChamp"
+  | "release"
+  | "disabledIntro"
+  | "magicExpell";
+
+/**
+ * Real-client lock-in button magic video (webm, straight alpha) for a given
+ * state — the authentic animated button layers composited over the CSS
+ * TrapezoidButton. Each clip carries its own alpha channel (VP9 straight alpha)
+ * so transparent regions let the CSS button read through; a clip that fails to
+ * load leaves the static look intact.
+ *
+ * State → filename mapping (all under CDRAGON_LOCKIN/):
+ *   "activeIntro"   lock-in-button-active-intro.webm   — enabled reveal (once on mount)
+ *   "activeIdle"    lock-in-button-active-idle.webm    — enabled idle loop
+ *   "activeHover"   lock-in-button-active-hover.webm   — hover loop (while pointer over)
+ *   "activeOut"     lock-in-button-active-out.webm     — hover-out one-shot (pointer leave)
+ *   "changeChamp"   lock-in-button-change-champ.webm   — change-champ accent (one-shot)
+ *   "release"       lock-in-button-release.webm        — press/release one-shot
+ *   "disabledIntro" lock-in-button-disabled-intro.webm — disabled reveal (once)
+ *   "magicExpell"   lock-in-magic-expell.webm          — magic burst accent (one-shot)
+ *
+ * PATCH PIN: all assets live ONLY at patch 7.5 (see {@link CDRAGON_LOCKIN}).
+ * All 8 confirmed HTTP 200 (2026-07, issue #428).
+ *
+ * Feed the returned URL to the `lockInVideoSources` prop of `LockInButton`;
+ * NO fetching happens in `@low/ui` — pages supply URLs from `@low/fixtures`.
+ *
+ * Source: CommunityDragon rcp-fe-lol-champ-select (patch 7.5) · video/lock-in/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const lockInVideoUrl = (state: LockInVideoState): string => {
+  const FILE: Record<LockInVideoState, string> = {
+    activeIntro:   "lock-in-button-active-intro.webm",
+    activeIdle:    "lock-in-button-active-idle.webm",
+    activeHover:   "lock-in-button-active-hover.webm",
+    activeOut:     "lock-in-button-active-out.webm",
+    changeChamp:   "lock-in-button-change-champ.webm",
+    release:       "lock-in-button-release.webm",
+    disabledIntro: "lock-in-button-disabled-intro.webm",
+    magicExpell:   "lock-in-magic-expell.webm",
+  };
+  return `${CDRAGON_LOCKIN}/${FILE[state]}`;
+};
+
+/**
+ * Disabled-state static PNG for the lock-in button — the fallback shown after
+ * the `disabledIntro` one-shot plays (or when the button is disabled and motion
+ * is reduced). Same patch-7.5 pin as the webms; the disabled PNG defines the
+ * canonical TrapezoidButton shape used in #427.
+ *
+ * Confirmed HTTP 200 (2026-07, issue #428).
+ *
+ * Source: CommunityDragon rcp-fe-lol-champ-select (patch 7.5) · video/lock-in/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const lockInDisabledPngUrl = (): string =>
+  `${CDRAGON_LOCKIN}/lock-in-button-disabled-idle.png`;
+
 /*
  * MODE-SELECT BACKGROUND — CDragon asset search result (2026-07, issue #218).
  *

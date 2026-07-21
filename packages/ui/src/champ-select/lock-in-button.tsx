@@ -18,7 +18,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   TrapezoidButton,
   TRAP_BORDER_PX,
@@ -128,6 +128,61 @@ export interface LockInVideoSources {
   allReturned?: string;
 }
 
+// ---------------------------------------------------------------------------
+// LockInButtonVideoSources — real-client LOCK IN button state videos
+// (issue #428). Separate from LockInVideoSources (FIND MATCH videos, #310):
+// these are the champ-select-plugin's native lock-in animations from CDragon
+// patch 7.5, which have a different state set (active-intro → active-idle loop;
+// active-hover loop ↔ active-out one-shot; release one-shot; disabled-intro;
+// optional changeChamp / magicExpell one-shot accents without a native trigger).
+// ---------------------------------------------------------------------------
+
+/**
+ * Real-client LOCK IN button state videos (issue #428), one URL per state.
+ * All optional — a state's video only layers when its URL is supplied, and the
+ * pure-CSS TrapezoidButton always renders beneath (so a missing or broken clip
+ * never regresses the static look). Pages/showcase supply URLs from `@low/fixtures`
+ * (`lockInVideoUrl(...)`); NO fetching happens in `@low/ui`.
+ *
+ * The videos are VP9-with-alpha straight-alpha overlays (carry their own alpha),
+ * composited directly over the CSS button. A missing clip leaves the static look
+ * intact. All layers: pointer-events-none, aria-hidden, motion-reduce:hidden.
+ *
+ * State machine:
+ *   `activeIntro` (once on mount) → `activeIdle` (loop)
+ *   `activeHover` (loop while pointer over) → `activeOut` (one-shot on leave)
+ *   `release` (one-shot on press-release — bumped internally on click)
+ *   `disabledIntro` (once when `disabled` is true) — then CSS disabled state shows
+ *
+ * One-shot accents (exposed but no built-in trigger — callers fire via tick props):
+ *   `changeChamp` — via `lockInChangeChampTick` on `LockInButtonProps`
+ *   `magicExpell` — via `lockInMagicExpellTick` on `LockInButtonProps`
+ */
+export interface LockInButtonVideoSources {
+  /** One-shot enabled reveal, played once on mount → hands off to `activeIdle`. */
+  activeIntro?: string;
+  /** Ambient enabled idle loop — the resting enabled state. */
+  activeIdle?: string;
+  /** Hover loop — crossfades in on pointer-enter, stays while hovered. */
+  activeHover?: string;
+  /** Hover-out one-shot — plays once on pointer-leave, then returns to idle. */
+  activeOut?: string;
+  /** Press-release one-shot — fired automatically on click. */
+  release?: string;
+  /** Disabled reveal one-shot — plays once when `disabled` is true. */
+  disabledIntro?: string;
+  /**
+   * Change-champ accent one-shot — fired by bumping `lockInChangeChampTick`.
+   * Exposed for callers that have a champion-change signal; no built-in trigger.
+   */
+  changeChamp?: string;
+  /**
+   * Magic burst accent one-shot — fired by bumping `lockInMagicExpellTick`.
+   * Analogous to PlayButton's `magicRelease`; no built-in trigger.
+   */
+  magicExpell?: string;
+}
+
 /**
  * The real client's green "ready" treatments for FIND MATCH, mapped 1:1 to the
  * WAD-corpus videos. `"none"` (default) leaves the button in its normal
@@ -139,7 +194,8 @@ export interface LockInButtonProps {
   /**
    * When true the button is non-interactive: dark fill, grey text/border, aria-disabled,
    * click no-op. Use for "In Queue" state in the lobby or while no champion is selected.
-   * Also suppresses the state videos (the disabled treatment is CSS-only).
+   * Also suppresses the interactive state videos (disabled shows `disabledIntro` once if
+   * provided via `lockInVideoSources`).
    */
   disabled?: boolean;
   /**
@@ -180,10 +236,34 @@ export interface LockInButtonProps {
    * `videoSources` entry is supplied and motion is allowed.
    */
   attention?: LockInAttention;
+  /**
+   * Real-client LOCK IN button state videos (issue #428). When provided, the
+   * native champ-select lock-in webms (CDragon patch 7.5) layer over the CSS
+   * button as a state machine: `activeIntro` plays once on mount → `activeIdle`
+   * loops; `activeHover` crossfades in on pointer-enter → `activeOut` one-shot on
+   * leave; `release` fires on each click; `disabledIntro` plays once when
+   * `disabled=true`. One-shot accents (`changeChamp`, `magicExpell`) are exposed
+   * but have no built-in trigger — bump their tick props to fire them.
+   *
+   * Pages supply these from `@low/fixtures` (`lockInVideoUrl`).
+   */
+  lockInVideoSources?: LockInButtonVideoSources;
+  /**
+   * Bump to (re)fire the `changeChamp` one-shot accent from `lockInVideoSources`.
+   * Convention: increment whenever the selected champion changes. No-op if
+   * `lockInVideoSources.changeChamp` is not supplied.
+   */
+  lockInChangeChampTick?: number;
+  /**
+   * Bump to (re)fire the `magicExpell` one-shot accent from `lockInVideoSources`.
+   * Convention: increment at lock-in confirmation. No-op if
+   * `lockInVideoSources.magicExpell` is not supplied.
+   */
+  lockInMagicExpellTick?: number;
 }
 
 // ---------------------------------------------------------------------------
-// LockInVideoLayer — the video state machine overlay (issue #310).
+// LockInVideoLayer — the FIND MATCH video state machine overlay (issue #310).
 //
 // Layers the real-client FIND MATCH state videos over the CSS button. Videos
 // carry their own alpha (VP9), so they composite straight (no screen blend) —
@@ -275,6 +355,184 @@ function LockInVideoLayer({
   );
 }
 
+// ---------------------------------------------------------------------------
+// LockInButtonVideoLayer — the native LOCK IN state machine overlay (issue #428).
+//
+// Mirrors PlayButtonVideoLayer's architecture onto the LOCK IN / FIND MATCH
+// trapezoid. The CDragon patch-7.5 webms carry straight alpha (VP9), so they
+// composite directly over the CSS TrapezoidButton — transparent regions let the
+// CSS frame read through, and a missing/failed clip leaves the static look
+// intact.
+//
+// State machine (mirroring the play-button's intro → idle + hover + release
+// pattern but with the native lock-in state names from the CDragon catalog):
+//   activeIntro (once on mount) → activeIdle (loop)
+//   activeHover (loop while pointer over) ↔ activeOut (one-shot on pointer-leave)
+//   release (one-shot on click, bumped via releaseTick)
+//   disabledIntro (once when disabled=true) — CSS disabled state renders below
+//   changeChamp, magicExpell (one-shot accents via their respective ticks)
+//
+// Disabled note: `disabledIntro` IS fired when `disabled=true` — it is an
+// additive overlay, so the CSS disabled treatment (grey fill / grey text) still
+// shows when the video ends or is absent.
+// ---------------------------------------------------------------------------
+
+type LIBVideoState =
+  | "activeIntro"
+  | "activeIdle"
+  | "activeHover"
+  | "activeOut"
+  | "release"
+  | "disabledIntro"
+  | "changeChamp"
+  | "magicExpell";
+
+function LockInButtonVideoLayer({
+  sources,
+  disabled,
+  hovered,
+  releaseTick,
+  changeChampTick,
+  magicExpellTick,
+}: {
+  sources: LockInButtonVideoSources;
+  disabled: boolean;
+  hovered: boolean;
+  /** Bumped on each press-release to (re)fire the release one-shot. */
+  releaseTick: number;
+  /** Bumped to (re)fire the changeChamp one-shot accent. */
+  changeChampTick: number;
+  /** Bumped to (re)fire the magicExpell one-shot accent. */
+  magicExpellTick: number;
+}) {
+  // introDone flips true when the active-intro one-shot finishes (or immediately
+  // when there is no intro clip), handing the resting state to activeIdle.
+  const [introDone, setIntroDone] = useState(!sources.activeIntro);
+
+  // disabledIntroDone flips true when the disabled-intro one-shot finishes (or
+  // when disabled first becomes true without a disabledIntro clip). Resets
+  // whenever disabled flips to false so the disabled intro replays next time.
+  const [disabledIntroDone, setDisabledIntroDone] = useState(
+    !disabled || !sources.disabledIntro,
+  );
+  const prevDisabled = useRef(disabled);
+  useEffect(() => {
+    if (disabled && !prevDisabled.current) {
+      // Transitioned to disabled: reset so disabledIntro replays.
+      setDisabledIntroDone(!sources.disabledIntro);
+    }
+    if (!disabled && prevDisabled.current) {
+      // Transitioned to enabled: reset the active intro too.
+      setIntroDone(!sources.activeIntro);
+      setDisabledIntroDone(true); // not relevant while enabled
+    }
+    prevDisabled.current = disabled;
+  }, [disabled, sources.activeIntro, sources.disabledIntro]);
+
+  // hoverOutActive plays the one-shot hover-out clip after the pointer leaves.
+  const [hoverOutActive, setHoverOutActive] = useState(false);
+  const prevHovered = useRef(hovered);
+  useEffect(() => {
+    if (!hovered && prevHovered.current && sources.activeOut) {
+      setHoverOutActive(true);
+    }
+    if (hovered && !prevHovered.current) {
+      setHoverOutActive(false);
+    }
+    prevHovered.current = hovered;
+  }, [hovered, sources.activeOut]);
+
+  // releasePlaying fires the release one-shot on each new releaseTick.
+  const [releasePlaying, setReleasePlaying] = useState(false);
+  const seenReleaseTick = useRef(releaseTick);
+  useEffect(() => {
+    if (releaseTick !== seenReleaseTick.current) {
+      seenReleaseTick.current = releaseTick;
+      if (sources.release) setReleasePlaying(true);
+    }
+  }, [releaseTick, sources.release]);
+
+  // changeChampPlaying fires the changeChamp accent on each new tick.
+  const [changeChampPlaying, setChangeChampPlaying] = useState(false);
+  const seenChangeChampTick = useRef(changeChampTick);
+  useEffect(() => {
+    if (changeChampTick !== seenChangeChampTick.current) {
+      seenChangeChampTick.current = changeChampTick;
+      if (sources.changeChamp) setChangeChampPlaying(true);
+    }
+  }, [changeChampTick, sources.changeChamp]);
+
+  // magicExpellPlaying fires the magic burst accent on each new tick.
+  const [magicExpellPlaying, setMagicExpellPlaying] = useState(false);
+  const seenMagicExpellTick = useRef(magicExpellTick);
+  useEffect(() => {
+    if (magicExpellTick !== seenMagicExpellTick.current) {
+      seenMagicExpellTick.current = magicExpellTick;
+      if (sources.magicExpell) setMagicExpellPlaying(true);
+    }
+  }, [magicExpellTick, sources.magicExpell]);
+
+  // Resolve the single active state, in priority order. One-shot accents fire
+  // above interactive states; disabled branch takes over when disabled=true.
+  let state: LIBVideoState;
+  if (magicExpellPlaying && sources.magicExpell) {
+    state = "magicExpell";
+  } else if (changeChampPlaying && sources.changeChamp) {
+    state = "changeChamp";
+  } else if (releasePlaying && sources.release) {
+    state = "release";
+  } else if (disabled) {
+    state = disabledIntroDone ? "activeIdle" : "disabledIntro";
+    // After disabledIntro, fall through to idle (which simply has no video if
+    // not provided — CSS disabled state shows through the transparent overlay).
+  } else if (!introDone && sources.activeIntro) {
+    state = "activeIntro";
+  } else if (hovered && sources.activeHover) {
+    state = "activeHover";
+  } else if (hoverOutActive && sources.activeOut) {
+    state = "activeOut";
+  } else {
+    state = "activeIdle";
+  }
+
+  const layers: {
+    key: LIBVideoState;
+    src?: string;
+    loop: boolean;
+    onEnded?: () => void;
+  }[] = [
+    { key: "activeIdle", src: sources.activeIdle, loop: true },
+    { key: "activeIntro", src: sources.activeIntro, loop: false, onEnded: () => setIntroDone(true) },
+    { key: "activeHover", src: sources.activeHover, loop: true },
+    { key: "activeOut", src: sources.activeOut, loop: false, onEnded: () => setHoverOutActive(false) },
+    { key: "release", src: sources.release, loop: false, onEnded: () => setReleasePlaying(false) },
+    { key: "disabledIntro", src: sources.disabledIntro, loop: false, onEnded: () => setDisabledIntroDone(true) },
+    { key: "changeChamp", src: sources.changeChamp, loop: false, onEnded: () => setChangeChampPlaying(false) },
+    { key: "magicExpell", src: sources.magicExpell, loop: false, onEnded: () => setMagicExpellPlaying(false) },
+  ];
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute z-[5] overflow-visible motion-reduce:hidden"
+      style={{ inset: `${-BLEED_FRAC * 100}%` }}
+    >
+      {layers.map(({ key, src, loop, onEnded }) =>
+        src ? (
+          <CrossfadeVideo
+            key={key}
+            src={src}
+            visible={state === key}
+            visibleOpacity={key === "activeIdle" ? IDLE_VIDEO_OPACITY : 1}
+            loop={loop}
+            onEnded={onEnded}
+          />
+        ) : null,
+      )}
+    </div>
+  );
+}
+
 /**
  * LockInButton — trapezoid-shaped gradient confirmation button with curved bottom arc.
  *
@@ -303,6 +561,9 @@ function LockInVideoLayer({
  * @param variant   "lock" (teal, default) or "ban" (brick-red, ban-phase CTA).
  * @param videoSources  Optional real-client FIND MATCH state videos (issue #310).
  * @param attention     Green ready treatment: "pulse" | "all-returned" | "none".
+ * @param lockInVideoSources  Optional real-client LOCK IN state videos (issue #428).
+ * @param lockInChangeChampTick  Bump to fire the changeChamp accent.
+ * @param lockInMagicExpellTick  Bump to fire the magicExpell accent.
  */
 export function LockInButton({
   disabled = false,
@@ -311,6 +572,9 @@ export function LockInButton({
   variant = "lock",
   videoSources,
   attention = "none",
+  lockInVideoSources,
+  lockInChangeChampTick = 0,
+  lockInMagicExpellTick = 0,
 }: LockInButtonProps) {
   const isBan = variant === "ban";
 
@@ -322,13 +586,28 @@ export function LockInButton({
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
-  // Only mount the video layer when at least one source is supplied and the
-  // button is interactive. The CSS button always renders beneath, so dropping
-  // the layer (disabled, or no sources) leaves the static look intact.
+  // releaseTick bumps on each successful click to (re)fire the release one-shot
+  // in LockInButtonVideoLayer. Starts at 0; incremented in the click handler.
+  const [releaseTick, setReleaseTick] = useState(0);
+
+  // Only mount the FIND MATCH video layer when at least one source is supplied
+  // and the button is interactive. The CSS button always renders beneath, so
+  // dropping the layer (disabled, or no sources) leaves the static look intact.
   const hasVideo =
     !disabled &&
     !!videoSources &&
     Object.values(videoSources).some(Boolean);
+
+  // Mount the LOCK IN video layer when at least one source is supplied.
+  // Unlike the FIND MATCH layer, this layer also activates while disabled
+  // (to show the disabledIntro one-shot). The CSS button always renders beneath.
+  const hasLockInVideo =
+    !!lockInVideoSources && Object.values(lockInVideoSources).some(Boolean);
+
+  // The two layers cannot overlap the same pointer-state signals. Both use the
+  // same `hovered` and `pressed` state — they both need pointer tracking when
+  // either is active.
+  const needsPointerTracking = hasVideo || hasLockInVideo;
 
   // Border colour: variant-dependent when enabled, grey-3 when disabled.
   // v14 (#335): the lock/FIND MATCH frame reads NEAR-WHITE hot, not thin teal.
@@ -417,21 +696,30 @@ export function LockInButton({
   return (
     <TrapezoidButton
       disabled={disabled}
-      onClick={onLockIn}
+      onClick={
+        disabled
+          ? undefined
+          : () => {
+              // Bump the release tick before calling onLockIn so the video
+              // fires in the same render cycle as the user's action.
+              if (hasLockInVideo) setReleaseTick((t) => t + 1);
+              onLockIn();
+            }
+      }
       layers={layers}
-      // Pointer tracking for the video state machine. No-ops (undefined) when
-      // there is no video layer, so the pure-CSS button keeps its exact behavior.
-      onPointerEnter={hasVideo ? () => setHovered(true) : undefined}
+      // Pointer tracking for the video state machines. No-ops (undefined) when
+      // neither video layer is active, so the pure-CSS button keeps its exact behavior.
+      onPointerEnter={needsPointerTracking ? () => setHovered(true) : undefined}
       onPointerLeave={
-        hasVideo
+        needsPointerTracking
           ? () => {
               setHovered(false);
               setPressed(false);
             }
           : undefined
       }
-      onPointerDown={hasVideo ? () => setPressed(true) : undefined}
-      onPointerUp={hasVideo ? () => setPressed(false) : undefined}
+      onPointerDown={needsPointerTracking ? () => setPressed(true) : undefined}
+      onPointerUp={needsPointerTracking ? () => setPressed(false) : undefined}
       className={[
         // Outer glow per the reference close-up — drop-shadow (not box-shadow:
         // it must follow the clipped silhouette including the arc).
@@ -450,14 +738,28 @@ export function LockInButton({
         .filter(Boolean)
         .join(" ")}
       bleed={
-        hasVideo && videoSources ? (
-          <LockInVideoLayer
-            sources={videoSources}
-            hovered={hovered}
-            pressed={pressed}
-            attention={attention}
-          />
-        ) : undefined
+        <>
+          {/* FIND MATCH video layer (issue #310) */}
+          {hasVideo && videoSources ? (
+            <LockInVideoLayer
+              sources={videoSources}
+              hovered={hovered}
+              pressed={pressed}
+              attention={attention}
+            />
+          ) : null}
+          {/* LOCK IN button video layer (issue #428) */}
+          {hasLockInVideo && lockInVideoSources ? (
+            <LockInButtonVideoLayer
+              sources={lockInVideoSources}
+              disabled={disabled}
+              hovered={hovered}
+              releaseTick={releaseTick}
+              changeChampTick={lockInChangeChampTick}
+              magicExpellTick={lockInMagicExpellTick}
+            />
+          ) : null}
+        </>
       }
       labelClassName={[
         // text-lg + 0.12em tracking: the reference FIND MATCH label fills ~50%

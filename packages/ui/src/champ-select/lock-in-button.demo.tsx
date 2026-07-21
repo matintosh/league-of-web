@@ -1,6 +1,6 @@
 "use client";
 
-import { findMatchVideoUrl } from "@low/fixtures";
+import { findMatchVideoUrl, lockInVideoUrl } from "@low/fixtures";
 import { LockInButton } from "./lock-in-button";
 
 // Real-client FIND MATCH state videos (issue #310). The showcase (a server file)
@@ -12,6 +12,20 @@ const FIND_MATCH_VIDEOS = {
   active: findMatchVideoUrl("active"),
   pulse: findMatchVideoUrl("pulse"),
   allReturned: findMatchVideoUrl("all-returned"),
+};
+
+// Real-client LOCK IN button state videos (issue #428, CDragon patch 7.5).
+// All 8 webms confirmed HTTP 200 at:
+//   https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-champ-select/global/default/video/lock-in/
+const LOCK_IN_VIDEOS = {
+  activeIntro:   lockInVideoUrl("activeIntro"),
+  activeIdle:    lockInVideoUrl("activeIdle"),
+  activeHover:   lockInVideoUrl("activeHover"),
+  activeOut:     lockInVideoUrl("activeOut"),
+  release:       lockInVideoUrl("release"),
+  disabledIntro: lockInVideoUrl("disabledIntro"),
+  changeChamp:   lockInVideoUrl("changeChamp"),
+  magicExpell:   lockInVideoUrl("magicExpell"),
 };
 
 /** Enabled lock variant — bright cyan gradient fill, dark text. */
@@ -110,6 +124,44 @@ export function LockInButtonAllReturnedDemo() {
         onLockIn={() => console.log("find match")}
         videoSources={FIND_MATCH_VIDEOS}
         attention="all-returned"
+      />
+    </div>
+  );
+}
+
+/**
+ * Native LOCK IN button state machine (issue #428) — the CDragon patch-7.5
+ * champ-select lock-in webms wired via `lockInVideoSources`. Plays activeIntro
+ * once on mount → activeIdle loops; hover crossfades to activeHover loop and
+ * activeOut plays on pointer-leave; release fires on click. All layers are
+ * additive straight-alpha overlays; the CSS button renders beneath so a missing
+ * clip leaves the static look intact.
+ */
+export function LockInButtonNativeVideoDemo() {
+  return (
+    <div style={{ width: 300 }}>
+      <LockInButton
+        label="Lock In"
+        onLockIn={() => console.log("lock in")}
+        lockInVideoSources={LOCK_IN_VIDEOS}
+      />
+    </div>
+  );
+}
+
+/**
+ * Native LOCK IN button — disabled variant with disabledIntro one-shot.
+ * When `disabled` is true and `disabledIntro` is supplied, the intro plays
+ * once then the CSS disabled state shows through the transparent overlay.
+ */
+export function LockInButtonNativeVideoDisabledDemo() {
+  return (
+    <div style={{ width: 300 }}>
+      <LockInButton
+        label="Lock In"
+        disabled
+        onLockIn={() => {}}
+        lockInVideoSources={LOCK_IN_VIDEOS}
       />
     </div>
   );
