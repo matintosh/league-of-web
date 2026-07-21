@@ -56,15 +56,33 @@ export function HomeContentRail({
       data-shot="home-content-rail"
       role="tablist"
       aria-orientation="vertical"
-      // #506: NO background at all — the rail is fully transparent so the
-      // featured splash + flames bleed through completely (the #503 scrim is
-      // gone). A single 1px RIGHT border is the only chrome: a subtle vertical
-      // divider separating the rail from the main splash region, matching the
-      // reference. Legibility over the busy splash comes from a MINIMAL per-text
-      // shadow on the labels/bullets (see ContentRailRow), not a rail panel.
-      className="flex h-full w-full min-w-[230px] max-w-[260px] flex-col border-r border-gold-5/40 py-6"
+      // #524: the rail is `relative` so the inset scrim layer below positions to
+      // it. #506 had removed the background entirely (fully transparent), which
+      // let the bright MF splash bleed through at full strength — the rail read
+      // washed/white. We re-introduce a SUBTLE dark translucent scrim (below),
+      // not a solid fill and not the old heavy #503 panel: splash/flame hints
+      // still show but the gold labels read on a dark ground. A single 1px RIGHT
+      // border remains the vertical divider separating the rail from the splash.
+      className="relative flex h-full w-full min-w-[230px] max-w-[260px] flex-col border-r border-gold-5/40 py-6"
     >
-      <div className="flex flex-1 flex-col gap-1">
+      {/* #524: SUBTLE dark scrim — an INSET translucent layer (not h-full): its
+          top sits BELOW the nav band and its bottom stops ABOVE the page edge,
+          matching the reference where the dark rail panel is inset vertically
+          (top-6/bottom-6 gaps). A left-darker horizontal gradient (~58% → ~40%
+          hextech-black) tames the splash brightness while keeping flame/splash
+          hints faintly visible — the far-left is darkest, matching the ref
+          measurement (dark ground ≈ #0b0d12 where the splash bleeds). Sits at
+          z-0 behind the rows (which are z-10 via the wrapper below). */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-6 bottom-6 z-0"
+        style={{
+          background:
+            "linear-gradient(to right, color-mix(in srgb, var(--color-hextech-black) 58%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 48%, transparent) 55%, color-mix(in srgb, var(--color-hextech-black) 40%, transparent) 100%)",
+        }}
+      />
+
+      <div className="relative z-10 flex flex-1 flex-col gap-1">
         {items.map((item) => (
           <ContentRailRow
             key={item.id}
@@ -76,7 +94,7 @@ export function HomeContentRail({
       </div>
 
       {pinnedItem != null && (
-        <div className="mt-6 border-t border-gold-5 pt-4">
+        <div className="relative z-10 mt-6 border-t border-gold-5 pt-4">
           <ContentRailRow
             item={pinnedItem}
             isActive={pinnedItem.id === activeId}
