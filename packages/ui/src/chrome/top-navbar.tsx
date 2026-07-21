@@ -99,31 +99,6 @@ function ActiveChevron() {
 }
 
 /**
- * Full-height darker CELL behind the active tab (#523). The real 2025 client
- * (Image #20 / ref-nav active-tab.png) renders the active item inside a subtle
- * vertical-gradient panel spanning the ENTIRE header height — darker at the top
- * (where the gold chevron notches over it) and lifting slightly toward the
- * bottom — rather than only a top-edge chevron. Inactive tabs have no cell.
- *
- * The panel is a translucent hextech-black wash (color-mix over the token, so
- * the Miss Fortune splash still bleeds faintly through) with a barely-there
- * gold lift at the bottom edge to echo the warm key-art. It sits UNDER the label
- * + chevron (both raised above it via `relative`) so text stays legible.
- */
-function ActiveCell() {
-  return (
-    <span
-      aria-hidden
-      className="pointer-events-none absolute inset-0"
-      style={{
-        backgroundImage:
-          "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 55%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 30%, transparent) 78%, color-mix(in srgb, var(--color-gold-4) 10%, transparent) 100%)",
-      }}
-    />
-  );
-}
-
-/**
  * TopNavbar is the slim horizontal navigation bar at the top of the LoL client.
  * It contains three regions: a left play CTA slot, a center nav item list,
  * and a right region for currency and player identity slots.
@@ -181,9 +156,12 @@ export function TopNavbar({
       <div className="flex shrink-0 items-center">{playSlot}</div>
 
       {/* Left-zone product switcher (#403) — sits right of PLAY, before the
-          screen-nav row. Vertically centred, spacing measured from the ref. */}
+          screen-nav row. `items-stretch` (#523) so the switcher spans the band's
+          full height and its active tab can render a full-height LEAGUE cell that
+          reaches the gold top border where the chevron notches over it; spacing
+          measured from the ref. */}
       {productSwitcherSlot && (
-        <div className="ml-4 flex shrink-0 items-center">{productSwitcherSlot}</div>
+        <div className="ml-4 flex shrink-0 items-stretch">{productSwitcherSlot}</div>
       )}
 
       {/* Center region — nav items stretch full height so buttons can place the
@@ -203,7 +181,7 @@ export function TopNavbar({
               aria-disabled={isDisabled ? true : undefined}
               onClick={isDisabled ? undefined : () => onNavigate(item.id)}
               className={[
-                "relative flex items-end px-4 pb-3 font-display uppercase tracking-widest text-sm transition-colors duration-150",
+                "relative flex items-end pb-3 font-display uppercase tracking-widest text-sm transition-colors duration-150",
                 isDisabled
                   ? "cursor-default text-grey-2 pointer-events-none"
                   : isActive
@@ -211,9 +189,8 @@ export function TopNavbar({
                   : "cursor-pointer text-grey-1 hover:text-gold-1",
               ].join(" ")}
             >
-              {isActive && <ActiveCell />}
               {isActive && <ActiveChevron />}
-              <span className="relative">{item.label}</span>
+              {item.label}
             </button>
           );
         })}
