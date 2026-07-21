@@ -156,8 +156,8 @@
   --color-ban-red-press: #5c1414;
 
   /* Typography — font files loaded by the app via next/font, exposed as vars */
-  --font-display: var(--font-marcellus), "Marcellus", serif;
-  --font-body: var(--font-inter), "Inter", sans-serif;
+  --font-display: var(--font-beaufort), "Beaufort for LOL", serif;
+  --font-body: var(--font-spiegel), "Spiegel", sans-serif;
   /* Handwriting-script face for the PlayerBanner signature flourish (#471).
      FONT-SUBSTITUTION stand-in for the client's rendered signature (no asset). */
   --font-signature: var(--font-dancing), "Dancing Script", cursive;
