@@ -1589,3 +1589,41 @@ export const friendFinderImageUrl = (name: string): string =>
  */
 export const socialMaskUrl = (name: string): string =>
   `${CDRAGON_SOCIAL}/${name}.png`;
+
+// ---------------------------------------------------------------------------
+// PLAYER-NOTIFICATIONS MASK GLYPH — the notification-tray bell button (#399)
+//
+// The real client's notification button ships a single bell glyph in the
+// player-notifications plugin. Like the friend-finder mask glyphs (#434), it is
+// a monochrome-on-transparent raster meant to be consumed via CSS `mask-image`
+// over a token background so the bell inherits the button's text color state
+// (grey-1 → gold-1 on hover) rather than baking a fixed tint. See ProfileChip.
+//
+// PINNED to patch 7.5 — the player-notifications plugin was dropped from the
+// `latest` mirror (404 at latest), same fate as the friend-finder plugin. A
+// bell is timeless iconography, so a 7.5 glyph is era-coherent for the
+// current-era chip. Do NOT change to `latest` without confirming it exists.
+//
+// Fan-content policy: https://www.riotgames.com/en/legal (fan-made, non-commercial).
+// ---------------------------------------------------------------------------
+
+/**
+ * Notification bell mask-glyph URL — the real client's notification-tray button
+ * icon (72×72 monochrome-on-transparent PNG). Mirrors the house style of the
+ * other cdragon.ts helpers: a static base, no fetching, JSDoc pins the patch.
+ *
+ * Feed the returned URL to a CSS `mask-image` on a token-colored box so the bell
+ * picks up the element's `text-*` color and its hover/focus transitions. Do NOT
+ * bake a fixed color; let the token background drive the tint — same treatment
+ * as {@link friendFinderImageUrl}. See ProfileChip's bell button.
+ *
+ * PINNED to patch 7.5 (see block comment above) — 404 at `latest`.
+ *
+ * Confirmed HTTP 200 image/png (2026-07, issue #399):
+ *   notificationBellUrl() → …/rcp-fe-lol-player-notifications/…/notifications_button_icon.png
+ *
+ * Source: CommunityDragon rcp-fe-lol-player-notifications (patch 7.5).
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const notificationBellUrl = (): string =>
+  "https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-player-notifications/global/default/notifications_button_icon.png";
