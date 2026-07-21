@@ -210,7 +210,11 @@ export function SocialPanel({
 
   return (
     <div
-      className="relative flex h-full flex-col overflow-hidden bg-[color-mix(in_srgb,var(--color-blue-7)_22%,var(--color-hextech-black))]"
+      // 1px white/50% LEFT hairline — the vertical divider separating the rail
+      // from the main content, matching the home rail's right border (#529).
+      // border-box (Tailwind default) keeps the border inside `width`, so the
+      // 224px total is unchanged (only the inner content loses 1px).
+      className="relative flex h-full flex-col overflow-hidden border-l border-white/50 bg-[color-mix(in_srgb,var(--color-blue-7)_22%,var(--color-hextech-black))]"
       style={{ width }}
     >
       {/* Ambient "magic" backdrop — subtle animated Hextech loop behind the

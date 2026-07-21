@@ -36,12 +36,18 @@ function MicIcon() {
   );
 }
 
-/** Settings gear icon — 18×18, stroke currentColor */
-function SettingsIcon() {
+/** Debug / bug-report beetle icon — 18×18, stroke currentColor */
+function BugIcon() {
   return (
-    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.25">
-      <circle cx="9" cy="9" r="2.5" />
-      <path d="M9 1.5v1.8M9 14.7v1.8M1.5 9h1.8M14.7 9h1.8M3.6 3.6l1.27 1.27M13.13 13.13l1.27 1.27M14.4 3.6l-1.27 1.27M4.87 13.13l-1.27 1.27" strokeLinecap="round" />
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+      {/* Beetle body */}
+      <path d="M9 4.5c2 0 3.5 1.7 3.5 4.2S11 13 9 13s-3.5-1.8-3.5-4.3S7 4.5 9 4.5Z" />
+      {/* Head + antennae */}
+      <path d="M9 4.5V3.2m-1.4-.9 1.4 1 1.4-1" />
+      {/* Center seam */}
+      <path d="M9 5.5v6.5" />
+      {/* Legs */}
+      <path d="M5.6 6.5 3.5 5.3M5.3 9H3M5.6 11.4l-2.1 1.2M12.4 6.5l2.1-1.2M12.7 9H15m-2.6 2.4 2.1 1.2" />
     </svg>
   );
 }
@@ -50,7 +56,7 @@ const DEMO_BUTTONS = [
   { id: "chat", icon: <ChatIcon />, label: "Chat", badge: 3 },
   { id: "party", icon: <MultiChatIcon />, label: "Party", badge: 31 },
   { id: "mic", icon: <MicIcon />, label: "Toggle microphone" },
-  { id: "settings", icon: <SettingsIcon />, label: "Social settings" },
+  { id: "debug", icon: <BugIcon />, label: "Report a bug", boxed: true },
 ];
 
 /**
