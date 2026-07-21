@@ -31,6 +31,7 @@ import { homeContentRailShowcase } from "./chrome/home-content-rail.showcase";
 import { homeNewsScreenShowcase } from "./chrome/home-news-screen.showcase";
 import { journeyTabShowcase } from "./chrome/journey-tab.showcase";
 import { launchSplashShowcase } from "./chrome/launch-splash.showcase";
+import { leagueHomeScreenShowcase } from "./chrome/league-home-screen.showcase";
 import { mapCrestImgShowcase } from "./chrome/map-crest-img.showcase";
 import { masteryEternalsPanelShowcase } from "./chrome/mastery-eternals-panel.showcase";
 import { modalFrameShowcase } from "./chrome/modal-frame.showcase";
@@ -140,6 +141,7 @@ export const registry: ShowcaseEntry[] = [
   homeNewsScreenShowcase,
   journeyTabShowcase,
   launchSplashShowcase,
+  leagueHomeScreenShowcase,
   mapCrestImgShowcase,
   masteryEternalsPanelShowcase,
   modalFrameShowcase,
