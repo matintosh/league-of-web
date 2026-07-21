@@ -116,6 +116,8 @@ export { SocialHeader } from "./chrome/social-header";
 export type { SocialHeaderProps, SocialAction } from "./chrome/social-header";
 export { SocialPanel } from "./chrome/social-panel";
 export type { SocialPanelProps, FriendEntry, FriendGroup } from "./chrome/social-panel";
+export { SocialPanelEmptyState } from "./chrome/social-panel-empty-state";
+export type { SocialPanelEmptyStateProps } from "./chrome/social-panel-empty-state";
 export { SoundLibrary } from "./chrome/sound-library";
 export type { SoundLibraryProps } from "./chrome/sound-library";
 export { StoryCard } from "./chrome/story-card";
