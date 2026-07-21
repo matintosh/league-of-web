@@ -74,10 +74,24 @@ export interface PlayerBannerProps {
    */
   crownChip?: boolean;
   /**
-   * Show the "Autofill Protected" pill chip at the banner foot.
-   * Visible on self banner per reference.
+   * @deprecated Use `autofillState` instead (issue #474). Legacy inside-foot
+   * "AUTOFILL PROTECTED" chip. Kept for un-migrated callers; when `autofillState`
+   * is supplied it takes precedence and this inside-foot chip is suppressed so
+   * the reference shows a single pill UNDER the banner, not two chips.
    */
   autofillProtected?: boolean;
+  /**
+   * Autofill indicator pill rendered UNDERNEATH the banner box (issue #474),
+   * centred, as a subtle dark rounded chip with the real parties-plugin
+   * autofill-protection glyph:
+   *   - "possible"  → "Autofill Possible" (the 2025 reference idle-lobby state)
+   *   - "protected" → "Autofill Protected"
+   *   - "none"      → no pill
+   * Works on both the self rank-frame and the legacy V11 self flag. Does not
+   * shift banner layout. Supersedes the deprecated inside-foot `autofillProtected`
+   * chip when set.
+   */
+  autofillState?: "none" | "possible" | "protected";
   /**
    * Slot for RoleSlotRow or other children rendered below the avatar area.
    * Compose in from the parent page/screen.
@@ -309,6 +323,14 @@ const BANNER_ART = {
   invited: `${CDRAGON_PARTIES}/invited-banner.png`,
 } as const;
 
+// Autofill-protection icon — the small shield-with-snowflake mark used on the
+// "Autofill Possible / Protected" pill beneath the self banner (issue #474).
+// Real CommunityDragon parties-plugin asset, confirmed HTTP 200 (2026-07-21).
+// Mirror of `autofillProtectionIconUrl` in @low/fixtures — kept inline like
+// WING_SRC / BANNER_ART above so the component owns no value import from
+// fixtures (pages/demos may use the exported helper instead).
+const AUTOFILL_ICON_SRC = `${CDRAGON_PARTIES}/autofill-protection-icon.png`;
+
 // Flag-box aspect (deep review #378). The raw banner-filled art content bbox is
 // 964×1390 → h/w ≈ 1.44, a stubby wide shield. The real v11 client renders each
 // filled flag as a TALL column: the self panel measures ≈515px tall over a ≈115px
@@ -389,6 +411,39 @@ function ShieldGlyph() {
         strokeLinejoin="round"
       />
     </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// AutofillPill — "Autofill Possible / Protected" chip UNDER the banner (#474)
+//
+// The 2025 reference (docs/reference/client-current-lobby-2025.png, crop
+// lobby-content.png) shows a subtle dark rounded pill centred beneath the self
+// banner reading "Autofill Possible", with the real parties-plugin
+// autofill-protection icon (AUTOFILL_ICON_SRC). "protected" swaps the wording;
+// "none" renders nothing. Rendered as a standalone caption below the banner box
+// (not inside the flag foot) so it does not shift banner layout.
+// ---------------------------------------------------------------------------
+
+function AutofillPill({ state }: { state: "possible" | "protected" }) {
+  const label = state === "protected" ? "Autofill Protected" : "Autofill Possible";
+  return (
+    <div
+      data-shot="autofill-pill"
+      className="mt-1.5 flex items-center gap-1 rounded-full border border-gold-5 bg-hextech-black/70 px-2.5 py-1 text-grey-1"
+    >
+      <img
+        src={AUTOFILL_ICON_SRC}
+        alt=""
+        aria-hidden="true"
+        width={12}
+        height={12}
+        className="shrink-0 select-none"
+      />
+      <span className="font-body text-[10px] leading-none tracking-wide">
+        {label}
+      </span>
+    </div>
   );
 }
 
@@ -1047,6 +1102,7 @@ export function PlayerBanner({
   isSelf = false,
   crownChip,
   autofillProtected = false,
+  autofillState = "none",
   children,
   empty = false,
   level,
@@ -1066,6 +1122,16 @@ export function PlayerBanner({
   const uid = useId();
   const showCrown = crownChip ?? isSelf;
   const tierGemSrc = tierGem ? TIER_GEM_SRC[tierGem] : undefined;
+
+  // Autofill pill under the banner (#474). When `autofillState` is supplied it
+  // wins and the deprecated inside-foot `autofillProtected` chip is suppressed
+  // so the reference idle lobby shows exactly one indicator (the pill UNDER the
+  // banner), never two.
+  const showAutofillPill = autofillState !== "none";
+  const showFootAutofillChip = autofillProtected && !showAutofillPill;
+  const autofillPill = showAutofillPill ? (
+    <AutofillPill state={autofillState === "protected" ? "protected" : "possible"} />
+  ) : null;
 
   // Width: self is wider (120px), teammates are narrower (96px)
   const wClass = isSelf ? "w-[120px]" : "w-[96px]";
@@ -1175,17 +1241,20 @@ export function PlayerBanner({
   // of the legacy V11 heraldic flag. Teammate / party slots always use the flag.
   if (isSelf && regaliaSrc) {
     return (
-      <SelfRankFrame
-        name={name}
-        title={title}
-        regaliaSrc={regaliaSrc}
-        backdropSrc={backdropSrc}
-        signature={signature}
-        masteryCrests={masteryCrests}
-        showCrown={showCrown}
-        onEditLoadout={onEditLoadout}
-        uid={uid}
-      />
+      <div className="flex flex-col items-center">
+        <SelfRankFrame
+          name={name}
+          title={title}
+          regaliaSrc={regaliaSrc}
+          backdropSrc={backdropSrc}
+          signature={signature}
+          masteryCrests={masteryCrests}
+          showCrown={showCrown}
+          onEditLoadout={onEditLoadout}
+          uid={uid}
+        />
+        {autofillPill}
+      </div>
     );
   }
 
@@ -1387,7 +1456,7 @@ export function PlayerBanner({
 
           {/* Footer: autofill chip + foot glyph + optional queue asterisk on self */}
           <div className="flex flex-col items-center gap-1 mt-auto">
-            {autofillProtected && (
+            {showFootAutofillChip && (
               <div className="flex items-center gap-0.5 rounded-full border border-grey-2 bg-grey-4 px-2 py-0.5 text-grey-1">
                 <ShieldGlyph />
                 <span className="font-body text-[9px] uppercase tracking-wide leading-none">
@@ -1407,6 +1476,10 @@ export function PlayerBanner({
           </div>
         </div>
       </div>
+
+      {/* Autofill pill — UNDER the banner box (#474). Centred by the column
+           root; does not shift the flag layout. */}
+      {autofillPill}
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import {
   LobbyHeader,
+  LobbyProgressionPanel,
   PlayerBanner,
   RoleSlotRow,
   RolePickerPopover,
@@ -12,7 +13,7 @@ import {
   MatchFoundModal,
   formatQueueTime,
 } from "@low/ui";
-import type { ChatMessage, RoleSlot, WingTier, TierGem, BadgeSlot, Role, PickableRole } from "@low/ui";
+import type { ChatMessage, RoleSlot, WingTier, TierGem, BadgeSlot, Role, PickableRole, LobbyMission } from "@low/ui";
 import {
   demoSummoner,
   demoFriends,
@@ -52,6 +53,33 @@ interface InvitedEntry {
 
 const INVITED_FIXTURE: InvitedEntry[] = [
   { id: "invited-1", name: demoSummoner.gameName },
+];
+
+// ---------------------------------------------------------------------------
+// Fixture: 2025 LobbyHeader middot breadcrumb (#487). Derived from the selected
+// mode/queue — this screen is pinned to SR · Ranked Solo/Duo · Draft, matching
+// the reference (docs/reference/client-current-lobby-2025.png header).
+// ---------------------------------------------------------------------------
+
+const LOBBY_BREADCRUMB = ["SR", "RANKED SOLO/DUO", "DRAFT"];
+
+// ---------------------------------------------------------------------------
+// Fixture: lobby Progression-panel missions (#473). The reference shows a single
+// completed "Seasonal Victorious / Win 15 Ranked games" mission with a gold
+// check medallion + a "2" stacked-card badge. The medallion is drawn as a token
+// gold-check disc (the reference's completed look); iconSrc is omitted so no
+// challenge art overrides it. challengeTokenUrl(id, level) is available from
+// @low/fixtures for missions that want real crest art.
+// ---------------------------------------------------------------------------
+
+const LOBBY_MISSIONS: LobbyMission[] = [
+  {
+    id: "seasonal-victorious",
+    title: "Seasonal Victorious",
+    objective: "Win 15 Ranked games",
+    complete: true,
+    progressBadge: "2",
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -448,7 +476,10 @@ export function PartyLobbyScreen({
   onChangeMode,
 }: PartyLobbyScreenProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(LOBBY_MESSAGES);
-  const [inviteTab, setInviteTab] = useState<"suggested" | "invited">("invited");
+  // Progression-panel tab (#473) — Progression is the reference default.
+  const [progressionTab, setProgressionTab] = useState<"progression" | "invited">("progression");
+  // Invite-permission half of the 2025 header's green toggle pair (#487).
+  const [invitePermission, setInvitePermission] = useState(false);
 
   // ---------------------------------------------------------------------------
   // Role picker state
@@ -646,13 +677,6 @@ export function PartyLobbyScreen({
     ]);
   }, []);
 
-  const handleTabKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-      e.preventDefault();
-      setInviteTab(prev => prev === "suggested" ? "invited" : "suggested");
-    }
-  }, []);
-
   // ---------------------------------------------------------------------------
   // Banner slot arrays (L2, L1 | SELF | R1, R2)
   // ---------------------------------------------------------------------------
@@ -735,16 +759,22 @@ export function PartyLobbyScreen({
       {/* ------------------------------------------------------------------ */}
       {/* LobbyHeader                                                          */}
       {/* ------------------------------------------------------------------ */}
-      <LobbyHeader
-        title="Summoner's Rift · Normal"
-        segments={["Intro", "Blind", "Summoner's Rift 5v5"]}
-        queueCount={30}
-        crestSrc={gameModeMapUrl("sr")}
-        onBack={onBack}
-        onChangeMode={onChangeMode ?? onBack}
-        partyOpen={partyOpen}
-        onPartyToggle={onPartyToggle}
-      />
+      {/* z-10 lifts the header above the top-edge legibility gradient (which is
+          an absolute z-0 sibling) so the breadcrumb / back / right cluster paint. */}
+      <div className="relative z-10">
+        <LobbyHeader
+          title="Summoner's Rift · Ranked Solo/Duo · Draft"
+          breadcrumb={LOBBY_BREADCRUMB}
+          crestSrc={gameModeMapUrl("sr")}
+          onBack={onBack}
+          onCopyInvite={() => {}}
+          onStats={() => {}}
+          partyOpen={partyOpen}
+          onPartyToggle={onPartyToggle}
+          invitePermission={invitePermission}
+          onInvitePermissionToggle={setInvitePermission}
+        />
+      </div>
 
       {/* ------------------------------------------------------------------ */}
       {/* Banner zone — 5 slots centered                                       */}
@@ -789,6 +819,7 @@ export function PartyLobbyScreen({
           regaliaSrc={regaliaBannerUrl("challenger")}
           backdropSrc={championSplashUrl("Ahri")}
           masteryCrests={[masteryCrestUrl(10), masteryCrestUrl(9), masteryCrestUrl(7)]}
+          autofillState="possible"
           onEditLoadout={() => {}}
         />
 
@@ -826,6 +857,23 @@ export function PartyLobbyScreen({
             <PlayerBanner key={`re${i}`} name="" avatarSrc="" empty queueing={isQueueing} />
           ),
         )}
+
+        {/* ---------------------------------------------------------------- */}
+        {/* Progression / Invited panel (#473) — docked bottom-right of the   */}
+        {/* banner zone, above the bottom bar (and the shell's social rail to  */}
+        {/* the right). Replaces the old inline "Suggested | Invited" strip.   */}
+        {/* Page owns the mission/invited fixtures; the component is dumb.     */}
+        {/* ---------------------------------------------------------------- */}
+        <div className="absolute bottom-3 right-4 z-20 w-[300px] max-w-[40%]">
+          <LobbyProgressionPanel
+            activeTab={progressionTab}
+            onTabChange={setProgressionTab}
+            invitedCount={INVITED_FIXTURE.length}
+            missions={LOBBY_MISSIONS}
+            invited={INVITED_FIXTURE}
+            onMenu={() => {}}
+          />
+        </div>
       </div>
 
       {/* ------------------------------------------------------------------ */}
@@ -865,42 +913,12 @@ export function PartyLobbyScreen({
             <CrossMedallion size={44} />
           </button>
 
-          {/* FIND MATCH slot: Autofill + Auto Accept chips stacked above button */}
+          {/* FIND MATCH slot: Auto Accept chip stacked above the button.
+              (#474) The old "Autofill activated" blue chip that sat here was
+              removed — the 2025 reference shows the autofill indicator ONLY as
+              the "Autofill Possible" pill under the self banner, not as a chip
+              above FIND MATCH. Keeping it would duplicate the autofill state. */}
           <div className="flex flex-col items-center gap-1" style={{ width: 200 }}>
-            {/* Autofill activated chip — dead/decorative, aria-hidden */}
-            <div
-              aria-hidden="true"
-              className="flex items-center gap-1 rounded-sm px-2 py-0.5 bg-blue-5/60"
-            >
-              {/* Blue info/warning triangle glyph */}
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 10 10"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-                className="shrink-0 text-blue-3"
-              >
-                <path
-                  d="M5 1L9 8.5H1L5 1Z"
-                  stroke="currentColor"
-                  strokeWidth="1.1"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M5 4.5V6"
-                  stroke="currentColor"
-                  strokeWidth="1.1"
-                  strokeLinecap="round"
-                />
-                <circle cx="5" cy="7.2" r="0.4" fill="currentColor" />
-              </svg>
-              <span className="font-body text-[10px] text-grey-1 leading-none">
-                Autofill activated
-              </span>
-            </div>
-
             {/* Auto Accept row — dead/decorative, aria-hidden */}
             <div
               aria-hidden="true"
@@ -977,112 +995,6 @@ export function PartyLobbyScreen({
               onClose={() => setOpenPicker(null)}
               iconSrcFor={pickerIconSrcFor}
             />
-          </div>
-        </div>
-
-        {/* Suggested | Invited panel — right */}
-        <div
-          className="flex shrink-0 flex-col border-l border-gold-5"
-          style={{ width: 200 }}
-        >
-          {/* Tab strip */}
-          <div
-            role="tablist"
-            aria-label="Invite options"
-            className="flex shrink-0 border-b border-gold-5"
-            onKeyDown={handleTabKeyDown}
-          >
-            <button
-              type="button"
-              role="tab"
-              id="tab-suggested"
-              aria-controls="panel-suggested"
-              aria-selected={inviteTab === "suggested"}
-              tabIndex={inviteTab === "suggested" ? 0 : -1}
-              onClick={() => setInviteTab("suggested")}
-              className={[
-                "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider cursor-pointer",
-                "border-b-2 transition-colors duration-150",
-                inviteTab === "suggested"
-                  ? "border-gold-4 text-gold-1"
-                  : "border-transparent text-grey-2 hover:text-grey-1",
-              ].join(" ")}
-            >
-              Suggested
-            </button>
-            <button
-              type="button"
-              role="tab"
-              id="tab-invited"
-              aria-controls="panel-invited"
-              aria-selected={inviteTab === "invited"}
-              tabIndex={inviteTab === "invited" ? 0 : -1}
-              onClick={() => setInviteTab("invited")}
-              className={[
-                "flex-1 px-2 py-1.5 font-display text-xs uppercase tracking-wider cursor-pointer",
-                "border-b-2 transition-colors duration-150",
-                inviteTab === "invited"
-                  ? "border-gold-4 text-gold-1"
-                  : "border-transparent text-grey-2 hover:text-grey-1",
-              ].join(" ")}
-            >
-              {`Invited (${INVITED_FIXTURE.length})`}
-            </button>
-          </div>
-
-          {/* Panel body */}
-          <div
-            id={`panel-${inviteTab}`}
-            role="tabpanel"
-            aria-labelledby={`tab-${inviteTab}`}
-            className="flex flex-1 flex-col bg-blue-7/30 overflow-y-auto"
-          >
-            {inviteTab === "invited" ? (
-              INVITED_FIXTURE.length > 0 ? (
-                <ul className="flex flex-col py-1">
-                  {INVITED_FIXTURE.map((entry) => (
-                    <li
-                      key={entry.id}
-                      className="flex items-center gap-2 px-3 py-1.5"
-                    >
-                      {/* Checkmark */}
-                      <svg
-                        aria-hidden="true"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="shrink-0 text-gold-2"
-                      >
-                        <path
-                          d="M2 6l3 3 5-5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <span className="truncate font-body text-xs text-grey-1">
-                        {entry.name}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="flex flex-1 items-center justify-center">
-                  <span className="font-body text-xs text-grey-3 px-2 text-center">
-                    No pending invites
-                  </span>
-                </div>
-              )
-            ) : (
-              <div className="flex flex-1 items-center justify-center">
-                <span className="font-body text-xs text-grey-3 px-2 text-center">
-                  No suggestions
-                </span>
-              </div>
-            )}
           </div>
         </div>
       </div>

@@ -425,6 +425,44 @@ export function PlayerBannerAutofillDemo() {
 }
 
 // ---------------------------------------------------------------------------
+// Autofill pill UNDER the banner (#474) — "possible" (reference), "protected",
+// and the reconciliation: autofillState wins over the deprecated inside-foot
+// autofillProtected chip so only one indicator shows.
+// ---------------------------------------------------------------------------
+
+export function PlayerBannerAutofillPillDemo() {
+  return (
+    <div className="flex items-start justify-center gap-6 p-8 bg-blue-6">
+      {/* Self rank-frame + "Autofill Possible" pill (the 2025 idle-lobby state) */}
+      <PlayerBanner
+        name="Matintosh"
+        title="Final Boss Faker"
+        isSelf
+        crownChip
+        avatarSrc={AVATAR_1}
+        regaliaSrc={regaliaBannerUrl("challenger")}
+        backdropSrc={championSplashUrl("Ahri")}
+        masteryCrests={[masteryCrestUrl(10), masteryCrestUrl(9), masteryCrestUrl(7)]}
+        signature="Matintosh"
+        autofillState="possible"
+      />
+      {/* Legacy V11 self flag + "Autofill Protected" pill */}
+      <PlayerBanner
+        name="Protected"
+        title="Locked In"
+        isSelf
+        avatarSrc={AVATAR_2}
+        wingTier="gold"
+        // autofillProtected is set too, but autofillState supersedes it — the
+        // inside-foot chip is suppressed so only the pill shows.
+        autofillProtected
+        autofillState="protected"
+      />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Tier gem — all TierGem values on teammate banners
 // ---------------------------------------------------------------------------
 

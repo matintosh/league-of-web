@@ -199,6 +199,12 @@ export { LobbyHeader } from "./lobby/lobby-header";
 export type { LobbyHeaderProps } from "./lobby/lobby-header";
 export { LobbyPlayerCard } from "./lobby/lobby-player-card";
 export type { LobbyPlayerCardProps } from "./lobby/lobby-player-card";
+export { LobbyProgressionPanel } from "./lobby/lobby-progression-panel";
+export type {
+  LobbyProgressionPanelProps,
+  LobbyMission,
+  LobbyInvitedEntry,
+} from "./lobby/lobby-progression-panel";
 export { MatchFoundModal } from "./lobby/match-found-modal";
 export type { MatchFoundModalProps } from "./lobby/match-found-modal";
 export { PlayerBanner } from "./lobby/player-banner";
