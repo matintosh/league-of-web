@@ -55,6 +55,13 @@ function ActiveChevron() {
      * stretched to full navbar height (self-stretch) and aligned to the
      * bottom (pb-3) so the button top edge coincides with the navbar top
      * edge — making top-0 here equivalent to the navbar's top edge.
+     *
+     * #505: the nav is an absolute overlay pinned to the window top (#502), so
+     * top-0 also coincides with WindowFrame's gold TOP border. The chevron uses
+     * the same gold-3 token as that border and its outer V tips flank the tab
+     * right below the line — so the top line and this chevron read as ONE
+     * continuous gold accent that notches down over the active tab (ref
+     * client-current-home-2025-mf.png / ref-tab-connect.png).
      */
     <span
       aria-hidden
@@ -118,10 +125,14 @@ export function TopNavbar({
       /* #460/#491: the band is a dark warm SCRIM over the home key-art, not a
          flat navy fill — the Miss Fortune splash BLEEDS THROUGH it. #491 tuned
          the wash more transparent to match the 2025 reference: a bottom-heavier
-         vertical gradient (lighter at the top edge, denser toward the bottom
-         hairline) so the splash reads clearly through the band while text/icons
-         stay legible. Both stops are token-derived via color-mix. A bright
-         gold-4 hairline caps the bottom edge. */
+         vertical gradient (lighter at the top edge, denser toward the bottom)
+         so the splash reads clearly through the band while text/icons stay
+         legible. Both stops are token-derived via color-mix.
+         #505: the 2025 reference shows the splash bleeding CONTINUOUSLY from the
+         band into the content below — there is no bottom hairline/border. The
+         only chrome accent is the gold TOP line (WindowFrame integrated variant)
+         which connects to the active-tab chevron. So the former bottom gold-4
+         hairline is removed; the scrim just fades into the body. */
       style={{
         backgroundImage:
           "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 42%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 68%, transparent) 100%)",
@@ -131,7 +142,7 @@ export function TopNavbar({
          icon cluster, currency, and profile chip all sit vertically centred in
          this taller band; the window-control row still floats top-right in the
          integrated chrome (WindowFrame), above this nav. */
-      className="flex h-22 w-full shrink-0 items-stretch border-b border-gold-4 px-4"
+      className="flex h-22 w-full shrink-0 items-stretch px-4"
     >
       {/* Left region — play slot; self-center so the PLAY button stays vertically centred */}
       <div className="flex shrink-0 items-center">{playSlot}</div>
