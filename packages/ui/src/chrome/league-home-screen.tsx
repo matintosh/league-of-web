@@ -92,55 +92,65 @@ export function LeagueHomeScreen({
   return (
     <div
       data-shot="league-home-screen"
-      className="flex h-full w-full bg-hextech-black"
+      className="relative flex h-full w-full overflow-visible bg-hextech-black"
     >
       {/* ---------------------------------------------------------------- */}
-      {/* LEFT — content-link rail (fixed-width column, from #456)          */}
-      {/* ---------------------------------------------------------------- */}
-      <div className="relative z-20 shrink-0">{railSlot}</div>
+      {/* SPLASH — FULL-BLEED layer behind BOTH columns (#503).             */}
+      {/* The featured key-art spans the entire content area (left rail +   */}
+      {/* right region), so with the rail now semi-transparent (#503) the   */}
+      {/* MF splash + flames bleed through behind the rail items, matching  */}
+      {/* the reference. Sits at z-0 under the rail (z-10) and right-region */}
+      {/* overlays (z-10). Preserves the #501 upward bleed: the layer       */}
+      {/* extends UP by `splashBleedTop` above this screen's top edge so    */}
+      {/* the art fills behind the transparent nav band. `overflow-hidden`  */}
+      {/* here (not on the parent) keeps the object-cover crop clean while  */}
+      {/* the parent stays `overflow-visible` so the art escapes upward.    */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-0 overflow-hidden"
+        style={{ top: -splashBleedTop }}
+      >
+        {/* Splash — object-cover fills the region, top-anchored on the face */}
+        <img
+          src={featured.splashSrc}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover object-top"
+        />
 
-      {/* ---------------------------------------------------------------- */}
-      {/* RIGHT — full-bleed featured splash + overlays                     */}
-      {/* ---------------------------------------------------------------- */}
-      <div className="relative min-w-0 flex-1 overflow-visible">
-        {/* Splash bleed layer (#501) — the splash + its scrims extend UP by
-            `splashBleedTop` above this screen's top edge so the key-art fills
-            behind the transparent nav band overlaying the content. The layer is
-            positioned from `-splashBleedTop` to the bottom; `overflow-hidden`
-            here (not on the parent) keeps the object-cover crop clean while the
-            parent stays `overflow-visible` so the art can escape upward. */}
+        {/* Left scrim — a lighter left-edge wash (#503): semi-transparent at
+            the far-left edge (was solid hextech-black at 0%) so the splash
+            shows THROUGH the rail rather than being blacked out, while still
+            damping contrast enough for the rail bullets/labels to read. */}
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden"
-          style={{ top: -splashBleedTop }}
-        >
-          {/* Splash — object-cover fills the region, top-anchored on the face */}
-          <img
-            src={featured.splashSrc}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover object-top"
-          />
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to right, color-mix(in srgb, var(--color-hextech-black) 58%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 34%, transparent) 24%, transparent 55%)",
+          }}
+        />
+        {/* Bottom scrim — darkens the lower edge so the copy + skins strip
+            stay legible over the splash. Unchanged (#501). */}
+        <div
+          className="absolute inset-x-0 bottom-0"
+          style={{
+            height: "62%",
+            background:
+              "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 92%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 45%, transparent) 48%, transparent 100%)",
+          }}
+        />
+      </div>
 
-          {/* Scrim — darkens the left + bottom edges so the rail seam and the
-              copy block stay legible over the splash. Same color-mix technique
-              as the legacy HomeLanding vignette. */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to right, var(--color-hextech-black) 0%, color-mix(in srgb, var(--color-hextech-black) 55%, transparent) 22%, transparent 55%)",
-            }}
-          />
-          <div
-            className="absolute inset-x-0 bottom-0"
-            style={{
-              height: "62%",
-              background:
-                "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 92%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 45%, transparent) 48%, transparent 100%)",
-            }}
-          />
-        </div>
+      {/* ---------------------------------------------------------------- */}
+      {/* LEFT — content-link rail (fixed-width column, from #456).         */}
+      {/* Semi-transparent (#503): sits ABOVE the splash layer (z-10) so    */}
+      {/* the art bleeds through its scrim.                                 */}
+      {/* ---------------------------------------------------------------- */}
+      <div className="relative z-10 shrink-0">{railSlot}</div>
 
+      {/* ---------------------------------------------------------------- */}
+      {/* RIGHT — featured overlays above the shared splash layer           */}
+      {/* ---------------------------------------------------------------- */}
+      <div className="relative z-10 min-w-0 flex-1">
         {/* -------------------------------------------------------------- */}
         {/* MUTE DISC — top-right, presentational (static glyph)            */}
         {/* -------------------------------------------------------------- */}
