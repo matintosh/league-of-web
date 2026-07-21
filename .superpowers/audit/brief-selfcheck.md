@@ -51,9 +51,16 @@ NEVER material-gated and always eligible for LIGHT cycles.
 
 ## Method (binding)
 
-- Audit the PRODUCTION build of origin/main: fresh worktree or main tree,
-  `pnpm build` + `pnpm --filter web exec next start -p 3900` (kill by port
-  after). NEVER audit the dev server.
+- Audit the PRODUCTION build of origin/main in a DEDICATED, DISPOSABLE
+  WORKTREE — `git worktree add /tmp/low-audit-<port> origin/main` then
+  `pnpm install` there. NEVER build in the main worktree and NEVER run
+  `git stash`/`git reset`/`git checkout -- .` on a shared tree: the user
+  (and other agents) edit the main worktree live, and a stash/reset there
+  silently discards their uncommitted WIP (this happened once — recovered
+  from a dangling stash, but do not repeat it). Build + serve from the
+  disposable worktree (`pnpm build` + `pnpm --filter web exec next start
+  -p 3900`), then `git worktree remove --force` it when done. NEVER audit
+  the dev server.
 - Playwright from the repo's node_modules; viewport 1280×720; dsf 3.
 - **Park the pointer** at (50,400) before any idle capture — hover states
   contaminate idle sampling (documented false-FAIL, convergence loop).
