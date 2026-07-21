@@ -6,6 +6,7 @@ import {
   PlayerBannerWingTiersDemo,
   PlayerBannerTruncationDemo,
   PlayerBannerAutofillDemo,
+  PlayerBannerAutofillPillDemo,
   PlayerBannerHeraldShapeDemo,
   PlayerBannerLevelBadgeDemo,
   PlayerBannerQueueingDemo,
@@ -88,8 +89,14 @@ export const playerBannerShowcase: ShowcaseEntry = {
     {
       name: "Autofill chip (non-self)",
       notes:
-        "autofillProtected=true on a teammate banner. Shield glyph + text chip at banner foot.",
+        "autofillProtected=true on a teammate banner. Shield glyph + text chip at banner foot (deprecated inside-foot chip).",
       render: () => <PlayerBannerAutofillDemo />,
+    },
+    {
+      name: "Autofill pill UNDER banner (#474)",
+      notes:
+        "autofillState pill beneath the self banner — 'Autofill Possible' (2025 reference) on the rank-frame, 'Autofill Protected' on the legacy flag. autofillState supersedes the deprecated inside-foot autofillProtected chip so exactly one indicator shows. Real parties-plugin autofill icon.",
+      render: () => <PlayerBannerAutofillPillDemo />,
     },
     {
       name: "Queueing state — blue glow empty slots + self asterisk",

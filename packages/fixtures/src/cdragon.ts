@@ -66,6 +66,48 @@ export const cdragonPartiesUrl = (path: string): string =>
   `${CDRAGON_PARTIES}/${path}`;
 
 /**
+ * Autofill-protection icon — the small shield-with-snowflake mark shown on the
+ * autofill pill beneath the self banner in the pre-game lobby (issue #474). The
+ * real client renders this exact PNG rather than an inline glyph.
+ *
+ * Source: CommunityDragon rcp-fe-lol-parties · autofill-protection-icon.png
+ * Confirmed HTTP 200 image/png (2026-07-21, issue #474).
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const autofillProtectionIconUrl = (): string =>
+  cdragonPartiesUrl("autofill-protection-icon.png");
+
+/**
+ * Challenge-token medallion — the circular tier-token crest for a Challenges
+ * entry at a given completion level (issue #473). Used as a stand-in "mission"
+ * crest in the lobby Progression panel where no bespoke mission art is
+ * extractable.
+ *
+ * `id` is the numeric Challenges config id (e.g. 101000 "ARAM Authority");
+ * `level` is the completion tier token. CommunityDragon rewrites the game-data
+ * path `/lol-game-data/assets/ASSETS/Challenges/Config/{id}/Tokens/{LEVEL}.png`
+ * to the lowercased plugin mirror below.
+ *
+ * Source: CommunityDragon rcp-be-lol-game-data · assets/challenges/config/{id}/tokens/{level}.png
+ * Confirmed HTTP 200 image/png for id 101000 (2026-07-21, issue #473).
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const challengeTokenUrl = (
+  id: number,
+  level:
+    | "iron"
+    | "bronze"
+    | "silver"
+    | "gold"
+    | "platinum"
+    | "diamond"
+    | "master"
+    | "grandmaster"
+    | "challenger" = "master",
+): string =>
+  `${CDRAGON_GAME_DATA}/assets/challenges/config/${id}/tokens/${level}.png`;
+
+/**
  * Client video (.webm) asset URL. The real client centralizes ALL its UI
  * magic/ambient videos under rcp-fe-lol-static-assets `videos/` — the
  * WAD-extracted corpus maps 1:1 by relative path into this subtree
