@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { NavProductSwitcher, type NavProduct } from "./nav-product-switcher";
 
-/** The reference set — LEAGUE (active) · TFT · [R] LoR pill. */
+/** The reference set — LEAGUE (active) · TFT · [R] LoR pill ↗ (external). */
 const REFERENCE_PRODUCTS: NavProduct[] = [
   { id: "league", label: "LEAGUE" },
   { id: "tft", label: "TFT" },
-  { id: "lor", label: "LoR", pill: true },
+  { id: "lor", label: "LoR", pill: true, external: true },
 ];
 
 /**

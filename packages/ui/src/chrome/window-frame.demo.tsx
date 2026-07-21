@@ -82,3 +82,20 @@ export function WindowFrameIntegratedWithGearDemo() {
     </div>
   );
 }
+
+export function WindowFrameStatusDotDemo() {
+  return (
+    <div className="h-48 w-96">
+      <WindowFrame
+        chrome="integrated"
+        showStatusDot
+        onHelp={() => {}}
+        onMinimize={() => {}}
+        onSettings={() => {}}
+        onClose={() => {}}
+      >
+        <PlaceholderContent />
+      </WindowFrame>
+    </div>
+  );
+}

@@ -113,7 +113,18 @@ export function TopNavbar({
   playerSlot,
 }: TopNavbarProps) {
   return (
-    <nav aria-label="Main navigation" className="flex h-14 w-full shrink-0 items-stretch border-b border-gold-5 bg-blue-7 px-4">
+    <nav
+      aria-label="Main navigation"
+      /* #460: the band is a dark warm SCRIM over the home key-art, not a flat
+         navy fill — the splash bleeds through a ~88% hextech-black wash (via
+         color-mix so it stays token-derived), and a bright gold-4 hairline
+         caps the bottom edge (the old dim gold-5 read as invisible navy). */
+      style={{
+        backgroundColor:
+          "color-mix(in srgb, var(--color-hextech-black) 88%, transparent)",
+      }}
+      className="flex h-14 w-full shrink-0 items-stretch border-b border-gold-4 px-4"
+    >
       {/* Left region — play slot; self-center so the PLAY button stays vertically centred */}
       <div className="flex shrink-0 items-center">{playSlot}</div>
 

@@ -6,6 +6,7 @@ import {
   WindowFrameNoControlsDemo,
   WindowFrameIntegratedDemo,
   WindowFrameIntegratedWithGearDemo,
+  WindowFrameStatusDotDemo,
 } from "./window-frame.demo";
 
 export const windowFrameShowcase: ShowcaseEntry = {
@@ -26,6 +27,12 @@ export const windowFrameShowcase: ShowcaseEntry = {
       notes:
         'onSettings supplied — the ⚙ settings control renders in the window-control row, in the reference order help → minimize → settings → close (#401). The gear is opt-in: omit onSettings and the row is the classic ? ─ ✕. This is how the app shell wires the gear in the current era, matching client-current-home-activity-center.jpg.',
       render: () => <WindowFrameIntegratedWithGearDemo />,
+    },
+    {
+      name: "Integrated with status dot (#464)",
+      notes:
+        'showStatusDot — a leading amber status dot precedes the help glyph (● ? ─ ⚙ ✕), matching the 2025 reference. Opt-in (default off), so the LOGIN title bar and other consumers are unaffected.',
+      render: () => <WindowFrameStatusDotDemo />,
     },
     {
       name: "Default",

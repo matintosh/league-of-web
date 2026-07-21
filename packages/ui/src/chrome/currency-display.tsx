@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import type { Wallet } from "@low/fixtures";
 
 export interface CurrencyDisplayProps {
@@ -35,6 +37,20 @@ export interface CurrencyDisplayProps {
    * so existing call sites are unaffected.
    */
   showBuyButtons?: boolean;
+  /**
+   * When true (stacked mode only), the RP row is enclosed in a rounded-full
+   * capsule outline (1px gold-4 border, dark translucent fill) that wraps the
+   * RP glyph + value + the `rpTrailingSlot` `＋` disc — the framed pill in the
+   * 2025 reference (#464). BE stays unframed below. Default false (back-compat).
+   */
+  capsule?: boolean;
+  /**
+   * Optional node rendered at the RIGHT end of the RP row — the current-era RP
+   * top-up `＋` disc (`RpTopUpButton`). When `capsule` is set it sits INSIDE the
+   * capsule outline, matching the reference. Composed at the page level so the
+   * component stays free of the top-up asset wiring.
+   */
+  rpTrailingSlot?: ReactNode;
 }
 
 /** Formats an integer with thousands separators, e.g. 34500 → "34,500". */
@@ -106,9 +122,24 @@ const buyButtonClass =
  * `blueEssenceIconUrl()` from `@low/fixtures` at the page/showcase level).
  * When omitted, the component falls back to its inline SVG glyphs.
  */
-export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false, rpIconSrc, beIconSrc, showBuyButtons = true }: CurrencyDisplayProps) {
+export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false, rpIconSrc, beIconSrc, showBuyButtons = true, capsule = false, rpTrailingSlot }: CurrencyDisplayProps) {
+  // The RP capsule (#464) only applies in stacked mode. When set, the row gets
+  // a rounded-full gold-4 outline over a dark translucent fill, wrapping glyph +
+  // value + the trailing `＋` disc; otherwise the row is unframed as before.
+  const rpFramed = capsule && stacked;
   const rpRow = (
-    <div className={["flex items-center gap-1.5", stacked ? "justify-end" : ""].join(" ")}>
+    <div
+      className={[
+        "flex items-center gap-1.5",
+        stacked ? "justify-end" : "",
+        rpFramed ? "rounded-full border border-gold-4 px-2 py-0.5" : "",
+      ].join(" ")}
+      style={
+        rpFramed
+          ? { backgroundColor: "color-mix(in srgb, var(--color-hextech-black) 60%, transparent)" }
+          : undefined
+      }
+    >
       <span className={rpIconSrc ? undefined : "text-blue-2"}>
         {rpIconSrc ? (
           <img src={rpIconSrc} alt="" aria-hidden="true" width={14} height={14} style={{ display: "inline-block", verticalAlign: "middle" }} />
@@ -129,6 +160,8 @@ export function CurrencyDisplay({ wallet, onBuyRp, onBuyBe, stacked = false, rpI
           +
         </button>
       )}
+      {/* RP top-up `＋` disc, inside the capsule at the row's right end (#464). */}
+      {rpTrailingSlot}
     </div>
   );
 

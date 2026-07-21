@@ -6,6 +6,7 @@ import {
   CurrencyDisplayStackedDemo,
   CurrencyDisplayRealIconsDemo,
   CurrencyDisplayRealIconsStackedDemo,
+  CurrencyDisplayCapsuleDemo,
 } from "./currency-display.demo";
 
 export const currencyDisplayShowcase: ShowcaseEntry = {
@@ -44,6 +45,11 @@ export const currencyDisplayShowcase: ShowcaseEntry = {
       name: "Real Icons + Stacked",
       notes: "Production configuration — stacked two-row layout with real CommunityDragon currency icons. This is what the live navbar renders.",
       render: () => <CurrencyDisplayRealIconsStackedDemo />,
+    },
+    {
+      name: "Capsule (RP framed, #464)",
+      notes: "capsule + stacked — the 2025 nav band: the RP row is enclosed in a rounded-full gold-4 capsule outline with the RP top-up ＋ disc INSIDE it (rpTrailingSlot); BE stays unframed below.",
+      render: () => <CurrencyDisplayCapsuleDemo />,
     },
   ],
 };
