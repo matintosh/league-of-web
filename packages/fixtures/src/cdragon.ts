@@ -2301,3 +2301,55 @@ export function skinUncenteredSplashUrl(
   const champ = champion.toLowerCase();
   return `${CDRAGON_GAME_DATA}/assets/characters/${champ}/skins/skin${skinNum}/images/${champ}_splash_${variant}_${skinNum}.skins_${champ}_skin${skinNum}.jpg`;
 }
+
+// ---------------------------------------------------------------------------
+// AVATAR themed-border frames (issue #489) — the real ornate ring the live
+// client paints around the summoner profile icon (nav-band chip + rail). The
+// uikit ships 21 numbered "themed-border" PNGs (ranked/prestige/event frames):
+// a gold ring with tier-tinted flourishes and an integrated bottom level-plate.
+// These replace the hand-drawn OrnateRing in ProfileChip.
+// ---------------------------------------------------------------------------
+
+const CDRAGON_THEMED_BORDERS = `${CDRAGON_STATIC}/images/uikit/themed-borders`;
+
+/**
+ * Themed avatar-border frame PNG for a given theme number (1..21) — the real
+ * ornate ring the client frames the summoner profile icon with. Each is a
+ * 512×512 straight-alpha PNG whose ART occupies only the centre ~57% of the
+ * canvas: a gold ring with a **transparent inner circle** (diameter ≈180px,
+ * i.e. ~35% of the canvas — measured, consistent across all themes) that the
+ * avatar shows through, plus tier-tinted wings/gems and a bottom level-plate
+ * that extend beyond the ring.
+ *
+ * ALIGNMENT NOTE for consumers: because the ring's inner circle is ~35% of the
+ * canvas and centred, to seat the avatar exactly inside the ring you render the
+ * border box at `avatarDiameter / 0.35 ≈ avatarDiameter × 2.85`, centred on the
+ * avatar — the frame's wings/plate then overflow the avatar box (pointer-events
+ * -none), matching the client. ProfileChip does this via its border overlay.
+ *
+ * CRISPNESS (raster-vs-SVG call, like #434): the 512px source is only ever
+ * DOWNSCALED (to a ~97px navband / ~137px rail border box), never upscaled, so
+ * it stays crisp at deviceScaleFactor 4 — the raster is wired at both sizes and
+ * supersedes the hand-drawn OrnateRing.
+ *
+ * Theme guide (probed against docs/reference/client-current-home-2025-mf.png):
+ *   theme-1  plain gold ring (no accent)
+ *   theme-3  gold ring + cyan/blue energy accents + gold-framed plate — the
+ *            closest match to the reference nav frame (gold + teal swoosh);
+ *            used by the ProfileChip consumers.
+ * Higher numbers are progressively more elaborate prestige/event frames.
+ *
+ * All 21 confirmed HTTP 200 image/png at `latest` (2026-07-21):
+ *   avatarBorderUrl(1)  → …/themed-borders/theme-1-border.png
+ *   avatarBorderUrl(3)  → …/themed-borders/theme-3-border.png
+ *   avatarBorderUrl(21) → …/themed-borders/theme-21-border.png
+ *
+ * Pass the returned URL as an <img> `src`. NO fetching happens here — pages /
+ * components supply the resolved URL. Tokens rule applies to CSS colours, not
+ * asset URLs.
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · images/uikit/themed-borders/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const avatarBorderUrl = (theme: number): string =>
+  `${CDRAGON_THEMED_BORDERS}/theme-${theme}-border.png`;

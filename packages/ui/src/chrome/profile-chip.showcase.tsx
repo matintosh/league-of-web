@@ -6,6 +6,7 @@ import {
   ProfileChipOfflineDemo,
   ProfileChipLongNameDemo,
   ProfileChipStatusTextDemo,
+  ProfileChipRailBorderDemo,
   ProfileChipNavbandDemo,
   ProfileChipNavbandInGameDemo,
   ProfileChipNavbandStatusTextDemo,
@@ -16,7 +17,7 @@ export const profileChipShowcase: ShowcaseEntry = {
   name: "Profile Chip",
   area: "chrome",
   description:
-    "Local player identity: circular avatar with ornate double gold ring, level badge, summoner name, availability dot, and notification bell. Two variants — 'rail' (social-rail header, #146) and 'navband' (compact current-era chip in the TopNavbar band, #387).",
+    "Local player identity: circular avatar framed by the real client themed-border (avatarBorderUrl, #489) — with a hand-drawn OrnateRing fallback when no border src is given — plus level badge, summoner name, availability dot, and notification bell. Two variants — 'rail' (social-rail header, #146) and 'navband' (compact current-era chip in the TopNavbar band, #387).",
   variants: [
     {
       name: "Online",
@@ -50,6 +51,12 @@ export const profileChipShowcase: ShowcaseEntry = {
       notes:
         "statusText prop replaces the availability label with a custom string. Dot color still reflects availability (online=green). Long text truncates within the chip width — chip width must not grow.",
       render: () => <ProfileChipStatusTextDemo />,
+    },
+    {
+      name: "Rail — real themed border (#489)",
+      notes:
+        "Rail variant with the REAL client themed-border frame via `avatarBorderSrc={avatarBorderUrl(3)}` (theme-3: gold ring + cyan accents + level-plate) — supersedes the hand-drawn OrnateRing. The 512px PNG is only downscaled (to a ~137px border box for the 48px avatar), so it stays crisp; the avatar seats concentrically inside the ring's transparent centre while the frame's wings/plate overflow the avatar box. Omit avatarBorderSrc (the other rail demos above) to keep the drawn-ring fallback.",
+      render: () => <ProfileChipRailBorderDemo />,
     },
     {
       name: "Navband — Online",

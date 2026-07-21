@@ -1,13 +1,24 @@
 "use client";
 
 import { ProfileChip } from "./profile-chip";
-import { demoSummoner, demoFriends, profileIconUrl, notificationBellUrl } from "@low/fixtures";
+import {
+  demoSummoner,
+  demoFriends,
+  profileIconUrl,
+  notificationBellUrl,
+  avatarBorderUrl,
+} from "@low/fixtures";
 import type { Summoner } from "@low/fixtures";
 
 // Real-client notification bell glyph (#399) — resolved once, passed to the
 // navband chips (the current-era chip that owns the bell). CSS mask-image tints
 // it to the button's token color so it keeps the grey-1 → gold-1 hover.
 const BELL_SRC = notificationBellUrl();
+
+// Real-client themed-border avatar frame (#489) — theme-3 (gold ring + cyan
+// accents + gold-framed level-plate), the closest match to the current-era nav
+// reference. Passed to the navband + rail-with-frame demos below.
+const BORDER_SRC = avatarBorderUrl(3);
 
 // Showcase helpers — derive availability-variant summoners from fixtures
 const awayFriend   = demoFriends[2]!; // Baus — away
@@ -101,6 +112,20 @@ export function ProfileChipStatusTextDemo() {
   );
 }
 
+export function ProfileChipRailBorderDemo() {
+  return (
+    <div className="w-[200px]">
+      <ProfileChip
+        summoner={demoSummoner}
+        level={demoSummoner.level}
+        profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+        avatarBorderSrc={BORDER_SRC}
+        onNotifications={() => console.log("notifications")}
+      />
+    </div>
+  );
+}
+
 // ── navband variant — the current-era compact chip in the TopNavbar band ──
 // Rendered over bg-blue-7 to mimic the nav band it lives in.
 
@@ -112,6 +137,7 @@ export function ProfileChipNavbandDemo() {
         summoner={demoSummoner}
         level={demoSummoner.level}
         profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+        avatarBorderSrc={BORDER_SRC}
         notificationBellSrc={BELL_SRC}
         onNotifications={() => console.log("notifications")}
         onOpenProfile={() => console.log("open profile")}
@@ -128,6 +154,7 @@ export function ProfileChipNavbandInGameDemo() {
         summoner={inGameFriend.summoner}
         level={inGameFriend.summoner.level}
         profileIconSrc={profileIconUrl(inGameFriend.summoner.profileIconId)}
+        avatarBorderSrc={BORDER_SRC}
         notificationBellSrc={BELL_SRC}
         onNotifications={() => console.log("notifications")}
       />
@@ -143,6 +170,7 @@ export function ProfileChipNavbandStatusTextDemo() {
         summoner={demoSummoner}
         level={demoSummoner.level}
         profileIconSrc={profileIconUrl(demoSummoner.profileIconId)}
+        avatarBorderSrc={BORDER_SRC}
         notificationBellSrc={BELL_SRC}
         onNotifications={() => console.log("notifications")}
         statusText="In Queue"

@@ -36,6 +36,20 @@ export interface ProfileChipProps {
    */
   notificationBellSrc?: string;
   /**
+   * Resolved URL for the real themed-border avatar frame — supply
+   * `avatarBorderUrl(theme)` from `@low/fixtures` (theme 1..21). When provided,
+   * the ornate ring around the avatar renders from this 512×512 PNG frame (a
+   * gold ring with tier-tinted flourishes + integrated level-plate) instead of
+   * the hand-drawn {@link OrnateRing}. The frame's ART occupies only the centre
+   * ~57% of its canvas with a transparent inner circle (~35% of canvas); the
+   * chip sizes the border box to `avatarSize / 0.35` and centres it so the
+   * avatar seats exactly inside the ring while the wings/plate overflow the
+   * avatar box (pointer-events-none, aria-hidden). Only ever downscaled from
+   * 512px, so it stays crisp at both navband (34px) and rail (48px). Omit to
+   * fall back to the drawn OrnateRing (back-compat).
+   */
+  avatarBorderSrc?: string;
+  /**
    * Called when the identity area (avatar + name block) is clicked. In the
    * real client the profile screen has NO main-nav tab — it opens from this
    * chip (issue #425). When provided, the identity area renders as a button
@@ -194,6 +208,48 @@ function OrnateRing({ size, uid }: { size: number; uid: string }) {
 }
 
 // ---------------------------------------------------------------------------
+// AvatarBorder — the REAL client themed-border frame (raster) around the avatar
+// ---------------------------------------------------------------------------
+
+/**
+ * Fraction of a themed-border PNG's 512px canvas taken up by the ring's
+ * transparent inner circle (where the avatar shows through). Measured as
+ * ~180/512 ≈ 0.352 and consistent across all 21 frames — see
+ * `avatarBorderUrl`'s JSDoc in `@low/fixtures`.
+ */
+const BORDER_INNER_RATIO = 180 / 512;
+
+/**
+ * Renders the real client themed-border frame over the avatar (issue #489).
+ *
+ * The 512×512 PNG's ring inner-circle is only ~35% of its canvas, so to seat the
+ * avatar exactly inside the ring the border box is sized to `size /
+ * BORDER_INNER_RATIO` (≈2.85× the avatar) and centred on the avatar; the frame's
+ * wings/gems/level-plate then overflow the avatar box. The image is
+ * pointer-events-none + aria-hidden (decorative) and object-contain so it never
+ * distorts. Only ever downscaled from 512px → stays crisp at 34px and 48px.
+ */
+function AvatarBorder({ size, src }: { size: number; src: string }) {
+  const box = size / BORDER_INNER_RATIO;
+  const offset = (box - size) / 2;
+  return (
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      className="absolute max-w-none object-contain pointer-events-none"
+      style={{
+        width: box,
+        height: box,
+        left: -offset,
+        top: -offset,
+        zIndex: 1,
+      }}
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
 // BellIcon — notification bell
 // ---------------------------------------------------------------------------
 
@@ -317,6 +373,7 @@ export function ProfileChip({
   profileIconSrc,
   onNotifications,
   notificationBellSrc,
+  avatarBorderSrc,
   onOpenProfile,
   statusText,
   variant = "rail",
@@ -385,8 +442,13 @@ export function ProfileChip({
           style={{ borderRadius: "50%", clipPath: `circle(${Math.round(clipR)}px at center)` }}
         />
 
-        {/* Ornate double ring + finial ticks */}
-        <OrnateRing size={AVATAR_SIZE} uid={uid} />
+        {/* Avatar frame — the real client themed-border raster when a src is    */}
+        {/* supplied (#489), else the hand-drawn ornate double ring (back-compat) */}
+        {avatarBorderSrc ? (
+          <AvatarBorder size={AVATAR_SIZE} src={avatarBorderSrc} />
+        ) : (
+          <OrnateRing size={AVATAR_SIZE} uid={uid} />
+        )}
 
         {/* Level badge pill — overlaps bottom-center of avatar */}
         <span
