@@ -5,8 +5,8 @@
 // MATCH FOUND "ACCEPT!" button (MatchFoundModal) are the SAME Hextech shape:
 //   - Trapezoid silhouette: NARROW flat top, sides splaying OUTWARD downward to
 //     a full-width base — capped by a CURVED BOTTOM ARC bowing downward. The top
-//     edge is gently arched upward. (v14: matches
-//     docs/reference/client-find-match-shape-v14.png.)
+//     edge is DEAD FLAT. (#427: refit to the official CommunityDragon asset
+//     lock-in-button-disabled-idle.png.)
 //   - A border "shell" layer (bg = border colour) with the fill layer inset
 //     BORDER_PX on top, both sharing one objectBoundingBox <clipPath> so the
 //     border follows the arc without CSS borders fighting the clip.
@@ -19,29 +19,26 @@
 // their palette (via `layers`) and optional overlays (via `overlay`).
 //
 // ---------------------------------------------------------------------------
-// v14 geometry — re-measured from docs/reference/client-find-match-shape-v14.png
-// (PIL, near-white bright-frame outline; scratchpad measure_v14d.py):
+// Geometry (#427) — fit to the official CommunityDragon asset
+// lock-in-button-disabled-idle.png (166×44, shape span x[1..164] y[1..41]).
+// The clip is clipPathUnits="objectBoundingBox", so the normalized silhouette
+// equals this path; constants were fit directly to the traced PNG profile.
 //
-//   Outer frame bbox 375×94 px → aspect ≈ 3.99:1.
-//   TOP edge:   outer corners at x 0.085 / 0.915 of the box width (NARROW top,
-//               ~8.5% inset per side), gently arched upward (~2px rise).
-//   SIDES:      splay OUTWARD downward — half-width 0.415 at top → 0.5 at base,
-//               reaching the FULL width (x 0 / 1) at the base corners.
-//   BASE row:   y ≈ 0.713 of the box height (where the straight sides end and
-//               the bottom arc begins).
-//   BOTTOM arc: quadratic bow from the full-width base corners down through the
-//               center tip at (0.5, 1.0); sagitta ≈ 0.287 of the box height
-//               (27px at the 94px reference scale).
+//   TOP edge:   DEAD FLAT (top peak at yf=0.000); outer corners inset 0.086 per
+//               side (x15..150 of the x[1..164] span). → TOP_ARC = 0.
+//   SIDES:      splay OUTWARD downward, reaching FULL width (x 0 / 1) at the
+//               widest row (yf≈0.75 of the shape → box y≈0.66 given the arc).
+//   BASE row:   TRAP_Y_BASE = 0.66 of the box (straight sides end, bottom arc
+//               begins).
+//   BOTTOM arc: quadratic from the full-width base corners through the center
+//               tip, control y = TRAP_BOTTOM_ARC_Y (1.05) to blunt the point.
 //
-// This REVERSES the pre-v14 silhouette: the old shape was wide-top / narrow-base
-// (inward taper, TRAP_SLOPE = 0.12). v14 is narrow-top / full-width-base
-// (outward splay, TRAP_TOP_INSET = 0.085) — the true client shape.
+// Rendered-vs-PNG silhouette: mean |ΔL| = 0.42px over the 163px-wide reference
+// (max 2.0px), excluding the singular bottom-tip row.
 //
-// Before → after (objectBoundingBox 0..1):
-//   top corners:      (0.00, 0) / (1.00, 0)   →  (0.085, ~0.02) / (0.915, ~0.02)
-//   top arc peak y:   flat (0)                →  0 (center rises ~0.02 above corners)
-//   base corners:     (0.12, 0.820) / (0.88…) →  (0.000, 0.713) / (1.000, 0.713)
-//   bottom arc tip:   (0.5, 1.0)              →  (0.5, 1.0)   [sagitta deeper vs body]
+// History: pre-v14 was wide-top / narrow-base (inward taper). v14 reversed it to
+// narrow-top / full-width-base. #427 flattened the top (was arched ~0.02) and
+// refit the base from 0.713 → 0.66 against the official disabled asset.
 //
 // Clip technique — SVG <clipPath> with clipPathUnits="objectBoundingBox":
 //   Coordinates are 0..1 fractions of the element bounding box, so the shape
@@ -61,25 +58,36 @@ import { useId, type CSSProperties, type ReactNode } from "react";
 // (pre-v14 was 2px teal). Consumers key their fill/overlay insets off this.
 export const TRAP_BORDER_PX = 3;
 
+// Geometry re-measured (#427) from the official CommunityDragon asset
+// `lock-in-button-disabled-idle.png` (166×44). Because the clip uses
+// clipPathUnits="objectBoundingBox", the normalized silhouette equals this path,
+// so constants were fit directly to the traced PNG profile (alpha>30).
+
 // Top-edge inset per side (objectBoundingBox). The flat top spans
 // x[TRAP_TOP_INSET .. 1-TRAP_TOP_INSET]; sides splay OUTWARD to full width at the
-// base. Measured 0.085 (top outer corners x136..447 in a 375px-wide frame box).
-export const TRAP_TOP_INSET = 0.085;
+// base. Measured 0.086 in the PNG (top corners x15..150 of the x[1..164] span).
+export const TRAP_TOP_INSET = 0.086;
 
-// Top-edge upward arch (objectBoundingBox y). The top center rises this far above
-// the top corners — a gentle convex arc. Measured ~2px over a 94px box ≈ 0.02.
-export const TRAP_TOP_ARC = 0.02;
+// Top-edge upward arch (objectBoundingBox y). The PNG top edge is DEAD FLAT — the
+// top peak sits at yf=0.000 with no rise over the corners — so the arch is zero.
+export const TRAP_TOP_ARC = 0.0;
 
 // Base row (objectBoundingBox y): where the straight sides end and the bottom arc
-// begins. Measured y≈0.713 (widest bright row y132 in a 94px-tall frame box).
-export const TRAP_Y_BASE = 0.713;
+// begins (the widest point). Fit to the PNG, whose widest row is at yf≈0.75 of the
+// shape; with the bottom arc reaching tip ≈0.855, that widest point lands at box
+// y≈0.66. (Was 0.713 — sides splayed a touch too steep.)
+export const TRAP_Y_BASE = 0.66;
+
+// Bottom-arc control-point y (objectBoundingBox). The quadratic base→tip→base uses
+// this as its control; 1.05 (just past the box floor) rounds the bottom point to
+// match the PNG, whose tip is slightly blunter than a y=1.0 control produces.
+export const TRAP_BOTTOM_ARC_Y = 1.05;
 
 // Arc padding: fraction of the BODY height added below for the downward bottom
 // arc. The body ends at the base row; container height = body + arc_pad. With the
-// base at TRAP_Y_BASE of the FULL box and the arc tip at y=1.0, the sagitta is
-// (1 - TRAP_Y_BASE) of the box = 0.287. Expressed as a fraction of body height:
-//   arc_pad / body = (1 - Y_BASE) / Y_BASE  ⇒  0.287 / 0.713 ≈ 0.402.
-export const TRAP_ARC_PAD_FRAC = (1 - TRAP_Y_BASE) / TRAP_Y_BASE; // ≈ 0.4025
+// base at TRAP_Y_BASE of the FULL box, the reserved arc room is (1 - Y_BASE) of
+// the box, i.e. arc_pad / body = (1 - Y_BASE) / Y_BASE ⇒ (1-0.66)/0.66 ≈ 0.515.
+export const TRAP_ARC_PAD_FRAC = (1 - TRAP_Y_BASE) / TRAP_Y_BASE; // ≈ 0.515
 
 // Bottom padding CSS: pt-3 (12px) body top + ARC_PAD_FRAC of the ~44px body.
 // Shared by both consumers so the arc room is identical everywhere.
@@ -91,20 +99,21 @@ export const TRAP_PADDING_BOTTOM = `calc(12px + 44px * ${TRAP_ARC_PAD_FRAC})`;
 //   → (bottom arc) bowing through center tip → base-left (full width)
 //   → straight side back up to top-left. Close.
 //
-// Top arc: quadratic from top-left (S, TOP_ARC) through peak (0.5, 0) to
-//          top-right (1-S, TOP_ARC) — center sits TOP_ARC above the corners.
-// Bottom arc: quadratic from base-right (1, Y_BASE) through tip (0.5, 1) to
-//          base-left (0, Y_BASE).
+// Top edge: quadratic from top-left (S, TOP_ARC) through (0.5, 0) to top-right
+//          (1-S, TOP_ARC). With TOP_ARC=0 this degenerates to a flat line.
+// Bottom arc: quadratic from base-right (1, Y_BASE) through control
+//          (0.5, TRAP_BOTTOM_ARC_Y) to base-left (0, Y_BASE).
 function trapArcPath(): string {
   const s = TRAP_TOP_INSET.toFixed(6);
   const s1 = (1 - TRAP_TOP_INSET).toFixed(6);
   const ta = TRAP_TOP_ARC.toFixed(6);
   const yb = TRAP_Y_BASE.toFixed(6);
+  const bc = TRAP_BOTTOM_ARC_Y.toFixed(6);
   return (
-    `M ${s},${ta} ` + // top-left corner (slightly below the arc peak)
-    `Q 0.5,0 ${s1},${ta} ` + // arched top edge, peaking at center (y=0)
+    `M ${s},${ta} ` + // top-left corner (flat top → ta=0)
+    `Q 0.5,0 ${s1},${ta} ` + // top edge (flat when TOP_ARC=0)
     `L 1,${yb} ` + // splay outward to full-width base-right
-    `Q 0.5,1 0,${yb} ` + // bottom arc bowing through center tip
+    `Q 0.5,${bc} 0,${yb} ` + // bottom arc bowing through center tip
     `Z` // straight side back up to the top-left start
   );
 }
