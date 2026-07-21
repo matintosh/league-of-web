@@ -27,6 +27,7 @@ import { hextechCheckboxShowcase } from "./chrome/hextech-checkbox.showcase";
 import { hextechSelectShowcase } from "./chrome/hextech-select.showcase";
 import { hextechToggleShowcase } from "./chrome/hextech-toggle.showcase";
 import { hextechTooltipShowcase } from "./chrome/hextech-tooltip.showcase";
+import { homeContentRailShowcase } from "./chrome/home-content-rail.showcase";
 import { homeNewsScreenShowcase } from "./chrome/home-news-screen.showcase";
 import { journeyTabShowcase } from "./chrome/journey-tab.showcase";
 import { launchSplashShowcase } from "./chrome/launch-splash.showcase";
@@ -135,6 +136,7 @@ export const registry: ShowcaseEntry[] = [
   hextechSelectShowcase,
   hextechToggleShowcase,
   hextechTooltipShowcase,
+  homeContentRailShowcase,
   homeNewsScreenShowcase,
   journeyTabShowcase,
   launchSplashShowcase,
