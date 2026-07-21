@@ -22,6 +22,8 @@ import {
   positionIconUrl,
   gameModeMapUrl,
   championSplashUrl,
+  regaliaBannerUrl,
+  masteryCrestUrl,
   partiesBgLoopUrl,
   partiesBackgroundUrl,
   partyBannerUrl,
@@ -777,32 +779,24 @@ export function PartyLobbyScreen({
           ),
         )}
 
-        {/* Self banner (center) */}
+        {/* Self banner (center) — the current-client 2025 ornate rank frame
+            (issues #471/#475): the challenger regalia banner backdrop + wreath
+            foot, a masked red-tinted champion splash, gold crest + crown, the
+            handwriting-script signature stand-in, name + "Final Boss Faker"
+            title, and three mastery medallions. Teammate flankers keep the V11
+            heraldic flag (the reference shows the rank frame on self only). */}
         <PlayerBanner
           name={demoSummoner.gameName}
           avatarSrc={profileIconUrl(demoSummoner.profileIconId)}
-          wingTier="gold"
           isSelf
-          level={demoSummoner.level}
-          autofillProtected
-          queueing={isQueueing}
-          tierGem="gold"
-          sweepVideoSrc={BANNER_SWEEP_SELF_SRC}
-          badges={[
-            { iconSrc: "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests/gold.png", ringColor: "var(--color-gold-3)" },
-            { iconSrc: "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests/challenger.png", ringColor: "var(--color-gold-2)" },
-            undefined,
-          ]}
-        >
-          <RoleSlotRow
-            size="md"
-            slots={[
-              { role: pickableToSlotRole(priorityRole) },
-              { role: pickableToSlotRole(secondaryRole) },
-            ]}
-            iconSrcFor={iconSrcFor}
-          />
-        </PlayerBanner>
+          crownChip
+          title="Final Boss Faker"
+          signature={demoSummoner.gameName}
+          regaliaSrc={regaliaBannerUrl("challenger")}
+          backdropSrc={championSplashUrl("Ahri")}
+          masteryCrests={[masteryCrestUrl(10), masteryCrestUrl(9), masteryCrestUrl(7)]}
+          onEditLoadout={() => {}}
+        />
 
         {/* Right flankers. R1 (i === 0) surfaces the invited flag when its slot
             is empty — a single pending invite in the solo lobby (see

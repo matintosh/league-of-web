@@ -13,6 +13,9 @@ import {
   PlayerBannerBadgeSlotsDemo,
   PlayerBannerSweepDemo,
   PlayerBannerInvitedDemo,
+  PlayerBannerRankFrameDemo,
+  PlayerBannerRankTiersDemo,
+  PlayerBannerPrestigeDemo,
 } from "./player-banner.demo";
 
 export const playerBannerShowcase: ShowcaseEntry = {
@@ -20,8 +23,26 @@ export const playerBannerShowcase: ShowcaseEntry = {
   name: "Player Banner",
   area: "lobby",
   description:
-    "Vertical heraldic banner card for the pre-game lobby. The flag chrome is the REAL client party-banner art (issue #336) — CommunityDragon rcp-fe-lol-parties `banner-filled.png`, a straight-alpha PNG that carries the whole silhouette (scooped-neck top, ornate gold corner scrolls, double-V pointed bottom) plus its gold trim, dropped in as one background <img>. The avatar crest / tier gem / level badge / badges / role row / footer composite on top; content is padded clear of the pointed-bottom band. Crown+name above the shape. Self reuses the same art brightened (its baked medallion ring lives in the unused current-player-banner art, so the live AvatarCrest ring isn't doubled). Deep review #378: the flag panel now renders as the real client's TALL translucent column (h/w≈2.5 — the native banner-filled art is a stubby 1.44 shield; the v11 client stretches it into a column matching the invited flag beside it) at reduced opacity so it reads as a dark navy panel the lobby bg shows through, with the ranked wings scaled up to dominate/frame the medallion and the tier gem enlarged. Widths stay 120px (self) / 96px (teammate). Empty: large grey + circle (~90px). Queue treatment (queueing=true): empty slots show dark circle with blue glow ring; self banner shows asterisk foot glyph. Wing art from CommunityDragon ranked-emblem PNGs. tierGem prop adds a ranked-mini-crest PNG at 12 o'clock on the portrait ring; badges tuple adds 3 circular badge slots below the role row.",
+    "Vertical banner card for the pre-game lobby. The SELF banner has TWO treatments: the current-client 2025 ornate rank-frame (issues #471/#475 — pass regaliaSrc = regaliaBannerUrl(tier): a masked red-tinted champion-splash backdrop, gold crest + crown finial, a handwriting-script signature stand-in, name + title, three mastery medallions, a tier-coloured wreath foot, and edit/loadout mini-icons), and the legacy V11 heraldic flag (no regaliaSrc) which teammate / party slots always use. The V11 flag chrome is the REAL client party-banner art (issue #336) — CommunityDragon rcp-fe-lol-parties `banner-filled.png`, a straight-alpha PNG that carries the whole silhouette (scooped-neck top, ornate gold corner scrolls, double-V pointed bottom) plus its gold trim, dropped in as one background <img>. The avatar crest / tier gem / level badge / badges / role row / footer composite on top; content is padded clear of the pointed-bottom band. Crown+name above the shape. Self reuses the same art brightened (its baked medallion ring lives in the unused current-player-banner art, so the live AvatarCrest ring isn't doubled). Deep review #378: the flag panel now renders as the real client's TALL translucent column (h/w≈2.5 — the native banner-filled art is a stubby 1.44 shield; the v11 client stretches it into a column matching the invited flag beside it) at reduced opacity so it reads as a dark navy panel the lobby bg shows through, with the ranked wings scaled up to dominate/frame the medallion and the tier gem enlarged. Widths stay 120px (self) / 96px (teammate). Empty: large grey + circle (~90px). Queue treatment (queueing=true): empty slots show dark circle with blue glow ring; self banner shows asterisk foot glyph. Wing art from CommunityDragon ranked-emblem PNGs. tierGem prop adds a ranked-mini-crest PNG at 12 o'clock on the portrait ring; badges tuple adds 3 circular badge slots below the role row.",
   variants: [
+    {
+      name: "2025 ornate rank-frame (self) — matintosh / challenger",
+      notes:
+        "The current-client (2025) self banner (issues #471/#475). Supplying regaliaSrc on an isSelf banner switches from the V11 heraldic flag to the ornate rank frame: the regalia tier banner (regaliaBannerUrl — a 512×512 straight-alpha PNG that carries BOTH the tall dark backdrop panel and its tier-coloured ornate wreath foot) as the frame; a champion splash (championSplashUrl) masked in behind the crest with a deep-red SR-parties tint (ban-red tokens via color-mix); a gold header crest + crown finial; a handwriting-script SIGNATURE flourish of the name; the plain summoner name (gold-cream) + captain crown; a title line (\"Final Boss Faker\", italic grey); three circular mastery medallions (masteryCrestUrl); and edit/loadout mini-icons above the wreath foot. FONT-SUBSTITUTION divergence: the real client renders a bespoke signature image (no extractable asset) — the signature here is a Dancing Script web-font stand-in (font-signature token), an intentional named divergence, not a pixel match.",
+      render: () => <PlayerBannerRankFrameDemo />,
+    },
+    {
+      name: "Rank-frame across tiers (unranked / gold / emerald / challenger)",
+      notes:
+        "The wreath foot + frame accent are tier-coloured — the regalia banner PNG differs per tier. Shows regaliaBannerUrl for unranked (grey), gold (gold V-point), emerald (green), and challenger (blue/gold winged wreath). Note emerald ships as a bare emerald_banner.png (no NN_ prefix) — it was inserted between gold(04) and platinum(05); the helper encodes this.",
+      render: () => <PlayerBannerRankTiersDemo />,
+    },
+    {
+      name: "Rank-frame — prestige splash + frame-only (no splash)",
+      notes:
+        "Left: a prestige/skin splash (championSplashUrl skin variant) masked into the challenger frame. Right: the frame-only fallback — no backdropSrc, so the plain dark regalia panel shows behind the crest, and a single mastery medallion. Demonstrates the backdrop is optional and the medallions row scales to fewer than three.",
+      render: () => <PlayerBannerPrestigeDemo />,
+    },
     {
       name: "Heraldic shape — self + teammate + empty circle",
       notes:

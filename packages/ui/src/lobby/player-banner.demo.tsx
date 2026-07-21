@@ -3,7 +3,15 @@
 import { useState } from "react";
 import { PlayerBanner } from "./player-banner";
 import { RoleSlotRow } from "./role-slot-row";
-import { profileIconUrl, bannerSweepVideoUrl, partyBannerUrl } from "@low/fixtures";
+import {
+  profileIconUrl,
+  bannerSweepVideoUrl,
+  partyBannerUrl,
+  regaliaBannerUrl,
+  championSplashUrl,
+  masteryCrestUrl,
+} from "@low/fixtures";
+import type { RankedTier } from "@low/fixtures";
 
 // Stable profile icon URLs for demos
 const AVATAR_1 = profileIconUrl(1);
@@ -47,6 +55,95 @@ export function PlayerBannerSelfDemo() {
           iconSrcFor={roleIconSrc}
         />
       </PlayerBanner>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 2025 ornate rank-frame (self banner) — issues #471 / #475
+//
+// The regalia tier banner (regaliaBannerUrl) is the ornate frame backdrop +
+// wreath foot; the champion splash (championSplashUrl) masks in red-tinted
+// behind the crest; masteryCrestUrl feeds the three medallions; `signature`
+// is the handwriting-font stand-in for the real client's rendered signature.
+// ---------------------------------------------------------------------------
+
+const RANK_SPLASH = championSplashUrl("Ahri");
+const RANK_MASTERY = [
+  masteryCrestUrl(10),
+  masteryCrestUrl(9),
+  masteryCrestUrl(7),
+];
+
+export function PlayerBannerRankFrameDemo() {
+  return (
+    <div className="flex items-end justify-center gap-6 p-8 bg-blue-6">
+      <PlayerBanner
+        name="matintosh"
+        title="Final Boss Faker"
+        avatarSrc={AVATAR_1}
+        isSelf
+        crownChip
+        signature="matintosh"
+        regaliaSrc={regaliaBannerUrl("challenger")}
+        backdropSrc={RANK_SPLASH}
+        masteryCrests={RANK_MASTERY}
+        onEditLoadout={() => {}}
+      />
+    </div>
+  );
+}
+
+// Variants across a few tiers — the wreath foot / frame accent is tier-coloured.
+export function PlayerBannerRankTiersDemo() {
+  const tiers: RankedTier[] = ["unranked", "gold", "emerald", "challenger"];
+  return (
+    <div className="flex flex-wrap items-end justify-center gap-4 p-8 bg-blue-6">
+      {tiers.map((tier) => (
+        <PlayerBanner
+          key={tier}
+          name="matintosh"
+          title="Final Boss Faker"
+          avatarSrc={AVATAR_1}
+          isSelf
+          crownChip
+          signature="matintosh"
+          regaliaSrc={regaliaBannerUrl(tier)}
+          backdropSrc={RANK_SPLASH}
+          masteryCrests={RANK_MASTERY}
+          onEditLoadout={() => {}}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Prestige/event banner — raw slug via the string overload (Spirit Blossom).
+export function PlayerBannerPrestigeDemo() {
+  return (
+    <div className="flex items-end justify-center gap-6 p-8 bg-blue-6">
+      <PlayerBanner
+        name="matintosh"
+        title="Spirit Blossom Festival"
+        avatarSrc={AVATAR_2}
+        isSelf
+        crownChip
+        signature="matintosh"
+        regaliaSrc={regaliaBannerUrl("challenger")}
+        backdropSrc={championSplashUrl("Ahri", 4)}
+        masteryCrests={RANK_MASTERY}
+        onEditLoadout={() => {}}
+      />
+      {/* No splash backdrop → plain dark panel behind the crest */}
+      <PlayerBanner
+        name="NoSplash"
+        title="Frame only"
+        avatarSrc={AVATAR_3}
+        isSelf
+        signature="NoSplash"
+        regaliaSrc={regaliaBannerUrl("diamond")}
+        masteryCrests={[masteryCrestUrl(7)]}
+      />
     </div>
   );
 }

@@ -155,6 +155,9 @@
   /* Typography — font files loaded by the app via next/font, exposed as vars */
   --font-display: var(--font-marcellus), "Marcellus", serif;
   --font-body: var(--font-inter), "Inter", sans-serif;
+  /* Handwriting-script face for the PlayerBanner signature flourish (#471).
+     FONT-SUBSTITUTION stand-in for the client's rendered signature (no asset). */
+  --font-signature: var(--font-dancing), "Dancing Script", cursive;
 
   /* Motion — Hextech preset timings + easings (issue #299), mirroring Riot's
      shared-mixin approach so all client motion "feels Hextech". Easing conveys
