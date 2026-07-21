@@ -229,14 +229,17 @@ function WindowControls({
 }
 
 /**
- * WindowFrame wraps the entire app shell with the LoL client's outer chrome:
- * a 1px gold-5 border and hextech-black background.
+ * WindowFrame wraps the entire app shell with the LoL client's outer chrome
+ * over a hextech-black background.
  *
  * Two chrome variants (see {@link WindowFrameProps.chrome}):
  * - `"titlebar"` (default): a slim draggable title bar with controls at its
- *   right end — the classic layout, still used by the login window.
+ *   right end — the classic layout, still used by the login window. Keeps the
+ *   full 1px gold-5 border box.
  * - `"integrated"`: no title-bar row; the controls float at the top-right,
  *   above the shell content and in-frame overlays (current-client era, #385).
+ *   Per #505 it has NO border box — only a ~2px gold TOP line that connects to
+ *   the active-tab chevron; left/right/bottom are borderless.
  *
  * Purely presentational — no internal state.
  */
@@ -268,7 +271,13 @@ export function WindowFrame({
 
   if (chrome === "integrated") {
     return (
-      <div className="relative flex h-full w-full flex-col border border-gold-5 bg-hextech-black">
+      /* #505: the current client draws NO box around the window — only a thin
+         (~2px) gold line caps the very TOP edge, which reads as one continuous
+         gold accent with the active-tab chevron descending from it (the nav is
+         an absolute overlay at top-0 per #502, so this border sits exactly at
+         the nav's top edge). Left / right / bottom stay borderless. gold-3
+         matches the ActiveChevron token so the line and chevron are one hue. */
+      <div className="relative flex h-full w-full flex-col border-t-2 border-gold-3 bg-hextech-black">
         {/* Content fills the whole frame — no title-bar row is reserved. */}
         <div className="flex-1 overflow-auto">{children}</div>
 
