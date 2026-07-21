@@ -152,24 +152,33 @@ export const rpIconSizedUrl = (size: 24 | 32 | 48 | 72): string =>
   cdragonStaticUrl(`images/icon-rp-${size}.png`);
 
 /**
- * Navigation bar icon for a named section.
- * Supported names: "loot", "collections", "store", "profile".
- * Source: CommunityDragon rcp-fe-lol-static-assets · images/nav-icon-{name}.svg
+ * Top-nav icon-cluster glyph for a named section (issue #512) — the official
+ * CommunityDragon SVGs the live client renders in its current-era right cluster,
+ * so our cluster stops using hand-drawn stand-ins where a real asset exists.
+ *
+ * Slugs → file (all confirmed HTTP 200, CommunityDragon `latest`, 2026-07):
+ *   "store"       → nav-icon-store.svg           (the three-coins glyph)
+ *   "loot"        → nav-icon-loot.svg            (the crossed-pickaxe/tool glyph)
+ *   "collections" → nav-icon-collections.svg     (the satchel/briefcase glyph)
+ *   "profile"     → nav-icon-profile.svg         (the player-bust glyph)
+ *   "updates-eat" → top-nav-updates-eat-icon.svg (the activity-center bust badge)
+ *
+ * These SVGs carry baked cream fills (#f0e6d2 / #cdbe91) — they read gold-cream
+ * on the dark nav band with no filter, matching the reference cream silhouettes.
+ * (The "updates-eat" variant fills dark #3d2e1d for use on a gold chip, so it is
+ * NOT suited to the bare dark band — prefer "collections" for the satchel slot.)
+ *
+ * Source: CommunityDragon rcp-fe-lol-static-assets · {file}
  * License: Riot fan-content policy (non-commercial fan use).
  */
 export const navIconUrl = (
-  name: "loot" | "collections" | "store" | "profile",
-): string => cdragonStaticUrl(`images/nav-icon-${name}.svg`);
-
-/**
- * Updates / notifications nav-band glyph — the player-bust badge that sits in
- * the current-era top-nav icon cluster (era shift #384/#386). Shares the same
- * 26×24 band canvas as the profile/collections glyphs.
- * Source: CommunityDragon rcp-fe-lol-static-assets · images/top-nav-updates-eat-icon.svg
- * License: Riot fan-content policy (non-commercial fan use).
- */
-export const navUpdatesIconUrl = (): string =>
-  cdragonStaticUrl("images/top-nav-updates-eat-icon.svg");
+  name: "store" | "loot" | "collections" | "profile" | "updates-eat",
+): string =>
+  cdragonStaticUrl(
+    name === "updates-eat"
+      ? "top-nav-updates-eat-icon.svg"
+      : `nav-icon-${name}.svg`,
+  );
 
 /**
  * RP top-up button glyph for the current-era currency block (era shift #386) —

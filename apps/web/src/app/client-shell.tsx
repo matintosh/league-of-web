@@ -46,6 +46,7 @@ import {
   avatarBorderUrl,
   rpTopUpIconUrl,
   yourShopIconVideoUrl,
+  navIconUrl,
   gameModeMapUrl,
   positionIconUrl,
   rankedEmblemUrl,
@@ -149,17 +150,20 @@ const YOUR_SHOP_EXPIRY = "Offers expire October 30 at 18:00 EET";
 
 
 // ---------------------------------------------------------------------------
-// Right nav-cluster glyphs (#463/#500) — the 2025 reference right cluster reads
-// as two groups of three split by a divider:
+// Right nav-cluster glyphs (#463/#500/#512) — the 2025 reference right cluster
+// reads as two groups of three split by a divider:
 //   A: cupped OPEN HANDS "2" · fanned LOOT CARDS "10" · RUNE-LEAF crest
 //   | divider |
 //   B: BRIEFCASE/satchel• · crossed HEXTECH BLADES · stacked COINS
-// #500: these were redrawn to trace the reference crop (scratchpad/navpolish/
-// ref-cluster.png). The real client renders them as SOLID cream SILHOUETTES
-// (filled, not stroked outlines), so these are filled `currentColor` paths — the
-// nav-icon-* CDN assets (loot pickaxe / vault chest / three-coins) are the older
-// era and don't match these 2025 shapes, so per the #386 placeholder rule they
-// stay faithful inline glyphs. 22px on a 24px canvas, matching the icon pitch.
+// #512: the group-B trio (satchel / crossed-tool / coins) now renders the OFFICIAL
+// CommunityDragon SVGs the live client ships — `navIconUrl("collections")` (the
+// satchel), `navIconUrl("loot")` (the crossed pickaxe/tool), and
+// `navIconUrl("store")` (the three coins) — swapped in inline at the buttons
+// below. Those SVGs carry baked cream fills, so they read gold on the dark band
+// with no tint. The group-A trio (hand / cards / crest) has NO faithful official
+// match — the nav-icon-profile/updates-eat assets are player busts, not these
+// shapes — so per the #386 placeholder rule they stay hand-drawn cream silhouettes
+// (filled `currentColor` paths, 22px on a 24px canvas, matching the icon pitch).
 // ---------------------------------------------------------------------------
 
 /** Cupped open hands (gift/receive) — group-A slot 1 (badge "2"). Two open
@@ -204,52 +208,6 @@ function CrestGlyph() {
     </svg>
   );
 }
-
-/** Briefcase / satchel — group-B slot 4 (carries a small notification dot).
- *  A rounded bag with a top handle and a horizontal flap seam, per the ref. */
-function SatchelGlyph() {
-  return (
-    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
-      {/* Top handle — a flat arch clear of the case body */}
-      <path d="M9 8V6.7A3 3 0 0 1 15 6.7V8h-1.5V6.7a1.5 1.5 0 0 0-3 0V8H9Z" />
-      {/* Case body — wide rounded rectangle with a horizontal lid seam + a small
-          latch tab, reading clearly as a briefcase (not a padlock). */}
-      <path d="M4.6 9.4c0-.55.45-1 1-1h12.8c.55 0 1 .45 1 1v8.9c0 .72-.58 1.3-1.3 1.3H5.9c-.72 0-1.3-.58-1.3-1.3V9.4Zm.9 3.3h13v-.8h-13v.8Zm5.7 0h2.6v1.5a.6.6 0 0 1-.6.6h-1.4a.6.6 0 0 1-.6-.6v-1.5Z" fillRule="evenodd" clipRule="evenodd" />
-    </svg>
-  );
-}
-
-/** Crossed hextech blades — group-B slot 5. A sword crossed with a wand,
- *  with a spark burst, matching the reference X-shape. */
-function CrossedSwordsGlyph() {
-  return (
-    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
-      {/* Blade 1 — top-left to bottom-right, tapered point + short guard/hilt */}
-      <path d="M4.6 4.2 6 3.9l11.4 12.7 1.4 2.7-2.7-1.3L4.7 5.5l-.1-1.3ZM16.4 17.8l2.4 2.2-.6.6-2.3-2.3.5-.5Z" fillRule="evenodd" clipRule="evenodd" />
-      {/* Blade 2 — top-right to bottom-left (wand), tapered */}
-      <path d="M19.4 4.2 18 3.9 6.6 16.6l-1.4 2.7 2.7-1.3L19.3 5.5l.1-1.3ZM7.6 17.8 5.2 20l.6.6 2.3-2.3-.5-.5Z" fillRule="evenodd" clipRule="evenodd" />
-      {/* Spark burst at the crossing */}
-      <path d="M12 8.2l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z" />
-    </svg>
-  );
-}
-
-/** Stacked coins — group-B slot 6 (opens Your Shop). A small cluster of disc
- *  coins piled left + a taller stack right, per the reference. */
-function CoinsGlyph() {
-  return (
-    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-gold-2">
-      {/* Left short stack — two coins */}
-      <ellipse cx="8.5" cy="14" rx="3.6" ry="1.6" />
-      <path d="M4.9 14v2.3c0 .88 1.6 1.6 3.6 1.6s3.6-.72 3.6-1.6V14c0 .88-1.6 1.6-3.6 1.6S4.9 14.88 4.9 14Z" />
-      {/* Right tall stack — three coins */}
-      <ellipse cx="15.5" cy="9.5" rx="3.6" ry="1.6" />
-      <path d="M11.9 9.5v2.2c0 .88 1.6 1.6 3.6 1.6s3.6-.72 3.6-1.6V9.5c0 .88-1.6 1.6-3.6 1.6s-3.6-.72-3.6-1.6Z" />
-      <path d="M11.9 11.7v2.2c0 .88 1.6 1.6 3.6 1.6s3.6-.72 3.6-1.6v-2.2c0 .88-1.6 1.6-3.6 1.6s-3.6-.72-3.6-1.6Z" />
-    </svg>
-  );
-}
-
 
 // ---------------------------------------------------------------------------
 // TFT Hub fixtures — page-level values (no fetching in @low/ui)
@@ -1020,7 +978,9 @@ export function ClientShell() {
                       className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
                       onClick={() => setShowUpdates((v) => !v)}
                     >
-                      <SatchelGlyph />
+                      {/* Official Riot satchel/briefcase SVG (nav-icon-collections)
+                          — baked cream fill reads gold on the dark band (#512). */}
+                      <img src={navIconUrl("collections")} alt="" aria-hidden="true" className="h-[22px] w-[22px]" />
                     </button>
                     {/* Unread notification dot — small gold disc at the icon's
                         top-right, shown only when there are unread items. */}
@@ -1052,7 +1012,9 @@ export function ClientShell() {
                     className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
                     onClick={() => { setActiveStoreTab("featured"); setView("store"); setActiveNavId("store"); }}
                   >
-                    <CrossedSwordsGlyph />
+                    {/* Official Riot crossed-tool SVG (nav-icon-loot) — the
+                        reference cluster's crossed-blades slot (#512). */}
+                    <img src={navIconUrl("loot")} alt="" aria-hidden="true" className="h-[22px] w-[22px]" />
                   </button>
                   {/* Coins → Your Shop. The 2025 reference has no gold chest in
                       this row (that CTA was retired here); the coins glyph opens
@@ -1063,7 +1025,9 @@ export function ClientShell() {
                     className="flex h-7 w-7 cursor-pointer items-center justify-center opacity-80 transition-opacity duration-150 hover:opacity-100"
                     onClick={() => setShowYourShop(true)}
                   >
-                    <CoinsGlyph />
+                    {/* Official Riot three-coins SVG (nav-icon-store) — the
+                        reference cluster's coins/loot-stack slot (#512). */}
+                    <img src={navIconUrl("store")} alt="" aria-hidden="true" className="h-[22px] w-[22px]" />
                   </button>
                 </div>
 

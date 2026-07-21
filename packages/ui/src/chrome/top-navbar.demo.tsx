@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
   demoWallet,
   navIconUrl,
-  navUpdatesIconUrl,
   navMissionIconUrl,
   rpIconUrl,
   rpTopUpIconUrl,
@@ -147,7 +146,7 @@ export function TopNavbarCurrentEraDemo() {
             <ClusterIcon label="Collection" src={navIconUrl("collections")} size={22} />
             <ClusterIcon label="Missions" src={navMissionIconUrl("mission")} size={20} disabled />
             <ClusterIcon label="Loot" src={navIconUrl("loot")} size={22} />
-            <ClusterIcon label="Updates" src={navUpdatesIconUrl()} size={22} disabled />
+            <ClusterIcon label="Updates" src={navIconUrl("updates-eat")} size={22} disabled />
             <ClusterIcon label="Store" src={navIconUrl("store")} size={20} />
           </div>
           <div className="h-5 w-px shrink-0 bg-gold-5" aria-hidden="true" />
