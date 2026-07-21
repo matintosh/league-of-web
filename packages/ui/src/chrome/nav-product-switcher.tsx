@@ -95,7 +95,9 @@ function ActiveCell() {
       className="pointer-events-none absolute inset-0"
       style={{
         backgroundImage:
-          "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 80%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 48%, transparent) 82%, color-mix(in srgb, var(--color-gold-4) 18%, transparent) 100%)",
+          "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 80%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 48%, transparent) 40%, color-mix(in srgb, var(--color-gold-4) 55%, transparent) 100%)",
+     
+     
       }}
     />
   );
@@ -265,7 +267,7 @@ export function NavProductSwitcher({
                 isDisabled
                   ? "cursor-default text-grey-2 pointer-events-none"
                   : isActive
-                  ? "cursor-pointer text-gold-1"
+                  ? "cursor-pointer text-gold-1 font-bold"
                   : "cursor-pointer text-grey-1 hover:text-gold-1",
               ].join(" ")}
             >

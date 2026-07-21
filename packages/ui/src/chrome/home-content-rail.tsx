@@ -60,7 +60,7 @@ export function HomeContentRail({
       // the featured splash bleeds completely through (reversing the #524 scrim).
       // The only chrome separating the rail from the splash is a single 1px RIGHT
       // border in white at 50% opacity (via the new --color-white token, #529).
-      className="flex h-full w-full min-w-[230px] max-w-[260px] flex-col border-r border-white/50 py-6"
+      className="flex h-[85%] mt-4 w-full min-w-[230px] max-w-[260px] flex-col border-r border-white/10 py-2"
     >
       <div className="flex flex-1 flex-col gap-1">
         {items.map((item) => (
@@ -74,11 +74,12 @@ export function HomeContentRail({
       </div>
 
       {pinnedItem != null && (
-        <div className="mt-6 border-t border-gold-5 pt-4">
+        <div className="mt-6 border-t border-white/10 pt-4 w-[80%] mx-auto">
           <ContentRailRow
             item={pinnedItem}
             isActive={pinnedItem.id === activeId}
             onSelect={onSelect}
+            noSidePadding={true}
           />
         </div>
       )}
@@ -90,9 +91,10 @@ interface ContentRailRowProps {
   item: HomeContentRailItem;
   isActive: boolean;
   onSelect: (id: string) => void;
+  noSidePadding?: boolean;
 }
 
-function ContentRailRow({ item, isActive, onSelect }: ContentRailRowProps) {
+function ContentRailRow({ item, isActive, onSelect, noSidePadding = false }: ContentRailRowProps) {
   const showThumb = isActive && item.thumbnailSrc != null;
 
   return (
@@ -102,7 +104,8 @@ function ContentRailRow({ item, isActive, onSelect }: ContentRailRowProps) {
       aria-selected={isActive}
       onClick={() => onSelect(item.id)}
       className={[
-        "group flex w-full cursor-pointer items-center gap-3 px-5 py-1.5 text-left transition-colors duration-150",
+        "group flex w-full cursor-pointer items-center gap-3 py-1.5 text-left transition-colors duration-150",
+        noSidePadding ? "" : "px-5",
         isActive ? "text-gold-1" : "text-gold-cream hover:text-gold-1",
       ].join(" ")}
     >
