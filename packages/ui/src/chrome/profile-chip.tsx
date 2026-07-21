@@ -228,8 +228,11 @@ const BORDER_INNER_RATIO = 180 / 512;
  * `ringOuter / BORDER_RING_RATIO` so the *visible ring* lands at a chosen pixel
  * diameter (≈48–56px in the reference) instead of blowing the box up to
  * `avatar / BORDER_INNER_RATIO` (≈2.85×, the #492 overflow that broke the band).
- * The frame's clasps then overflow only a few px past the avatar box — capped so
- * they never reach the name/currency (the #499 regression must not return).
+ * The frame's wing-tips still flare ~25.65px past each side of the 34px avatar
+ * box, so the navband clips the frame's painted footprint to ±28px from the
+ * avatar centre (AvatarBorder `clipHalfWidth`) — keeping the full ring but
+ * trimming the wing-tips off both the name (right) and currency (left). See the
+ * ringOuter comment in ProfileChip (#521).
  */
 const BORDER_RING_RATIO = 324 / 512;
 
@@ -248,6 +251,14 @@ const BORDER_RING_RATIO = 324 / 512;
  *   BORDER_INNER_RATIO` (≈2.85× the avatar) so the inner circle equals the
  *   avatar and the wings/plate overflow generously.
  *
+ * `clipHalfWidth` (navband, #521) horizontally clips the painted footprint to
+ * ±`clipHalfWidth` px from the avatar centre via `clip-path: inset()`. The box
+ * is 85.3px for a 54px ring, so its side wing-tips flare ±25.65px past the 34px
+ * avatar and paint over BOTH siblings (name right, currency left). Clipping to
+ * ~±28px keeps the full ring (needs ±27px), the bottom crescent/gem and the
+ * level plate, and trims only the outer wing-tips (which aren't in the reference
+ * frame). Vertical extent is left unclipped (top/bottom = 0).
+ *
  * object-contain so the frame never distorts; only ever downscaled from 512px so
  * it stays crisp. aria-hidden — purely decorative.
  */
@@ -255,13 +266,20 @@ function AvatarBorder({
   size,
   src,
   ringOuter,
+  clipHalfWidth,
 }: {
   size: number;
   src: string;
   ringOuter?: number;
+  clipHalfWidth?: number;
 }) {
   const box = ringOuter ? ringOuter / BORDER_RING_RATIO : size / BORDER_INNER_RATIO;
   const offset = (box - size) / 2;
+  // Trim per horizontal side = box half-width − requested half-width. The img is
+  // `box` wide and centred on the avatar centre (left: -offset), so trimming
+  // this much off each side leaves a ±clipHalfWidth painted band around centre.
+  const sideTrim =
+    clipHalfWidth !== undefined ? Math.max(0, box / 2 - clipHalfWidth) : 0;
   return (
     <img
       src={src}
@@ -274,6 +292,7 @@ function AvatarBorder({
         left: -offset,
         top: -offset,
         zIndex: 1,
+        clipPath: sideTrim > 0 ? `inset(0 ${sideTrim}px)` : undefined,
       }}
     />
   );
@@ -422,11 +441,21 @@ export function ProfileChip({
   const AVATAR_SIZE = isNavband ? 34 : 48;
   // navband: render the themed border COMPACT — the visible gold ring lands at
   // ~54px (measured off the reference: ring outer ≈55–57px around the ~34px
-  // avatar) via AvatarBorder's ringOuter path, so only tiny clasps overflow the
-  // avatar box (≤~11px each side) and the chip footprint stays the avatar size —
-  // no reach into the currency/name (the #499 regression). rail keeps the
-  // generous inner-hole sizing (undefined ringOuter).
+  // avatar) via AvatarBorder's ringOuter path. The border box is 85.3px
+  // (54/BORDER_RING_RATIO), so its side wing-tips flare ~25.65px past each side
+  // of the 34px avatar box and — since the frame is an absolutely-centred z-1
+  // element — paint over BOTH siblings (name on the right, currency on the
+  // left). We clip the frame's painted footprint to ±28px from the avatar centre
+  // (clipHalfWidth) so the wing-tips can't reach either sibling, while keeping
+  // the full ~54px ring (needs ±27px) + bottom crescent/gem + level plate. The
+  // name block is also offset (ml-[18px]) for extra clearance on the right. This
+  // fixes the #492/#499 occlusion class on both sides (#521). rail keeps the
+  // generous inner-hole sizing (undefined ringOuter, no clip).
   const ringOuter = isNavband ? 54 : undefined;
+  // Half-width of the frame's allowed painted band, measured from the avatar
+  // centre. 28px > the ring's 27px radius (ring stays intact) but < the 42.66px
+  // box half-width, so only the outer wing-tips get trimmed.
+  const frameClipHalfWidth = isNavband ? 28 : undefined;
   // Inner clip radius matches OrnateRing's clipR (outerR - gap - 1.5).
   const clipR = AVATAR_SIZE * 0.5 - 1 - 3 - 1.5;
   // navband: cream name (matches reference), status tinted to its dot. rail:
@@ -482,7 +511,12 @@ export function ProfileChip({
         {/* Avatar frame — the real client themed-border raster when a src is    */}
         {/* supplied (#489), else the hand-drawn ornate double ring (back-compat) */}
         {avatarBorderSrc ? (
-          <AvatarBorder size={AVATAR_SIZE} src={avatarBorderSrc} ringOuter={ringOuter} />
+          <AvatarBorder
+            size={AVATAR_SIZE}
+            src={avatarBorderSrc}
+            ringOuter={ringOuter}
+            clipHalfWidth={frameClipHalfWidth}
+          />
         ) : (
           <OrnateRing size={AVATAR_SIZE} uid={uid} />
         )}
@@ -505,8 +539,17 @@ export function ProfileChip({
 
       {/* ------------------------------------------------------------------ */}
       {/* Name + availability row                                             */}
+      {/*                                                                     */}
+      {/* navband: the compact themed frame's visible ring lands at ~54px,    */}
+      {/* but its right clasp/wing art flares ~25.65px past the 34px avatar    */}
+      {/* box ((85.3−34)/2). The IdentityArea gap-2 (8px) alone left ~17.7px   */}
+      {/* of clasp painting over the name start (the #492/#499 regression,     */}
+      {/* #521). We clear the name by pushing it a further 18px right, so the  */}
+      {/* name origin sits 26px (8px gap + 18px) from the avatar edge — just   */}
+      {/* past the ~25.65px overhang, landing the clasp in empty space. The    */}
+      {/* frame stays untouched (reference-matched ring), only the name moves. */}
       {/* ------------------------------------------------------------------ */}
-      <div className={isNavband ? "min-w-0" : "min-w-0 flex-1"}>
+      <div className={isNavband ? "ml-[18px] min-w-0" : "min-w-0 flex-1"}>
         {/* Summoner name — navband uses the Marcellus display serif (matches the
             reference, which renders the name in the client's serif face, not the
             body sans) at a compact 13px cream, sized so the name cap-height is
