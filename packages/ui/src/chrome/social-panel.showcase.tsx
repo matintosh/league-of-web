@@ -2,6 +2,7 @@ import type { ShowcaseEntry } from "../showcase";
 import {
   SocialPanelAmbientDemo,
   SocialPanelEmptyGroupDemo,
+  SocialPanelEmptyListDemo,
   SocialPanelFullReplicaDemo,
   SocialPanelInteractiveDemo,
   SocialPanelNoRequestsDemo,
@@ -39,6 +40,12 @@ export const socialPanelShowcase: ShowcaseEntry = {
       notes:
         "A group with zero friends. FriendGroupHeader shows (0/0) and no rows appear below it. Requests row hidden (no requestCount prop).",
       render: () => <SocialPanelEmptyGroupDemo />,
+    },
+    {
+      name: "Empty list — poro empty state (#433)",
+      notes:
+        'groups={[]} with a poroSrcFor resolver supplied: the panel branches to SocialPanelEmptyState, showing the "?" poro and "Add a friend to get started" (the new-account state). Omit poroSrcFor and the scroll area stays empty (legacy behaviour). data-shot="social-panel-empty-list".',
+      render: () => <SocialPanelEmptyListDemo />,
     },
     {
       name: "No requests (requestCount=0)",

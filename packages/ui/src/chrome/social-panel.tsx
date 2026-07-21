@@ -1,11 +1,12 @@
 "use client";
 
-import type { Summoner } from "@low/fixtures";
+import type { PoroVariant, Summoner } from "@low/fixtures";
 import { AmbientVideoLayer } from "./ambient-video-layer";
 import { FriendGroupHeader } from "./friend-group-header";
 import { FriendRequestsRow } from "./friend-requests-row";
 import { FriendRow } from "./friend-row";
 import { SocialHeader, type SocialAction } from "./social-header";
+import { SocialPanelEmptyState } from "./social-panel-empty-state";
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -102,6 +103,28 @@ export interface SocialPanelProps {
    * owned by the shell at the window edge.
    */
   onToggleCollapse?: () => void;
+  /**
+   * Which poro mascot the empty state shows when `groups` is empty (issue
+   * #433). Defaults to `"question"` (the new-account "add a friend" poro). Set
+   * `"sad"` when an empty `groups` array is the result of a search that
+   * returned nothing, or `"sleeping"` for a loading placeholder.
+   *
+   * The empty state only renders when {@link poroSrcFor} is also supplied —
+   * without a resolver the scroll area is left empty (prior behaviour).
+   */
+  emptyStatePoro?: PoroVariant;
+  /**
+   * Resolver that converts the {@link emptyStatePoro} variant to an `<img>`
+   * src URL. Injected by the caller so the panel never imports fixture values
+   * directly — keeping @low/ui fixture-value-free. Wire it to `poroUrl` from
+   * @low/fixtures:
+   *
+   *   poroSrcFor={(v) => poroUrl(v)}
+   *
+   * Required for the empty state to render; omit it to keep the legacy
+   * empty-scroll-area behaviour.
+   */
+  poroSrcFor?: (variant: PoroVariant) => string;
 }
 
 // ---------------------------------------------------------------------------
@@ -149,8 +172,11 @@ export function SocialPanel({
   ambientVideoSrc,
   onHeaderAction,
   onToggleCollapse,
+  emptyStatePoro = "question",
+  poroSrcFor,
 }: SocialPanelProps) {
   const showRequests = requestCount != null && requestCount > 0;
+  const showEmptyState = groups.length === 0 && poroSrcFor != null;
 
   return (
     <div
@@ -174,9 +200,13 @@ export function SocialPanel({
         </div>
       )}
 
-      {/* ── 3. Friend groups — scrollable ── */}
+      {/* ── 3. Friend groups — scrollable (or the poro empty state) ── */}
       <div className="relative z-10 min-h-0 flex-1 overflow-y-auto">
-        {groups.map((group) => {
+        {showEmptyState && (
+          <SocialPanelEmptyState poro={emptyStatePoro} poroSrcFor={poroSrcFor} />
+        )}
+        {!showEmptyState &&
+          groups.map((group) => {
           const online = group.friends.filter((f) => isOnline(f.summoner)).length;
           const total = group.friends.length;
 

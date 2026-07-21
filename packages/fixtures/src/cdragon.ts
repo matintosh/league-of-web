@@ -1409,3 +1409,58 @@ export const FRIEND_FINDER_SFX: readonly SoundEntry[] = [
     filename: "sfx-soc-ui-statuswindow-close.ogg",
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Friend-finder poro art (empty-state mascots) — issue #433
+// ---------------------------------------------------------------------------
+
+/**
+ * Base URL for the official CommunityDragon friend-finder image set.
+ *
+ * PINNED to patch 7.5 — these poro mascots were last live at patch 9.3 and are
+ * gone from 9.4 onward, so the `latest` mirror 404s. Patch 7.5 ships the full
+ * set (poro_question / poro_sad / poro_sleeping, all 102×96 RGBA). Do not change
+ * this to `latest` without confirming the images exist at the target patch. Same
+ * pin/rationale as the lock-in videos ({@link lockInVideoUrl}) and the
+ * friend-finder SFX ({@link soundUrl}).
+ *
+ * Poro designs are timeless Hextech mascots — using a 7.5 poro for a current-era
+ * empty state is era-coherent.
+ *
+ * Fan-content policy: https://www.riotgames.com/en/legal (fan-made, non-commercial).
+ */
+const CDRAGON_FRIEND_FINDER =
+  "https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-friend-finder/global/default/images";
+
+/**
+ * Named poro variants served from the friend-finder image set. Feed one to
+ * {@link poroUrl} to resolve its PNG src. Union (rather than a raw string) so a
+ * typo fails typecheck instead of silently 404-ing.
+ *
+ * - `"question"` → poro with a "?" — the "no friends yet" empty state.
+ * - `"sad"`      → droopy poro — a "search returned nothing" empty state.
+ * - `"sleeping"` → dozing poro — a "loading / away" empty state.
+ */
+export type PoroVariant = "question" | "sad" | "sleeping";
+
+/**
+ * Poro mascot PNG URL for a given {@link PoroVariant}. Mirrors the `soundUrl`
+ * house style: a `Record<PoroVariant, string>` filename map resolved against the
+ * pinned patch-7.5 friend-finder base ({@link CDRAGON_FRIEND_FINDER}).
+ *
+ * Pass the returned URL as an `<img>` `src` in the APP/showcase layer — the
+ * Tokens rule governs CSS colors, not asset URLs, so these are safe to use.
+ *
+ * All 3 confirmed HTTP 200 image/png (2026-07, issue #433):
+ *   poroUrl("question") → …/images/poro_question.png
+ *   poroUrl("sad")      → …/images/poro_sad.png
+ *   poroUrl("sleeping") → …/images/poro_sleeping.png
+ */
+export const poroUrl = (variant: PoroVariant): string => {
+  const FILE: Record<PoroVariant, string> = {
+    question: "poro_question.png",
+    sad:      "poro_sad.png",
+    sleeping: "poro_sleeping.png",
+  };
+  return `${CDRAGON_FRIEND_FINDER}/${FILE[variant]}`;
+};

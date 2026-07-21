@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Summoner } from "@low/fixtures";
-import { profileIconUrl, socialPanelBgLoopUrl } from "@low/fixtures";
+import { poroUrl, profileIconUrl, socialPanelBgLoopUrl } from "@low/fixtures";
 import type { FriendGroup } from "./social-panel";
 import { SocialPanel } from "./social-panel";
 
@@ -147,6 +147,28 @@ export function SocialPanelEmptyGroupDemo() {
   return (
     <div className="h-[200px]">
       <SocialPanel groups={EMPTY_GROUP} profileIconSrcFor={iconSrc} />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Empty list demo (groups=[] + poroSrcFor → poro empty state, issue #433)
+// ---------------------------------------------------------------------------
+
+/**
+ * No friend groups at all — the panel branches to SocialPanelEmptyState,
+ * showing the "?" poro and "Add a friend to get started". This is the
+ * new-account state. The empty state renders because a poroSrcFor resolver is
+ * supplied (wired to poroUrl in this client/demo layer).
+ */
+export function SocialPanelEmptyListDemo() {
+  return (
+    <div data-shot="social-panel-empty-list" className="h-[420px]">
+      <SocialPanel
+        groups={[]}
+        profileIconSrcFor={iconSrc}
+        poroSrcFor={poroUrl}
+      />
     </div>
   );
 }

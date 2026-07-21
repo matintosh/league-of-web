@@ -48,6 +48,7 @@ import { settingsModalShowcase } from "./chrome/settings-modal.showcase";
 import { settingsRowShowcase } from "./chrome/settings-row.showcase";
 import { socialDockShowcase } from "./chrome/social-dock.showcase";
 import { socialHeaderShowcase } from "./chrome/social-header.showcase";
+import { socialPanelEmptyStateShowcase } from "./chrome/social-panel-empty-state.showcase";
 import { socialPanelShowcase } from "./chrome/social-panel.showcase";
 import { soundLibraryShowcase } from "./chrome/sound-library.showcase";
 import { storyCardShowcase } from "./chrome/story-card.showcase";
@@ -154,6 +155,7 @@ export const registry: ShowcaseEntry[] = [
   settingsRowShowcase,
   socialDockShowcase,
   socialHeaderShowcase,
+  socialPanelEmptyStateShowcase,
   socialPanelShowcase,
   soundLibraryShowcase,
   storyCardShowcase,
