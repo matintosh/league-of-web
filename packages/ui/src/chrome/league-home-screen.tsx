@@ -117,17 +117,11 @@ export function LeagueHomeScreen({
           className="absolute inset-0 h-full w-full object-cover object-top"
         />
 
-        {/* Left scrim — a lighter left-edge wash (#503): semi-transparent at
-            the far-left edge (was solid hextech-black at 0%) so the splash
-            shows THROUGH the rail rather than being blacked out, while still
-            damping contrast enough for the rail bullets/labels to read. */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to right, color-mix(in srgb, var(--color-hextech-black) 58%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 34%, transparent) 24%, transparent 55%)",
-          }}
-        />
+        {/* #506: the #503 left scrim panel is REMOVED — the rail is now fully
+            transparent over the splash (no left wash), so the key-art bleeds
+            through the rail area completely, matching the reference. Rail-label
+            legibility is handled by a MINIMAL per-text shadow in the rail rows,
+            not a left scrim. Only the bottom scrim remains. */}
         {/* Bottom scrim — darkens the lower edge so the copy + skins strip
             stay legible over the splash. Unchanged (#501). */}
         <div
@@ -198,10 +192,14 @@ export function LeagueHomeScreen({
             </div>
           </div>
 
+          {/* #507: SOLID GOLD FILLED PILL — no outline. A filled gold pill with
+              dark text (was an outline: border + gold text), matching the
+              reference. `border-gold-4` gives only a subtle darker-gold edge on
+              the fill; `rounded-full` makes the pill shape. */}
           <button
             type="button"
             onClick={onGoToStore}
-            className="cursor-pointer border border-gold-5 bg-gold-3 px-6 py-1.5 font-display text-xs uppercase tracking-[0.2em] text-hextech-black transition-colors duration-150 hover:bg-gold-2"
+            className="cursor-pointer rounded-full border border-gold-4 bg-gold-3 px-6 py-1.5 font-display text-xs uppercase tracking-[0.2em] text-hextech-black transition-colors duration-150 hover:border-gold-3 hover:bg-gold-2"
           >
             Go to Store
           </button>
