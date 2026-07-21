@@ -1690,3 +1690,122 @@ export const CHAMPION_STAT_WHEEL_ART = {
     championDetailAssetUrl("cdp-graph-segment-l3.png"),
   ],
 } as const;
+
+// ---------------------------------------------------------------------------
+// End-of-Game (post-match) scoreboard assets — issue #441
+//
+// Two plugins feed the EOG screen. Both catalogs were probed 2026-07 via the
+// CDragon dir JSON: every file cited here resolves 200 image/png.
+//
+// CAVEAT (mirrors #438): the rcp-fe-lol-match-history assets live directly at
+// the plugin `global/default/` ROOT — NOT under an `images/` subdir (that path
+// 404s). The objective/role/stat icons are current-era and byte-stable, so the
+// base is pinned to `latest` and needs no per-patch bump.
+// ---------------------------------------------------------------------------
+
+const CDRAGON_MATCH_HISTORY =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-match-history/global/default";
+
+const CDRAGON_POSTGAME =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-postgame/global/default";
+
+/**
+ * Match-history plugin asset URL for a given `filename` (with extension).
+ * Generic escape hatch mirroring `championDetailAssetUrl` — a base + name join,
+ * no fetching. Files live at the plugin ROOT (see caveat above). Feed the URL
+ * to an <img> `src`.
+ *
+ * Confirmed HTTP 200 image/png (2026-07, issue #441):
+ *   matchHistoryIconUrl("champion_frame.png") → portrait frame (63×126)
+ *   matchHistoryIconUrl("icon_gold.png")      → gold coin glyph
+ *   matchHistoryIconUrl("roleicon-mage.png")  → role class icon (72×72)
+ *
+ * Source: CommunityDragon rcp-fe-lol-match-history · global/default/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const matchHistoryIconUrl = (filename: string): string =>
+  `${CDRAGON_MATCH_HISTORY}/${filename}`;
+
+/** The six scoreboard role-class icon slugs (72×72, gold on transparent). */
+export type ScoreboardRole =
+  | "assassin"
+  | "fighter"
+  | "mage"
+  | "marksman"
+  | "support"
+  | "tank";
+
+/**
+ * Match-history scoreboard role icon URL (`roleicon-<role>.png`, 72×72) — the
+ * small gold class glyph shown beside each player row. Distinct from
+ * `positionIconUrl` (lane positions) and `championRoleIconUrl` (168×168 art-deco
+ * emblems from the champion-details plugin): these are the compact match-history
+ * class icons.
+ */
+export const scoreboardRoleIconUrl = (role: ScoreboardRole): string =>
+  matchHistoryIconUrl(`roleicon-${role}.png`);
+
+/**
+ * Neutral objective a team can take. The match-history plugin ships each as a
+ * team-tinted 144×144 icon suffixed `-100` (blue/order side) and `-200`
+ * (red/chaos side). Elemental dragons additionally carry per-element art
+ * (`fire`/`water`/`air`/`earth`); the generic `dragon` icon is the soul-agnostic
+ * drake.
+ */
+export type ObjectiveIcon =
+  | "dragon"
+  | "baron"
+  | "herald"
+  | "elder"
+  | "fire"
+  | "water"
+  | "air"
+  | "earth"
+  | "tower"
+  | "inhibitor";
+
+/**
+ * Objective summary icon URL (144×144, team-tinted). `side` picks the tint:
+ * "blue" → `-100` (order), "red" → `-200` (chaos). Used by the EOG objectives
+ * strip (dragons/baron/herald/towers/inhibitors counts).
+ *
+ * Confirmed HTTP 200 image/png (2026-07, issue #441):
+ *   objectiveIconUrl("dragon", "blue")    → dragon-100.png
+ *   objectiveIconUrl("baron", "red")      → baron-200.png
+ *   objectiveIconUrl("fire", "blue")      → fire-100.png (Infernal drake)
+ *   objectiveIconUrl("inhibitor", "red")  → inhibitor-200.png
+ *
+ * Source: CommunityDragon rcp-fe-lol-match-history · global/default/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const objectiveIconUrl = (
+  id: ObjectiveIcon,
+  side: "blue" | "red" = "blue",
+): string => matchHistoryIconUrl(`${id}-${side === "blue" ? "100" : "200"}.png`);
+
+/**
+ * Postgame plugin asset URL for a given `filename` (with extension). Generic
+ * escape hatch for the rcp-fe-lol-postgame plugin (mastery banners, victory/
+ * defeat glyphs, score-meter frame). Files live at the plugin ROOT. No fetching.
+ *
+ * Confirmed HTTP 200 (2026-07, issue #441):
+ *   postgameAssetUrl("icon-sr-victory.png")            → victory banner glyph
+ *   postgameAssetUrl("banner-mastery-small-lvl7.png")  → per-player mastery banner
+ *   postgameAssetUrl("frame-meter.png")                → score-meter frame
+ *
+ * Source: CommunityDragon rcp-fe-lol-postgame · global/default/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const postgameAssetUrl = (filename: string): string =>
+  `${CDRAGON_POSTGAME}/${filename}`;
+
+/**
+ * Per-player mastery banner URL (`banner-mastery-small-lvl<n>.png`) — the small
+ * gold pennant behind a player's score meter, one art per champion-mastery level
+ * 1–7. Level 0 / no-mastery uses the `lvlempty` art.
+ *
+ * Source: CommunityDragon rcp-fe-lol-postgame · global/default/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const masteryBannerUrl = (level: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7): string =>
+  postgameAssetUrl(`banner-mastery-small-lvl${level === 0 ? "empty" : level}.png`);

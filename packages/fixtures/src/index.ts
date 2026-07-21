@@ -6,6 +6,7 @@ export * from "./journey";
 export * from "./summoner";
 export * from "./champions";
 export * from "./champion-detail";
+export * from "./end-of-game";
 export * from "./emotes";
 export * from "./runes";
 export * from "./spells";

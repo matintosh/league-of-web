@@ -27,6 +27,14 @@ export const profileIconUrl = (id: number): string =>
   `${BASE}/cdn/${DDRAGON_VERSION}/img/profileicon/${id}.png`;
 
 /**
+ * Item icon, 64×64. `id` is the DDragon numeric item id (e.g. 3153 Blade of the
+ * Ruined King, 6672 Kraken Slayer, 3006 Berserker's Greaves, 3364 Oracle Lens
+ * trinket). Confirmed 200 (2026-07, issue #441).
+ */
+export const itemIconUrl = (id: number): string =>
+  `${BASE}/cdn/${DDRAGON_VERSION}/img/item/${id}.png`;
+
+/**
  * DDragon map thumbnail for Summoner's Rift (map id 11).
  * Returns a 512×512 px overhead illustrated minimap image
  * (olive-green terrain, teal river paths, grey stone structures).
