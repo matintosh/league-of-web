@@ -2,7 +2,7 @@
 
 import { useState, useId } from "react";
 import { GameModeCard, QueueTypeList, HextechButton, TabBar, MapCrestImg } from "@low/ui";
-import { gameModeMapUrl } from "@low/fixtures";
+import { gameModeMapUrl, lobbyButtonVideoUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Crest SVGs — duplicated from game-mode-card.demo.tsx (page-level content).
@@ -308,6 +308,20 @@ function ConfirmMedallion() {
   );
 }
 
+// Real-client lobby (CONFIRM) button state videos (issue #454) — the native
+// rcp-fe-lol-patcher lobby-button webms (CDragon patch 7.5), mapped 1:1 to the
+// HextechButton `lobbyVideoSources` state machine. Module-level constant (stable
+// identity) so the button's one-shot intro fires exactly once per mount.
+const CONFIRM_VIDEO_SOURCES = {
+  intro: lobbyButtonVideoUrl("intro"),
+  hoverIntro: lobbyButtonVideoUrl("hoverIntro"),
+  hoverLoop: lobbyButtonVideoUrl("hoverLoop"),
+  hoverOutro: lobbyButtonVideoUrl("hoverOutro"),
+  release: lobbyButtonVideoUrl("release"),
+  magicRelease: lobbyButtonVideoUrl("magicRelease"),
+  disabledIntro: lobbyButtonVideoUrl("disabledIntro"),
+};
+
 // ---------------------------------------------------------------------------
 // ModeSelectScreen
 // ---------------------------------------------------------------------------
@@ -541,6 +555,7 @@ export function ModeSelectScreen({ onConfirm, onBack }: ModeSelectScreenProps) {
           variant="primary"
           size="large"
           medallion={<ConfirmMedallion />}
+          lobbyVideoSources={CONFIRM_VIDEO_SOURCES}
           onClick={onConfirm}
         >
           Confirm

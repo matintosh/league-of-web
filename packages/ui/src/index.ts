@@ -61,6 +61,8 @@ export { FriendRow } from "./chrome/friend-row";
 export type { FriendRowProps } from "./chrome/friend-row";
 export { CrossMedallion, HextechButton } from "./chrome/hextech-button";
 export type { HextechButtonProps, HextechButtonVariant, HextechButtonSize, CrossMedallionProps } from "./chrome/hextech-button";
+export { LobbyButtonVideoLayer } from "./chrome/lobby-button-video-layer";
+export type { LobbyButtonVideoSources } from "./chrome/lobby-button-video-layer";
 export { HextechCheckbox } from "./chrome/hextech-checkbox";
 export type { HextechCheckboxProps } from "./chrome/hextech-checkbox";
 export { HextechSelect } from "./chrome/hextech-select";
