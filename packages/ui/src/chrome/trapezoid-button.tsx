@@ -61,18 +61,30 @@ import { useId, type CSSProperties, type ReactNode } from "react";
 // (pre-v14 was 2px teal). Consumers key their fill/overlay insets off this.
 export const TRAP_BORDER_PX = 3;
 
+// Geometry re-measured (#427) from the official CommunityDragon asset
+// `lock-in-button-disabled-idle.png` (166×44). Because the clip uses
+// clipPathUnits="objectBoundingBox", the normalized silhouette equals this path,
+// so constants were fit directly to the traced PNG profile (alpha>30).
+
 // Top-edge inset per side (objectBoundingBox). The flat top spans
 // x[TRAP_TOP_INSET .. 1-TRAP_TOP_INSET]; sides splay OUTWARD to full width at the
-// base. Measured 0.085 (top outer corners x136..447 in a 375px-wide frame box).
-export const TRAP_TOP_INSET = 0.085;
+// base. Measured 0.086 in the PNG (top corners x15..150 of the x[1..164] span).
+export const TRAP_TOP_INSET = 0.086;
 
-// Top-edge upward arch (objectBoundingBox y). The top center rises this far above
-// the top corners — a gentle convex arc. Measured ~2px over a 94px box ≈ 0.02.
-export const TRAP_TOP_ARC = 0.02;
+// Top-edge upward arch (objectBoundingBox y). The PNG top edge is DEAD FLAT — the
+// top peak sits at yf=0.000 with no rise over the corners — so the arch is zero.
+export const TRAP_TOP_ARC = 0.0;
 
 // Base row (objectBoundingBox y): where the straight sides end and the bottom arc
-// begins. Measured y≈0.713 (widest bright row y132 in a 94px-tall frame box).
-export const TRAP_Y_BASE = 0.713;
+// begins (the widest point). Fit to the PNG, whose widest row is at yf≈0.75 of the
+// shape; with the bottom arc reaching tip ≈0.855, that widest point lands at box
+// y≈0.66. (Was 0.713 — sides splayed a touch too steep.)
+export const TRAP_Y_BASE = 0.66;
+
+// Bottom-arc control-point y (objectBoundingBox). The quadratic base→tip→base uses
+// this as its control; 1.05 (just past the box floor) rounds the bottom point to
+// match the PNG, whose tip is slightly blunter than a y=1.0 control produces.
+export const TRAP_BOTTOM_ARC_Y = 1.05;
 
 // Arc padding: fraction of the BODY height added below for the downward bottom
 // arc. The body ends at the base row; container height = body + arc_pad. With the
@@ -100,11 +112,12 @@ function trapArcPath(): string {
   const s1 = (1 - TRAP_TOP_INSET).toFixed(6);
   const ta = TRAP_TOP_ARC.toFixed(6);
   const yb = TRAP_Y_BASE.toFixed(6);
+  const bc = TRAP_BOTTOM_ARC_Y.toFixed(6);
   return (
-    `M ${s},${ta} ` + // top-left corner (slightly below the arc peak)
-    `Q 0.5,0 ${s1},${ta} ` + // arched top edge, peaking at center (y=0)
+    `M ${s},${ta} ` + // top-left corner (flat top → ta=0)
+    `Q 0.5,0 ${s1},${ta} ` + // top edge (flat when TOP_ARC=0)
     `L 1,${yb} ` + // splay outward to full-width base-right
-    `Q 0.5,1 0,${yb} ` + // bottom arc bowing through center tip
+    `Q 0.5,${bc} 0,${yb} ` + // bottom arc bowing through center tip
     `Z` // straight side back up to the top-left start
   );
 }
