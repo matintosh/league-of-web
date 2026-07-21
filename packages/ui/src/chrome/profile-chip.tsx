@@ -220,17 +220,47 @@ function OrnateRing({ size, uid }: { size: number; uid: string }) {
 const BORDER_INNER_RATIO = 180 / 512;
 
 /**
- * Renders the real client themed-border frame over the avatar (issue #489).
+ * Fraction of the 512px canvas taken up by the ring's OUTER gold band diameter
+ * (the visible ring, excluding the small clasps/wings that flare past it).
+ * Measured on theme-3 as 324/512 ≈ 0.633 and stable across the compact frames.
  *
- * The 512×512 PNG's ring inner-circle is only ~35% of its canvas, so to seat the
- * avatar exactly inside the ring the border box is sized to `size /
- * BORDER_INNER_RATIO` (≈2.85× the avatar) and centred on the avatar; the frame's
- * wings/gems/level-plate then overflow the avatar box. The image is
- * pointer-events-none + aria-hidden (decorative) and object-contain so it never
- * distorts. Only ever downscaled from 512px → stays crisp at 34px and 48px.
+ * The compact navband render (#509) sizes the border box to
+ * `ringOuter / BORDER_RING_RATIO` so the *visible ring* lands at a chosen pixel
+ * diameter (≈48–56px in the reference) instead of blowing the box up to
+ * `avatar / BORDER_INNER_RATIO` (≈2.85×, the #492 overflow that broke the band).
+ * The frame's clasps then overflow only a few px past the avatar box — capped so
+ * they never reach the name/currency (the #499 regression must not return).
  */
-function AvatarBorder({ size, src }: { size: number; src: string }) {
-  const box = size / BORDER_INNER_RATIO;
+const BORDER_RING_RATIO = 324 / 512;
+
+/**
+ * Renders the real client themed-border frame over the avatar (issue #489/#509).
+ *
+ * The 512×512 PNG's ring is centred on its canvas with a transparent inner
+ * circle. Two sizing modes:
+ *
+ * - `ringOuter` supplied (compact navband, #509) — the box is sized so the
+ *   visible gold ring lands at `ringOuter` px (`ringOuter / BORDER_RING_RATIO`).
+ *   The avatar seats just inside; only the small clasps overflow the avatar box
+ *   by a few px. Absolutely centred + pointer-events-none, so the wider box
+ *   NEVER pushes layout — the chip's footprint stays the avatar size.
+ * - otherwise (rail, back-compat) — the box is sized to `size /
+ *   BORDER_INNER_RATIO` (≈2.85× the avatar) so the inner circle equals the
+ *   avatar and the wings/plate overflow generously.
+ *
+ * object-contain so the frame never distorts; only ever downscaled from 512px so
+ * it stays crisp. aria-hidden — purely decorative.
+ */
+function AvatarBorder({
+  size,
+  src,
+  ringOuter,
+}: {
+  size: number;
+  src: string;
+  ringOuter?: number;
+}) {
+  const box = ringOuter ? ringOuter / BORDER_RING_RATIO : size / BORDER_INNER_RATIO;
   const offset = (box - size) / 2;
   return (
     <img
@@ -390,6 +420,13 @@ export function ProfileChip({
 
   // Per-variant geometry / typography.
   const AVATAR_SIZE = isNavband ? 34 : 48;
+  // navband: render the themed border COMPACT — the visible gold ring lands at
+  // ~54px (measured off the reference: ring outer ≈55–57px around the ~34px
+  // avatar) via AvatarBorder's ringOuter path, so only tiny clasps overflow the
+  // avatar box (≤~11px each side) and the chip footprint stays the avatar size —
+  // no reach into the currency/name (the #499 regression). rail keeps the
+  // generous inner-hole sizing (undefined ringOuter).
+  const ringOuter = isNavband ? 54 : undefined;
   // Inner clip radius matches OrnateRing's clipR (outerR - gap - 1.5).
   const clipR = AVATAR_SIZE * 0.5 - 1 - 3 - 1.5;
   // navband: cream name (matches reference), status tinted to its dot. rail:
@@ -445,16 +482,20 @@ export function ProfileChip({
         {/* Avatar frame — the real client themed-border raster when a src is    */}
         {/* supplied (#489), else the hand-drawn ornate double ring (back-compat) */}
         {avatarBorderSrc ? (
-          <AvatarBorder size={AVATAR_SIZE} src={avatarBorderSrc} />
+          <AvatarBorder size={AVATAR_SIZE} src={avatarBorderSrc} ringOuter={ringOuter} />
         ) : (
           <OrnateRing size={AVATAR_SIZE} uid={uid} />
         )}
 
-        {/* Level badge pill — overlaps bottom-center of avatar */}
+        {/* Level badge plate — dark angular plate with gold trim, seated at the  */}
+        {/* bottom-centre of the avatar (matches the reference's "371" plate). In */}
+        {/* the navband it sits a touch lower so it clears the compact ring's     */}
+        {/* bottom band; the plate is the chip's own element (NOT part of the     */}
+        {/* border art), so it renders identically whichever frame is chosen.     */}
         <span
           className={[
-            "absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rounded-sm border border-gold-4 bg-grey-4 px-1 font-body leading-none text-gold-1 tabular-nums whitespace-nowrap",
-            isNavband ? "text-[9px]" : "text-[10px]",
+            "absolute left-1/2 -translate-x-1/2 rounded-[3px] border border-gold-4 bg-grey-4 font-body leading-none text-gold-1 tabular-nums whitespace-nowrap shadow-sm",
+            isNavband ? "text-[9px] px-1 py-[0.5px] bottom-0 translate-y-[35%]" : "text-[10px] px-1 bottom-0 translate-y-1/2",
           ].join(" ")}
           style={{ zIndex: 2 }}
         >
@@ -466,17 +507,22 @@ export function ProfileChip({
       {/* Name + availability row                                             */}
       {/* ------------------------------------------------------------------ */}
       <div className={isNavband ? "min-w-0" : "min-w-0 flex-1"}>
-        {/* Summoner name */}
-        <p className={`truncate font-body leading-tight ${isNavband ? "text-sm" : "text-sm"} ${nameClass}`}>
+        {/* Summoner name — navband uses the Marcellus display serif (matches the
+            reference, which renders the name in the client's serif face, not the
+            body sans) at a compact 13px cream, sized so the name cap-height is
+            ~⅕ of the ring diameter. rail keeps its 14px body treatment. */}
+        <p className={`truncate ${isNavband ? "font-display text-[13px] leading-none" : "font-body text-sm leading-tight"} ${nameClass}`}>
           {gameName}
         </p>
-        {/* Availability row: status dot + label (or custom statusText) */}
-        <div className="mt-0.5 flex min-w-0 items-center gap-1.5">
+        {/* Availability row: status dot + label (or custom statusText). navband
+            tightens the dot + label to an 11px line tucked directly under the
+            name (matches the reference's compact stack). */}
+        <div className={`flex min-w-0 items-center ${isNavband ? "mt-0.5 gap-1" : "mt-0.5 gap-1.5"}`}>
           <span
             aria-label={statusLabel}
-            className={`inline-block h-2 w-2 shrink-0 rounded-full transition-colors duration-150 ${dotClass}`}
+            className={`inline-block shrink-0 rounded-full transition-colors duration-150 ${isNavband ? "h-1.5 w-1.5" : "h-2 w-2"} ${dotClass}`}
           />
-          <span className={`min-w-0 truncate font-body text-xs leading-tight ${statusClass}`}>
+          <span className={`min-w-0 truncate font-body leading-tight ${isNavband ? "text-[11px]" : "text-xs"} ${statusClass}`}>
             {displayLabel}
           </span>
         </div>
