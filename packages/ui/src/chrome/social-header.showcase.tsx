@@ -23,7 +23,7 @@ export const socialHeaderShowcase: ShowcaseEntry = {
     {
       name: "Default (all real glyphs)",
       notes:
-        'Shows the "SOCIAL" label and all four 16px icon buttons, each rendering its real-client mask glyph: add-friend via `addIconSrc` (`add_person_mask`, #434) plus groups/list/search via `groupsIconSrc`/`listIconSrc`/`searchIconSrc` (`add_folder_mask`/`sort_mask`/`search_mask`, #440) — authentic silhouettes tinted through CSS mask-image so they keep the grey-1 → gold-1 hover. Hover any button to see the transition. data-shot target for visual verification.',
+        'Shows the "SOCIAL" label and all four 16px icon buttons, each rendering its real-client mask glyph: add-friend via `addIconSrc` (`add_person_mask`, #434) plus groups/list/search via `groupsIconSrc`/`listIconSrc`/`searchIconSrc` (`add_folder_mask`/`sort_mask`/`search_mask`, #440) — authentic silhouettes tinted through CSS mask-image so they keep the gold-2 (rest) → gold-1 (hover) tint (#514). Hover any button to see the transition. data-shot target for visual verification.',
       render: () => (
         <div data-shot="social-header" className="w-64 bg-blue-7">
           <SocialHeader

@@ -238,7 +238,8 @@ export function SocialPanel({
       )}
 
       {/* ── 3. Friend groups — scrollable (or the poro empty state) ── */}
-      <div className="relative z-10 min-h-0 flex-1 overflow-y-auto">
+      {/* scrollbar-hextech: thin gold overlay scrollbar (#516). */}
+      <div className="scrollbar-hextech relative z-10 min-h-0 flex-1 overflow-y-auto">
         {showEmptyState && (
           <SocialPanelEmptyState poro={emptyStatePoro} poroSrcFor={poroSrcFor} />
         )}

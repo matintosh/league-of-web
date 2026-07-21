@@ -25,7 +25,7 @@ export interface SocialHeaderProps {
    * Supply `friendFinderImageUrl("add_person_mask")` from `@low/fixtures` at
    * the page/showcase level: the add button then renders the authentic filled
    * person-bust + `+` silhouette via CSS `mask-image`, tinted by the button's
-   * token text color so it keeps the grey-1 → gold-1 hover transition.
+   * token text color so it keeps the gold-2 → gold-1 hover transition.
    *
    * The asset is a 72×72 mask that downscales crisply to this 16px slot (see
    * `iconMap.add`). Omit it and the add button falls back to the hand-drawn
@@ -37,7 +37,7 @@ export interface SocialHeaderProps {
    * to #434). Supply `socialMaskUrl("add_folder_mask")` from `@low/fixtures` at
    * the page/showcase level: the groups button then renders the authentic
    * friend-group / folder silhouette via CSS `mask-image`, tinted by the token
-   * text color so it keeps the grey-1 → gold-1 hover — mirroring `addIconSrc`.
+   * text color so it keeps the gold-2 → gold-1 hover — mirroring `addIconSrc`.
    * Omit it and the groups button falls back to the hand-drawn SVG below.
    */
   groupsIconSrc?: string;
@@ -45,14 +45,14 @@ export interface SocialHeaderProps {
    * Optional URL for the real-client "list" (sort) MASK glyph (issue #440).
    * Supply `socialMaskUrl("sort_mask")` from `@low/fixtures`. Renders the
    * authentic sort silhouette via CSS `mask-image`, tinted by the token text
-   * color (grey-1 → gold-1 hover). Omit it and the button falls back to the SVG.
+   * color (gold-2 → gold-1 hover). Omit it and the button falls back to the SVG.
    */
   listIconSrc?: string;
   /**
    * Optional URL for the real-client "search" MASK glyph (issue #440). Supply
    * `socialMaskUrl("search_mask")` from `@low/fixtures`. Renders the authentic
    * magnifier silhouette via CSS `mask-image`, tinted by the token text color
-   * (grey-1 → gold-1 hover). Omit it and the button falls back to the SVG.
+   * (gold-2 → gold-1 hover). Omit it and the button falls back to the SVG.
    */
   searchIconSrc?: string;
 }
@@ -81,7 +81,7 @@ const iconMap: Record<
    * person-bust + `+` silhouette, whereas the SVG below is a hand-drawn OUTLINE
    * (stroked circle/arc/plus), a visibly different look. So when `addIconSrc`
    * is supplied the button renders the mask glyph (tinted via CSS `mask-image`
-   * so it keeps the grey-1 → gold-1 token hover); this SVG remains only as the
+   * so it keeps the gold-2 → gold-1 token hover); this SVG remains only as the
    * no-asset fallback for consumers that don't pass a URL.
    */
   add: {
@@ -160,7 +160,7 @@ export function SocialHeader({
 }: SocialHeaderProps) {
   // Per-action mask-glyph URLs. A supplied src renders the real-client 72×72
   // mask via CSS mask-image (tinted by the button's token text color, so it
-  // keeps the grey-1 → gold-1 hover); an undefined src falls back to the
+  // keeps the gold-2 → gold-1 hover); an undefined src falls back to the
   // hand-drawn SVG in `iconMap`, preserving back-compat for each glyph.
   const iconSrc: Record<SocialAction, string | undefined> = {
     add: addIconSrc,
@@ -215,12 +215,12 @@ export function SocialHeader({
               type="button"
               aria-label={ariaLabel}
               onClick={() => onAction?.(key)}
-              className="text-grey-1 transition-colors duration-100 hover:text-gold-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-3"
+              className="text-gold-2 transition-colors duration-100 hover:text-gold-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-3"
             >
               {iconSrc[key] ? (
                 // Real-client mask glyph (add #434; groups/list/search #440).
                 // CSS mask-image tints the monochrome raster to the button's
-                // token text color, so it inherits the grey-1 → gold-1 hover
+                // token text color, so it inherits the gold-2 → gold-1 hover
                 // just like the SVG glyphs.
                 <span
                   aria-hidden="true"

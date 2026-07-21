@@ -37,6 +37,34 @@ const statusTextColor: Record<Availability, string> = {
   offline: "text-grey-2",
 };
 
+/**
+ * Presence RING color for the avatar, keyed by availability. Mirrors the same
+ * availability→token mapping as {@link statusTextColor} so the ring reads the
+ * status at a glance: online → status-online green, in-game/in-queue → blue-2
+ * cyan, away → gold-3 amber. Offline gets a neutral grey-2 ring (dimmed avatar
+ * carries the offline read). Matches the current-era reference (#513).
+ */
+const ringColor: Record<Availability, string> = {
+  online: "border-status-online",
+  away: "border-gold-3",
+  "in-game": "border-blue-2",
+  "in-queue": "border-blue-2",
+  offline: "border-grey-2",
+};
+
+/**
+ * Presence PIP (status-dot) color, keyed by availability. Same mapping as the
+ * ring, rendered as a filled dot overlapping the avatar's bottom-right edge.
+ * Offline renders no pip (null) — the dimmed grey avatar is the offline signal.
+ */
+const pipColor: Record<Availability, string | null> = {
+  online: "bg-status-online",
+  away: "bg-gold-3",
+  "in-game": "bg-blue-2",
+  "in-queue": "bg-blue-2",
+  offline: null,
+};
+
 /** Name text color, keyed by availability. Online/active statuses use grey-1; offline uses grey-2. */
 const nameTextColor: Record<Availability, string> = {
   online: "text-grey-1",
@@ -76,23 +104,35 @@ export function FriendRow({
 }: FriendRowProps) {
   const { gameName, availability } = summoner;
   const dimmed = avatarDimmed[availability];
+  const pip = pipColor[availability];
 
   const inner = (
     <div className="flex w-full items-center gap-2 px-3 py-[5px]">
-      {/* Circular avatar with thin gold ring — 28px, current-era measured */}
-      <div className="shrink-0">
+      {/* Circular 30px avatar with a presence-colored ring + status pip.
+          Ring + pip color come from the same availability→token mapping as the
+          status text (online green / in-game cyan / away amber / offline grey),
+          so who's online reads straight off the avatar (#513). */}
+      <div className="relative shrink-0">
         <img
           src={profileIconSrc}
           alt={gameName}
-          width={28}
-          height={28}
+          width={30}
+          height={30}
           className={[
-            "h-7 w-7 rounded-full border border-gold-5 object-cover",
+            `h-[30px] w-[30px] rounded-full border-2 object-cover ${ringColor[availability]}`,
             dimmed ? "brightness-50 grayscale-[0.4]" : "",
           ]
             .filter(Boolean)
             .join(" ")}
         />
+        {/* Presence pip — filled dot on the avatar's bottom-right edge, ringed
+            in the panel bg so it reads as a separate badge. Omitted offline. */}
+        {pip != null && (
+          <span
+            aria-hidden="true"
+            className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-hextech-black ${pip}`}
+          />
+        )}
       </div>
 
       {/* Name + status text */}

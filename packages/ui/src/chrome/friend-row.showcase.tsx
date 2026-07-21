@@ -3,21 +3,24 @@ import { demoFriends, demoSummoner, profileIconUrl } from "@low/fixtures";
 import { FriendRow } from "./friend-row";
 import { FriendRowClickableDemo } from "./friend-row.demo";
 
-// demoFriends order: Faker=in-game [0], Tyler1=in-queue [1], Baus=away [2], Phreak=offline [3]
+// demoFriends order: Faker=in-game [0], Tyler1=in-queue [1], Baus=away [2],
+// Doublelift=online [3], Sneaky=offline [4]
 const inGameFriend = demoFriends[0]!;
-const offlineFriend = demoFriends[3]!;
+const inQueueFriend = demoFriends[1]!;
+const awayFriend = demoFriends[2]!;
+const offlineFriend = demoFriends[4]!;
 
 export const friendRowShowcase: ShowcaseEntry = {
   slug: "friend-row",
   name: "FriendRow",
   area: "chrome",
   description:
-    "Single row in the social sidebar friends list — 28px circular avatar, name, and colored status line (current-era slim metrics: 48px pitch). Offline avatars are dimmed.",
+    "Single row in the social sidebar friends list — 30px circular avatar with a presence-colored ring + status pip, name, and colored status line (current-era slim metrics: 48px pitch). Offline avatars are dimmed with a neutral grey ring and no pip.",
   variants: [
     {
       name: "Online",
       notes:
-        "Full-color avatar, grey-1 name, status text in status-online green.",
+        "Full-color avatar, status-online green ring + pip, grey-1 name, status text in status-online green. availability=online.",
       render: () => (
         <div className="w-56 bg-blue-7">
           <FriendRow
@@ -31,7 +34,7 @@ export const friendRowShowcase: ShowcaseEntry = {
     {
       name: "In Game",
       notes:
-        "Full-color avatar, grey-1 name, status text in bright cyan (blue-2), matched to the current-era reference rgb(21,194,221). Faker, availability=in-game.",
+        "Full-color avatar, bright cyan (blue-2) ring + pip and status text, matched to the current-era reference rgb(21,194,221). Faker, availability=in-game.",
       render: () => (
         <div className="w-56 bg-blue-7">
           <FriendRow
@@ -43,9 +46,37 @@ export const friendRowShowcase: ShowcaseEntry = {
       ),
     },
     {
+      name: "In Queue",
+      notes:
+        "Full-color avatar, blue-2 cyan ring + pip and status text (same active-cyan family as in-game). Tyler1, availability=in-queue.",
+      render: () => (
+        <div className="w-56 bg-blue-7">
+          <FriendRow
+            summoner={inQueueFriend.summoner}
+            statusText={inQueueFriend.statusText ?? "Ranked Solo/Duo"}
+            profileIconSrc={profileIconUrl(inQueueFriend.summoner.profileIconId)}
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Away",
+      notes:
+        "Full-color avatar, gold-3 amber ring + pip and status text. Baus, availability=away.",
+      render: () => (
+        <div className="w-56 bg-blue-7">
+          <FriendRow
+            summoner={awayFriend.summoner}
+            statusText="Away"
+            profileIconSrc={profileIconUrl(awayFriend.summoner.profileIconId)}
+          />
+        </div>
+      ),
+    },
+    {
       name: "Offline",
       notes:
-        "Avatar dimmed with brightness-50 + grayscale-[0.4], grey-2 name and status text. Phreak, availability=offline.",
+        "Avatar dimmed with brightness-50 + grayscale-[0.4], neutral grey-2 ring and NO pip, grey-2 name and status text. Sneaky, availability=offline.",
       render: () => (
         <div className="w-56 bg-blue-7">
           <FriendRow

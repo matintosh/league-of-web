@@ -11,3 +11,26 @@
 body {
   @apply bg-hextech-black text-grey-1 font-body antialiased;
 }
+
+/* Thin Hextech scrollbar — slim gold thumb, transparent track. Used by the
+   social friends list (#516) and available to any overflow area that wants the
+   League-style rail. Colors come from gold tokens only (no raw hex); overlay
+   so it never reserves layout width that would shift rail content. */
+.scrollbar-hextech {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--color-gold-4) transparent;
+}
+.scrollbar-hextech::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.scrollbar-hextech::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-hextech::-webkit-scrollbar-thumb {
+  background-color: var(--color-gold-4);
+  border-radius: 9999px;
+}
+.scrollbar-hextech:hover::-webkit-scrollbar-thumb {
+  background-color: var(--color-gold-3);
+}
