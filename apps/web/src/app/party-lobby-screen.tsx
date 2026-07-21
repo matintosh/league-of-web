@@ -23,6 +23,7 @@ import {
   gameModeMapUrl,
   championSplashUrl,
   partiesBgLoopUrl,
+  partiesBackgroundUrl,
   partyBannerUrl,
   staticVideoUrl,
   findMatchVideoUrl,
@@ -341,6 +342,11 @@ const BANNER_SWEEP_ALLY_SRC = bannerSweepVideoUrl("ally");
 // the loop and as the sole visual under prefers-reduced-motion / video error.
 const INVITED_VIDEO_SRC = "/media/invited-banner/invited-banner-pulse.webm";
 const INVITED_FALLBACK_SRC = partyBannerUrl("invited");
+
+// Full-bleed party-lobby backdrop — the real client's dark forested Summoner's
+// Rift parties art (issue #461). URL supplied here (not built in @low/ui);
+// pages own asset URLs.
+const PARTIES_BG_SRC = partiesBackgroundUrl("classic_sru");
 
 // ---------------------------------------------------------------------------
 // Queue phase type (internal to this screen)
@@ -663,39 +669,39 @@ export function PartyLobbyScreen({
   return (
     <div className="relative flex h-full flex-col bg-hextech-black" data-shot="party-lobby">
       {/*
-       * Atmospheric background — party lobby dark forest art.
+       * Atmospheric background — the REAL client's party-lobby art (issue #461):
+       * the dark forested Summoner's Rift `parties-background.jpg` from the
+       * game-data gamemodeassets tree, full-bleed behind the banner grid. URL in
+       * via `partiesBackgroundUrl` (fixtures) — this screen owns the URL, the
+       * asset is never fetched/built in @low/ui.
        *
-       * CDragon asset search result (2026-07): no standalone lobby background is
-       * exposed in rcp-fe-lol-parties, rcp-fe-lol-static-assets, or related plugins
-       * (see the mode-select note in packages/fixtures/src/cdragon.ts — same result
-       * applies here; rcp-fe-lol-parties only carries map crest PNGs + lottie/webm).
-       * The forest art appears baked into the client shell.
-       *
-       * Fallback: layered CSS gradient approximation, sampled from
-       * docs/reference/client-lobby-solo.jpg. Skews greener/teal than mode-select
-       * (same family, different hue — forest greens vs. mode-select's purple).
-       *
-       * Tone map (reference sample → token composition):
-       *   Upper sky      #050a0e → hextech-black   (#010a13, nearest darkest)
-       *   Mid fog        #0b1a14 → color-mix(blue-5 #0a323c 50%, party-band #1a3a1a 50%)
-       *   Ambient glow   #122416 → color-mix(party-band #1a3a1a 55%, hextech-black 45%)
-       *   Tree silhouette #071209 → hextech-black   (near-black, absorbed at 100% stop)
-       *
-       * party-band (#1a3a1a) is the only forest-green token in the set — it was added
-       * for the social rail's OPEN PARTY block and maps cleanly to the lobby's ambient hue.
-       * No new tokens needed; all stops compose from existing palette.
+       * hextech-black underlay stands in until the image paints (and if it fails
+       * to load), so the lobby never flashes an empty frame. The scrim + edge
+       * gradients + corner vignette below keep the banner grid, header text, and
+       * FIND MATCH button legible over the photographic art.
        */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 bg-hextech-black"
+      >
+        <img
+          src={PARTIES_BG_SRC}
+          alt=""
+          className="h-full w-full object-cover"
+        />
+      </div>
+
+      {/* Legibility scrim + corner vignette over the photo — darkens the art so
+          banners, header, and action bar read clearly. Tokens only. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0"
         style={{
           background: [
-            /* Base: deep green-dark sky blending upward from near-black to forest-fog teal-green */
-            `radial-gradient(ellipse 85% 65% at 50% 30%, color-mix(in srgb, var(--color-blue-5) 50%, var(--color-party-band) 50%) 0%, color-mix(in srgb, var(--color-party-band) 55%, var(--color-hextech-black) 45%) 45%, var(--color-hextech-black) 100%)`,
-            /* Mid-depth atmospheric fog band — faint green ambient glow at horizon center */
-            `radial-gradient(ellipse 55% 35% at 50% 55%, color-mix(in srgb, var(--color-party-band) 40%, var(--color-hextech-black) 60%) 0%, transparent 70%)`,
+            /* Overall darkening wash — knocks the bright forest art back */
+            `linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 55%, transparent 45%), color-mix(in srgb, var(--color-hextech-black) 35%, transparent 65%) 45%, color-mix(in srgb, var(--color-hextech-black) 70%, transparent 30%))`,
             /* Corner darkening vignette — pulls corners to near-black, keeps center readable */
-            `radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, color-mix(in srgb, var(--color-hextech-black) 88%, transparent 12%) 100%)`,
+            `radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, color-mix(in srgb, var(--color-hextech-black) 80%, transparent 20%) 100%)`,
           ].join(", "),
         }}
       />
