@@ -196,18 +196,18 @@ export function TopNavbar({
         })}
       </div>
 
-      {/* Right region — currency (vertically centred) + player slot. The player
-          slot is bottom-aligned into the lower half of the band so its controls
-          clear the floating window-controls row (?─⚙✕), which occupies the top
-          ~28px at the far right in the integrated chrome (#385/#390). This
-          matches the reference, where the profile chip / rail controls sit BELOW
-          the window-controls row, not beside it (see
-          docs/reference/client-current-home-activity-center.jpg top-right). The
-          slot is `self-stretch` + `items-end` so #387's profile chip inherits the
-          same below-controls placement. */}
+      {/* Right region — currency + player slot, both VERTICALLY CENTERED in the
+          band (#527). The player slot was formerly bottom-aligned (`items-end`,
+          #385/#390) to clear the floating window-controls row, but the #509
+          theme-3 avatar frame (85px) centered on a bottom-aligned 34px avatar
+          spilled ~24px past the band bottom into the home content and read as
+          "misplaced". Centering the chip seats the 85px frame inside the 88px
+          band (frame ≈ y3.5→88.5) and aligns the profile with the currency. The
+          window-controls (?─⚙✕) float in the window chrome (window-frame.tsx),
+          a separate layer at the top-right corner, so they don't collide. */}
       <div className="flex shrink-0 items-center gap-3">
         {currencySlot}
-        <div className="flex h-full items-end pb-0.5">{playerSlot}</div>
+        <div className="flex h-full items-center">{playerSlot}</div>
       </div>
     </nav>
   );
