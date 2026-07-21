@@ -17,7 +17,7 @@ export type {
   DeclareMapVideoSources,
 } from "./champ-select/declare-intent-screen";
 export { LockInButton } from "./champ-select/lock-in-button";
-export type { LockInButtonProps, LockInVideoSources, LockInAttention } from "./champ-select/lock-in-button";
+export type { LockInButtonProps, LockInVideoSources, LockInAttention, LockInButtonVideoSources } from "./champ-select/lock-in-button";
 export { SkinCarousel, SkinThumbStrip } from "./champ-select/skin-carousel";
 export type { SkinCarouselProps, SkinThumbStripProps, SkinOption } from "./champ-select/skin-carousel";
 export { TeamPlayerRow } from "./champ-select/team-player-row";

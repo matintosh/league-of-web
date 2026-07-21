@@ -9,6 +9,8 @@ import {
   LockInButtonVideoDemo,
   LockInButtonPulseDemo,
   LockInButtonAllReturnedDemo,
+  LockInButtonNativeVideoDemo,
+  LockInButtonNativeVideoDisabledDemo,
 } from "./lock-in-button.demo";
 
 export const lockInButtonShowcase: ShowcaseEntry = {
@@ -93,6 +95,24 @@ export const lockInButtonShowcase: ShowcaseEntry = {
         "attention=\"all-returned\" — the steady green outline glow shown when the whole party is ready. " +
         "Same 300×200 bleed geometry as the pulse state.",
       render: () => <LockInButtonAllReturnedDemo />,
+    },
+    {
+      name: "Native LOCK IN video state machine (issue #428)",
+      notes:
+        "Real-client champ-select lock-in button webms (CDragon patch 7.5, `lockInVideoSources` prop). " +
+        "activeIntro plays once on mount → activeIdle loops; hover crossfades to activeHover loop; " +
+        "activeOut one-shot fires on pointer-leave; release fires on click. " +
+        "All clips carry straight alpha (VP9) and composite directly over the CSS TrapezoidButton — " +
+        "a missing or failed clip leaves the static look intact. motion-reduce:hidden suppresses all layers.",
+      render: () => <LockInButtonNativeVideoDemo />,
+    },
+    {
+      name: "Native LOCK IN video — disabled with disabledIntro",
+      notes:
+        "When disabled=true and `disabledIntro` is supplied, the disabled intro plays once then the " +
+        "CSS disabled state (grey fill / grey text) shows through the transparent overlay. " +
+        "The interactive clips (activeIntro, activeIdle, etc.) do not play while disabled.",
+      render: () => <LockInButtonNativeVideoDisabledDemo />,
     },
   ],
 };
