@@ -1,4 +1,4 @@
-import { friendFinderImageUrl } from "@low/fixtures";
+import { friendFinderImageUrl, socialMaskUrl } from "@low/fixtures";
 import type { ShowcaseEntry } from "../showcase";
 import { SocialHeader } from "./social-header";
 import {
@@ -8,6 +8,10 @@ import {
 
 /** Real-client add-friend mask glyph, patch-7.5 pinned (#434). */
 const ADD_ICON_SRC = friendFinderImageUrl("add_person_mask");
+/** Remaining real-client social glyphs, `latest`-pinned masks (#440). */
+const GROUPS_ICON_SRC = socialMaskUrl("add_folder_mask");
+const LIST_ICON_SRC = socialMaskUrl("sort_mask");
+const SEARCH_ICON_SRC = socialMaskUrl("search_mask");
 
 export const socialHeaderShowcase: ShowcaseEntry = {
   slug: "social-header",
@@ -17,19 +21,24 @@ export const socialHeaderShowcase: ShowcaseEntry = {
     'Top strip of the social sidebar — "SOCIAL" label (font-display xs uppercase grey-1) on the left and four icon buttons (add friend, groups, list, search) on the right.',
   variants: [
     {
-      name: "Default (real add-friend glyph)",
+      name: "Default (all real glyphs)",
       notes:
-        'Shows the "SOCIAL" label and all four 16px icon buttons. The add-friend button uses the real-client `add_person_mask` glyph (#434) via `addIconSrc={friendFinderImageUrl("add_person_mask")}` — the authentic filled person-bust + `+` silhouette, tinted through CSS mask-image so it keeps the grey-1 → gold-1 hover. Hover any button to see the transition. data-shot target for visual verification.',
+        'Shows the "SOCIAL" label and all four 16px icon buttons, each rendering its real-client mask glyph: add-friend via `addIconSrc` (`add_person_mask`, #434) plus groups/list/search via `groupsIconSrc`/`listIconSrc`/`searchIconSrc` (`add_folder_mask`/`sort_mask`/`search_mask`, #440) — authentic silhouettes tinted through CSS mask-image so they keep the grey-1 → gold-1 hover. Hover any button to see the transition. data-shot target for visual verification.',
       render: () => (
         <div data-shot="social-header" className="w-64 bg-blue-7">
-          <SocialHeader addIconSrc={ADD_ICON_SRC} />
+          <SocialHeader
+            addIconSrc={ADD_ICON_SRC}
+            groupsIconSrc={GROUPS_ICON_SRC}
+            listIconSrc={LIST_ICON_SRC}
+            searchIconSrc={SEARCH_ICON_SRC}
+          />
         </div>
       ),
     },
     {
-      name: "SVG fallback (no addIconSrc)",
+      name: "SVG fallback (no icon srcs)",
       notes:
-        "Omit `addIconSrc` and the add-friend button falls back to the hand-drawn outline SVG (unchanged behaviour for consumers that don't supply the mask URL). Compare the outline here against the filled raster glyph in the variant above.",
+        "Omit the `*IconSrc` props and every button falls back to its hand-drawn outline SVG (unchanged behaviour for consumers that don't supply mask URLs). Compare the outlines here against the filled raster glyphs in the variant above.",
       render: () => (
         <div className="w-64 bg-blue-7">
           <SocialHeader />

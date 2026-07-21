@@ -32,6 +32,29 @@ export interface SocialHeaderProps {
    * SVG below, so existing consumers are unchanged.
    */
   addIconSrc?: string;
+  /**
+   * Optional URL for the real-client "groups" MASK glyph (issue #440, companion
+   * to #434). Supply `socialMaskUrl("add_folder_mask")` from `@low/fixtures` at
+   * the page/showcase level: the groups button then renders the authentic
+   * friend-group / folder silhouette via CSS `mask-image`, tinted by the token
+   * text color so it keeps the grey-1 → gold-1 hover — mirroring `addIconSrc`.
+   * Omit it and the groups button falls back to the hand-drawn SVG below.
+   */
+  groupsIconSrc?: string;
+  /**
+   * Optional URL for the real-client "list" (sort) MASK glyph (issue #440).
+   * Supply `socialMaskUrl("sort_mask")` from `@low/fixtures`. Renders the
+   * authentic sort silhouette via CSS `mask-image`, tinted by the token text
+   * color (grey-1 → gold-1 hover). Omit it and the button falls back to the SVG.
+   */
+  listIconSrc?: string;
+  /**
+   * Optional URL for the real-client "search" MASK glyph (issue #440). Supply
+   * `socialMaskUrl("search_mask")` from `@low/fixtures`. Renders the authentic
+   * magnifier silhouette via CSS `mask-image`, tinted by the token text color
+   * (grey-1 → gold-1 hover). Omit it and the button falls back to the SVG.
+   */
+  searchIconSrc?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -120,9 +143,10 @@ const iconMap: Record<
  * Each button fires `onAction?.(key)` on click; the chevron fires
  * `onToggleCollapse?.()`.
  *
- * The add-friend button renders the real-client `add_person_mask` glyph when
- * `addIconSrc` is supplied (issue #434), falling back to a hand-drawn SVG
- * otherwise (see `iconMap.add`).
+ * Each icon button renders the real-client MASK glyph when its matching
+ * `*IconSrc` URL is supplied — `addIconSrc` (#434) plus `groupsIconSrc` /
+ * `listIconSrc` / `searchIconSrc` (#440) — falling back to the hand-drawn SVG
+ * for any glyph whose src is omitted (see `iconMap`).
  *
  * Reference: "SOCIAL ＋ 🗂 ≡ 🔍" strip in the LoL client right sidebar.
  */
@@ -130,7 +154,20 @@ export function SocialHeader({
   onAction,
   onToggleCollapse,
   addIconSrc,
+  groupsIconSrc,
+  listIconSrc,
+  searchIconSrc,
 }: SocialHeaderProps) {
+  // Per-action mask-glyph URLs. A supplied src renders the real-client 72×72
+  // mask via CSS mask-image (tinted by the button's token text color, so it
+  // keeps the grey-1 → gold-1 hover); an undefined src falls back to the
+  // hand-drawn SVG in `iconMap`, preserving back-compat for each glyph.
+  const iconSrc: Record<SocialAction, string | undefined> = {
+    add: addIconSrc,
+    groups: groupsIconSrc,
+    list: listIconSrc,
+    search: searchIconSrc,
+  };
   return (
     <div
       data-shot="social-header"
@@ -180,16 +217,17 @@ export function SocialHeader({
               onClick={() => onAction?.(key)}
               className="text-grey-1 transition-colors duration-100 hover:text-gold-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-3"
             >
-              {key === "add" && addIconSrc ? (
-                // Real-client add-friend mask glyph (#434). CSS mask-image tints
-                // the off-white raster to the button's token text color, so it
-                // inherits the grey-1 → gold-1 hover just like the SVG glyphs.
+              {iconSrc[key] ? (
+                // Real-client mask glyph (add #434; groups/list/search #440).
+                // CSS mask-image tints the monochrome raster to the button's
+                // token text color, so it inherits the grey-1 → gold-1 hover
+                // just like the SVG glyphs.
                 <span
                   aria-hidden="true"
                   className="block h-4 w-4 bg-current"
                   style={{
-                    maskImage: `url(${addIconSrc})`,
-                    WebkitMaskImage: `url(${addIconSrc})`,
+                    maskImage: `url(${iconSrc[key]})`,
+                    WebkitMaskImage: `url(${iconSrc[key]})`,
                     maskSize: "contain",
                     WebkitMaskSize: "contain",
                     maskRepeat: "no-repeat",
