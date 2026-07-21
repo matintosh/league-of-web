@@ -41,6 +41,7 @@ import {
   demoFriends,
   profileIconUrl,
   championSplashUrl,
+  skinUncenteredSplashUrl,
   championSquareUrl,
   loadingArtUrl,
   rpIconUrl,
@@ -1581,7 +1582,9 @@ const HOME_FEATURED_DEFAULT: LeagueHomeFeatured = {
   eyebrow: "NEW SKIN",
   title: "MVP T1\nMISS FORTUNE",
   body: "Celebrate 2025 Worlds Winners with new skins and the 'Together as 1' Nexus Finisher.",
-  splashSrc: championSplashUrl("MissFortune"),
+  // MVP T1 Miss Fortune (skin69) full-art UNCENTERED splash — the real featured
+  // background, not the plain default MF loading splash (issue #481).
+  splashSrc: skinUncenteredSplashUrl("missfortune", 69),
 };
 
 const HOME_FEATURED: Record<string, LeagueHomeFeatured> = {
@@ -1601,7 +1604,7 @@ const HOME_FEATURED: Record<string, LeagueHomeFeatured> = {
 };
 
 const HOME_SKINS_DEFAULT: LeagueHomeSkin[] = [
-  { id: "mvp-mf-skin", name: "MVP T1 Miss Fortune", artSrc: loadingArtUrl("MissFortune", 0), owned: true },
+  { id: "mvp-mf-skin", name: "MVP T1 Miss Fortune", artSrc: skinUncenteredSplashUrl("missfortune", 69, "centered"), owned: true },
   { id: "together-as-1", name: "'Together as 1' Nexus Finisher", artSrc: championSplashUrl("MissFortune", 4) },
 ];
 

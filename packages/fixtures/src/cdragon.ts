@@ -2214,3 +2214,48 @@ export function regaliaBannerUrl(tierOrFile: RankedTier | string): string {
   const slug = (FILE as Record<string, string>)[tierOrFile] ?? tierOrFile;
   return `${CDRAGON_REGALIA_BANNERS}/${slug}.png`;
 }
+
+// ---------------------------------------------------------------------------
+// SKIN full-splash art (issue #481) — the un-cropped per-skin splash the real
+// client paints full-bleed behind featured-content copy (home OVERVIEW banner,
+// store spotlights). Unlike DDragon's `championSplashUrl` (which serves the
+// DEFAULT champion loading-screen splash), CDragon exposes each SKIN's own
+// full-art files under the /game-data assets tree, keyed by numeric skin id.
+// ---------------------------------------------------------------------------
+
+/**
+ * Full-art SKIN splash URL from the CDragon /game-data assets tree.
+ *
+ * Each skin ships three splash cuts under
+ * `assets/characters/<champ>/skins/skin<N>/images/`, selected via `variant`:
+ *   - `"uncentered"` — the un-cropped wide art (character bleeds off-frame);
+ *      what the client uses full-bleed behind featured copy. DEFAULT.
+ *   - `"centered"`   — recomposed so the character sits centred (card art).
+ *   - `"tile"`       — the small collection/loadout tile crop.
+ *
+ * The filenames carry an odd DOUBLE suffix that repeats the champ + skin id,
+ * e.g. `missfortune_splash_uncentered_69.skins_missfortune_skin69.jpg`. Both
+ * `<champ>` and the skin id must be lowercased/interpolated exactly per CDragon;
+ * `champion` is lowercased here so callers may pass either `"MissFortune"` or
+ * `"missfortune"`. `skinNum` is the numeric skin id (0 = base skin).
+ *
+ * Confirmed HTTP 200 image/jpeg at `latest` (2026-07-21):
+ *   skinUncenteredSplashUrl("missfortune", 69)  → MVP T1 Miss Fortune full art
+ *   (…/missfortune/skins/skin69/images/missfortune_splash_uncentered_69
+ *     .skins_missfortune_skin69.jpg)
+ *
+ * Pass the returned URL as an <img> `src`. NO fetching happens here — pages /
+ * components supply the resolved URL. Tokens rule applies to CSS colours, not
+ * asset URLs.
+ *
+ * Source: CommunityDragon rcp-be-lol-game-data · assets/characters/<champ>/skins/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export function skinUncenteredSplashUrl(
+  champion: string,
+  skinNum: number,
+  variant: "uncentered" | "centered" | "tile" = "uncentered",
+): string {
+  const champ = champion.toLowerCase();
+  return `${CDRAGON_GAME_DATA}/assets/characters/${champ}/skins/skin${skinNum}/images/${champ}_splash_${variant}_${skinNum}.skins_${champ}_skin${skinNum}.jpg`;
+}
