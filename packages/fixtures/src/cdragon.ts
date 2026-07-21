@@ -2009,3 +2009,89 @@ export const UIKIT_SFX: readonly SoundEntry[] = [
  */
 export const partiesBackgroundUrl = (mode = "classic_sru"): string =>
   `${CDRAGON_GAME_DATA}/content/src/leagueclient/gamemodeassets/${mode}/img/parties-background.jpg`;
+// Lobby (CONFIRM) button videos (issue #454) — the rcp-fe-lol-PATCHER plugin's
+// native lobby-button state machine.
+//
+// PIN 7.5 (deliberate): unlike the other video helpers here, the patcher plugin
+// mirror is NOT carried at `latest` — every lobby-button-*.webm 404s on the
+// latest tree and returns 206 video/webm only at patch 7.5 (re-probed 2026-07,
+// issue #454). So this family hard-pins the `7.5` CDN tag rather than reusing the
+// `latest`-based `CDRAGON_*` bases above. Kept as its own const so a future
+// re-pin touches one line.
+//
+// The clips are 146×58 VP8-with-alpha (alpha_mode=1) — the SAME frame family as
+// the play-button set (`playButtonVideoUrl`), i.e. they carry the FULL button
+// silhouette (concave-left arrow chevron, dark fill) for the opaque states
+// (intro/hover-intro/release/magic-release) and a transparent-center frame-only
+// shimmer for `hover-loop`/`hover-outro`. Because they carry the whole button
+// FACE (not just an additive glow), the consuming button SWAPS its CSS frame for
+// the video while active rather than stacking (issue #423 doubled-art class); see
+// HextechButton `lobbyVideoSources`. `disabled-intro` is the shared 178×108
+// disabled reveal.
+// ---------------------------------------------------------------------------
+
+const CDRAGON_PATCHER_VIDEOS_75 =
+  "https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-patcher/global/default/videos";
+
+/**
+ * Lobby (CONFIRM) button state for {@link lobbyButtonVideoUrl}. Mirrors the
+ * play-button / lock-in state machines:
+ *   `intro`        one-shot enabled reveal — gold frame flashes cyan and settles
+ *                  to the teal-framed dark idle face (played once on mount).
+ *   `hoverIntro`   one-shot hover-in — the dark face brightens its teal frame.
+ *   `hoverLoop`    ambient hover loop — frame-only travelling border shimmer
+ *                  (transparent center; composites over the settled dark face).
+ *   `hoverOutro`   one-shot hover-out — the hover shimmer fades back down.
+ *   `release`      one-shot press-release — cyan energy streaks sweep the fill.
+ *   `magicRelease` one-shot press-release accent — brighter magic flare variant.
+ *   `disabledIntro` one-shot disabled reveal — the shared grey button-disabled
+ *                  intro (178×108 canvas), settling to the grey disabled face.
+ */
+export type LobbyButtonVideoState =
+  | "intro"
+  | "hoverIntro"
+  | "hoverLoop"
+  | "hoverOutro"
+  | "release"
+  | "magicRelease"
+  | "disabledIntro";
+
+/**
+ * Real-client lobby (CONFIRM) button state video (webm, VP8 straight alpha) for a
+ * given state — the rcp-fe-lol-patcher plugin's native lobby-button animation set
+ * (issue #454). Each clip is 146×58 (the shared 178×108 for `disabledIntro`) and
+ * carries the FULL button face for the opaque states, so the consuming button
+ * SWAPS its CSS frame for the video while the layer is active (issue #423) rather
+ * than stacking (which would double the frame).
+ *
+ * PIN 7.5 — the patcher plugin videos are mirrored only at CDragon patch 7.5;
+ * `latest` 404s (re-probed 2026-07). See {@link CDRAGON_PATCHER_VIDEOS_75}.
+ *
+ * States → file:
+ *   "intro"         → lobby-button-intro.webm
+ *   "hoverIntro"    → lobby-button-hover-intro.webm
+ *   "hoverLoop"     → lobby-button-hover-loop.webm
+ *   "hoverOutro"    → lobby-button-hover-outro.webm
+ *   "release"       → lobby-button-release.webm
+ *   "magicRelease"  → lobby-button-magic-release.webm
+ *   "disabledIntro" → button-disabled-intro.webm  (shared disabled reveal)
+ *
+ * All seven confirmed HTTP 206 video/webm with alpha at patch 7.5 (2026-07).
+ * Feed the returned URL to the `lobbyVideoSources` of `HextechButton` (primary
+ * variant). NO fetching happens here — pages/showcase supply URLs.
+ *
+ * Source: CommunityDragon rcp-fe-lol-patcher · global/default/videos/ (patch 7.5)
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const lobbyButtonVideoUrl = (state: LobbyButtonVideoState): string => {
+  const FILE: Record<LobbyButtonVideoState, string> = {
+    intro: "lobby-button-intro.webm",
+    hoverIntro: "lobby-button-hover-intro.webm",
+    hoverLoop: "lobby-button-hover-loop.webm",
+    hoverOutro: "lobby-button-hover-outro.webm",
+    release: "lobby-button-release.webm",
+    magicRelease: "lobby-button-magic-release.webm",
+    disabledIntro: "button-disabled-intro.webm",
+  };
+  return `${CDRAGON_PATCHER_VIDEOS_75}/${FILE[state]}`;
+};
