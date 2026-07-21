@@ -54,7 +54,7 @@ export function FriendGroupHeader({
       </svg>
 
       {/* Group name — CSS uppercase, tracking-widest, gold-2 (matches ref) */}
-      <span className="font-body text-xs uppercase tracking-widest text-gold-2">
+      <span className="font-body text-xs uppercase tracking-widest text-gold-1">
         {name}
       </span>
 

@@ -1229,7 +1229,7 @@ export function ClientShell() {
             {railVisible && socialExpanded && (
               <div
                 aria-label="Social panel"
-                className="flex shrink-0 flex-col border-l border-gold-5"
+                className="flex shrink-0 flex-col"
                 style={{ width: SOCIAL_RAIL_WIDTH }}
               >
                 {/* Identity no longer heads the rail (era shift #384 / #387):

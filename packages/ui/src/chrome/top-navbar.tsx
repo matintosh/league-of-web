@@ -162,7 +162,7 @@ export function TopNavbar({
          icon cluster, currency, and profile chip all sit vertically centred in
          this taller band; the window-control row still floats top-right in the
          integrated chrome (WindowFrame), above this nav. */
-      className="flex h-22 w-full shrink-0 items-stretch px-4 [backdrop-filter:blur(6px)]"
+      className="flex h-18 w-full shrink-0 items-stretch px-4 [backdrop-filter:blur(6px)] border-b border-b-gold-1/20"
     >
       {/* Left region — play slot; self-center so the PLAY button stays vertically centred */}
       <div className="flex shrink-0 items-center">{playSlot}</div>

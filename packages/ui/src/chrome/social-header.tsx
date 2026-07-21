@@ -175,33 +175,8 @@ export function SocialHeader({
     >
       {/* Leading group: collapse chevron (when wired) + "Social" label */}
       <div className="flex items-center gap-1.5">
-        {onToggleCollapse && (
-          <button
-            type="button"
-            aria-label="Collapse social panel"
-            aria-expanded={true}
-            onClick={onToggleCollapse}
-            className="flex h-4 w-4 items-center justify-center text-grey-1 transition-colors duration-100 hover:text-gold-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-3"
-          >
-            {/* « double-chevron pointing toward the window edge (collapse) */}
-            <svg
-              aria-hidden="true"
-              width="12"
-              height="12"
-              viewBox="0 0 12 12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6,2 2,6 6,10" />
-              <polyline points="10,2 6,6 10,10" />
-            </svg>
-          </button>
-        )}
         {/* "Social" label — natural-case in JSX, CSS uppercase */}
-        <span className="font-display text-[11px] uppercase tracking-widest text-grey-1">
+        <span className="font-display text-[11px] uppercase tracking-widest text-gold-1">
           Social
         </span>
       </div>
