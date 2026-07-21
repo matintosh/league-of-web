@@ -458,11 +458,21 @@ const DOCK_BUTTONS: DockButton[] = [
     ),
   },
   {
-    id: "social-settings",
-    label: "Social settings",
+    // Debug / bug-report — the reference's far-right control, framed in its own
+    // gold-outlined cell (`boxed`). Hand-drawn beetle in token color (#535).
+    id: "debug",
+    label: "Report a bug",
+    boxed: true,
     icon: (
       <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fillRule="evenodd" clipRule="evenodd" d="M7.5 1h3l.45 1.8a5.6 5.6 0 0 1 1.35.79l1.8-.56 1.5 2.6-1.35 1.23c.03.37.03.74 0 1.11l1.35 1.23-1.5 2.6-1.8-.56c-.43.3-.87.56-1.35.79L10.5 14h-3l-.45-1.8a5.6 5.6 0 0 1-1.35-.79l-1.8.56-1.5-2.6 1.35-1.23a5.7 5.7 0 0 1 0-1.11L2.25 5.63l1.5-2.6 1.8.56c.43-.3.87-.56 1.35-.79L7.5 1ZM9 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="currentColor" />
+        {/* Beetle body */}
+        <path d="M9 4.5c2 0 3.5 1.7 3.5 4.2S11 13 9 13s-3.5-1.8-3.5-4.3S7 4.5 9 4.5Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+        {/* Head */}
+        <path d="M9 4.5V3.2m-1.4-.9 1.4 1 1.4-1" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+        {/* Center seam */}
+        <path d="M9 5.5v6.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+        {/* Legs */}
+        <path d="M5.6 6.5 3.5 5.3M5.3 9H3M5.6 11.4l-2.1 1.2M12.4 6.5l2.1-1.2M12.7 9H15m-2.6 2.4 2.1 1.2" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
       </svg>
     ),
   },

@@ -26,7 +26,7 @@ export const socialPanelShowcase: ShowcaseEntry = {
     {
       name: "Full replica (2 groups, one collapsed, badge, mixed availability)",
       notes:
-        'Closest to the real LoL client: "General" group expanded with 4 friends across in-game/in-queue/away/offline; "Work" group collapsed, showing derived (1/2) count. FriendRequestsRow shows a badge of 2. data-shot="social-panel" on the wrapper.',
+        'Closest to the real LoL client: "General" group expanded with 4 friends across in-game/in-queue/away/offline; "Work" group collapsed, showing derived (1/2) count. FriendRequestsRow shows a badge of 2. A 1px white/50% LEFT hairline (#535) divides the rail from the main content, matching the home rail\'s right border; border-box keeps the 224px width unchanged. data-shot="social-panel" on the wrapper.',
       render: () => <SocialPanelFullReplicaDemo />,
     },
     {
