@@ -228,8 +228,10 @@ const BORDER_INNER_RATIO = 180 / 512;
  * `ringOuter / BORDER_RING_RATIO` so the *visible ring* lands at a chosen pixel
  * diameter (≈48–56px in the reference) instead of blowing the box up to
  * `avatar / BORDER_INNER_RATIO` (≈2.85×, the #492 overflow that broke the band).
- * The frame's clasps then overflow only a few px past the avatar box — capped so
- * they never reach the name/currency (the #499 regression must not return).
+ * The frame's clasps still flare ~25.65px past each side of the 34px avatar
+ * box, so the chip's name block is offset clear of the right clasp (see the
+ * ringOuter comment in ProfileChip, #521); the currency sits far enough left to
+ * stay clear on that side.
  */
 const BORDER_RING_RATIO = 324 / 512;
 
@@ -422,10 +424,14 @@ export function ProfileChip({
   const AVATAR_SIZE = isNavband ? 34 : 48;
   // navband: render the themed border COMPACT — the visible gold ring lands at
   // ~54px (measured off the reference: ring outer ≈55–57px around the ~34px
-  // avatar) via AvatarBorder's ringOuter path, so only tiny clasps overflow the
-  // avatar box (≤~11px each side) and the chip footprint stays the avatar size —
-  // no reach into the currency/name (the #499 regression). rail keeps the
-  // generous inner-hole sizing (undefined ringOuter).
+  // avatar) via AvatarBorder's ringOuter path. The border box is 85.3px
+  // (54/BORDER_RING_RATIO), so the clasps/wings flare ~25.65px past each side of
+  // the 34px avatar box. The frame is absolutely centred + pointer-events-none
+  // so it never pushes layout, but its right clasp DOES paint ~25.65px right of
+  // the avatar — the name block below is offset (ml-[18px] → 26px total from the
+  // avatar edge) so that overhang lands in empty space, not on the "M" (#521;
+  // the returned #492/#499 regression). rail keeps the generous inner-hole
+  // sizing (undefined ringOuter).
   const ringOuter = isNavband ? 54 : undefined;
   // Inner clip radius matches OrnateRing's clipR (outerR - gap - 1.5).
   const clipR = AVATAR_SIZE * 0.5 - 1 - 3 - 1.5;
@@ -505,8 +511,17 @@ export function ProfileChip({
 
       {/* ------------------------------------------------------------------ */}
       {/* Name + availability row                                             */}
+      {/*                                                                     */}
+      {/* navband: the compact themed frame's visible ring lands at ~54px,    */}
+      {/* but its right clasp/wing art flares ~25.65px past the 34px avatar    */}
+      {/* box ((85.3−34)/2). The IdentityArea gap-2 (8px) alone left ~17.7px   */}
+      {/* of clasp painting over the name start (the #492/#499 regression,     */}
+      {/* #521). We clear the name by pushing it a further 18px right, so the  */}
+      {/* name origin sits 26px (8px gap + 18px) from the avatar edge — just   */}
+      {/* past the ~25.65px overhang, landing the clasp in empty space. The    */}
+      {/* frame stays untouched (reference-matched ring), only the name moves. */}
       {/* ------------------------------------------------------------------ */}
-      <div className={isNavband ? "min-w-0" : "min-w-0 flex-1"}>
+      <div className={isNavband ? "ml-[18px] min-w-0" : "min-w-0 flex-1"}>
         {/* Summoner name — navband uses the Marcellus display serif (matches the
             reference, which renders the name in the client's serif face, not the
             body sans) at a compact 13px cream, sized so the name cap-height is
