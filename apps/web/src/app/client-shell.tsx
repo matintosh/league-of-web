@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { CLIENT_WIDTH, CLIENT_HEIGHT } from "../lib/client-window";
+import { useSound } from "../lib/use-sound";
 import {
   WindowFrame,
   TopNavbar,
@@ -513,6 +514,11 @@ export function ClientShell() {
   const [socialExpanded, setSocialExpanded] = useState(true);
   const [friendGroups, setFriendGroups] = useState<FriendGroup[]>(INITIAL_FRIEND_GROUPS);
 
+  // Sound system (#432) — the app owns audio playback (a side effect), never
+  // @low/ui. Wired to a few existing component callbacks below; every call is
+  // user-gesture-initiated (no autoplay).
+  const { play: playSfx } = useSound();
+
   // Party open/closed toggle — wired to PartyStatusPanel header when in lobby.
   // Defaults to open (true) matching the reference; toggling reflects both the
   // panel header label and the PARTY text in the TopNavbar PARTY pill.
@@ -534,7 +540,13 @@ export function ClientShell() {
     [],
   );
 
-  const toggleSocialPanel = () => setSocialExpanded((prev) => !prev);
+  const toggleSocialPanel = () =>
+    setSocialExpanded((prev) => {
+      // Status-window open/close SFX (#432) — play the matching clip for the
+      // direction we're toggling toward.
+      playSfx(prev ? "statuswindow-close" : "statuswindow-open");
+      return !prev;
+    });
 
   // Champ-select phases are a full-screen takeover (issue #341): the TopNavbar
   // is hidden and the champ-select screen stretches to the window's top edge.
@@ -1157,7 +1169,11 @@ export function ClientShell() {
                     groups={friendGroups}
                     requestCount={2}
                     onToggleGroup={handleToggleFriendGroup}
-                    onFriendClick={(s) => console.log("friend click:", s.gameName)}
+                    onFriendClick={(s) => {
+                      // Generic UI click SFX (#432).
+                      playSfx("click-generic");
+                      console.log("friend click:", s.gameName);
+                    }}
                     profileIconSrcFor={(s) => profileIconUrl(s.profileIconId)}
                     // Collapse toggle folded into the SOCIAL header (#401) — the
                     // « chevron there collapses the rail. The matching EXPAND
@@ -1171,7 +1187,11 @@ export function ClientShell() {
                 <SocialDock
                   buttons={DOCK_BUTTONS}
                   version={SOCIAL_VERSION}
-                  onAction={(id) => console.log("dock action:", id)}
+                  onAction={(id) => {
+                    // Suggested-tab-click SFX (#432) — the dock action tabs.
+                    playSfx("suggested-tab-click");
+                    console.log("dock action:", id);
+                  }}
                 />
               </div>
             )}

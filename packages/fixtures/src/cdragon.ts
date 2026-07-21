@@ -1267,3 +1267,145 @@ export const lockInDisabledPngUrl = (): string =>
  * helper here following the pattern of cdragonStaticUrl(), and swap in an
  * <img> tag in the screen file.
  */
+
+// ---------------------------------------------------------------------------
+// SOUND (.ogg) HELPERS — issue #432 (sound system v1)
+//
+// The real client's friend-finder UI SFX (click, status-window open/close,
+// success/fail notifications, tab clicks). CommunityDragon mirrors these as
+// small `audio/ogg` clips (~12–48 KB each). Like the lock-in videos (#428),
+// they live ONLY at patch 7.5 — the `latest` friend-finder plugin dropped the
+// sounds/ dir (404 at latest). Patch 7.5 is pinned deliberately.
+//
+// All 6 confirmed HTTP 200 audio/ogg at:
+//   https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-friend-finder/global/default/sounds/
+// (probed 2026-07, issue #432)
+//
+// Audio playback is a SIDE EFFECT and must NOT live in @low/ui — these helpers
+// only build URLs. Pages/app hooks feed a returned URL to an HTMLAudioElement,
+// and playback is user-gesture-initiated (no autoplay). See apps/web useSound.
+// ---------------------------------------------------------------------------
+
+/**
+ * Base URL for the official CommunityDragon friend-finder SFX set.
+ *
+ * PINNED to patch 7.5 — the `latest` mirror's friend-finder plugin no longer
+ * carries a sounds/ dir (404). Patch 7.5 ships the full set. Do not change this
+ * to `latest` without confirming the sounds exist at the target patch. Same
+ * pin/rationale as the lock-in videos ({@link lockInVideoUrl}).
+ *
+ * Fan-content policy: https://www.riotgames.com/en/legal (fan-made, non-commercial).
+ */
+const CDRAGON_SOUND =
+  "https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-friend-finder/global/default/sounds";
+
+/**
+ * Typed id union for the friend-finder SFX catalog. Each id is a stable slug
+ * used as the {@link SoundEntry.id} and consumed by {@link soundUrl}. Keeping
+ * this a union (rather than `string`) means a caller playing an unknown clip is
+ * a compile error, and {@link soundUrl}'s filename map is exhaustive.
+ */
+export type SfxId =
+  | "click-generic"
+  | "statuswindow-open"
+  | "statuswindow-close"
+  | "notif-success"
+  | "login-fail"
+  | "suggested-tab-click";
+
+/** Broad grouping used to organize the sound library UI into labelled sections. */
+export type SoundCategory = "UI" | "Notification" | "Social";
+
+/**
+ * One catalog entry describing a single client SFX. Presentational components
+ * (e.g. `SoundLibrary`) import this TYPE from `@low/fixtures` and receive the
+ * VALUES from pages/showcase — never fetching or constructing URLs themselves.
+ */
+export interface SoundEntry {
+  /** Stable id — feed to {@link soundUrl} to resolve the streaming URL. */
+  id: SfxId;
+  /** Human-readable label shown in the library row (e.g. "Generic UI Click"). */
+  label: string;
+  /** Group the clip belongs to — drives the library's section grouping. */
+  category: SoundCategory;
+  /** The `.ogg` filename under {@link CDRAGON_SOUND} (without the base path). */
+  filename: string;
+}
+
+/**
+ * Friend-finder SFX streaming URL for a given {@link SfxId}. Mirrors the
+ * `lockInVideoUrl` house style: a `Record<SfxId, string>` filename map (so a new
+ * id fails typecheck instead of silently 404-ing) resolved against the pinned
+ * patch-7.5 base.
+ *
+ * Feed the returned URL to an `HTMLAudioElement` in the APP layer (see the
+ * `useSound` hook). NO fetching or playback happens here — this only builds a
+ * URL, and audio playback must stay user-gesture-initiated.
+ *
+ * All 6 confirmed HTTP 200 audio/ogg (2026-07, issue #432):
+ *   soundUrl("click-generic")       → …/sounds/sfx-soc-ui-click-generic.ogg
+ *   soundUrl("statuswindow-open")   → …/sounds/sfx-soc-ui-statuswindow-open.ogg
+ *   soundUrl("notif-success")       → …/sounds/sfx-soc-notif-success.ogg
+ *
+ * Source: CommunityDragon rcp-fe-lol-friend-finder (patch 7.5) · sounds/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const soundUrl = (id: SfxId): string => {
+  const FILE: Record<SfxId, string> = {
+    "click-generic":       "sfx-soc-ui-click-generic.ogg",
+    "statuswindow-open":   "sfx-soc-ui-statuswindow-open.ogg",
+    "statuswindow-close":  "sfx-soc-ui-statuswindow-close.ogg",
+    "notif-success":       "sfx-soc-notif-success.ogg",
+    "login-fail":          "sfx-login-notif-login-fail.ogg",
+    "suggested-tab-click": "sfx-lobby-suggested-tab-click.ogg",
+  };
+  return `${CDRAGON_SOUND}/${FILE[id]}`;
+};
+
+/**
+ * The friend-finder SFX catalog (issue #432) — the 6 social/UI clips the real
+ * client plays around the friends list. Ordered UI → Notification → Social so
+ * the library groups read top-to-bottom in that order. Pages/showcase pass this
+ * to the `SoundLibrary` component; components import only the {@link SoundEntry}
+ * TYPE, never this value.
+ *
+ * Resolve each entry's streaming URL with `soundUrl(entry.id)`.
+ */
+export const FRIEND_FINDER_SFX: readonly SoundEntry[] = [
+  {
+    id: "click-generic",
+    label: "Generic UI Click",
+    category: "UI",
+    filename: "sfx-soc-ui-click-generic.ogg",
+  },
+  {
+    id: "suggested-tab-click",
+    label: "Suggested Tab Click",
+    category: "UI",
+    filename: "sfx-lobby-suggested-tab-click.ogg",
+  },
+  {
+    id: "notif-success",
+    label: "Success Notification",
+    category: "Notification",
+    filename: "sfx-soc-notif-success.ogg",
+  },
+  {
+    id: "login-fail",
+    label: "Login Failed",
+    category: "Notification",
+    filename: "sfx-login-notif-login-fail.ogg",
+  },
+  {
+    id: "statuswindow-open",
+    label: "Status Window Open",
+    category: "Social",
+    filename: "sfx-soc-ui-statuswindow-open.ogg",
+  },
+  {
+    id: "statuswindow-close",
+    label: "Status Window Close",
+    category: "Social",
+    filename: "sfx-soc-ui-statuswindow-close.ogg",
+  },
+];
