@@ -1562,3 +1562,30 @@ export const poroUrl = (variant: PoroVariant): string => {
  */
 export const friendFinderImageUrl = (name: string): string =>
   `${CDRAGON_FRIEND_FINDER}/${name}.png`;
+
+/**
+ * Social-plugin MASK glyph URL for a given `name` (filename WITHOUT the `.png`
+ * extension). Companion to {@link friendFinderImageUrl} (#434): where that helper
+ * serves the friend-finder `add_person_mask`, this one serves the remaining
+ * SocialHeader glyphs that live at the rcp-fe-lol-social plugin root — groups
+ * (`add_folder_mask`), list/sort (`sort_mask`), and search (`search_mask`).
+ *
+ * These are 72×72 monochrome-on-transparent PNGs — MASK glyphs, not pre-tinted
+ * icons. Feed the URL to a CSS `mask-image` on a token-colored box so the glyph
+ * picks up the element's `text-*` color and its hover/focus transitions (grey-1
+ * → gold-1). Do NOT bake a fixed color; let the token background drive the tint.
+ *
+ * Pinned to `latest` (not patch 7.5 like the friend-finder set): these masks
+ * survive to the current era — confirmed HTTP 200 image/png at `latest`, so they
+ * are era-coherent with the rest of the current-client chrome, not dated art.
+ *
+ * Confirmed HTTP 200 image/png (2026-07, issue #440):
+ *   socialMaskUrl("search_mask")     → …/rcp-fe-lol-social/…/search_mask.png
+ *   socialMaskUrl("add_folder_mask") → …/rcp-fe-lol-social/…/add_folder_mask.png (groups)
+ *   socialMaskUrl("sort_mask")       → …/rcp-fe-lol-social/…/sort_mask.png (list/sort)
+ *
+ * Source: CommunityDragon rcp-fe-lol-social (latest) · global/default/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const socialMaskUrl = (name: string): string =>
+  `${CDRAGON_SOCIAL}/${name}.png`;
