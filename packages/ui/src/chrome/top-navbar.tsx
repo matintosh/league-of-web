@@ -132,7 +132,13 @@ export function TopNavbar({
          band into the content below — there is no bottom hairline/border. The
          only chrome accent is the gold TOP line (WindowFrame integrated variant)
          which connects to the active-tab chevron. So the former bottom gold-4
-         hairline is removed; the scrim just fades into the body. */
+         hairline is removed; the scrim just fades into the body.
+         #508: the band is an absolute overlay over the z-0 home splash, so
+         `backdrop-blur-md` frosts what's BEHIND it — the splash bleeding up to
+         y=0 reads as soft frosted glass through the band, matching the 2025
+         reference (Image #14). The transparent scrim gradient sits ON TOP of the
+         blur so the art stays legible; all nav children (text/chevron/currency/
+         profile) render above this layer and stay crisp. */
       style={{
         backgroundImage:
           "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 42%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 68%, transparent) 100%)",
@@ -142,7 +148,7 @@ export function TopNavbar({
          icon cluster, currency, and profile chip all sit vertically centred in
          this taller band; the window-control row still floats top-right in the
          integrated chrome (WindowFrame), above this nav. */
-      className="flex h-22 w-full shrink-0 items-stretch px-4"
+      className="flex h-22 w-full shrink-0 items-stretch px-4 backdrop-blur-md"
     >
       {/* Left region — play slot; self-center so the PLAY button stays vertically centred */}
       <div className="flex shrink-0 items-center">{playSlot}</div>
