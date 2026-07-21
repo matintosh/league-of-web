@@ -49,6 +49,7 @@ import { settingsRowShowcase } from "./chrome/settings-row.showcase";
 import { socialDockShowcase } from "./chrome/social-dock.showcase";
 import { socialHeaderShowcase } from "./chrome/social-header.showcase";
 import { socialPanelShowcase } from "./chrome/social-panel.showcase";
+import { soundLibraryShowcase } from "./chrome/sound-library.showcase";
 import { storyCardShowcase } from "./chrome/story-card.showcase";
 import { tabBarShowcase } from "./chrome/tab-bar.showcase";
 import { tftHubScreenShowcase } from "./chrome/tft-hub-screen.showcase";
@@ -154,6 +155,7 @@ export const registry: ShowcaseEntry[] = [
   socialDockShowcase,
   socialHeaderShowcase,
   socialPanelShowcase,
+  soundLibraryShowcase,
   storyCardShowcase,
   tabBarShowcase,
   tftHubScreenShowcase,
