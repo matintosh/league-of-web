@@ -1411,17 +1411,31 @@ export const FRIEND_FINDER_SFX: readonly SoundEntry[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Friend-finder poro art (empty-state mascots) — issue #433
+// FRIEND-FINDER IMAGE HELPERS — poro empty-state mascots (#433) + mask glyphs (#434)
+//
+// The friend-finder plugin ships empty-state poros (poro_question/sad/sleeping)
+// and mask glyphs (add_person_mask, icon_check_mask, …). Like the friend-finder
+// SFX (#432) and the lock-in videos (#428), these images live at patch 7.5 (last
+// live at 9.3; the `latest` mirror dropped this plugin from 9.4 onward). Patch
+// 7.5 is pinned deliberately — do NOT change to `latest` without confirming the
+// images exist at the target patch.
+//
+// Mask glyphs: opaque pixels are warm off-white / gold (#f0e6d2, exactly our
+// `gold-1`) on transparent. Consume via CSS `mask-image` over a token background
+// color so the glyph inherits `text-*` state colors (grey-1 → gold-1 on hover)
+// rather than baking a fixed tint — see SocialHeader. Confirmed HTTP 200
+// image/png at:
+//   https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-friend-finder/global/default/images/
 // ---------------------------------------------------------------------------
 
 /**
  * Base URL for the official CommunityDragon friend-finder image set.
  *
- * PINNED to patch 7.5 — these poro mascots were last live at patch 9.3 and are
- * gone from 9.4 onward, so the `latest` mirror 404s. Patch 7.5 ships the full
- * set (poro_question / poro_sad / poro_sleeping, all 102×96 RGBA). Do not change
- * this to `latest` without confirming the images exist at the target patch. Same
- * pin/rationale as the lock-in videos ({@link lockInVideoUrl}) and the
+ * PINNED to patch 7.5 — the `latest` mirror dropped the friend-finder plugin
+ * from patch 9.4 onward (404 at latest). Patch 7.5 ships the full image set
+ * (poros poro_question/sad/sleeping @ 102×96 RGBA; mask glyphs @ 72×72). Do not
+ * change to `latest` without confirming the images exist at the target patch.
+ * Same pin/rationale as the lock-in videos ({@link lockInVideoUrl}) and the
  * friend-finder SFX ({@link soundUrl}).
  *
  * Poro designs are timeless Hextech mascots — using a 7.5 poro for a current-era
@@ -1464,3 +1478,29 @@ export const poroUrl = (variant: PoroVariant): string => {
   };
   return `${CDRAGON_FRIEND_FINDER}/${FILE[variant]}`;
 };
+
+/**
+ * Friend-finder MASK glyph URL for a given `name` (filename WITHOUT the `.png`
+ * extension). Mirrors the house style of the other cdragon.ts helpers: a base +
+ * name join, no fetching, JSDoc pins the patch.
+ *
+ * These are 72×72 indexed-palette PNGs where opaque pixels are off-white/gold
+ * (#f0e6d2) on transparent — MASK glyphs, not pre-tinted icons. Feed the URL to
+ * a CSS `mask-image` on a token-colored box so the glyph picks up the element's
+ * `text-*` color (and its hover/focus transitions). Do NOT tint by baking a
+ * fixed color; let the token background drive it.
+ *
+ * Crispness note (issue #434): the 72×72 raster downscales cleanly to the
+ * SocialHeader's 16px render — the filled person-bust + `+` reads sharp with no
+ * meaningful blur, and it is more faithful than a hand-drawn outline SVG (the
+ * client glyph is a FILLED silhouette). See SocialHeader's `iconMap.add`.
+ *
+ * Confirmed HTTP 200 image/png (2026-07, issue #434):
+ *   friendFinderImageUrl("add_person_mask") → …/images/add_person_mask.png
+ *   friendFinderImageUrl("icon_check_mask") → …/images/icon_check_mask.png
+ *
+ * Source: CommunityDragon rcp-fe-lol-friend-finder (patch 7.5) · images/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const friendFinderImageUrl = (name: string): string =>
+  `${CDRAGON_FRIEND_FINDER}/${name}.png`;

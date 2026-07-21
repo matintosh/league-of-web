@@ -20,6 +20,18 @@ export interface SocialHeaderProps {
    * unchanged.
    */
   onToggleCollapse?: () => void;
+  /**
+   * Optional URL for the real-client "add friend" MASK glyph (issue #434).
+   * Supply `friendFinderImageUrl("add_person_mask")` from `@low/fixtures` at
+   * the page/showcase level: the add button then renders the authentic filled
+   * person-bust + `+` silhouette via CSS `mask-image`, tinted by the button's
+   * token text color so it keeps the grey-1 → gold-1 hover transition.
+   *
+   * The asset is a 72×72 mask that downscales crisply to this 16px slot (see
+   * `iconMap.add`). Omit it and the add button falls back to the hand-drawn
+   * SVG below, so existing consumers are unchanged.
+   */
+  addIconSrc?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -32,6 +44,23 @@ const iconMap: Record<
   SocialAction,
   { ariaLabel: string; path: ReactNode }
 > = {
+  /**
+   * add-friend glyph (issue #434 decision).
+   *
+   * The real client ships a dedicated raster for this button:
+   *   https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-friend-finder/global/default/images/add_person_mask.png
+   * (72×72 mask, opaque pixels are #f0e6d2 = gold-1). Resolve it via
+   * `friendFinderImageUrl("add_person_mask")` from `@low/fixtures`.
+   *
+   * DECISION — the raster WINS. Compared side-by-side at the 16px render size
+   * (hi-DPI, deviceScaleFactor 4): the 72×72 mask downscales cleanly with no
+   * meaningful blur, AND it is more faithful — the client glyph is a FILLED
+   * person-bust + `+` silhouette, whereas the SVG below is a hand-drawn OUTLINE
+   * (stroked circle/arc/plus), a visibly different look. So when `addIconSrc`
+   * is supplied the button renders the mask glyph (tinted via CSS `mask-image`
+   * so it keeps the grey-1 → gold-1 token hover); this SVG remains only as the
+   * no-asset fallback for consumers that don't pass a URL.
+   */
   add: {
     ariaLabel: "Add friend",
     path: (
@@ -91,9 +120,17 @@ const iconMap: Record<
  * Each button fires `onAction?.(key)` on click; the chevron fires
  * `onToggleCollapse?.()`.
  *
+ * The add-friend button renders the real-client `add_person_mask` glyph when
+ * `addIconSrc` is supplied (issue #434), falling back to a hand-drawn SVG
+ * otherwise (see `iconMap.add`).
+ *
  * Reference: "SOCIAL ＋ 🗂 ≡ 🔍" strip in the LoL client right sidebar.
  */
-export function SocialHeader({ onAction, onToggleCollapse }: SocialHeaderProps) {
+export function SocialHeader({
+  onAction,
+  onToggleCollapse,
+  addIconSrc,
+}: SocialHeaderProps) {
   return (
     <div
       data-shot="social-header"
@@ -143,17 +180,37 @@ export function SocialHeader({ onAction, onToggleCollapse }: SocialHeaderProps) 
               onClick={() => onAction?.(key)}
               className="text-grey-1 transition-colors duration-100 hover:text-gold-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-3"
             >
-              <svg
-                aria-hidden="true"
-                width="16"
-                height="16"
-                viewBox="0 0 18 18"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.25"
-              >
-                {path}
-              </svg>
+              {key === "add" && addIconSrc ? (
+                // Real-client add-friend mask glyph (#434). CSS mask-image tints
+                // the off-white raster to the button's token text color, so it
+                // inherits the grey-1 → gold-1 hover just like the SVG glyphs.
+                <span
+                  aria-hidden="true"
+                  className="block h-4 w-4 bg-current"
+                  style={{
+                    maskImage: `url(${addIconSrc})`,
+                    WebkitMaskImage: `url(${addIconSrc})`,
+                    maskSize: "contain",
+                    WebkitMaskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
+              ) : (
+                <svg
+                  aria-hidden="true"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.25"
+                >
+                  {path}
+                </svg>
+              )}
             </button>
           )
         )}
