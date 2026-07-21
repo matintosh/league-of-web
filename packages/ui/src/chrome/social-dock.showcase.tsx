@@ -23,11 +23,15 @@ function MultiChatIcon() {
   );
 }
 
-function DownloadIcon() {
+function MicIcon() {
   return (
-    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.25">
-      <path d="M9 2v10M5 8l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M3 15h12" strokeLinecap="round" />
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+      {/* Capsule mic body */}
+      <rect x="6.5" y="2" width="5" height="9" rx="2.5" />
+      {/* Cradle arc */}
+      <path d="M4 8a5 5 0 0 0 10 0" />
+      {/* Stand */}
+      <path d="M9 13v3M6.5 16h5" />
     </svg>
   );
 }
@@ -42,10 +46,10 @@ function SettingsIcon() {
 }
 
 const REPLICA_BUTTONS = [
-  { id: "chat", icon: <ChatIcon />, label: "Chat" },
-  { id: "multi-chat", icon: <MultiChatIcon />, label: "Multi-chat", badge: 2 },
-  { id: "download", icon: <DownloadIcon />, label: "Download" },
-  { id: "settings", icon: <SettingsIcon />, label: "Settings" },
+  { id: "chat", icon: <ChatIcon />, label: "Chat", badge: 3 },
+  { id: "party", icon: <MultiChatIcon />, label: "Party", badge: 31 },
+  { id: "mic", icon: <MicIcon />, label: "Toggle microphone" },
+  { id: "settings", icon: <SettingsIcon />, label: "Social settings" },
 ];
 
 export const socialDockShowcase: ShowcaseEntry = {
@@ -53,25 +57,25 @@ export const socialDockShowcase: ShowcaseEntry = {
   name: "SocialDock",
   area: "chrome",
   description:
-    "Bottom toolbar of the social rail — icon buttons (caller-supplied ReactNode icons) with optional gold count badge, plus optional version string (xs grey-2). Dark bg-hextech-black band.",
+    "Bottom toolbar of the social rail — icon buttons in gold-outlined cells (caller-supplied ReactNode icons) with optional gold count badge, plus an optional static client-clock readout (xs grey-2). Dark bg-hextech-black band.",
   variants: [
     {
-      name: "Default replica (4 buttons, badge, version)",
+      name: "Current-era replica (boxed cells, badges, clock)",
       notes:
-        "Matches the LoL client bottom dock: chat, multi-chat with badge '2', download, settings, and 'V9.14' version text. Hover buttons to see grey-1 → gold-1 colour transition.",
+        "Matches the current-era reference (client-current-home-2025-mf.png) bottom dock: chat (badge '3'), party (badge '31'), microphone, then the client clock '26.14', settings — each glyph in its own gold-outlined cell. Hover a cell to see the grey-1 → gold-1 / border-gold-4 transition.",
       render: () => (
         <div data-shot="social-dock" className="w-64">
           <SocialDock
             buttons={REPLICA_BUTTONS}
-            version="V9.14"
+            clockLabel="26.14"
           />
         </div>
       ),
     },
     {
-      name: "No version",
+      name: "No clock",
       notes:
-        "When `version` is omitted the version node is not rendered at all — the buttons fill the left side of the band.",
+        "When `clockLabel` is omitted the clock node is not rendered at all — the boxed icon cells fill the left side of the band.",
       render: () => (
         <div className="w-64">
           <SocialDock buttons={REPLICA_BUTTONS} />

@@ -316,8 +316,13 @@ const CLASH_OPPONENTS: ClashScoutingPlayer[] = [
 // Social rail constants (page-level, not hardcoded hex)
 // ---------------------------------------------------------------------------
 
-/** Version string shown in the SocialDock bottom strip. */
-const SOCIAL_VERSION = "V26.14";
+/**
+ * Static client-clock readout shown in the SocialDock bottom strip (issue #457).
+ * The current-era reference (client-current-home-2025-mf.png) carries a running-
+ * time readout here — NOT a patch/version string. This is a presentational
+ * fixture value (a pre-formatted string), not a live ticking timer.
+ */
+const SOCIAL_CLOCK = "26.14";
 
 /** Queue label for the party lobby — feeds ProfileChip statusText + PartyStatusPanel. */
 const PARTY_QUEUE_LABEL = "Normal Draft";
@@ -383,8 +388,10 @@ const DOCK_BUTTONS: DockButton[] = [
     ),
   },
   {
-    id: "group-chat",
-    label: "Group chat",
+    // Party / multi-chat — carries the current-era "31" gold badge (#457).
+    id: "party",
+    label: "Party",
+    badge: 31,
     icon: (
       <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M1 3h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4l-4 3V4a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
@@ -393,13 +400,19 @@ const DOCK_BUTTONS: DockButton[] = [
     ),
   },
   {
-    id: "add-friend",
-    label: "Add friend",
+    // Microphone / voice-toggle (#457). Replaces the old add-friend dock button
+    // — add-friend already lives in the SOCIAL header, so it was redundant here.
+    // Hand-drawn to match the sibling dock glyphs and the reference's plain
+    // (unmuted) mic: the current-era rcp-fe-lol-social plugin ships only a
+    // slashed `mute_mask` (a muted state), not the neutral mic the reference
+    // shows, so no correct CDN glyph resolves for this slot.
+    id: "mic",
+    label: "Toggle microphone",
     icon: (
       <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="7" cy="6" r="3.5" stroke="currentColor" strokeWidth="1.25" />
-        <path d="M1 16c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-        <path d="M14 8v4M12 10h4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+        <rect x="6.5" y="2" width="5" height="9" rx="2.5" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+        <path d="M4 8a5 5 0 0 0 10 0" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M9 13v3M6.5 16h5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
   },
@@ -1196,7 +1209,7 @@ export function ClientShell() {
                 {/* SocialDock pinned at panel bottom */}
                 <SocialDock
                   buttons={DOCK_BUTTONS}
-                  version={SOCIAL_VERSION}
+                  clockLabel={SOCIAL_CLOCK}
                   onAction={(id) => {
                     // Suggested-tab-click SFX (#432) — the dock action tabs.
                     playSfx("suggested-tab-click");

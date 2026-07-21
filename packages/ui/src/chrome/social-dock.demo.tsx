@@ -22,12 +22,16 @@ function MultiChatIcon() {
   );
 }
 
-/** Download / arrow-down icon — 18×18, stroke currentColor */
-function DownloadIcon() {
+/** Microphone / voice-toggle icon — 18×18, stroke currentColor */
+function MicIcon() {
   return (
-    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.25">
-      <path d="M9 2v10M5 8l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M3 15h12" strokeLinecap="round" />
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+      {/* Capsule mic body */}
+      <rect x="6.5" y="2" width="5" height="9" rx="2.5" />
+      {/* Cradle arc */}
+      <path d="M4 8a5 5 0 0 0 10 0" />
+      {/* Stand */}
+      <path d="M9 13v3M6.5 16h5" />
     </svg>
   );
 }
@@ -43,10 +47,10 @@ function SettingsIcon() {
 }
 
 const DEMO_BUTTONS = [
-  { id: "chat", icon: <ChatIcon />, label: "Chat" },
-  { id: "multi-chat", icon: <MultiChatIcon />, label: "Multi-chat", badge: 2 },
-  { id: "download", icon: <DownloadIcon />, label: "Download" },
-  { id: "settings", icon: <SettingsIcon />, label: "Settings" },
+  { id: "chat", icon: <ChatIcon />, label: "Chat", badge: 3 },
+  { id: "party", icon: <MultiChatIcon />, label: "Party", badge: 31 },
+  { id: "mic", icon: <MicIcon />, label: "Toggle microphone" },
+  { id: "settings", icon: <SettingsIcon />, label: "Social settings" },
 ];
 
 /**
@@ -59,7 +63,7 @@ export function SocialDockActionLogDemo() {
     <div className="w-64 bg-blue-7">
       <SocialDock
         buttons={DEMO_BUTTONS}
-        version="V9.14"
+        clockLabel="26.14"
         onAction={setLast}
       />
       {last !== null && (

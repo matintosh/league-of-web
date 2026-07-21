@@ -31,7 +31,7 @@ export const friendRowShowcase: ShowcaseEntry = {
     {
       name: "In Game",
       notes:
-        "Full-color avatar, grey-1 name, status text in blue-3 (muted teal, matched to the current-era reference). Faker, availability=in-game.",
+        "Full-color avatar, grey-1 name, status text in bright cyan (blue-2), matched to the current-era reference rgb(21,194,221). Faker, availability=in-game.",
       render: () => (
         <div className="w-56 bg-blue-7">
           <FriendRow
