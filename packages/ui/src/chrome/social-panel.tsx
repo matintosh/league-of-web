@@ -104,6 +104,32 @@ export interface SocialPanelProps {
    */
   onToggleCollapse?: () => void;
   /**
+   * Optional pass-through URL for the SocialHeader "add friend" MASK glyph
+   * (issue #434, threaded live in #444). Supply
+   * `friendFinderImageUrl("add_person_mask")` from `@low/fixtures` at the
+   * page/showcase level — forwarded verbatim to {@link SocialHeader}'s
+   * `addIconSrc`. Omit it and the header falls back to its hand-drawn SVG.
+   */
+  addIconSrc?: string;
+  /**
+   * Optional pass-through URL for the SocialHeader "groups" MASK glyph (issue
+   * #440, threaded live in #444). Supply `socialMaskUrl("add_folder_mask")` —
+   * forwarded verbatim to {@link SocialHeader}'s `groupsIconSrc`.
+   */
+  groupsIconSrc?: string;
+  /**
+   * Optional pass-through URL for the SocialHeader "list" (sort) MASK glyph
+   * (issue #440, threaded live in #444). Supply `socialMaskUrl("sort_mask")` —
+   * forwarded verbatim to {@link SocialHeader}'s `listIconSrc`.
+   */
+  listIconSrc?: string;
+  /**
+   * Optional pass-through URL for the SocialHeader "search" MASK glyph (issue
+   * #440, threaded live in #444). Supply `socialMaskUrl("search_mask")` —
+   * forwarded verbatim to {@link SocialHeader}'s `searchIconSrc`.
+   */
+  searchIconSrc?: string;
+  /**
    * Which poro mascot the empty state shows when `groups` is empty (issue
    * #433). Defaults to `"question"` (the new-account "add a friend" poro). Set
    * `"sad"` when an empty `groups` array is the result of a search that
@@ -172,6 +198,10 @@ export function SocialPanel({
   ambientVideoSrc,
   onHeaderAction,
   onToggleCollapse,
+  addIconSrc,
+  groupsIconSrc,
+  listIconSrc,
+  searchIconSrc,
   emptyStatePoro = "question",
   poroSrcFor,
 }: SocialPanelProps) {
@@ -190,7 +220,14 @@ export function SocialPanel({
 
       {/* ── 1. Social header strip ── */}
       <div className="relative z-10">
-        <SocialHeader onAction={onHeaderAction} onToggleCollapse={onToggleCollapse} />
+        <SocialHeader
+          onAction={onHeaderAction}
+          onToggleCollapse={onToggleCollapse}
+          addIconSrc={addIconSrc}
+          groupsIconSrc={groupsIconSrc}
+          listIconSrc={listIconSrc}
+          searchIconSrc={searchIconSrc}
+        />
       </div>
 
       {/* ── 2. Friend requests row (hidden when count is 0 or undefined) ── */}
