@@ -815,6 +815,8 @@ export function PartyLobbyScreen({
           isSelf
           crownChip
           title="Final Boss Faker"
+          wingTier="blue"
+          tierGem="challenger"
           signature={demoSummoner.gameName}
           regaliaSrc={regaliaBannerUrl("challenger")}
           backdropSrc={championSplashUrl("Ahri")}

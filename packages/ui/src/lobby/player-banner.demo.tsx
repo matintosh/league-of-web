@@ -20,7 +20,7 @@ const AVATAR_3 = profileIconUrl(550);
 
 // CommunityDragon role slug mapping (mirror role-selector.demo.tsx)
 import type { Role } from "./role-selector";
-import type { TierGem } from "./player-banner";
+import type { TierGem, WingTier } from "./player-banner";
 import { positionIconUrl } from "@low/fixtures";
 
 const ROLE_TO_CDRAGON: Record<Role, "top" | "jungle" | "middle" | "bottom" | "utility"> = {
@@ -84,6 +84,8 @@ export function PlayerBannerRankFrameDemo() {
         avatarSrc={AVATAR_1}
         isSelf
         crownChip
+        wingTier="blue"
+        tierGem="challenger"
         signature="matintosh"
         regaliaSrc={regaliaBannerUrl("challenger")}
         backdropSrc={RANK_SPLASH}
@@ -96,10 +98,17 @@ export function PlayerBannerRankFrameDemo() {
 
 // Variants across a few tiers — the wreath foot / frame accent is tier-coloured.
 export function PlayerBannerRankTiersDemo() {
-  const tiers: RankedTier[] = ["unranked", "gold", "emerald", "challenger"];
+  // Each tier pairs its regalia banner with the wing-clasp art + gem for the top
+  // medallion (WingTier / TierGem). The foot wreath is red-tinted uniformly.
+  const rows: { tier: RankedTier; wing: WingTier; gem: TierGem }[] = [
+    { tier: "unranked", wing: "default", gem: "unranked" },
+    { tier: "gold", wing: "gold", gem: "gold" },
+    { tier: "emerald", wing: "green", gem: "diamond" },
+    { tier: "challenger", wing: "blue", gem: "challenger" },
+  ];
   return (
     <div className="flex flex-wrap items-end justify-center gap-4 p-8 bg-blue-6">
-      {tiers.map((tier) => (
+      {rows.map(({ tier, wing, gem }) => (
         <PlayerBanner
           key={tier}
           name="matintosh"
@@ -107,6 +116,8 @@ export function PlayerBannerRankTiersDemo() {
           avatarSrc={AVATAR_1}
           isSelf
           crownChip
+          wingTier={wing}
+          tierGem={gem}
           signature="matintosh"
           regaliaSrc={regaliaBannerUrl(tier)}
           backdropSrc={RANK_SPLASH}
@@ -128,6 +139,8 @@ export function PlayerBannerPrestigeDemo() {
         avatarSrc={AVATAR_2}
         isSelf
         crownChip
+        wingTier="blue"
+        tierGem="challenger"
         signature="matintosh"
         regaliaSrc={regaliaBannerUrl("challenger")}
         backdropSrc={championSplashUrl("Ahri", 4)}
@@ -140,6 +153,8 @@ export function PlayerBannerPrestigeDemo() {
         title="Frame only"
         avatarSrc={AVATAR_3}
         isSelf
+        wingTier="blue"
+        tierGem="diamond"
         signature="NoSplash"
         regaliaSrc={regaliaBannerUrl("diamond")}
         masteryCrests={[masteryCrestUrl(7)]}
@@ -440,6 +455,8 @@ export function PlayerBannerAutofillPillDemo() {
         isSelf
         crownChip
         avatarSrc={AVATAR_1}
+        wingTier="blue"
+        tierGem="challenger"
         regaliaSrc={regaliaBannerUrl("challenger")}
         backdropSrc={championSplashUrl("Ahri")}
         masteryCrests={[masteryCrestUrl(10), masteryCrestUrl(9), masteryCrestUrl(7)]}

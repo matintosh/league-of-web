@@ -61,6 +61,11 @@ export interface PlayerBannerProps {
    * Wing tier controls wing color art. Maps to ranked-emblem PNGs from
    * CommunityDragon (rcp-fe-lol-static-assets/ranked-emblem/wings/).
    * Defaults to "default" (iron wings).
+   *
+   * On the V11 heraldic flag these are the wings framing the medallion. On the
+   * 2025 self rank frame (isSelf + regaliaSrc, issue #494) the same wing art
+   * supplies BOTH the blue/silver clasp tips flanking the top rank medallion AND
+   * the red-tinted winged wreath at the badge foot.
    */
   wingTier?: WingTier;
   /**
@@ -116,9 +121,11 @@ export interface PlayerBannerProps {
    */
   queueing?: boolean;
   /**
-   * Ranked tier for the small circular gem placed at the 12-o'clock position of
-   * the portrait ring. Omit to show no gem (unranked/casual players).
-   * Maps to CommunityDragon ranked-mini-crests/ PNG assets.
+   * Ranked tier for the small circular gem. On the V11 flag it sits at the
+   * 12-o'clock position of the portrait ring; on the 2025 self rank frame
+   * (issue #494) it sits at the foot of the top rank medallion. Omit to show no
+   * gem (unranked/casual players). Maps to CommunityDragon ranked-mini-crests/
+   * PNG assets.
    */
   tierGem?: TierGem;
   /**
@@ -180,13 +187,17 @@ export interface PlayerBannerProps {
   // 2025 ornate rank-frame (self banner) — issues #471 / #475
   // -------------------------------------------------------------------------
   /**
-   * Ornate regalia rank-frame backdrop for the SELF banner (issues #471/#475).
-   * Pass `regaliaBannerUrl(tier)` from @low/fixtures — a 512×512 straight-alpha
-   * PNG that carries BOTH the tall dark backdrop panel and its tier-coloured
-   * ornate wreath foot in one image. When supplied on an `isSelf` banner, the
-   * component renders the 2025 rank-frame treatment (masked splash backdrop,
-   * gold crest + crown finial, signature, mastery medallions, wreath foot,
-   * edit/loadout mini-icons) instead of the V11 heraldic flag.
+   * Ornate regalia rank-frame backdrop for the SELF banner (issues #471/#475,
+   * #494). Pass `regaliaBannerUrl(tier)` from @low/fixtures — a 512×512
+   * straight-alpha PNG that carries BOTH the tall dark backdrop panel and its
+   * tier-coloured ornate wreath foot in one image. When supplied on an `isSelf`
+   * banner, the component renders the 2025 compact rank BADGE (issue #494): a
+   * masked red-tinted splash backdrop, a TOP rank-emblem medallion (ornate ring
+   * + red heart crest + the handwriting signature inside it, tier wing-clasps
+   * flanking), the crowned name + title, three mastery medallions, edit/loadout
+   * mini-icons, and a prominent RED WINGED WREATH foot — instead of the V11
+   * heraldic flag. The regalia PNG here forms the gold-edged base beneath the
+   * red wreath overlay.
    *
    * Omit to keep the legacy V11 flag look (the heraldic banner-filled art) —
    * teammate / party slots always use the V11 flag regardless of this prop.
@@ -559,6 +570,176 @@ function LoadoutGlyph() {
 // Tokens only; the red tint is color-mix over ban-red. SVG ids via useId.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// RankMedallion — the TOP circular rank-emblem of the self badge (issue #494)
+//
+// Reference (docs/reference/client-current-lobby-2025.png, top of self banner):
+// an ornate circular ring with blue/silver metallic wing-clasps flanking its
+// sides, a RED heart-shaped crest plaque at its centre, and the handwriting
+// signature drawn INSIDE the heart. A small tier gem sits at the ring's foot.
+//
+// Composited from: the tier wing PNG (`wingSrc`, the ranked-emblem wings) pinned
+// behind the ring so its blue/silver clasp tips read at the sides as in the
+// reference; an SVG ornate double-ring; an SVG red heart plaque (ban-red tokens);
+// the signature (font-signature stand-in); and the tier gem PNG at the foot.
+// All art via props (presentational). Tokens only; SVG ids namespaced by `uid`.
+// ---------------------------------------------------------------------------
+
+function RankMedallion({
+  wingSrc,
+  tierGemSrc,
+  sigText,
+  uid,
+  size,
+}: {
+  wingSrc: string;
+  tierGemSrc?: string;
+  sigText: string;
+  uid: string;
+  size: number;
+}) {
+  const heartId = `${uid}-heart`;
+  const ringId = `${uid}-ring`;
+  const cx = size / 2;
+  const cy = size / 2;
+  const outerR = size / 2 - 2;
+  const innerR = outerR - 5;
+
+  return (
+    <div
+      className="relative flex items-center justify-center select-none"
+      style={{ width: size, height: size }}
+    >
+      {/* Tier wings behind the ring — their blue/silver clasp tips flank the ring
+           sides as in the reference. Scaled wider than the ring so only the outer
+           wing tips read past the ring edge. */}
+      <img
+        src={wingSrc}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute select-none"
+        style={{
+          width: size * 1.7,
+          height: "auto",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -46%)",
+          filter:
+            "drop-shadow(0 0 4px color-mix(in srgb, var(--color-blue-3) 55%, transparent))",
+        }}
+      />
+
+      {/* Ornate ring + red heart crest + signature */}
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        aria-hidden="true"
+        className="relative z-10"
+      >
+        <defs>
+          <radialGradient id={heartId} cx="50%" cy="42%" r="65%">
+            <stop offset="0%" stopColor="var(--color-ban-red-2)" />
+            <stop offset="60%" stopColor="var(--color-ban-red-3)" />
+            <stop offset="100%" stopColor="var(--color-ban-red-press)" />
+          </radialGradient>
+          <linearGradient id={ringId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-gold-2)" />
+            <stop offset="100%" stopColor="var(--color-gold-5)" />
+          </linearGradient>
+        </defs>
+
+        {/* Outer + inner ornate ring (gold) over a dark disc backing */}
+        <circle cx={cx} cy={cy} r={innerR + 1} fill="var(--color-hextech-black)" fillOpacity="0.85" />
+        <circle cx={cx} cy={cy} r={outerR} fill="none" stroke={`url(#${ringId})`} strokeWidth="2" />
+        <circle
+          cx={cx}
+          cy={cy}
+          r={innerR}
+          fill="none"
+          stroke={`url(#${ringId})`}
+          strokeWidth="1"
+          strokeOpacity="0.55"
+        />
+
+        {/* Red heart crest plaque — the reference's centre focal shape */}
+        <path
+          d={`M ${cx} ${cy + innerR * 0.62}
+              C ${cx - innerR * 0.9} ${cy + innerR * 0.05}, ${cx - innerR * 0.78} ${cy - innerR * 0.62}, ${cx - innerR * 0.34} ${cy - innerR * 0.5}
+              C ${cx - innerR * 0.13} ${cy - innerR * 0.44}, ${cx} ${cy - innerR * 0.22}, ${cx} ${cy - innerR * 0.12}
+              C ${cx} ${cy - innerR * 0.22}, ${cx + innerR * 0.13} ${cy - innerR * 0.44}, ${cx + innerR * 0.34} ${cy - innerR * 0.5}
+              C ${cx + innerR * 0.78} ${cy - innerR * 0.62}, ${cx + innerR * 0.9} ${cy + innerR * 0.05}, ${cx} ${cy + innerR * 0.62} Z`}
+          fill={`url(#${heartId})`}
+          stroke="var(--color-ban-red-1)"
+          strokeWidth="1"
+          strokeOpacity="0.7"
+        />
+      </svg>
+
+      {/* Signature flourish INSIDE the heart — handwriting-font stand-in
+           (FONT-SUBSTITUTION divergence, see the `signature` prop / PR note). */}
+      <span
+        className="font-signature absolute z-20 leading-none"
+        style={{
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -46%) rotate(-4deg)",
+          fontSize: Math.round(size * 0.22),
+          color: "var(--color-ban-red-1)",
+          textShadow:
+            "0 0 6px color-mix(in srgb, var(--color-riot-red) 80%, transparent)",
+          maxWidth: size * 0.72,
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+        }}
+        title={sigText}
+      >
+        {sigText}
+      </span>
+
+      {/* Tier gem at the ring foot */}
+      {tierGemSrc && (
+        <img
+          src={tierGemSrc}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute z-20 select-none"
+          style={{
+            width: Math.round(size * 0.24),
+            height: Math.round(size * 0.24),
+            bottom: -Math.round(size * 0.08),
+            left: "50%",
+            transform: "translateX(-50%)",
+            filter: "drop-shadow(0 0 3px var(--color-blue-2))",
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SelfRankFrame — the 2025 ornate rank-frame self banner (issues #471 / #475,
+// rebuilt for #494).
+//
+// Reference: docs/reference/client-current-lobby-2025.png (center banner) — a
+// COMPACT ornate rank BADGE (not a thin tall flag), top → bottom:
+//   - a masked champion-splash backdrop, deep-red SR tint (ban-red tokens)
+//   - the TOP rank-emblem medallion (RankMedallion): ornate ring + red heart
+//     crest + the handwriting signature inside it, tier wing-clasps flanking
+//   - the crowned summoner name (gold-cream) + a title line
+//   - a row of up to three circular mastery medallions
+//   - edit / loadout mini-icons
+//   - a prominent RED WINGED WREATH foot (the tier wings, red-tinted + enlarged)
+//     with a red gem at its centre
+//
+// PRESENTATIONAL: every art URL arrives via props (regaliaSrc / backdropSrc /
+// masteryCrests / wingSrc / tierGemSrc) resolved by @low/fixtures helpers at the
+// call site — no fetch. Tokens only; the red tint is color-mix over ban-red.
+// SVG ids via useId. #494 fixed the proportions from 150×380 (thin flag) to a
+// compact ~200×360 badge and added the top medallion + prominent wreath.
+// ---------------------------------------------------------------------------
+
 function SelfRankFrame({
   name,
   title,
@@ -568,6 +749,8 @@ function SelfRankFrame({
   masteryCrests,
   showCrown,
   onEditLoadout,
+  wingSrc,
+  tierGemSrc,
   uid,
 }: {
   name: string;
@@ -578,19 +761,21 @@ function SelfRankFrame({
   masteryCrests?: string[];
   showCrown: boolean;
   onEditLoadout?: () => void;
+  /** Resolved ranked-emblem wings PNG — the top clasps + the red foot wreath. */
+  wingSrc: string;
+  /** Resolved ranked-mini-crest PNG for the gem at the medallion foot. */
+  tierGemSrc?: string;
   uid: string;
 }) {
-  // Frame footprint. The regalia PNG is a tall dark banner rendered at ~150px
-  // wide at a column aspect so the wreath foot and crest read at lobby scale.
-  // MEASURED (challenger_banner.png, 512²): the dark PANEL body spans only the
-  // 28%–72% horizontal band of the art (the rest is transparent margin around
-  // the wreath wings), and the wreath owns roughly the bottom ~25%. So the
-  // splash and all content are inset to that panel band, not the full box.
-  const FRAME_W = 150;
-  const FRAME_H = 380;
-  // Panel body band (fractions of FRAME_W) — content lives inside this column.
-  const PANEL_L = "28%";
-  const PANEL_W = "44%";
+  // Compact badge footprint (#494): the reference reads as a ~200-wide badge, not
+  // the old 150×380 thin flag. Reducing the height also fixes the flanking
+  // invited-slot portal, which was rendering as a tall column off this box.
+  const FRAME_W = 200;
+  const FRAME_H = 340;
+  const MEDALLION = 96;
+  // The red wreath foot occupies the bottom band; reserve it so the content
+  // column (name → medallions → edit icons) never overlaps the wreath.
+  const WREATH_BAND = Math.round(FRAME_W * 0.36);
   const sigText = signature ?? name;
 
   return (
@@ -599,35 +784,22 @@ function SelfRankFrame({
       className="relative flex flex-col items-center select-none"
       style={{ width: FRAME_W, height: FRAME_H }}
     >
-      {/* Regalia tier banner — the ornate frame: dark panel + tier-coloured wreath
-           foot baked into one straight-alpha PNG. The panel body is an OPAQUE dark
-           gradient, so the splash cannot sit behind it — it masks in ABOVE the
-           panel fill (z-[2]) but below the gold ornamental edges' read. */}
-      <img
-        src={regaliaSrc}
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] h-full w-full"
-        style={{ objectFit: "fill" }}
-      />
-
-      {/* Masked champion-splash backdrop — deep-red SR tint, masked INTO the upper
-           panel body (the 28–72% band). Composites over the panel fill; a top +
-           bottom fade lets the regalia's own dark panel + gold edges read around
-           it (so the frame ornament isn't covered). */}
+      {/* Masked champion-splash backdrop — deep-red SR tint, filling most of the
+           badge behind the content. A radial + edge fade keeps the badge dark at
+           its rim so the medallion / wreath read against it. */}
       {backdropSrc && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute z-[2] overflow-hidden"
+          className="pointer-events-none absolute z-0 overflow-hidden rounded-[10px]"
           style={{
-            top: "1.5%",
-            left: PANEL_L,
-            width: PANEL_W,
-            height: "73%",
+            top: "3%",
+            left: "12%",
+            width: "76%",
+            height: "82%",
             WebkitMaskImage:
-              "linear-gradient(180deg, transparent 0%, #000 10%, #000 80%, transparent 100%)",
+              "radial-gradient(72% 66% at 50% 42%, #000 55%, transparent 100%)",
             maskImage:
-              "linear-gradient(180deg, transparent 0%, #000 10%, #000 80%, transparent 100%)",
+              "radial-gradient(72% 66% at 50% 42%, #000 55%, transparent 100%)",
           }}
         >
           <img
@@ -636,162 +808,181 @@ function SelfRankFrame({
             aria-hidden="true"
             className="h-full w-full object-cover"
             style={{
-              objectPosition: "50% 16%",
-              // Desaturate + darken the splash so the red wash below dominates.
-              filter: "saturate(0.7) brightness(0.72) contrast(1.05)",
+              objectPosition: "50% 14%",
+              filter: "saturate(0.7) brightness(0.6) contrast(1.05)",
             }}
           />
-          {/* Deep-red SR-parties wash — ban-red tokens via color-mix, multiplied
-               over the splash so it reads red like the reference. */}
+          {/* Deep-red SR wash — ban-red tokens via color-mix, multiplied. */}
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(180deg, color-mix(in srgb, var(--color-ban-red-2) 78%, transparent) 0%, color-mix(in srgb, var(--color-ban-red-3) 86%, transparent) 55%, color-mix(in srgb, var(--color-ban-red-press) 95%, transparent) 100%)",
+                "linear-gradient(180deg, color-mix(in srgb, var(--color-ban-red-2) 80%, transparent) 0%, color-mix(in srgb, var(--color-ban-red-3) 88%, transparent) 55%, color-mix(in srgb, var(--color-ban-red-press) 96%, transparent) 100%)",
               mixBlendMode: "multiply",
             }}
           />
-          {/* Warm red highlight lifting the upper portrait area. */}
           <div
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(80% 60% at 50% 26%, color-mix(in srgb, var(--color-ban-red-1) 45%, transparent) 0%, transparent 72%)",
+                "radial-gradient(70% 55% at 50% 28%, color-mix(in srgb, var(--color-ban-red-1) 42%, transparent) 0%, transparent 72%)",
               mixBlendMode: "screen",
             }}
           />
         </div>
       )}
 
-      {/* Content column — inset horizontally to the panel body band (28–72%) so
-           the name / title / medallions stay inside the dark panel, not over the
-           transparent wreath margins. Vertical zones mirror the reference order. */}
+      {/* Content column — top → bottom: medallion, name, title, medallions,
+           edit/loadout icons. Bottom padding reserves the wreath-foot band so the
+           edit icons sit just ABOVE the wreath (as in the reference), never over
+           it. The wreath foot is rendered last, below this column. */}
       <div
-        className="absolute z-10 flex flex-col items-center"
-        style={{ top: 0, left: PANEL_L, width: PANEL_W, height: "100%" }}
+        className="absolute inset-x-0 top-0 z-10 flex flex-col items-center"
+        style={{ bottom: WREATH_BAND }}
       >
-        {/* Gold header crest + crown finial (very top) */}
-        <div className="relative flex flex-col items-center pt-1" aria-hidden="true">
-          <CrownGlyph />
-          <svg
-            width="60"
-            height="16"
-            viewBox="0 0 72 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="-mt-0.5"
-          >
-            <defs>
-              <linearGradient id={`${uid}-crest`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--color-gold-2)" />
-                <stop offset="100%" stopColor="var(--color-gold-4)" />
-              </linearGradient>
-            </defs>
-            {/* A shallow ornate crest bar: center peak + tapering wings */}
-            <path
-              d="M36 2 L44 8 L68 9 Q60 13 52 12 L40 11 L36 15 L32 11 L20 12 Q12 13 4 9 L28 8 Z"
-              fill={`url(#${uid}-crest)`}
-              stroke="var(--color-gold-1)"
-              strokeWidth="0.5"
-              strokeOpacity="0.5"
-            />
-          </svg>
+        {/* Top rank-emblem medallion — ornate ring + red heart + signature. */}
+        <div className="mt-2">
+          <RankMedallion
+            wingSrc={wingSrc}
+            tierGemSrc={tierGemSrc}
+            sigText={sigText}
+            uid={uid}
+            size={MEDALLION}
+          />
         </div>
 
-        {/* Signature flourish — handwriting-font stand-in (FONT-SUBSTITUTION).
-             Sits over the top of the red splash portrait, as in the reference. */}
-        <span
-          className="font-signature text-gold-1 leading-none"
-          style={{
-            fontSize: 20,
-            marginTop: 1,
-            textShadow:
-              "0 1px 3px color-mix(in srgb, var(--color-ban-red-press) 90%, transparent)",
-            transform: "rotate(-4deg)",
-            maxWidth: "108%",
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-          }}
-          title={sigText}
-        >
-          {sigText}
-        </span>
-
-        {/* Lower cluster — pinned toward the wreath foot: name, title, medallions,
-             edit/loadout icons. Pushed down by the spacer so the splash portrait
-             owns the mid-panel. */}
-        <div
-          className="mt-auto flex flex-col items-center gap-0.5 pb-[26%]"
-          style={{ width: "150%" }}
-        >
-          {/* Summoner name + captain crown glyph */}
-          <div className="flex items-center gap-1 min-w-0">
-            {showCrown && (
-              <span className="shrink-0 text-gold-2" aria-label="Captain">
-                <CrownGlyph />
-              </span>
-            )}
-            <span className="truncate font-display text-[13px] text-gold-cream tracking-wide">
-              {name}
-            </span>
-          </div>
-
-          {/* Title line */}
-          {title && (
-            <span className="w-full truncate text-center font-body italic text-[10px] text-grey-1 px-1">
-              {title}
+        {/* Summoner name + captain crown glyph */}
+        <div className="mt-3 flex items-center gap-1 min-w-0 px-2">
+          {showCrown && (
+            <span className="shrink-0 text-gold-2" aria-label="Captain">
+              <CrownGlyph />
             </span>
           )}
+          <span className="truncate font-display text-[15px] text-gold-cream tracking-wide">
+            {name}
+          </span>
+        </div>
 
-          {/* Mastery medallions row */}
-          {masteryCrests && masteryCrests.length > 0 && (
-            <div className="mt-1 flex items-center justify-center gap-1.5">
-              {masteryCrests.slice(0, 3).map((src, i) => (
-                <div
-                  key={i}
-                  className="relative flex items-center justify-center rounded-full bg-hextech-black/60"
-                  style={{
-                    width: 27,
-                    height: 27,
-                    border: "1.5px solid var(--color-gold-4)",
-                    boxShadow:
-                      "0 0 5px color-mix(in srgb, var(--color-gold-3) 45%, transparent)",
-                  }}
-                >
-                  <img
-                    src={src}
-                    alt=""
-                    aria-hidden="true"
-                    width={20}
-                    height={20}
-                    className="object-contain"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+        {/* Title line */}
+        {title && (
+          <span className="mt-0.5 w-full truncate text-center font-body italic text-[11px] text-grey-1 px-2">
+            {title}
+          </span>
+        )}
 
-          {/* Edit / loadout mini-icons */}
-          <div className="mt-1 flex items-center justify-center gap-2">
-            <button
-              type="button"
-              onClick={onEditLoadout}
-              aria-label="Edit banner"
-              className="flex items-center justify-center rounded-sm border border-gold-4 bg-hextech-black/50 p-0.5 text-gold-2 transition-colors hover:text-gold-1 hover:border-gold-2"
-            >
-              <EditGlyph />
-            </button>
-            <button
-              type="button"
-              onClick={onEditLoadout}
-              aria-label="Change loadout"
-              className="flex items-center justify-center rounded-sm border border-gold-4 bg-hextech-black/50 p-0.5 text-gold-2 transition-colors hover:text-gold-1 hover:border-gold-2"
-            >
-              <LoadoutGlyph />
-            </button>
+        {/* Mastery medallions row */}
+        {masteryCrests && masteryCrests.length > 0 && (
+          <div className="mt-2 flex items-center justify-center gap-2">
+            {masteryCrests.slice(0, 3).map((src, i) => (
+              <div
+                key={i}
+                className="relative flex items-center justify-center rounded-full bg-hextech-black/60"
+                style={{
+                  width: 30,
+                  height: 30,
+                  border: "1.5px solid var(--color-gold-4)",
+                  boxShadow:
+                    "0 0 5px color-mix(in srgb, var(--color-gold-3) 45%, transparent)",
+                }}
+              >
+                <img
+                  src={src}
+                  alt=""
+                  aria-hidden="true"
+                  width={22}
+                  height={22}
+                  className="object-contain"
+                />
+              </div>
+            ))}
           </div>
+        )}
+
+        {/* Edit / loadout mini-icons — sit just above the wreath foot */}
+        <div className="mt-auto mb-1 flex items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={onEditLoadout}
+            aria-label="Edit banner"
+            className="flex items-center justify-center rounded-sm border border-gold-4 bg-hextech-black/50 p-0.5 text-gold-2 transition-colors hover:text-gold-1 hover:border-gold-2"
+          >
+            <EditGlyph />
+          </button>
+          <button
+            type="button"
+            onClick={onEditLoadout}
+            aria-label="Change loadout"
+            className="flex items-center justify-center rounded-sm border border-gold-4 bg-hextech-black/50 p-0.5 text-gold-2 transition-colors hover:text-gold-1 hover:border-gold-2"
+          >
+            <LoadoutGlyph />
+          </button>
         </div>
       </div>
+
+      {/* Red winged wreath foot (#494) — the tier wings, enlarged + red-tinted so
+           the wreath reads prominently across the badge foot, matching the
+           reference's bold red regalia wreath. The regalia banner supplies ONLY
+           its gold-edged wreath base: we anchor its bottom to the badge foot and
+           show just that band (its tall dark panel is clipped above the foot).
+           z-[4]/[5]: over the splash, under the content text above. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute z-[4] overflow-hidden"
+        style={{
+          left: "50%",
+          bottom: 0,
+          transform: "translateX(-50%)",
+          width: FRAME_W * 0.92,
+          height: FRAME_W * 0.42,
+        }}
+      >
+        {/* Only the bottom wreath band of the regalia PNG shows — the panel above
+             is pushed out of this clip window. */}
+        <img
+          src={regaliaSrc}
+          alt=""
+          aria-hidden="true"
+          className="absolute left-0 w-full select-none"
+          style={{ bottom: 0, height: "auto" }}
+        />
+      </div>
+      <img
+        src={wingSrc}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute z-[5] select-none"
+        style={{
+          left: "50%",
+          bottom: -4,
+          transform: "translateX(-50%) scaleY(0.82)",
+          transformOrigin: "bottom center",
+          width: FRAME_W * 0.94,
+          height: "auto",
+          objectFit: "contain",
+          // Force the (blue/tier) wings to the reference's bold red regardless of
+          // source hue: grayscale→sepia warms everything, then saturate + a small
+          // hue-rotate pushes it to red; a ban-red drop-shadow deepens the glow.
+          filter:
+            "grayscale(1) sepia(1) saturate(6) hue-rotate(-18deg) brightness(0.92) drop-shadow(0 0 7px color-mix(in srgb, var(--color-ban-red-2) 75%, transparent))",
+        }}
+      />
+      {/* Red gem at wreath centre */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute z-[6]"
+        style={{
+          left: "50%",
+          bottom: FRAME_W * 0.11,
+          width: 12,
+          height: 16,
+          transform: "translateX(-50%) rotate(45deg)",
+          background:
+            "linear-gradient(135deg, var(--color-ban-red-1) 0%, var(--color-ban-red-3) 100%)",
+          border: "1px solid var(--color-gold-3)",
+          boxShadow:
+            "0 0 6px color-mix(in srgb, var(--color-ban-red-1) 80%, transparent)",
+        }}
+      />
     </div>
   );
 }
@@ -1251,6 +1442,8 @@ export function PlayerBanner({
           masteryCrests={masteryCrests}
           showCrown={showCrown}
           onEditLoadout={onEditLoadout}
+          wingSrc={WING_SRC[wingTier]}
+          tierGemSrc={tierGemSrc}
           uid={uid}
         />
         {autofillPill}
