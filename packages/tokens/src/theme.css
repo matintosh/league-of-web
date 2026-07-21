@@ -23,6 +23,9 @@
   /* Gold extended — Figma-measured UI-specific tones */
   --color-gold-cream: #cdbe91;
   --color-gold-coin: #deb53c;
+  /* Pure white — for hairline dividers/borders at low opacity (e.g. the home rail's
+     1px white/50% right border, #529). Use via `border-white/50`, `text-white`, etc. */
+  --color-white: #ffffff;
   /* Gold border stops — Riot production secondary button (issue #61, computed from displays.riotgames.com) */
   --color-gold-border-dark: #72542a;
   --color-gold-border-light: #bd9e5e;
@@ -186,6 +189,8 @@
     --color-gold-6: #32281e;
     --color-gold-cream: #cdbe91;
     --color-gold-coin: #deb53c;
+    /* Pure white — hairline dividers at low opacity (#529). See @theme block above. */
+    --color-white: #ffffff;
     /* Gold border stops — Riot production secondary button (issue #61) */
     --color-gold-border-dark: #72542a;
     --color-gold-border-light: #bd9e5e;

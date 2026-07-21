@@ -79,10 +79,14 @@ function ExternalLinkGlyph() {
  * bottom — rather than a small centred pill backing. Inactive tabs (TFT) have no
  * cell; the LoR gold pill keeps its own treatment.
  *
- * The panel is a translucent hextech-black wash (color-mix over the token, so
- * the Miss Fortune splash still bleeds faintly through) with a barely-there
- * gold-4 lift at the bottom edge to echo the warm key-art. It sits UNDER the
- * label + chevron (both raised above it via `relative`) so text stays legible.
+ * The panel is a strong translucent hextech-black wash (color-mix over the token,
+ * so the Miss Fortune splash still bleeds a touch through) — #529 deepens it so
+ * the selected tab reads as an OBVIOUSLY darker recessed cell vs the plain TFT
+ * tab (the #523 55%→30% wash was nearly invisible over the dark blurred nav).
+ * ~80% hextech-black at the top (where the gold chevron notches over it) eases
+ * to ~48% mid, then a stronger gold-4 accent (~18%) warms the very bottom edge to
+ * echo the key-art. It sits UNDER the label + chevron (both raised above it via
+ * `relative`) so text stays legible.
  */
 function ActiveCell() {
   return (
@@ -91,7 +95,7 @@ function ActiveCell() {
       className="pointer-events-none absolute inset-0"
       style={{
         backgroundImage:
-          "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 55%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 30%, transparent) 78%, color-mix(in srgb, var(--color-gold-4) 10%, transparent) 100%)",
+          "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 80%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 48%, transparent) 82%, color-mix(in srgb, var(--color-gold-4) 18%, transparent) 100%)",
       }}
     />
   );

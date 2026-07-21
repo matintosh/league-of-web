@@ -11,7 +11,7 @@ export const homeContentRailShowcase: ShowcaseEntry = {
   name: "Home Content Rail",
   area: "chrome",
   description:
-    "Left content-link rail of the current-era LEAGUE HOME — a vertical stack of gem-bulleted featured rows (active row brighter gold + champion thumbnail) with PATCH NOTES pinned to the bottom. Rows swap the featured splash on the right. A subtle dark translucent scrim (inset below the nav band and above the page bottom) tames the splash so the gold labels stay legible while splash/flame hints still bleed through faintly.",
+    "Left content-link rail of the current-era LEAGUE HOME — a vertical stack of gem-bulleted featured rows (active row brighter gold + champion thumbnail) with PATCH NOTES pinned to the bottom. Rows swap the featured splash on the right. The rail has NO background/scrim at all (#529) — it is fully transparent so the featured splash bleeds completely through; a single 1px white/50% right border (via the --color-white token) is the only divider from the splash. Per-label text-shadows keep the gold labels legible over the busy art.",
   referenceImage: "client-current-home-2025-mf.png",
   referenceNote:
     "docs/reference/client-current-home-2025-mf.png — the rail is the far-left vertical column (MVP T1 Miss Fortune active).",
