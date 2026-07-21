@@ -1627,3 +1627,66 @@ export const socialMaskUrl = (name: string): string =>
  */
 export const notificationBellUrl = (): string =>
   "https://raw.communitydragon.org/7.5/plugins/rcp-fe-lol-player-notifications/global/default/notifications_button_icon.png";
+
+// ---------------------------------------------------------------------------
+// Champion-details plugin — Overview stat-wheel art + role-class glyphs (#438)
+// ---------------------------------------------------------------------------
+
+const CDRAGON_CHAMPION_DETAILS =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-champion-details/global/default";
+
+/**
+ * Champion-details plugin asset URL for a given `filename` (with extension).
+ * Mirrors the house style of the other cdragon.ts helpers: a base + name join,
+ * no fetching, JSDoc pins the source. Feed the URL to an <img> `src`.
+ *
+ * The champion-overview UI is EVERGREEN — these assets are byte-identical on
+ * patch `7.5` and `latest`, so the base is pinned to `latest` and needs no
+ * per-patch bump. Files live directly at the plugin `global/default/` root
+ * (NOT under an `images/` or `assets/` subdir — probed 2026-07, #438).
+ *
+ * Confirmed HTTP 200 image/png (2026-07, issue #438):
+ *   championDetailAssetUrl("cdp_graph_backing.png")     → wheel backing plate
+ *   championDetailAssetUrl("cdp-graph-segment-l3.png")  → 3-tier teal arc fan
+ *   championDetailAssetUrl("role-icon-mage.png")        → gold class emblem
+ *
+ * Source: CommunityDragon rcp-fe-lol-champion-details · global/default/
+ * License: Riot fan-content policy (non-commercial fan use).
+ */
+export const championDetailAssetUrl = (filename: string): string =>
+  `${CDRAGON_CHAMPION_DETAILS}/${filename}`;
+
+/** The six art-deco role-class emblem names (gold, 168×168). */
+export type ChampionRoleClass =
+  | "assassin"
+  | "fighter"
+  | "mage"
+  | "marksman"
+  | "support"
+  | "tank";
+
+/**
+ * Gold art-deco role-class emblem URL (`role-icon-<class>.png`, 168×168).
+ * These are the filled class emblems (assassin = hooded blade, mage = flame,
+ * tank = shield, etc.) — pre-tinted gold on transparent, render as-is.
+ */
+export const championRoleIconUrl = (role: ChampionRoleClass): string =>
+  championDetailAssetUrl(`role-icon-${role}.png`);
+
+/**
+ * Resolved URLs for the Overview `RadialStatWheel` art, ready to pass straight
+ * into `ChampionDetail`'s `statWheelArt` prop. Values resolve at module init;
+ * the component receives them as props (component contract: URLs in, no fetch).
+ *
+ * - `backing` — dark concentric target plate (grey role glyphs baked at corners)
+ * - `segments` — filled teal arc-fan overlays, one per rating tier (l1/l2/l3);
+ *   indexed by tier so `segments[difficulty - 1]` selects the right fan.
+ */
+export const CHAMPION_STAT_WHEEL_ART = {
+  backing: championDetailAssetUrl("cdp_graph_backing.png"),
+  segments: [
+    championDetailAssetUrl("cdp-graph-segment-l1.png"),
+    championDetailAssetUrl("cdp-graph-segment-l2.png"),
+    championDetailAssetUrl("cdp-graph-segment-l3.png"),
+  ],
+} as const;

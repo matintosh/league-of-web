@@ -19,7 +19,7 @@ export const championDetailShowcase: ShowcaseEntry = {
     {
       name: "Overview tab",
       notes:
-        "Default tab: full-bleed splash with left gradient scrim, info panel (Damage / Style slider / Difficulty bars / decorative radial stat wheel / lore / Owned chip / Learn More link). The stat wheel is a filled segmented concentric target (alternating blue-3 / dark-teal bands over navy) with a blue-3 center dot and four role glyphs (goblet/shield/fist/spiral) at the corners, matching the client champion-overview reference.",
+        "Default tab: full-bleed splash with left gradient scrim, info panel (Damage / Style slider / Difficulty bars / radial stat wheel / lore / Owned chip / Learn More link). The stat wheel composites the real client CDN art — the cdp_graph_backing target plate (grey role glyphs + teal centre dot baked in) with the cdp-graph-segment-l{difficulty} teal arc-fan layered on top — matching docs/reference/client-champion-overview-statwheel.jpg. When art URLs are absent it falls back to a token-styled hand-drawn target.",
       render: () => <ChampionDetailOverviewDemo />,
     },
     {

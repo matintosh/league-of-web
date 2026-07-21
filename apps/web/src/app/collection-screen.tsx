@@ -30,6 +30,7 @@ import {
   championSplashUrl,
   warwickDetail,
   warwickMastery,
+  CHAMPION_STAT_WHEEL_ART,
   RUNE_PATHS_ORDERED,
   runesGlyphIconUrl,
   SUMMONER_SPELLS,
@@ -983,6 +984,7 @@ export function CollectionScreen() {
             <ChampionDetail
               champion={warwickDetail}
               mastery={warwickMastery}
+              statWheelArt={CHAMPION_STAT_WHEEL_ART}
               onClose={() => setDetailChampId(null)}
             />
           </div>
