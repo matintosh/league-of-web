@@ -9,6 +9,8 @@ export const palette = {
   gold6: "#32281e",
   goldCream: "#cdbe91",
   goldCoin: "#deb53c",
+  /** Pure white — hairline dividers/borders at low opacity (#529). */
+  white: "#ffffff",
   /** Riot production secondary button border gradient stops (issue #61) */
   goldBorderDark: "#72542a",
   goldBorderLight: "#bd9e5e",
