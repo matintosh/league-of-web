@@ -275,9 +275,10 @@ export function WindowFrame({
          (~2px) gold line caps the very TOP edge, which reads as one continuous
          gold accent with the active-tab chevron descending from it (the nav is
          an absolute overlay at top-0 per #502, so this border sits exactly at
-         the nav's top edge). Left / right / bottom stay borderless. gold-3
-         matches the ActiveChevron token so the line and chevron are one hue. */
-      <div className="relative flex h-full w-full flex-col border-t-2 border-gold-3 bg-hextech-black">
+         the nav's top edge). Left / right / bottom stay borderless. gold-4 is
+         the antique-gold tone measured in the reference top stripe (#548);
+         rgb(120,90,40) vs the brighter gold-3 rgb(200,155,60). */
+      <div className="relative flex h-full w-full flex-col border-t-2 border-gold-4 bg-hextech-black">
         {/* Content fills the whole frame — no title-bar row is reserved. */}
         <div className="flex-1 overflow-auto">{children}</div>
 
