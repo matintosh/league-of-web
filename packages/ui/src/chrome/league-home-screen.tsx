@@ -237,27 +237,29 @@ function SkinCard({ skin, onSelect }: SkinCardProps) {
     <button
       type="button"
       onClick={() => onSelect?.(skin.id)}
-      className="group flex w-[120px] cursor-pointer flex-col border border-gold-5 bg-hextech-black/70 text-left transition-colors duration-150 hover:border-gold-2"
+      className="group flex w-[190px] cursor-pointer flex-col border border-gold-5 bg-hextech-black/70 text-left transition-colors duration-150 hover:border-gold-2"
     >
       {/* Art tile */}
-      <div className="relative h-[72px] w-full overflow-hidden">
+      <div className="relative h-[125px] w-full overflow-hidden">
         <img
           src={skin.artSrc}
           alt=""
           aria-hidden="true"
           className="absolute inset-0 h-full w-full object-cover object-top"
         />
+      </div>
+
+      {/* Caption — skin name, with an "Owned" line below when owned */}
+      <span className="flex flex-col px-2 py-1.5">
+        <span className="line-clamp-2 font-body text-[11px] leading-tight text-gold-cream group-hover:text-gold-1">
+          {skin.name}
+        </span>
         {skin.owned && (
-          <span className="absolute right-1 top-1 flex items-center gap-1 bg-hextech-black/80 px-1.5 py-0.5 font-display text-[10px] uppercase tracking-wide text-gold-1">
+          <span className="mt-0.5 flex items-center gap-1 font-body text-[11px] leading-tight text-gold-2">
             <CheckGlyph className="h-2.5 w-2.5" />
             Owned
           </span>
         )}
-      </div>
-
-      {/* Caption */}
-      <span className="line-clamp-2 px-2 py-1.5 font-body text-[11px] leading-tight text-gold-cream group-hover:text-gold-1">
-        {skin.name}
       </span>
     </button>
   );
