@@ -23,7 +23,9 @@ const PINNED = { id: "patch-notes", label: "PATCH NOTES" };
 // Per-rail-item featured content (copy + splash + skins strip).
 const MF_FEATURED: LeagueHomeFeatured = {
   eyebrow: "NEW SKIN",
-  title: "MVP T1\nMISS FORTUNE",
+  // Featured overlay wraps "MVP T1 MISS" / "FORTUNE" to match the reference; the
+  // left rail label keeps its own "MVP T1" / "MISS FORTUNE" break (see RAIL_ITEMS).
+  title: "MVP T1 MISS\nFORTUNE",
   body: "Celebrate 2025 Worlds Winners with new skins and the 'Together as 1' Nexus Finisher.",
   splashSrc: championSplashUrl("MissFortune"),
 };

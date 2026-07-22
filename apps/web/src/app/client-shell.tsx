@@ -420,7 +420,6 @@ const DOCK_BUTTONS: DockButton[] = [
   {
     id: "chat",
     label: "Chat",
-    badge: 3,
     icon: (
       <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M2 2h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5l-4 3V3a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
@@ -1459,7 +1458,9 @@ const HOME_RAIL_PINNED = { id: "patch-notes", label: "PATCH NOTES", iconType: "p
 
 const HOME_FEATURED_DEFAULT: LeagueHomeFeatured = {
   eyebrow: "NEW SKIN",
-  title: "MVP T1\nMISS FORTUNE",
+  // Featured overlay wraps "MVP T1 MISS" / "FORTUNE" to match the reference; the
+  // left rail label keeps its own "MVP T1" / "MISS FORTUNE" break (see HOME_RAIL_ITEMS).
+  title: "MVP T1 MISS\nFORTUNE",
   body: "Celebrate 2025 Worlds Winners with new skins and the 'Together as 1' Nexus Finisher.",
   // MVP T1 Miss Fortune (skin69) full-art UNCENTERED splash — the real featured
   // background, not the plain default MF loading splash (issue #481).
