@@ -71,8 +71,7 @@ export interface LeagueHomeScreenProps {
  *
  * A fixed-width left content-link rail (passed in as `railSlot`) beside a
  * full-bleed champion splash filling the remainder. Over the splash: a gold
- * eyebrow + display title + body copy anchored lower-left (behind a left/bottom
- * hextech-black scrim so the copy and rail stay legible), a mute disc top-right,
+ * eyebrow + display title + body copy anchored top-left, a mute disc top-right,
  * and a SKINS thumbnail strip + GO TO STORE button anchored bottom-right.
  *
  * Presentational: props in, callbacks out. No fetching — splash and skin art
@@ -159,9 +158,9 @@ export function LeagueHomeScreen({
         </button>
 
         {/* -------------------------------------------------------------- */}
-        {/* FEATURED COPY — eyebrow / title / body, lower-left over splash  */}
+        {/* FEATURED COPY — eyebrow / title / body, top-left over splash    */}
         {/* -------------------------------------------------------------- */}
-        <div className="absolute bottom-8 left-8 z-10 max-w-[46%]">
+        <div className="absolute left-8 top-8 z-10 max-w-[46%]">
           <p className="font-display text-xs uppercase tracking-[0.2em] text-gold-1">
             {featured.eyebrow}
           </p>
@@ -204,7 +203,7 @@ export function LeagueHomeScreen({
           <button
             type="button"
             onClick={onGoToStore}
-            className="group/store relative cursor-pointer overflow-hidden border border-gold-4 px-6 py-2 font-display text-xs uppercase tracking-[0.14em] text-gold-1 transition-colors duration-150 hover:border-gold-2 [background:linear-gradient(to_bottom,color-mix(in_srgb,var(--color-gold-5)_82%,var(--color-gold-4))_0%,color-mix(in_srgb,var(--color-gold-5)_58%,var(--color-hextech-black))_100%)] hover:[background:linear-gradient(to_bottom,color-mix(in_srgb,var(--color-gold-4)_70%,var(--color-gold-5))_0%,color-mix(in_srgb,var(--color-gold-5)_70%,var(--color-hextech-black))_100%)]"
+            className="group/store relative cursor-pointer overflow-hidden border border-gold-4 px-9 py-4 font-display text-sm uppercase tracking-[0.14em] text-gold-1 transition-colors duration-150 hover:border-gold-2 [background:linear-gradient(to_bottom,color-mix(in_srgb,var(--color-gold-5)_82%,var(--color-gold-4))_0%,color-mix(in_srgb,var(--color-gold-5)_58%,var(--color-hextech-black))_100%)] hover:[background:linear-gradient(to_bottom,color-mix(in_srgb,var(--color-gold-4)_70%,var(--color-gold-5))_0%,color-mix(in_srgb,var(--color-gold-5)_70%,var(--color-hextech-black))_100%)]"
           >
             {/* Metallic sheen — faint warm highlight over the upper third. */}
             <span
