@@ -3,6 +3,7 @@ import {
   HomeContentRailDefaultDemo,
   HomeContentRailAltActiveDemo,
   HomeContentRailNoThumbDemo,
+  HomeContentRailAllGlyphsDemo,
   HomeContentRailLongLabelDemo,
 } from "./home-content-rail.demo";
 
@@ -11,7 +12,7 @@ export const homeContentRailShowcase: ShowcaseEntry = {
   name: "Home Content Rail",
   area: "chrome",
   description:
-    "Left content-link rail of the current-era LEAGUE HOME — a vertical stack of gem-bulleted featured rows (active row brighter gold + champion thumbnail) with PATCH NOTES pinned to the bottom. Rows swap the featured splash on the right. The rail has NO background/scrim at all (#529) — it is fully transparent so the featured splash bleeds completely through; a single 1px white/50% right border (via the --color-white token) is the only divider from the splash. Per-label text-shadows keep the gold labels legible over the busy art.",
+    "Left content-link rail of the current-era LEAGUE HOME — a vertical stack of featured rows, each bulleted with a per-category glyph (mask, trophy, diamond, crescent, cycle, patch; #545) that falls back to a generic gem bullet when no iconType is set (active row brighter gold + champion thumbnail) with PATCH NOTES pinned to the bottom. Rows swap the featured splash on the right. The rail has NO background/scrim at all (#529) — it is fully transparent so the featured splash bleeds completely through; a single 1px white/50% right border (via the --color-white token) is the only divider from the splash. Per-label text-shadows keep the gold labels legible over the busy art.",
   referenceImage: "client-current-home-2025-mf.png",
   referenceNote:
     "docs/reference/client-current-home-2025-mf.png — the rail is the far-left vertical column (MVP T1 Miss Fortune active).",
@@ -31,8 +32,14 @@ export const homeContentRailShowcase: ShowcaseEntry = {
     {
       name: "No-thumbnail item active",
       notes:
-        "RANKED active — it has no thumbnailSrc, so the active row keeps its gem bullet (brighter gold, no portrait).",
+        "RANKED active — it has no thumbnailSrc, so the active row keeps its category glyph (brighter gold, no portrait).",
       render: () => <HomeContentRailNoThumbDemo />,
+    },
+    {
+      name: "Category glyphs",
+      notes:
+        "Every iconType — mask (World Champions), trophy (Ranked), diamond (skin spotlight), crescent (Diana), cycle (Season), patch (Patch Notes) — plus the no-iconType gem-bullet fallback. All rows inactive so each distinct glyph is visible; glyphs fill via currentColor (inactive gold-cream, hover gold-1).",
+      render: () => <HomeContentRailAllGlyphsDemo />,
     },
     {
       name: "Long-label wrap",

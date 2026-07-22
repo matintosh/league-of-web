@@ -1,6 +1,22 @@
 "use client";
 
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
+
+/**
+ * Category glyph shown on a rail row's bullet. Each value maps to a distinct
+ * inline SVG in {@link RailIcon}, matching the per-category glyphs in the
+ * current-era LEAGUE HOME reference (theater mask, trophy, sparkle-diamond,
+ * crescent, cycle-arrows, patch diamond). Omit / `"default"` → the generic
+ * faceted gem bullet (back-compat).
+ */
+export type HomeContentRailIconType =
+  | "mask"
+  | "trophy"
+  | "diamond"
+  | "crescent"
+  | "cycle"
+  | "patch"
+  | "default";
 
 /** A single selectable featured-content row in the rail. */
 export interface HomeContentRailItem {
@@ -16,6 +32,11 @@ export interface HomeContentRailItem {
    * Supplied by the page — the component never fetches.
    */
   thumbnailSrc?: string;
+  /**
+   * Category of the row, selecting which glyph the bullet renders when the row
+   * is inactive (or active without a thumbnail). Omit for the generic gem.
+   */
+  iconType?: HomeContentRailIconType;
 }
 
 export interface HomeContentRailProps {
@@ -29,7 +50,7 @@ export interface HomeContentRailProps {
    * Optional row pinned to the bottom of the rail, separated from the main
    * list (e.g. "PATCH NOTES"). Selecting it also fires `onSelect`.
    */
-  pinnedItem?: { id: string; label: string };
+  pinnedItem?: { id: string; label: string; iconType?: HomeContentRailIconType };
 }
 
 /**
@@ -117,9 +138,13 @@ function ContentRailRow({ item, isActive, onSelect, noSidePadding = false }: Con
           className="h-8 w-8 shrink-0 rounded-sm border border-gold-5 object-cover"
         />
       ) : (
-        // #506: subtle dark drop-shadow so the gem stays crisp over the splash
-        // now that the rail has no scrim panel behind it.
-        <GemBullet className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_1px_color-mix(in_srgb,var(--color-hextech-black)_75%,transparent))]" />
+        // #506: subtle dark drop-shadow so the glyph stays crisp over the splash
+        // now that the rail has no scrim panel behind it. #545: per-category
+        // glyph via iconType (falls back to the gem bullet when absent).
+        <RailIcon
+          iconType={item.iconType}
+          className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_1px_color-mix(in_srgb,var(--color-hextech-black)_75%,transparent))]"
+        />
       )}
 
       <span
@@ -139,8 +164,146 @@ function ContentRailRow({ item, isActive, onSelect, noSidePadding = false }: Con
 }
 
 /**
+ * RailIcon — dispatches to the per-category glyph for a row's bullet, matching
+ * the distinct glyphs in the current-era LEAGUE HOME reference. Falls back to
+ * the generic {@link GemBullet} when `iconType` is absent or `"default"`, so
+ * existing call sites are unchanged. All glyphs fill via `currentColor` and so
+ * inherit the row's active/inactive gold. Decorative (`aria-hidden`).
+ */
+function RailIcon({
+  iconType,
+  className,
+}: {
+  iconType?: HomeContentRailIconType;
+  className?: string;
+}) {
+  switch (iconType) {
+    case "mask":
+      return <MaskGlyph className={className} />;
+    case "trophy":
+      return <TrophyGlyph className={className} />;
+    case "diamond":
+      return <SparkleGlyph className={className} />;
+    case "crescent":
+      return <CrescentGlyph className={className} />;
+    case "cycle":
+      return <CycleGlyph className={className} />;
+    case "patch":
+    case "default":
+    case undefined:
+    default:
+      return <GemBullet className={className} />;
+  }
+}
+
+/** Shared props for the leaf glyph SVGs. */
+interface GlyphProps {
+  className?: string;
+}
+
+/** Base svg wrapper for the flat single-color category glyphs (16×16). */
+function GlyphSvg({ className, children }: GlyphProps & { children: ReactNode }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      {children}
+    </svg>
+  );
+}
+
+/**
+ * Theater / tragedy mask — WORLD CHAMPIONS row. A rounded shield-mask with two
+ * slanted eye slits and a curved smile, matching the reference glyph.
+ */
+function MaskGlyph({ className }: GlyphProps) {
+  return (
+    <GlyphSvg className={className}>
+      {/* Mask body: wide brow tapering to a chin. */}
+      <path d="M2.4 3.2c1.9-.7 3.7-1 5.6-1s3.7.3 5.6 1c.3 3-.3 6-2.1 8.3-1 1.2-2.1 2-3.5 2s-2.5-.8-3.5-2C2.7 9.2 2.1 6.2 2.4 3.2Z" />
+      {/* Eye slits + smile knocked out with the row/splash colour behind. */}
+      <path
+        fill="var(--color-hextech-black)"
+        d="M4.9 6c.9-.5 1.7-.5 2.4.1-.7.6-1.5.7-2.4-.1Zm3.8.1c.7-.6 1.5-.6 2.4-.1-.9.8-1.7.7-2.4.1ZM5.6 9.1c1.5 1 3.3 1 4.8 0-.6 1-1.5 1.6-2.4 1.6s-1.8-.6-2.4-1.6Z"
+      />
+    </GlyphSvg>
+  );
+}
+
+/**
+ * Trophy / laurel wing — RANKED row. A stemmed cup on a plinth flanked by two
+ * small handle wings, standing in for the reference's ranked emblem.
+ */
+function TrophyGlyph({ className }: GlyphProps) {
+  return (
+    <GlyphSvg className={className}>
+      {/* Cup bowl. */}
+      <path d="M4.5 2.2h7c0 2.6-.4 4.6-1.6 5.7-.6.6-1.4.9-1.9.9s-1.3-.3-1.9-.9C4.9 6.8 4.5 4.8 4.5 2.2Z" />
+      {/* Side handles / wings. */}
+      <path d="M4.4 2.8c-1.4.1-2 .9-2 2 0 1.2.9 2 2.3 2.1-.2-.6-.3-1.4-.3-2.1v-2Zm7.2 0c1.4.1 2 .9 2 2 0 1.2-.9 2-2.3 2.1.2-.6.3-1.4.3-2.1v-2Z" />
+      {/* Stem + base plinth. */}
+      <path d="M7.4 8.4h1.2v2.3h1.7v1.2H5.7v-1.2h1.7V8.4Zm-3 4.3h7.2v1.2H4.4v-1.2Z" />
+    </GlyphSvg>
+  );
+}
+
+/**
+ * Sparkle diamond — SAHN-UZAL MORDEKAISER row. A four-pointed star with
+ * concave sides and thin diagonal accents, the reference's skin-row glyph.
+ */
+function SparkleGlyph({ className }: GlyphProps) {
+  return (
+    <GlyphSvg className={className}>
+      {/* Main four-pointed sparkle with concave waists. */}
+      <path d="M8 .8c.5 3 1.5 4 4.5 4.5-3 .5-4 1.5-4.5 4.5-.5-3-1.5-4-4.5-4.5C6.5 4.8 7.5 3.8 8 .8Z" transform="translate(0 2.3)" />
+      {/* Small diagonal spark accents at the diagonals. */}
+      <path d="M2.9 3.1c1 .3 1.3.6 1.6 1.6.3-1 .6-1.3 1.6-1.6-1-.3-1.3-.6-1.6-1.6-.3 1-.6 1.3-1.6 1.6Z" opacity="0.75" />
+      <path d="M11.5 11.8c1 .3 1.3.6 1.6 1.6.3-1 .6-1.3 1.6-1.6-1-.3-1.3-.6-1.6-1.6-.3 1-.6 1.3-1.6 1.6Z" opacity="0.75" />
+    </GlyphSvg>
+  );
+}
+
+/**
+ * Crescent — ECLIPSE ETERNAL ASPECT DIANA row. A waxing crescent with a small
+ * star nestled in its curve, echoing Diana's moon motif.
+ */
+function CrescentGlyph({ className }: GlyphProps) {
+  return (
+    <GlyphSvg className={className}>
+      {/* Crescent: full disc minus an offset disc. */}
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 1a7 7 0 1 0 4.9 12A5.6 5.6 0 0 1 8 1Z"
+      />
+      {/* Small four-point star inside the crescent's hollow. */}
+      <path d="M11.3 5.3c.3 1.4.6 1.7 2 2-1.4.3-1.7.6-2 2-.3-1.4-.6-1.7-2-2 1.4-.3 1.7-.6 2-2Z" />
+    </GlyphSvg>
+  );
+}
+
+/**
+ * Cycle arrows — SEASON: PANDEMONIUM row. Two curved arrows chasing each other
+ * in a ring, the reference's rotating-season glyph.
+ */
+function CycleGlyph({ className }: GlyphProps) {
+  return (
+    <GlyphSvg className={className}>
+      {/* Two open arcs forming a rotation ring. */}
+      <path d="M8 2.4a5.6 5.6 0 0 1 4.9 2.9l-.1.1H10a.7.7 0 0 0 0 1.4h4a.7.7 0 0 0 .7-.7v-4a.7.7 0 1 0-1.4 0v1.7A7 7 0 0 0 8 1a.7.7 0 0 0 0 1.4Z" />
+      <path d="M8 13.6a5.6 5.6 0 0 1-4.9-2.9l.1-.1H6a.7.7 0 0 0 0-1.4H2a.7.7 0 0 0-.7.7v4a.7.7 0 1 0 1.4 0v-1.7A7 7 0 0 0 8 15a.7.7 0 0 0 0-1.4Z" />
+    </GlyphSvg>
+  );
+}
+
+/**
  * Gold gem/diamond bullet glyph — a faceted diamond, token-filled via
  * `currentColor` so it inherits the row's active/inactive gold. Decorative.
+ * Also used for the PATCH NOTES pinned row (`iconType: "patch"`).
  */
 function GemBullet({ className }: { className?: string }) {
   const gradientId = useId();
