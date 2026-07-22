@@ -164,7 +164,7 @@ export function LeagueHomeScreen({
           <p className="font-display text-xs uppercase tracking-[0.2em] text-gold-1">
             {featured.eyebrow}
           </p>
-          <h2 className="mt-2 whitespace-pre-line font-display text-4xl uppercase leading-[1.05] tracking-wide text-gold-1">
+          <h2 className="mt-2 whitespace-pre-line font-display text-3xl uppercase leading-[1.05] tracking-wide text-gold-1">
             {featured.title}
           </h2>
           <p className="mt-3 max-w-md font-body text-sm leading-snug text-gold-cream">
