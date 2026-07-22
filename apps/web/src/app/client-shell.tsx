@@ -1447,15 +1447,15 @@ export function ClientShell() {
 // ---------------------------------------------------------------------------
 
 const HOME_RAIL_ITEMS: HomeContentRailItem[] = [
-  { id: "mvp-mf", label: "MVP T1\nMISS FORTUNE", thumbnailSrc: championSquareUrl("MissFortune") },
-  { id: "world-champions", label: "WORLD\nCHAMPIONS: 2025\nSKINS" },
-  { id: "ranked", label: "RANKED" },
-  { id: "mordekaiser", label: "SAHN-UZAL\nMORDEKAISER", thumbnailSrc: championSquareUrl("Mordekaiser") },
-  { id: "diana", label: "ECLIPSE ETERNAL\nASPECT DIANA", thumbnailSrc: championSquareUrl("Diana") },
-  { id: "season", label: "SEASON:\nPANDEMONIUM" },
+  { id: "mvp-mf", label: "MVP T1\nMISS FORTUNE", thumbnailSrc: championSquareUrl("MissFortune"), iconType: "diamond" },
+  { id: "world-champions", label: "WORLD\nCHAMPIONS: 2025\nSKINS", iconType: "mask" },
+  { id: "ranked", label: "RANKED", iconType: "trophy" },
+  { id: "mordekaiser", label: "SAHN-UZAL\nMORDEKAISER", thumbnailSrc: championSquareUrl("Mordekaiser"), iconType: "diamond" },
+  { id: "diana", label: "ECLIPSE ETERNAL\nASPECT DIANA", thumbnailSrc: championSquareUrl("Diana"), iconType: "crescent" },
+  { id: "season", label: "SEASON:\nPANDEMONIUM", iconType: "cycle" },
 ];
 
-const HOME_RAIL_PINNED = { id: "patch-notes", label: "PATCH NOTES" };
+const HOME_RAIL_PINNED = { id: "patch-notes", label: "PATCH NOTES", iconType: "patch" as const };
 
 const HOME_FEATURED_DEFAULT: LeagueHomeFeatured = {
   eyebrow: "NEW SKIN",
