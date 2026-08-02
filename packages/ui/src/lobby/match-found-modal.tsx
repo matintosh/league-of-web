@@ -548,14 +548,14 @@ export function MatchFoundModal({
         {/* 9. DECLINE — outside and below the circle, small gap + compact dark rectangle.
             Understated treatment per client-match-found-modal.png: dark/black fill,
             thin muted grey-gold border (gold-5/gold-4 mix), uppercase label in grey-1
-            (brightens to grey-1/gold-2 on hover). NOT red, NOT the standard secondary
+            (brightens to gold-1 cream on hover). NOT red, NOT the standard secondary
             chunky border — this reads as a low-priority action beneath the ACCEPT. */}
         <div className="mt-2">
           <button
             type="button"
             onClick={onDecline}
             className={[
-              "group/decline relative",
+              "relative",
               "inline-flex items-center justify-center",
               "px-6 py-1.5",
               "font-display text-xs uppercase tracking-[0.15em] leading-none",
@@ -567,8 +567,8 @@ export function MatchFoundModal({
               // Hover: border brightens slightly, fill lightens a touch
               "hover:border-[color-mix(in_srgb,var(--color-gold-4)_60%,var(--color-grey-3)_40%)]",
               "hover:bg-[color-mix(in_srgb,var(--color-hextech-black)_70%,var(--color-grey-4)_30%)]",
-              // Label: muted grey, brightens on hover
-              "text-grey-1 hover:text-grey-1",
+              // Label: muted grey (grey-1), brightens to gold-1 (pale cream) on hover
+              "text-grey-1 hover:text-gold-1",
               // Focus ring (a11y)
               "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3 focus-visible:outline-offset-2",
             ].join(" ")}
