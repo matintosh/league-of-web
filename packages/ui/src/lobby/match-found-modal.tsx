@@ -1,8 +1,6 @@
 "use client";
 
 import { useId, useState } from "react";
-import { MapCrestImg } from "../chrome/map-crest-img";
-import { TrapezoidButton, TRAP_BORDER_PX, type TrapLayer } from "../chrome/trapezoid-button";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -24,9 +22,12 @@ export interface MatchFoundModalProps {
   /** Circular keyart image URL; falls back to bg-linear-to-b from-blue-6 to-blue-7 disc when absent */
   keyartSrc?: string;
   /**
-   * URL for the game-mode/map crest displayed in the modal center (from gameModeMapUrl).
-   * Renders as the lit (active) atlas frame inside a gold ornamental double-border square.
-   * Falls back to the generic HexCrest placeholder when absent.
+   * URL for the game-mode/map crest displayed in the modal center.
+   * NOTE: As of the fidelity pass (#564), the component no longer renders
+   * this as a framed map crest — a bare gold "blind pick" overlapping-cards
+   * glyph (inline SVG) is rendered instead. This prop is kept for API
+   * compatibility; the passed value is not used. Pass undefined or any value.
+   * @deprecated The crest is now an inline SVG glyph; this prop is ignored.
    */
   crestSrc?: string;
   /**
@@ -78,72 +79,75 @@ export interface MatchFoundModalProps {
 }
 
 // ---------------------------------------------------------------------------
-// HexCrest — fallback placeholder when crestSrc is absent, not exported
+// BlindPickGlyph — bare gold line-art "blind pick" overlapping-cards glyph.
+//
+// Two overlapping rounded-square card outlines with a diagonal slash through
+// them — the real client's blind-pick mode icon, rendered as an inline SVG
+// in gold-3/gold-4 strokes at ~55px (scaled via viewBox to fill the given size).
+// NO square frame around it. SVG gradient id is passed in from parent useId.
 // ---------------------------------------------------------------------------
 
-function HexCrest({ gradientId }: { gradientId: string }) {
+function BlindPickGlyph({ gradientId, size = 55 }: { gradientId: string; size?: number }) {
   return (
-    <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 55 55"
+      aria-hidden="true"
+      fill="none"
+    >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--color-gold-4)" />
-          <stop offset="100%" stopColor="var(--color-gold-3)" />
+          <stop offset="0%" stopColor="var(--color-gold-3)" />
+          <stop offset="100%" stopColor="var(--color-gold-4)" />
         </linearGradient>
       </defs>
-      <polygon
-        points="24,2 44,13 44,35 24,46 4,35 4,13"
-        fill={`url(#${gradientId})`}
-        stroke="var(--color-gold-2)"
-        strokeWidth="1"
+      {/* Back card — offset up-left, rounded rect */}
+      <rect
+        x="5"
+        y="5"
+        width="33"
+        height="33"
+        rx="5"
+        ry="5"
+        stroke={`url(#${gradientId})`}
+        strokeWidth="1.6"
+      />
+      {/* Front card — offset down-right, rounded rect */}
+      <rect
+        x="17"
+        y="17"
+        width="33"
+        height="33"
+        rx="5"
+        ry="5"
+        stroke={`url(#${gradientId})`}
+        strokeWidth="1.6"
+      />
+      {/* Diagonal slash across the front card */}
+      <line
+        x1="17"
+        y1="50"
+        x2="50"
+        y2="17"
+        stroke={`url(#${gradientId})`}
+        strokeWidth="1.6"
+        strokeLinecap="round"
       />
     </svg>
   );
 }
 
 // ---------------------------------------------------------------------------
-// MapCrestFrame — crestSrc wrapped in gold ornamental double-border square.
-// Matches the reference (client-match-found-crest.png): thin outer gold-4
-// border + thin inner gold-3 border with a 2px gap between them, 4px inset
-// from the outer edge. Image fills the inner content area.
-// ---------------------------------------------------------------------------
-
-function MapCrestFrame({ src }: { src: string }) {
-  return (
-    <div
-      aria-hidden="true"
-      className="relative flex items-center justify-center"
-      style={{
-        // Outer border — gold-4
-        border: "1px solid var(--color-gold-4)",
-        padding: 3,
-        background: "transparent",
-      }}
-    >
-      {/* Inner border — gold-3 */}
-      <div
-        style={{
-          border: "1px solid var(--color-gold-3)",
-          padding: 2,
-        }}
-      >
-        <MapCrestImg src={src} frame="active" size={48} />
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// AcceptTrapezoid — ACCEPT! button.
+// AcceptRoundedRect — ACCEPT! button.
 //
-// The trapezoid + curved-bottom-arc silhouette is the shared TrapezoidButton
-// primitive (../chrome/trapezoid-button) — the SAME shape as FIND MATCH / LOCK IN
-// (#331 unification). This wrapper supplies only the ACCEPT palette + entrance
-// pulse overlay. Colors: dark teal/navy fill (blue-5) with teal-ring border —
-// matches the reference ACCEPT inside the circle (RGB 51–57, 81–85 background,
-// teal border). Hover brightens to blue-4; active dims further.
+// Ref (#565): a wide rounded-rectangle inside the circle bottom — dark navy fill,
+// bright glowing CYAN top border (dimmer teal sides/bottom), gold-cream "ACCEPT!"
+// caps centered, subtle slightly-tapered ends. ~200px wide, ~44px tall.
+// Keeps entrance pulse + hover brighten + onAccept + focus-visible + sr-only/a11y.
 // ---------------------------------------------------------------------------
 
-function AcceptTrapezoid({
+function AcceptRoundedRect({
   onClick,
   pulseClass,
 }: {
@@ -151,59 +155,79 @@ function AcceptTrapezoid({
   /** Instance-scoped entrance-pulse class applied to the glow overlay on mount. */
   pulseClass: string;
 }) {
-  const layers: TrapLayer[] = [
-    {
-      // Border shell — teal-ring color
-      key: "shell",
-      inset: 0,
-      style: { background: "var(--color-teal-ring)", transition: "background 150ms" },
-    },
-    {
-      // Fill layer — dark teal (blue-5)
-      key: "fill",
-      inset: TRAP_BORDER_PX,
-      className: "group-hover:!bg-[var(--color-blue-4)]",
-      style: { background: "var(--color-blue-5)", transition: "background 150ms" },
-    },
-    {
-      // Active press overlay — slightly darker
-      key: "press",
-      inset: TRAP_BORDER_PX,
-      className: "opacity-0 group-active:opacity-100 transition-opacity duration-75",
-      style: { background: "var(--color-teal-grad-press-a)" },
-    },
-  ];
-
   return (
-    <TrapezoidButton
+    <button
+      type="button"
       onClick={onClick}
-      layers={layers}
       className={[
-        // Teal glow following the clipped silhouette
-        "[filter:drop-shadow(0_0_10px_color-mix(in_srgb,var(--color-blue-2)_60%,transparent))]",
+        "group",
+        "relative",
+        "inline-flex items-center justify-center",
+        "rounded-[6px]",
         "cursor-pointer",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-2 focus-visible:outline-offset-2",
+        // Focus ring (a11y)
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-blue-2)] focus-visible:outline-offset-2",
+        // Drop shadow glow matching the cyan top edge
+        "[filter:drop-shadow(0_0_8px_color-mix(in_srgb,var(--color-cyan-1)_45%,transparent))]",
+        "hover:[filter:drop-shadow(0_0_14px_color-mix(in_srgb,var(--color-cyan-1)_70%,transparent))]",
+        "transition-[filter] duration-150",
       ].join(" ")}
-      // Entrance glow pulse — a clipped teal wash over the fill that brightens
-      // twice on mount to draw attention, then rests invisible (base opacity 0;
-      // the persistent glow is the button's drop-shadow). Disabled under
-      // prefers-reduced-motion. Purely decorative.
-      overlay={({ clipRef }) => (
-        <span
-          aria-hidden="true"
-          className={`pointer-events-none absolute opacity-0 ${pulseClass}`}
-          style={{
-            inset: TRAP_BORDER_PX,
-            clipPath: clipRef,
-            background: "color-mix(in srgb, var(--color-blue-2) 40%, transparent)",
-          }}
-        />
-      )}
-      labelClassName="font-display text-sm tracking-[0.2em] uppercase text-gold-1 group-hover:text-gold-2 group-active:text-gold-2"
-      labelStyle={{ transition: "color 150ms" }}
+      style={{ width: 200, height: 44 }}
     >
-      Accept!
-    </TrapezoidButton>
+      {/* Dark navy fill */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 rounded-[6px]"
+        style={{
+          background: "color-mix(in srgb, var(--color-navy-swirl) 80%, var(--color-blue-6) 20%)",
+        }}
+      />
+      {/* Bright cyan top border — 2px thick, dimmer teal on sides/bottom */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 rounded-[6px] pointer-events-none"
+        style={{
+          // Top edge bright cyan, sides/bottom dimmer teal
+          boxShadow: [
+            "inset 0 2px 0 color-mix(in srgb, var(--color-cyan-1) 90%, transparent)",
+            "inset 0 -1px 0 color-mix(in srgb, var(--color-teal-ring) 60%, transparent)",
+            "inset 1px 0 0 color-mix(in srgb, var(--color-teal-ring) 50%, transparent)",
+            "inset -1px 0 0 color-mix(in srgb, var(--color-teal-ring) 50%, transparent)",
+          ].join(", "),
+        }}
+      />
+      {/* Hover brighten overlay */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 rounded-[6px] opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+        style={{
+          background: "color-mix(in srgb, var(--color-blue-2) 12%, transparent)",
+        }}
+      />
+      {/* Active press overlay */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 rounded-[6px] opacity-0 group-active:opacity-100 transition-opacity duration-75"
+        style={{
+          background: "color-mix(in srgb, var(--color-hextech-black) 20%, transparent)",
+        }}
+      />
+      {/* Entrance pulse glow overlay */}
+      <span
+        aria-hidden="true"
+        className={`pointer-events-none absolute inset-0 rounded-[6px] opacity-0 ${pulseClass}`}
+        style={{
+          background: "color-mix(in srgb, var(--color-blue-2) 35%, transparent)",
+        }}
+      />
+      {/* Label */}
+      <span
+        className="relative font-display text-sm tracking-[0.2em] uppercase text-gold-1 group-hover:text-gold-2 group-active:text-gold-2 transition-colors duration-150"
+        style={{ letterSpacing: "0.2em" }}
+      >
+        Accept!
+      </span>
+    </button>
   );
 }
 
@@ -338,8 +362,8 @@ function TimerVideoOverlay({
  * MatchFoundModal — circular hi-fi overlay displayed when a match has been found.
  *
  * 480 px circle on a dimmed full-screen backdrop. Contains a countdown arc
- * (parent-driven), ACCEPT trapezoid inside the circle bottom, and DECLINE
- * rectangle below the circle. The arc is the sole visual timer — countdown
+ * (parent-driven), ACCEPT rounded-rect inside the circle bottom, and DECLINE
+ * tab on the circle's bottom bezel. The arc is the sole visual timer — countdown
  * text is sr-only for accessibility.
  *
  * Presentational only — the parent drives `secondsRemaining` via its own
@@ -351,6 +375,15 @@ function TimerVideoOverlay({
  * The video is a straight-alpha overlay, `pointer-events-none`, and hidden under
  * `prefers-reduced-motion` — in which case the #299 CSS ring sweep remains. The
  * video is decorative sync only and NEVER drives `secondsRemaining`.
+ *
+ * Frame (#564): Dark outer BEZEL band → bright cyan countdown arc (WAD video) →
+ * thin complete solid GOLD ring → keyart disc. Crest is a bare gold "blind pick"
+ * overlapping-cards glyph (inline SVG, no square frame). Title "MATCH FOUND!"
+ * at text-3xl; subtitle uppercase + letter-spaced in component.
+ *
+ * Actions (#565): ACCEPT! is a rounded-rect with bright cyan top edge + glow,
+ * dark navy fill, gold label. DECLINE is a compact tab on the circle's bottom
+ * bezel — inside the 480px box, NOT floating below the circle.
  */
 export function MatchFoundModal({
   open,
@@ -360,7 +393,6 @@ export function MatchFoundModal({
   onDecline,
   subtitle,
   keyartSrc,
-  crestSrc,
   countdownVideoSrc,
   acceptedIntroVideoSrc,
   acceptedIdleVideoSrc,
@@ -429,8 +461,8 @@ export function MatchFoundModal({
       {/* 1. Full-screen backdrop — not dismissible, no onClick */}
       <div aria-hidden="true" className="fixed inset-0 z-50 bg-hextech-black/70" />
 
-      {/* 2. Outer wrapper — centers the circle + the DECLINE below it */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col items-center">
+      {/* 2. Outer wrapper — centers the circle; DECLINE now lives inside the circle */}
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
 
         {/* 3. Circle container (the modal) */}
         <div
@@ -453,17 +485,38 @@ export function MatchFoundModal({
             style={{ background: "radial-gradient(circle at center, transparent 40%, color-mix(in srgb, var(--color-hextech-black) 75%, transparent) 100%)" }}
           />
 
-          {/* 5. Double gold ring */}
+          {/* 5. Ring system — outer bezel + thin solid gold ring.
+              The bright cyan arc is the WAD video (TimerVideoOverlay below).
+              Outer ring (r235): dark navy BEZEL band (stroke-width 10, dark fill).
+              Inner gold ring (r224): thin complete solid gold-3 circle just inside. */}
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 480 480" aria-hidden="true">
-            <circle cx="240" cy="240" r="235" fill="none" stroke="var(--color-gold-4)" strokeWidth="1" strokeDasharray="6 3" />
-            <circle cx="240" cy="240" r="228" fill="none" stroke="var(--color-gold-3)" strokeWidth="1" />
+            {/* Dark outer BEZEL band — sits between the circle edge and the cyan arc video */}
+            <circle
+              cx="240"
+              cy="240"
+              r="235"
+              fill="none"
+              stroke="color-mix(in srgb, var(--color-blue-6) 70%, var(--color-hextech-black) 30%)"
+              strokeWidth="10"
+            />
+            {/* Thin complete solid GOLD ring — sits just inside the cyan arc */}
+            <circle
+              cx="240"
+              cy="240"
+              r="225"
+              fill="none"
+              stroke="var(--color-gold-3)"
+              strokeWidth="1.5"
+            />
           </svg>
 
-          {/* 6. Countdown arc SVG — rotated -90° so arc starts at top.
+          {/* 6. Countdown arc SVG — reduced-motion CSS fallback only.
               When a countdown video is supplied it becomes the visual ring, so the
               CSS arc is hidden under motion-safe (no double ring) but stays visible
               under prefers-reduced-motion (where the video layer is hidden). Without
-              a video, the CSS arc is always the timer, unchanged from #299. */}
+              a video, the CSS arc is always the timer, unchanged from #299.
+              Fallback arc is bright cyan (blue-2) with glow to match the video's
+              bright cyan appearance as closely as possible. */}
           <svg
             className={`absolute inset-0 w-full h-full -rotate-90${
               countdownVideoSrc ? " motion-safe:hidden" : ""
@@ -473,7 +526,7 @@ export function MatchFoundModal({
           >
             <defs>
               <filter id={glowId}>
-                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feGaussianBlur stdDeviation="5" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
                   <feMergeNode in="SourceGraphic" />
@@ -484,10 +537,10 @@ export function MatchFoundModal({
               className={`mfm-sweep-${scope}`}
               cx="240"
               cy="240"
-              r="232"
+              r="228"
               fill="none"
               stroke="var(--color-blue-2)"
-              strokeWidth="6"
+              strokeWidth="9"
               pathLength={100}
               strokeDasharray="100"
               strokeDashoffset={100 - arcFraction * 100}
@@ -513,17 +566,24 @@ export function MatchFoundModal({
           )}
 
           {/* 7. Content stack — crest, title, subtitle, sr-only countdown */}
-          <div className="absolute inset-0 flex flex-col items-center px-8" style={{ paddingTop: "80px", paddingBottom: "120px" }}>
-            {crestSrc ? (
-              <MapCrestFrame src={crestSrc} />
-            ) : (
-              <HexCrest gradientId={crestGradId} />
-            )}
-            <h2 id={titleId} className="font-display text-2xl uppercase tracking-widest text-gold-1 text-center mt-4">
-              MATCH FOUND
+          <div className="absolute inset-0 flex flex-col items-center px-8" style={{ paddingTop: "80px", paddingBottom: "130px" }}>
+            {/* Bare gold "blind pick" glyph — two overlapping rounded-square cards
+                with a diagonal slash, no frame. Replaces the old MapCrestFrame/HexCrest. */}
+            <BlindPickGlyph gradientId={crestGradId} size={55} />
+            <h2
+              id={titleId}
+              className="font-display text-3xl uppercase text-gold-1 text-center mt-4"
+              style={{ letterSpacing: "0.15em" }}
+            >
+              MATCH FOUND!
             </h2>
             {subtitle && (
-              <p className="font-body text-xs text-gold-2 text-center mt-1">{subtitle}</p>
+              <p
+                className="font-body text-xs text-gold-2 text-center mt-1 uppercase"
+                style={{ letterSpacing: "0.12em" }}
+              >
+                {subtitle}
+              </p>
             )}
             {/* sr-only countdown: arc is the sole visual timer; text kept for screen readers */}
             <p
@@ -535,46 +595,51 @@ export function MatchFoundModal({
             </p>
           </div>
 
-          {/* 8. ACCEPT trapezoid — absolutely anchored to the circle bottom interior */}
-          {/* Positioned 24px above the circle bottom, centered, ~280px wide */}
+          {/* 8. ACCEPT! rounded-rect — anchored inside the circle bottom (~78% down).
+              Ref: ~200px wide, ~44px tall, dark navy fill, bright cyan top edge+glow,
+              gold "ACCEPT!" centered. Replaces the old AcceptTrapezoid. */}
           <div
-            className="absolute left-1/2 -translate-x-1/2"
-            style={{ bottom: "24px", width: "280px" }}
+            className="absolute left-1/2 -translate-x-1/2 z-10"
+            style={{ bottom: "52px" }}
           >
-            <AcceptTrapezoid onClick={onAccept} pulseClass={`mfm-pulse-${scope}`} />
+            <AcceptRoundedRect onClick={onAccept} pulseClass={`mfm-pulse-${scope}`} />
           </div>
-        </div>
 
-        {/* 9. DECLINE — outside and below the circle, small gap + compact dark rectangle.
-            Understated treatment per client-match-found-modal.png: dark/black fill,
-            thin muted grey-gold border (gold-5/gold-4 mix), uppercase label in grey-1
-            (brightens to gold-1 cream on hover). NOT red, NOT the standard secondary
-            chunky border — this reads as a low-priority action beneath the ACCEPT. */}
-        <div className="mt-2">
-          <button
-            type="button"
-            onClick={onDecline}
-            className={[
-              "relative",
-              "inline-flex items-center justify-center",
-              "px-6 py-1.5",
-              "font-display text-xs uppercase tracking-[0.15em] leading-none",
-              "cursor-pointer transition-colors duration-150",
-              // Dark fill — near-black, slightly lighter than hextech-black
-              "bg-[color-mix(in_srgb,var(--color-hextech-black)_85%,var(--color-grey-4)_15%)]",
-              // Thin 1px muted grey-gold border
-              "border border-[color-mix(in_srgb,var(--color-gold-5)_70%,var(--color-grey-3)_30%)]",
-              // Hover: border brightens slightly, fill lightens a touch
-              "hover:border-[color-mix(in_srgb,var(--color-gold-4)_60%,var(--color-grey-3)_40%)]",
-              "hover:bg-[color-mix(in_srgb,var(--color-hextech-black)_70%,var(--color-grey-4)_30%)]",
-              // Label: muted grey (grey-1), brightens to gold-1 (pale cream) on hover
-              "text-grey-1 hover:text-gold-1",
-              // Focus ring (a11y)
-              "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3 focus-visible:outline-offset-2",
-            ].join(" ")}
+          {/* 9. DECLINE tab — on the circle's bottom bezel (~96% down), inside the
+              480px box. Compact gold-lined tab: thin gold-4/gold-5 top+bottom hairlines,
+              dark fill, muted gold-1 label brightening on hover. NOT floating below. */}
+          <div
+            className="absolute left-1/2 -translate-x-1/2 z-10"
+            style={{ bottom: "8px" }}
           >
-            DECLINE
-          </button>
+            <button
+              type="button"
+              onClick={onDecline}
+              className={[
+                "relative",
+                "inline-flex items-center justify-center",
+                "px-5 py-1",
+                "font-display text-[11px] uppercase tracking-[0.15em] leading-none",
+                "cursor-pointer transition-colors duration-150",
+                // Dark fill
+                "bg-[color-mix(in_srgb,var(--color-hextech-black)_85%,var(--color-blue-6)_15%)]",
+                // Thin gold hairlines top+bottom only
+                "border-y border-[color-mix(in_srgb,var(--color-gold-5)_80%,var(--color-gold-4)_20%)]",
+                // No side borders (matching the bezel tab look)
+                "border-x-0",
+                // Hover: hairlines brighten, fill lightens slightly
+                "hover:border-[color-mix(in_srgb,var(--color-gold-4)_70%,var(--color-gold-3)_30%)]",
+                "hover:bg-[color-mix(in_srgb,var(--color-hextech-black)_70%,var(--color-grey-4)_30%)]",
+                // Label: muted gold, brightens on hover
+                "text-[color-mix(in_srgb,var(--color-gold-1)_65%,var(--color-grey-1)_35%)]",
+                "hover:text-gold-1",
+                // Focus ring (a11y)
+                "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3 focus-visible:outline-offset-2",
+              ].join(" ")}
+            >
+              DECLINE
+            </button>
+          </div>
         </div>
       </div>
     </>
