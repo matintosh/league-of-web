@@ -41,6 +41,11 @@
   --color-merch-surface: #f5f5f5; /* card / panel / footer background              */
   --color-merch-border:  #e5e5e5; /* dividers, card outlines                       */
 
+  /* ── Header (dark bar sampled from merch.riotgames.com) ────────────── */
+  --color-merch-ink-dark:    #0d0d0d; /* header/nav background — near-black          */
+  --color-merch-border-dark: #2a2a2a; /* header bottom border separator              */
+  --color-merch-on-dark:     #ffffff; /* white text/icons on the dark header + badge text on dark/red backgrounds */
+
   /* ── Typography ─────────────────────────────────────────────────────── */
   /* Modern e-commerce font stack — system sans-serif by default.
      A later build step may swap in a Riot-approved web font here. */
