@@ -157,12 +157,15 @@ export function TopNavbar({
         backgroundImage:
           "linear-gradient(to bottom, color-mix(in srgb, var(--color-hextech-black) 42%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 68%, transparent) 100%)",
       }}
-      /* #491: band raised to ~88px (h-22 = 88px) to match the 2025 reference,
-         where content/rail start ~y88. The play medallion, product switcher,
-         icon cluster, currency, and profile chip all sit vertically centred in
-         this taller band; the window-control row still floats top-right in the
+      /* #491: band raised to ~88px (h-22 = 88px) to match the 2025 reference.
+         #544: reduced to h-15 (60px) — pixel scan of client-current-home-2025-mf.png
+         puts the nav bottom at y≈60, matching the reference. Content row padding-top
+         updated accordingly (pt-16 = 64px, covering 60px nav + 2px border + 2px
+         breathing room). The play medallion, product switcher, icon cluster, currency,
+         and profile chip all sit vertically centred in this band via items-stretch +
+         items-center children; the window-control row still floats top-right in the
          integrated chrome (WindowFrame), above this nav. */
-      className="flex h-18 w-full shrink-0 items-stretch px-4 [backdrop-filter:blur(6px)] border-b border-b-gold-1/20"
+      className="flex h-15 w-full shrink-0 items-stretch px-4 [backdrop-filter:blur(6px)] border-b border-b-gold-1/20"
     >
       {/* Left region — play slot; self-center so the PLAY button stays vertically centred */}
       <div className="flex shrink-0 items-center">{playSlot}</div>
