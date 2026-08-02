@@ -1140,7 +1140,7 @@ export function ClientShell() {
               screen-content wrapper is overflow-visible ONLY on home to let the
               art escape up; every other screen keeps overflow-hidden (its own
               chrome sits fully below the band, nothing to bleed). */}
-          <div className={`relative flex flex-1 overflow-hidden${champSelectActive ? "" : " pt-16"}`}>
+          <div className={`relative flex flex-1 overflow-hidden${champSelectActive ? "" : " pt-22"}`}>
             {/* Screen content — fills all available width (minus rail when present) */}
             <div className={`relative flex-1 min-w-0 ${view === "home" ? "overflow-visible" : "overflow-hidden"}`}>
               {view === "competitive" ? (
