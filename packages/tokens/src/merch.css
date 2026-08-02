@@ -1,0 +1,49 @@
+/*
+ * Merch design tokens — CSS custom properties for the /merch section.
+ *
+ * SCOPE: These tokens apply ONLY to the merch store. They are imported
+ * directly by apps/web/src/app/merch/layout.tsx (or page.tsx) so they are
+ * scoped to that route and its merch showcase entries.
+ *
+ * DESIGN NOTE: The merch store is NOT Hextech. It uses a modern e-commerce
+ * layout inspired by merch.riotgames.com — clean whites, warm greys, and the
+ * Riot merch red accent. The Hextech no-default-palette rule is scoped to the
+ * LoL client, NOT to this section. Merch components:
+ *   • MAY use a modern e-commerce layout (white bg, warm grey surfaces)
+ *   • MUST reference --color-merch-* tokens, not raw hex
+ *   • MUST NOT import Hextech tokens (--color-gold-*, --color-blue-*, etc.)
+ *     for anything other than bridge/cross-section chrome
+ *
+ * PALETTE (sampled from merch.riotgames.com):
+ *   Riot merch red   #d13639  — primary CTA, wordmark, accent borders
+ *   Near-black       #1a1a1a  — heading ink
+ *   Dark grey        #333333  — body text
+ *   Warm mid-grey    #737373  — muted / secondary text
+ *   Light grey       #e5e5e5  — borders, dividers
+ *   Soft surface     #f5f5f5  — card / section background
+ *   White            #ffffff  — page background
+ *
+ * To add a new token: add it here in the :root block AND document it above.
+ */
+
+:root {
+  /* ── Accent ─────────────────────────────────────────────────────────── */
+  --color-merch-red:     #d13639; /* primary accent — CTAs, wordmark, badges      */
+  --color-merch-red-dark: #a82b2e; /* hover / pressed state                       */
+
+  /* ── Ink / text ─────────────────────────────────────────────────────── */
+  --color-merch-ink:     #1a1a1a; /* heading-level text                            */
+  --color-merch-body:    #333333; /* body / paragraph text                         */
+  --color-merch-muted:   #737373; /* secondary, captions, footer copy              */
+
+  /* ── Surfaces ───────────────────────────────────────────────────────── */
+  --color-merch-bg:      #ffffff; /* page background                               */
+  --color-merch-surface: #f5f5f5; /* card / panel / footer background              */
+  --color-merch-border:  #e5e5e5; /* dividers, card outlines                       */
+
+  /* ── Typography ─────────────────────────────────────────────────────── */
+  /* Modern e-commerce font stack — system sans-serif by default.
+     A later build step may swap in a Riot-approved web font here. */
+  --font-merch: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    Arial, sans-serif;
+}

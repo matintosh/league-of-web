@@ -178,7 +178,7 @@ export default function ClientMapPage() {
       <div className="flex flex-col gap-6">
         {/* Root node */}
         <div className="flex items-center gap-3">
-          <Node node={{ label: "Client Shell (/)", status: "live", href: "/" }} />
+          <Node node={{ label: "Client Shell (/)", status: "live", href: "/client" }} />
           <span className="font-body text-xs text-grey-2">← entry point</span>
         </div>
 
@@ -188,73 +188,73 @@ export default function ClientMapPage() {
           <div className="ml-3 flex flex-col gap-6 flex-1">
 
             {/* ── HOME ── */}
-            <Section heading={{ label: "Home", status: "live", href: "/" }}>
-              <TreeItem node={{ label: "Overview", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "Arcade 2019", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "Battle Pass", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "Journey", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "News", status: "live", href: "/" }} />
+            <Section heading={{ label: "Home", status: "live", href: "/client" }}>
+              <TreeItem node={{ label: "Overview", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "Arcade 2019", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "Battle Pass", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "Journey", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "News", status: "live", href: "/client" }} />
               <TreeItem node={{ label: "Patch Notes", status: "disabled" }} last />
             </Section>
 
             {/* ── PLAY FLOW ── */}
             <Section heading={{ label: "Play Flow", status: "live" }}>
-              <TreeItem node={{ label: "Mode Select", status: "live", href: "/" }}>
+              <TreeItem node={{ label: "Mode Select", status: "live", href: "/client" }}>
               </TreeItem>
-              <TreeItem node={{ label: "Party Lobby", status: "live", href: "/" }}>
+              <TreeItem node={{ label: "Party Lobby", status: "live", href: "/client" }}>
               </TreeItem>
-              <TreeItem node={{ label: "Finding Match / Match Found", status: "live", href: "/" }}>
+              <TreeItem node={{ label: "Finding Match / Match Found", status: "live", href: "/client" }}>
               </TreeItem>
-              <TreeItem node={{ label: "Accept", status: "live", href: "/" }}>
+              <TreeItem node={{ label: "Accept", status: "live", href: "/client" }}>
               </TreeItem>
-              <TreeItem node={{ label: "Ban Phase", status: "live", href: "/" }}>
+              <TreeItem node={{ label: "Ban Phase", status: "live", href: "/client" }}>
               </TreeItem>
-              <TreeItem node={{ label: "Champ Select (Pick)", status: "live", href: "/" }}>
+              <TreeItem node={{ label: "Champ Select (Pick)", status: "live", href: "/client" }}>
               </TreeItem>
-              <TreeItem node={{ label: "Loadout", status: "live", href: "/" }} last />
+              <TreeItem node={{ label: "Loadout", status: "live", href: "/client" }} last />
             </Section>
 
             {/* ── PROFILE ── */}
-            <Section heading={{ label: "Profile", status: "live", href: "/" }}>
-              <TreeItem node={{ label: "Overview", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "Challenges", status: "live", href: "/" }} />
+            <Section heading={{ label: "Profile", status: "live", href: "/client" }}>
+              <TreeItem node={{ label: "Overview", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "Challenges", status: "live", href: "/client" }} />
               <TreeItem node={{ label: "Match History", status: "disabled" }} />
-              <TreeItem node={{ label: "Ranked", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "Clubs", status: "live", href: "/" }} />
+              <TreeItem node={{ label: "Ranked", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "Clubs", status: "live", href: "/client" }} />
               <TreeItem node={{ label: "Highlights", status: "disabled" }} />
-              <TreeItem node={{ label: "Stats", status: "live", href: "/" }} last />
+              <TreeItem node={{ label: "Stats", status: "live", href: "/client" }} last />
             </Section>
 
             {/* ── COLLECTION ── */}
-            <Section heading={{ label: "Collection", status: "live", href: "/" }}>
-              <TreeItem node={{ label: "Champions", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "Skins", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "Emotes", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "Runes", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "Spells", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "Chromas", status: "live", href: "/" }} />
+            <Section heading={{ label: "Collection", status: "live", href: "/client" }}>
+              <TreeItem node={{ label: "Champions", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "Skins", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "Emotes", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "Runes", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "Spells", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "Chromas", status: "live", href: "/client" }} />
               <TreeItem node={{ label: "Items", status: "stub" }} />
               <TreeItem node={{ label: "Icons", status: "stub" }} />
               <TreeItem node={{ label: "Wards", status: "stub" }} last />
             </Section>
 
             {/* ── COMPETITIVE (CLASH) ── */}
-            <Section heading={{ label: "Competitive (Clash)", status: "live", href: "/" }}>
-              <TreeItem node={{ label: "Registration / Team Lobby", status: "live", href: "/" }} />
-              <TreeItem node={{ label: "Scouting Phase", status: "live", href: "/" }} last />
+            <Section heading={{ label: "Competitive (Clash)", status: "live", href: "/client" }}>
+              <TreeItem node={{ label: "Registration / Team Lobby", status: "live", href: "/client" }} />
+              <TreeItem node={{ label: "Scouting Phase", status: "live", href: "/client" }} last />
             </Section>
 
             {/* ── STORE ── */}
-            <Section heading={{ label: "Store", status: "live", href: "/" }}>
-              <TreeItem node={{ label: "Featured", status: "live", href: "/" }} />
+            <Section heading={{ label: "Store", status: "live", href: "/client" }}>
+              <TreeItem node={{ label: "Featured", status: "live", href: "/client" }} />
               <TreeItem node={{ label: "Champions", status: "stub" }} />
               <TreeItem node={{ label: "Skins", status: "stub" }} />
               <TreeItem
-                node={{ label: "Loot", status: "live", href: "/" }}
+                node={{ label: "Loot", status: "live", href: "/client" }}
               >
-                <TreeItem node={{ label: "Crafting", status: "live", href: "/" }} />
-                <TreeItem node={{ label: "Sanctum", status: "live", href: "/" }} />
-                <TreeItem node={{ label: "Mythic Shop", status: "live", href: "/" }} last />
+                <TreeItem node={{ label: "Crafting", status: "live", href: "/client" }} />
+                <TreeItem node={{ label: "Sanctum", status: "live", href: "/client" }} />
+                <TreeItem node={{ label: "Mythic Shop", status: "live", href: "/client" }} last />
               </TreeItem>
               <TreeItem node={{ label: "Emotes", status: "stub" }} />
               <TreeItem node={{ label: "Accessories", status: "stub" }} />
@@ -266,7 +266,7 @@ export default function ClientMapPage() {
             </Section>
 
             {/* ── TFT HUB ── */}
-            <Section heading={{ label: "Teamfight Tactics Hub", status: "live", href: "/" }} />
+            <Section heading={{ label: "Teamfight Tactics Hub", status: "live", href: "/client" }} />
 
             {/* ── LOGIN ── */}
             <Section heading={{ label: "Login", status: "live", href: "/login" }} />

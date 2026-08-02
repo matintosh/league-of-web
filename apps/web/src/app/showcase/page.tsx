@@ -16,9 +16,11 @@ const AREA_META: Record<Area, { label: string; description: string }> = {
     { label: "Store", description: "Hero carousel, item tiles, purchase modals, loot tab, mythic shop panel." },
   lobby:
     { label: "Lobby", description: "Game mode cards, player cards, role selectors, queue status, match-found modal." },
+  merch:
+    { label: "Merch", description: "Riot merch store shell and components — modern e-commerce design using --color-merch-* tokens." },
 };
 
-const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store", "lobby"];
+const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store", "lobby", "merch"];
 
 // Stats derived from the registry at build time
 const componentCount = registry.length;
@@ -78,7 +80,7 @@ export default function ShowcaseLanding() {
             Browse components ↓
           </a>
           <Link
-            href="/"
+            href="/client"
             className="inline-flex items-center gap-2 border border-gold-5 px-5 py-2 text-sm uppercase tracking-widest text-gold-4 transition-colors hover:border-gold-3 hover:text-gold-2"
           >
             View the client →

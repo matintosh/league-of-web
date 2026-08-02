@@ -1,4 +1,5 @@
 import type { ShowcaseEntry } from "./showcase";
+import { landingHubShowcase } from "./chrome/landing-hub.showcase";
 import { banStatusStripShowcase } from "./champ-select/ban-status-strip.showcase";
 import { champSelectActionBarShowcase } from "./champ-select/champ-select-action-bar.showcase";
 import { championPickTileShowcase } from "./champ-select/champion-pick-tile.showcase";
@@ -102,6 +103,7 @@ import { storeItemTileShowcase } from "./store/store-item-tile.showcase";
 import { storeSubNavBarShowcase } from "./store/store-sub-nav-bar.showcase";
 import { yourShopIconShowcase } from "./store/your-shop-icon.showcase";
 import { yourShopScreenShowcase } from "./store/your-shop-screen.showcase";
+import { merchStoreShowcase } from "./merch/merch-store.showcase";
 
 /**
  * Every component registers its showcase entry here.
@@ -142,6 +144,7 @@ export const registry: ShowcaseEntry[] = [
   homeContentRailShowcase,
   homeNewsScreenShowcase,
   journeyTabShowcase,
+  landingHubShowcase,
   launchSplashShowcase,
   leagueHomeScreenShowcase,
   mapCrestImgShowcase,
@@ -218,4 +221,6 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
+  // merch — alphabetical: MerchStore
+  merchStoreShowcase,
 ];

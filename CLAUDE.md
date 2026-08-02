@@ -15,7 +15,7 @@ browsable in the custom showcase at `/showcase`.
 
 - `apps/web` — Next.js App Router app: client clone routes + `/showcase`
 - `packages/ui` (`@low/ui`) — ALL components, grouped by area folder:
-  `src/chrome/`, `src/champ-select/`, `src/collection/`, `src/login/`, `src/store/`
+  `src/chrome/`, `src/champ-select/`, `src/collection/`, `src/login/`, `src/store/`, `src/merch/`
 - `packages/tokens` (`@low/tokens`) — Hextech design tokens (Tailwind v4 `@theme`)
 - `packages/fixtures` (`@low/fixtures`) — typed dummy data + Data Dragon helpers
 

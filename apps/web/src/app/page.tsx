@@ -1,29 +1,50 @@
-import { ClientShell } from "./client-shell";
-import { ViewSwitcher } from "./view-switcher";
+import { LandingHub } from "@low/ui";
+import type { LandingHubCard } from "@low/ui";
+
+const HUB_CARDS: LandingHubCard[] = [
+  {
+    id: "client",
+    label: "Client",
+    description:
+      "1:1 web recreation of the League of Legends client — fully interactive, component-for-component faithful.",
+    href: "/client",
+    badge: "Hextech design system",
+  },
+  {
+    id: "login",
+    label: "Login",
+    description:
+      "The League of Legends sign-in screen — animated background, credential form, and Hextech chrome.",
+    href: "/login",
+    badge: "Hextech design system",
+  },
+  {
+    id: "merch",
+    label: "Merch",
+    description:
+      "Riot merch store scaffold — a new section with its own modern e-commerce design language.",
+    href: "/merch",
+    badge: "Merch design system",
+  },
+];
 
 /**
- * Home page — renders the 1280×720 simulated LoL client window centered in the
- * viewport. `h-screen overflow-hidden` pins body.scrollHeight to the viewport
- * height (720px at 1280×720), preventing the 32px ViewSwitcher from pushing
- * body.scrollHeight to 752px.
+ * Landing hub — root of league-of-web.
  *
- * ViewSwitcher is taken out of normal flow (`absolute top-0`) so it floats
- * above the window without contributing to the page's flow height. At viewports
- * larger than 720px the window is centered and the switcher sits visibly above
- * it; at exactly 720px the switcher overlays the window's top edge (intentional
- * at that tight test viewport — the full client window is still unclipped).
- * The integrated chrome (#385) has no title bar, so the top edge is the navbar.
+ * Offers three primary entry points: the LoL client clone (/client), the login
+ * screen (/login), and the Riot merch store scaffold (/merch). A secondary
+ * utility link to the component showcase (/showcase) is rendered separately.
+ *
+ * Uses Hextech tokens for hub chrome (the site-wide token theme is already
+ * loaded by the root layout); no merch tokens are needed here.
  */
 export default function Home() {
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-hextech-black flex items-center justify-center">
-      {/* Portfolio tab strip — absolute so it doesn't push body.scrollHeight */}
-      <div className="absolute top-0 inset-x-0 flex justify-center z-50 pointer-events-none">
-        <div className="pointer-events-auto">
-          <ViewSwitcher />
-        </div>
-      </div>
-      <ClientShell />
-    </div>
+    <LandingHub
+      title="League of Web"
+      subtitle="A portfolio project: a 1:1 web recreation of the LoL client, a Riot merch store scaffold, and a component showcase."
+      cards={HUB_CARDS}
+      utilityLink={{ label: "Component Showcase →", href: "/showcase" }}
+    />
   );
 }

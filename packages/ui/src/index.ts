@@ -76,6 +76,8 @@ export type { HomeContentRailProps, HomeContentRailItem } from "./chrome/home-co
 export { HomeNewsScreen } from "./chrome/home-news-screen";
 export type { HomeNewsScreenProps, NewsArticle } from "./chrome/home-news-screen";
 export { JourneyTab, LevelUpRewardsDetail } from "./chrome/journey-tab";
+export { LandingHub } from "./chrome/landing-hub";
+export type { LandingHubProps, LandingHubCard, LandingHubUtilityLink } from "./chrome/landing-hub";
 export type {
   JourneyTabProps,
   LevelUpRewardsDetailProps,
@@ -241,3 +243,6 @@ export { YourShopIcon } from "./store/your-shop-icon";
 export type { YourShopIconProps, YourShopIconVideoSources } from "./store/your-shop-icon";
 export { YourShopScreen } from "./store/your-shop-screen";
 export type { YourShopScreenProps, YourShopCard } from "./store/your-shop-screen";
+// merch
+export { MerchStore } from "./merch/merch-store";
+export type { MerchStoreProps, MerchNavLink } from "./merch/merch-store";
