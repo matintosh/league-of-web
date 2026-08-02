@@ -243,6 +243,16 @@ export { YourShopIcon } from "./store/your-shop-icon";
 export type { YourShopIconProps, YourShopIconVideoSources } from "./store/your-shop-icon";
 export { YourShopScreen } from "./store/your-shop-screen";
 export type { YourShopScreenProps, YourShopCard } from "./store/your-shop-screen";
-// merch
+// merch — alphabetical: MerchFooter < MerchHeader < MerchProductCard < MerchStore
+export { MerchFooter } from "./merch/merch-footer";
+export type {
+  MerchFooterProps,
+  MerchFooterLink,
+  MerchFooterLinkGroup,
+} from "./merch/merch-footer";
+export { MerchHeader } from "./merch/merch-header";
+export type { MerchHeaderProps } from "./merch/merch-header";
+export { MerchProductCard } from "./merch/merch-product-card";
+export type { MerchProductCardProps } from "./merch/merch-product-card";
 export { MerchStore } from "./merch/merch-store";
 export type { MerchStoreProps, MerchNavLink } from "./merch/merch-store";

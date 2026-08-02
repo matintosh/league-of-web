@@ -245,3 +245,26 @@ export interface PurchaseBundle {
   /** 2×2 preview items (up to 4). */
   items: PurchaseItem[];
 }
+
+// ---------------------------------------------------------------------------
+// Merch store (merch.riotgames.com clone — /merch route)
+// ---------------------------------------------------------------------------
+
+/**
+ * A single product in the Riot merch store.
+ * Presentational: all image URLs are resolved by the caller (page / fixture file).
+ */
+export interface MerchProduct {
+  /** URL-safe product slug, e.g. "riftbound-origins-champion-deck-jinx". */
+  slug: string;
+  /** Display title, e.g. "Riftbound Origins Champion Deck - Jinx". */
+  title: string;
+  /** Primary product image URL (square or portrait, object-fit: cover). */
+  imageUrl: string;
+  /** Display price string, e.g. "$19.99" or "$19.99 – $49.99". */
+  price: string;
+  /** Original (pre-sale) price string, e.g. "$29.99"; omit if not on sale. */
+  originalPrice?: string;
+  /** Optional badge label for the tile. */
+  badge?: "New" | "Sale" | "Out of Stock" | "Limited";
+}
