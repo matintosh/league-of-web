@@ -2,10 +2,19 @@
 
 import { useState } from "react";
 import { FindingMatchPanel } from "./finding-match-panel";
-import { gameModeMapUrl, partiesBgLoopUrl } from "@low/fixtures";
+import type { ProgressBarVideoSrcs } from "./finding-match-panel";
+import { gameModeMapUrl, partiesBgLoopUrl, staticVideoUrl } from "@low/fixtures";
 
 const SR_CREST = gameModeMapUrl("sr");
 const QUEUE_LOOP = partiesBgLoopUrl("queue-delay");
+
+// Long progress-bar webm layers — matches the rail-width bar in
+// docs/reference/client-finding-match-widget.png. All confirmed HTTP 200 (2026-08).
+const PROGRESS_BAR_SRCS: ProgressBarVideoSrcs = {
+  borderSrc: staticVideoUrl("long-progress-bar-border-loop.webm"),
+  mainSrc:   staticVideoUrl("long-progress-bar-main-loop.webm"),
+  tipSrc:    staticVideoUrl("long-progress-bar-tip-loop.webm"),
+};
 
 // ---------------------------------------------------------------------------
 // Static demos — 'use client' wrappers that supply the required onCancel prop.
@@ -97,6 +106,26 @@ export function FindingMatchInRailDemo() {
         elapsedLabel="0:27"
         estimatedLabel="Estimated: 5:02"
         crestSrc={SR_CREST}
+        onCancel={() => {}}
+      />
+    </div>
+  );
+}
+
+/**
+ * With official progress-bar webm loops — long-progress-bar-{border,main,tip}-loop.webm
+ * composited as straight-alpha overlays over the CSS fallback bar strip (issue #559).
+ * The video layers are hidden under prefers-reduced-motion and the CSS bar becomes
+ * the sole visual. Long bar chosen to match the rail-width reference.
+ */
+export function FindingMatchProgressBarDemo() {
+  return (
+    <div className="w-[200px] bg-blue-7">
+      <FindingMatchPanel
+        elapsedLabel="0:27"
+        estimatedLabel="Estimated: 3:00"
+        crestSrc={SR_CREST}
+        progressBarVideoSrcs={PROGRESS_BAR_SRCS}
         onCancel={() => {}}
       />
     </div>

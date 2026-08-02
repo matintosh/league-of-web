@@ -13,6 +13,9 @@ import { MapCrestImg } from "./map-crest-img";
 //        left: crest chip (~36px, optional)
 //        center: large elapsed timer (display ~27px, gold-cream)
 //        below timer: "Estimated: X:XX" in blue-2 (hidden when estimatedLabel absent)
+//   3. Progress bar strip (optional, issue #559) — the official layered webm loops
+//        composited as straight-alpha overlays (border-loop / main-loop / tip-loop).
+//        Gate behind prefers-reduced-motion with the CSS bar strip as fallback.
 //
 // The parent owns the ticker: elapsedLabel is passed in pre-formatted as "m:ss"
 // or "h:mm:ss". The component is purely presentational (no intervals, no state).
@@ -22,6 +25,21 @@ import { MapCrestImg } from "./map-crest-img";
 //       timer aria-live="off" (decorative — parent owns ticking, screen readers
 //       would be spammy if it were polite; the label text is always visible).
 // ---------------------------------------------------------------------------
+
+/**
+ * Optional progress-bar webm layer URLs (issue #559). Supply the three straight-alpha
+ * loop clips from staticVideoUrl — the bar is composited border → main → tip.
+ * Omit the object entirely to suppress the bar strip; when present the CSS fallback
+ * bar is shown under prefers-reduced-motion and when any URL errors.
+ */
+export interface ProgressBarVideoSrcs {
+  /** Border layer (the outer glow/frame of the bar). */
+  borderSrc: string;
+  /** Main fill layer (the animated progress fill). */
+  mainSrc: string;
+  /** Tip particle layer (the travelling highlight at the bar's leading edge). */
+  tipSrc: string;
+}
 
 export interface FindingMatchPanelProps {
   /** Pre-formatted elapsed time string, e.g. "20:03" or "1:23:45". Parent owns the tick. */
@@ -37,6 +55,14 @@ export interface FindingMatchPanelProps {
    * unchanged. Hidden under `prefers-reduced-motion`.
    */
   ambientVideoSrc?: string;
+  /**
+   * Optional progress-bar webm layer URLs (issue #559). Supply via
+   * `staticVideoUrl("long-progress-bar-{border,main,tip}-loop.webm")`. When
+   * present, the three straight-alpha webm loops are composited as the animated
+   * loading bar; a static CSS bar strip is the fallback under
+   * `prefers-reduced-motion` and when the object is absent.
+   */
+  progressBarVideoSrcs?: ProgressBarVideoSrcs;
   /** Called when the user clicks the ✕ cancel button in the header. */
   onCancel: () => void;
 }
@@ -84,6 +110,7 @@ export function FindingMatchPanel({
   estimatedLabel,
   crestSrc,
   ambientVideoSrc,
+  progressBarVideoSrcs,
   onCancel,
 }: FindingMatchPanelProps) {
   return (
@@ -126,7 +153,7 @@ export function FindingMatchPanel({
           paddingLeft: crestSrc ? 48 : 12,
           paddingRight: 12,
           paddingTop: 8,
-          paddingBottom: 8,
+          paddingBottom: progressBarVideoSrcs ? 4 : 8,
         }}
       >
         {/* Crest chip — absolute left, centred vertically, drop-shadow glow */}
@@ -169,6 +196,69 @@ export function FindingMatchPanel({
           )}
         </div>
       </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* 3. Progress bar strip — issue #559                                  */}
+      {/*                                                                     */}
+      {/* Official layered webm loops: border → main → tip, all straight-     */}
+      {/* alpha. Composited pointer-events-none + aria-hidden over the CSS    */}
+      {/* fallback bar strip. Gate behind prefers-reduced-motion via the       */}
+      {/* motion-reduce:hidden class on the video wrapper (the CSS bar         */}
+      {/* strip stays visible at all times as the base layer).                */}
+      {/* When progressBarVideoSrcs is absent the section is entirely hidden. */}
+      {/* ------------------------------------------------------------------ */}
+      {progressBarVideoSrcs && (
+        <div
+          className="relative z-10 w-full"
+          style={{ height: 18 }}
+        >
+          {/* CSS fallback bar — always visible; sits as the base under the video layers */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(to right, var(--color-blue-3), var(--color-blue-2))`,
+              opacity: 0.45,
+            }}
+          />
+          {/* Webm video layer stack — straight-alpha overlays, hidden under reduced-motion */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 motion-reduce:hidden"
+          >
+            {/* Border loop — outermost glow/frame layer */}
+            <video
+              src={progressBarVideoSrcs.borderSrc}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              className="absolute inset-0 h-full w-full object-fill"
+            />
+            {/* Main loop — animated progress fill */}
+            <video
+              src={progressBarVideoSrcs.mainSrc}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              className="absolute inset-0 h-full w-full object-fill"
+            />
+            {/* Tip loop — travelling highlight at the bar's leading edge */}
+            <video
+              src={progressBarVideoSrcs.tipSrc}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              className="absolute inset-0 h-full w-full object-fill"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

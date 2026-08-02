@@ -322,11 +322,14 @@ const DEMO_KEYART_SRC = championSplashUrl("Jinx");
  * WAD ready-check ring videos, streamed from the CommunityDragon static-assets
  * mirror via staticVideoUrl (see docs/reference/VIDEO-ASSETS.md — the whole corpus
  * maps 1:1 into rcp-fe-lol-static-assets/…/videos/). The countdown ring is the
- * visual timer; accepted intro→idle plays if the modal stays mounted.
+ * visual timer; accepted intro→idle plays if the modal stays mounted long enough;
+ * declined plays once when DECLINE fires and the modal stays up.
+ * All four confirmed HTTP 200 (2026-08).
  */
 const MATCH_FOUND_COUNTDOWN_SRC = staticVideoUrl("timer-countdown.webm");
 const MATCH_FOUND_ACCEPTED_INTRO_SRC = staticVideoUrl("timer-accepted-intro.webm");
 const MATCH_FOUND_ACCEPTED_IDLE_SRC = staticVideoUrl("timer-accepted-idle.webm");
+const MATCH_FOUND_DECLINED_SRC = staticVideoUrl("timer-declined.webm");
 
 /**
  * Real-client FIND MATCH state videos (issue #310), streamed from the
@@ -380,7 +383,18 @@ const PARTIES_BG_SRC = partiesBackgroundUrl("classic_sru");
 // Queue phase type (internal to this screen)
 // ---------------------------------------------------------------------------
 
+/** Phases reported to the shell via onQueuePhaseChange. */
 type QueuePhase = "idle" | "queue" | "found";
+
+/**
+ * Internal phase adds "declining" — a transient state that keeps the
+ * MatchFoundModal open (open = found || declining) while the declined ring
+ * video plays, then transitions to "idle" after the clip finishes.
+ * React 18 auto-batching means we cannot set both matchDeclined=true AND
+ * queuePhase="idle" in one handler and expect the modal to render the
+ * declined ring first — the modal early-returns when open is false.
+ */
+type InternalQueuePhase = QueuePhase | "declining";
 
 // ---------------------------------------------------------------------------
 // PartyLobbyScreen
@@ -522,15 +536,20 @@ export function PartyLobbyScreen({
   // Queue state machine
   // ---------------------------------------------------------------------------
 
-  const [queuePhase, setQueuePhase] = useState<QueuePhase>("idle");
+  const [queuePhase, setQueuePhase] = useState<InternalQueuePhase>("idle");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [secondsRemaining, setSecondsRemaining] = useState(MATCH_ACCEPT_SECONDS);
+  // Tracks whether the player clicked DECLINE — set immediately so the declined
+  // ring video fires before the modal unmounts. Cleared on every new queue start.
+  const [matchDeclined, setMatchDeclined] = useState(false);
 
   // Stable refs for all timers — allows clearAllTimers() to work reliably
   // regardless of closure age.
   const queueIntervalRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const matchDelayRef       = useRef<ReturnType<typeof setTimeout> | null>(null);
   const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Timeout that ends the "declining" transient phase after the declined ring video finishes.
+  const declineTimerRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ---------------------------------------------------------------------------
   // Timer cleanup helpers
@@ -554,10 +573,18 @@ export function PartyLobbyScreen({
     }
   }, []);
 
+  const clearDeclineTimer = useCallback(() => {
+    if (declineTimerRef.current !== null) {
+      clearTimeout(declineTimerRef.current);
+      declineTimerRef.current = null;
+    }
+  }, []);
+
   const clearAllTimers = useCallback(() => {
     clearQueueTimers();
     clearCountdownTimer();
-  }, [clearQueueTimers, clearCountdownTimer]);
+    clearDeclineTimer();
+  }, [clearQueueTimers, clearCountdownTimer, clearDeclineTimer]);
 
   // Clean up all timers on unmount.
   useEffect(() => {
@@ -572,7 +599,9 @@ export function PartyLobbyScreen({
   // ---------------------------------------------------------------------------
 
   useEffect(() => {
-    if (queuePhase === "idle") {
+    if (queuePhase === "idle" || queuePhase === "declining") {
+      // "declining" is a transient internal phase — the shell sees it as idle
+      // (FindingMatchPanel hidden, rail returns to PartyStatusPanel).
       onQueuePhaseChange("idle");
     } else {
       // Notify for both "queue" and "found" phases so the shell always
@@ -589,6 +618,7 @@ export function PartyLobbyScreen({
   const startQueue = useCallback(() => {
     clearAllTimers();
     setElapsedSeconds(0);
+    setMatchDeclined(false);
     setQueuePhase("queue");
 
     // Tick the elapsed counter every second.
@@ -638,12 +668,26 @@ export function PartyLobbyScreen({
     onAccept();
   }, [clearAllTimers, onAccept]);
 
-  /** Decline or auto-decline — clear timers, return to idle lobby in place. */
+  /** Decline or auto-decline — clear timers, enter the "declining" transient
+   *  phase so the modal stays open (open = found || declining) while the
+   *  timer-declined.webm ring plays (~1.3 s), then settle to "idle".
+   *
+   *  React 18 batches state updates inside event handlers, so setting both
+   *  matchDeclined=true and queuePhase="idle" in one handler would close the
+   *  modal on the very same render — the declined ring never reaches the
+   *  overlay. The transient "declining" phase keeps `open` true for the
+   *  duration of the clip before dismissing. */
   const handleDeclineMatch = useCallback(() => {
     clearAllTimers();
+    setMatchDeclined(true);
     setSecondsRemaining(MATCH_ACCEPT_SECONDS);
-    setQueuePhase("idle");
-    // onQueuePhaseChange("idle") fires via the effect above.
+    setQueuePhase("declining");
+    // Transition to idle after the timer-declined.webm clip finishes (~1.3 s).
+    // The ref is cleared in clearAllTimers so unmount/re-queue never leaks.
+    declineTimerRef.current = setTimeout(() => {
+      declineTimerRef.current = null;
+      setQueuePhase("idle");
+    }, 1300);
   }, [clearAllTimers]);
 
   // Auto-decline when the countdown reaches 0 while in the "found" phase.
@@ -659,7 +703,7 @@ export function PartyLobbyScreen({
   // ---------------------------------------------------------------------------
 
   const handleCancelOrBack = useCallback(() => {
-    if (queuePhase === "idle") {
+    if (queuePhase === "idle" || queuePhase === "declining") {
       onBack();
     } else {
       handleCancelQueue();
@@ -688,7 +732,8 @@ export function PartyLobbyScreen({
     ? [DEMO_PARTY[2] as DemoPartyMember, DEMO_PARTY[3] as DemoPartyMember]
     : [null, null];
 
-  const isQueueing = queuePhase !== "idle";
+  // "declining" is treated as idle for all non-modal UI — banners, buttons, etc.
+  const isQueueing = queuePhase === "queue" || queuePhase === "found";
 
   return (
     <div className="relative flex h-full flex-col bg-hextech-black" data-shot="party-lobby">
@@ -1005,7 +1050,7 @@ export function PartyLobbyScreen({
       {/* Match Found modal — renders over the lobby at z-50 in "found" phase  */}
       {/* ------------------------------------------------------------------ */}
       <MatchFoundModal
-        open={queuePhase === "found"}
+        open={queuePhase === "found" || queuePhase === "declining"}
         secondsRemaining={secondsRemaining}
         totalSeconds={MATCH_ACCEPT_SECONDS}
         onAccept={handleAcceptMatch}
@@ -1016,6 +1061,8 @@ export function PartyLobbyScreen({
         countdownVideoSrc={MATCH_FOUND_COUNTDOWN_SRC}
         acceptedIntroVideoSrc={MATCH_FOUND_ACCEPTED_INTRO_SRC}
         acceptedIdleVideoSrc={MATCH_FOUND_ACCEPTED_IDLE_SRC}
+        declinedVideoSrc={MATCH_FOUND_DECLINED_SRC}
+        declined={matchDeclined}
       />
     </div>
   );

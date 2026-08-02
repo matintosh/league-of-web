@@ -1,7 +1,6 @@
 "use client";
 
 import { useId, useState } from "react";
-import { HextechButton } from "../chrome/hextech-button";
 import { MapCrestImg } from "../chrome/map-crest-img";
 import { TrapezoidButton, TRAP_BORDER_PX, type TrapLayer } from "../chrome/trapezoid-button";
 
@@ -57,9 +56,25 @@ export interface MatchFoundModalProps {
    * state (intro → idle loop). Presentational: the consumer sets it after ACCEPT
    * if it keeps the modal mounted long enough to show the accepted ring. Defaults
    * to false; existing consumers that navigate away on accept can ignore it.
+   * `accepted` wins if both `accepted` and `declined` are true.
    * @default false
    */
   accepted?: boolean;
+  /**
+   * WAD declined ring video (timer-declined.webm — the ring in its declined / red
+   * state). Played once when `declined` flips true, holding the final frame.
+   * `declined` and `accepted` are mutually exclusive; `accepted` wins if both are
+   * set. Only meaningful alongside `countdownVideoSrc`.
+   */
+  declinedVideoSrc?: string;
+  /**
+   * When true, the video overlay swaps from the countdown ring to the declined
+   * state (plays once, holds final frame). Presentational: the consumer sets it
+   * when DECLINE fires and the modal remains mounted. `accepted` wins if both are
+   * set. Defaults to false.
+   * @default false
+   */
+  declined?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -220,11 +235,16 @@ function TimerVideoOverlay({
   acceptedIntroSrc,
   acceptedIdleSrc,
   accepted,
+  declinedSrc,
+  declined,
 }: {
   countdownSrc: string;
   acceptedIntroSrc?: string;
   acceptedIdleSrc?: string;
   accepted: boolean;
+  declinedSrc?: string;
+  /** `accepted` wins if both are true. */
+  declined: boolean;
 }) {
   // Which accepted clip is currently showing. `intro` plays once then `onEnded`
   // advances to `idle`. This sequences video playback only — it derives nothing
@@ -233,11 +253,17 @@ function TimerVideoOverlay({
     acceptedIntroSrc ? "intro" : "idle",
   );
 
-  const showAcceptedIntro = accepted && !!acceptedIntroSrc && acceptedPhase === "intro";
+  // `accepted` wins if both flags are set.
+  const effectiveAccepted = accepted;
+  const effectiveDeclined = declined && !accepted;
+
+  const showAcceptedIntro = effectiveAccepted && !!acceptedIntroSrc && acceptedPhase === "intro";
   const showAcceptedIdle =
-    accepted && !!acceptedIdleSrc && (acceptedPhase === "idle" || !acceptedIntroSrc);
-  // Countdown fades out the moment ACCEPT swaps us into the accepted state.
-  const showCountdown = !accepted;
+    effectiveAccepted && !!acceptedIdleSrc && (acceptedPhase === "idle" || !acceptedIntroSrc);
+  // Declined ring — plays once, holds final frame; fades in when declined, out when accepted.
+  const showDeclined = effectiveDeclined && !!declinedSrc;
+  // Countdown fades out the moment ACCEPT or DECLINE swaps us into another state.
+  const showCountdown = !effectiveAccepted && !effectiveDeclined;
 
   const layerBase =
     "pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-auto object-contain";
@@ -259,8 +285,22 @@ function TimerVideoOverlay({
         style={{ ...fade, width: VIDEO_RING_SCALE, opacity: showCountdown ? 1 : 0 }}
       />
 
+      {/* Declined ring — mounts only once declined so it starts from frame 0;
+          plays once and holds the final frame (no loop). */}
+      {effectiveDeclined && declinedSrc && (
+        <video
+          src={declinedSrc}
+          autoPlay
+          muted
+          playsInline
+          preload="auto"
+          className={layerBase}
+          style={{ ...fade, width: VIDEO_RING_SCALE, opacity: showDeclined ? 1 : 0 }}
+        />
+      )}
+
       {/* Accepted intro — mounts only once accepted so it starts from frame 0 */}
-      {accepted && acceptedIntroSrc && (
+      {effectiveAccepted && acceptedIntroSrc && (
         <video
           src={acceptedIntroSrc}
           autoPlay
@@ -274,7 +314,7 @@ function TimerVideoOverlay({
       )}
 
       {/* Accepted idle loop — the resting accepted ring */}
-      {accepted && acceptedIdleSrc && (
+      {effectiveAccepted && acceptedIdleSrc && (
         <video
           src={acceptedIdleSrc}
           autoPlay
@@ -325,6 +365,8 @@ export function MatchFoundModal({
   acceptedIntroVideoSrc,
   acceptedIdleVideoSrc,
   accepted = false,
+  declinedVideoSrc,
+  declined = false,
 }: MatchFoundModalProps) {
   const uid = useId();
   const titleId = `${uid}-title`;
@@ -465,6 +507,8 @@ export function MatchFoundModal({
               acceptedIntroSrc={acceptedIntroVideoSrc}
               acceptedIdleSrc={acceptedIdleVideoSrc}
               accepted={accepted}
+              declinedSrc={declinedVideoSrc}
+              declined={declined}
             />
           )}
 
@@ -501,11 +545,36 @@ export function MatchFoundModal({
           </div>
         </div>
 
-        {/* 9. DECLINE — outside and below the circle, small compact rectangle */}
-        <div className="mt-3">
-          <HextechButton variant="secondary" onClick={onDecline}>
-            Decline
-          </HextechButton>
+        {/* 9. DECLINE — outside and below the circle, small gap + compact dark rectangle.
+            Understated treatment per client-match-found-modal.png: dark/black fill,
+            thin muted grey-gold border (gold-5/gold-4 mix), uppercase label in grey-1
+            (brightens to gold-1 cream on hover). NOT red, NOT the standard secondary
+            chunky border — this reads as a low-priority action beneath the ACCEPT. */}
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={onDecline}
+            className={[
+              "relative",
+              "inline-flex items-center justify-center",
+              "px-6 py-1.5",
+              "font-display text-xs uppercase tracking-[0.15em] leading-none",
+              "cursor-pointer transition-colors duration-150",
+              // Dark fill — near-black, slightly lighter than hextech-black
+              "bg-[color-mix(in_srgb,var(--color-hextech-black)_85%,var(--color-grey-4)_15%)]",
+              // Thin 1px muted grey-gold border
+              "border border-[color-mix(in_srgb,var(--color-gold-5)_70%,var(--color-grey-3)_30%)]",
+              // Hover: border brightens slightly, fill lightens a touch
+              "hover:border-[color-mix(in_srgb,var(--color-gold-4)_60%,var(--color-grey-3)_40%)]",
+              "hover:bg-[color-mix(in_srgb,var(--color-hextech-black)_70%,var(--color-grey-4)_30%)]",
+              // Label: muted grey (grey-1), brightens to gold-1 (pale cream) on hover
+              "text-grey-1 hover:text-gold-1",
+              // Focus ring (a11y)
+              "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3 focus-visible:outline-offset-2",
+            ].join(" ")}
+          >
+            DECLINE
+          </button>
         </div>
       </div>
     </>

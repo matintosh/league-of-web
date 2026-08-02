@@ -7,6 +7,7 @@ import {
   MatchFoundModalNoCrestDemo,
   MatchFoundModalEntranceReplayDemo,
   MatchFoundModalAcceptFlowDemo,
+  MatchFoundModalDeclinedFlowDemo,
   MatchFoundModalDemo,
 } from "./match-found-modal.demo";
 
@@ -56,6 +57,12 @@ export const matchFoundModalShowcase: ShowcaseEntry = {
       notes:
         'Interactive: "Find Match" plays the countdown ring video; ACCEPT swaps the overlay to the accepted intro → idle loop (modal stays mounted so the swap is visible); DECLINE / 0s resets. Honors prefers-reduced-motion (video hidden, CSS ring shows).',
       render: () => <MatchFoundModalAcceptFlowDemo />,
+    },
+    {
+      name: "Decline flow (video state machine)",
+      notes:
+        'Interactive: "Find Match" plays the countdown ring video; DECLINE swaps the overlay to the declined ring (plays once, holds final frame). accepted wins if both accepted/declined are set. Under prefers-reduced-motion the video is hidden and the CSS ring shows.',
+      render: () => <MatchFoundModalDeclinedFlowDemo />,
     },
     {
       name: "Trigger + ticking demo",

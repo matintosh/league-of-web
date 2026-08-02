@@ -12,9 +12,11 @@ const TOTAL = 10;
 // WAD ready-check ring videos, streamed from the CommunityDragon static-assets
 // mirror via staticVideoUrl (see docs/reference/VIDEO-ASSETS.md). Components take
 // the resolved URL as a prop; showcase/demo files supply it.
+// All four confirmed HTTP 200 (2026-08).
 const COUNTDOWN_SRC = staticVideoUrl("timer-countdown.webm");
 const ACCEPTED_INTRO_SRC = staticVideoUrl("timer-accepted-intro.webm");
 const ACCEPTED_IDLE_SRC = staticVideoUrl("timer-accepted-idle.webm");
+const DECLINED_SRC = staticVideoUrl("timer-declined.webm");
 
 // ---------------------------------------------------------------------------
 // Static showcase wrappers
@@ -174,6 +176,69 @@ export function MatchFoundModalAcceptFlowDemo() {
           accepted={accepted}
           onAccept={() => setAccepted(true)}
           onDecline={() => { setOpen(false); setAccepted(false); setSeconds(TOTAL); }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Declined-flow demo: the modal stays mounted through DECLINE so the WAD declined
+ * ring video is visible end-to-end. Click "Find Match" → countdown ring video plays;
+ * click DECLINE → the overlay swaps to the declined ring (plays once, holds final
+ * frame). Under prefers-reduced-motion the videos are hidden and the #299 CSS ring
+ * shows instead. `accepted` wins if somehow both are set simultaneously.
+ */
+export function MatchFoundModalDeclinedFlowDemo() {
+  const [open, setOpen] = useState(false);
+  const [declined, setDeclined] = useState(false);
+  const [seconds, setSeconds] = useState(TOTAL);
+
+  useEffect(() => {
+    if (!open || declined) return;
+    const id = setInterval(() => {
+      setSeconds((s) => {
+        if (s <= 1) {
+          clearInterval(id);
+          setOpen(false);
+          return TOTAL;
+        }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [open, declined]);
+
+  function handleOpen() {
+    setSeconds(TOTAL);
+    setDeclined(false);
+    setOpen(true);
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-4 p-6">
+      <HextechButton onClick={handleOpen} disabled={open}>
+        Find Match
+      </HextechButton>
+      <p className="font-body text-xs text-grey-2">
+        Countdown ring video plays; DECLINE swaps to the declined ring (plays once,
+        holds final frame). Under prefers-reduced-motion, the CSS ring shows instead.
+      </p>
+      <div className="relative overflow-hidden [transform:translateZ(0)] h-[560px] w-[520px]">
+        <MatchFoundModal
+          open={open}
+          secondsRemaining={seconds}
+          totalSeconds={TOTAL}
+          keyartSrc={championSplashUrl("Ahri")}
+          crestSrc={SR_CREST}
+          subtitle="Summoner's Rift • Ranked • 5v5"
+          countdownVideoSrc={COUNTDOWN_SRC}
+          acceptedIntroVideoSrc={ACCEPTED_INTRO_SRC}
+          acceptedIdleVideoSrc={ACCEPTED_IDLE_SRC}
+          declinedVideoSrc={DECLINED_SRC}
+          declined={declined}
+          onAccept={() => { setOpen(false); setDeclined(false); setSeconds(TOTAL); }}
+          onDecline={() => setDeclined(true)}
         />
       </div>
     </div>
