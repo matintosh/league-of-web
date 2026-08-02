@@ -20,11 +20,12 @@ import { usePathname } from "next/navigation";
 export function ViewSwitcher() {
   const pathname = usePathname();
   const onLoginRoute = pathname === "/login";
-
+  // The ViewSwitcher floats above /client and /login only; active detection
+  // uses exact match so /client doesn't fire on / (the hub) or /login.
   const inactiveColor = onLoginRoute ? "text-login-ink" : "text-grey-1";
 
   const tabs = [
-    { label: "Client", href: "/" },
+    { label: "Client", href: "/client" },
     { label: "Login", href: "/login" },
   ];
 

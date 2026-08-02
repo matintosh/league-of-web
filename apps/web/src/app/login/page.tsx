@@ -36,7 +36,7 @@ import { LOGIN_WIDTH, LOGIN_HEIGHT } from "../../lib/login-window";
  *
  * This route does NOT gate the client — portfolio visitors land on / directly.
  * Discovery path: Settings → Developer → "Sign out" link navigates here.
- * Submit navigates to / (no real auth).
+ * Submit navigates to /client (no real auth).
  *
  * Splash champion: Syndra (energetic, high-contrast purple — pairs well
  * against the white left panel).
@@ -56,7 +56,7 @@ export default function LoginPage() {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!bothFilled) return;
-    router.push("/");
+    router.push("/client");
   }
 
   return (
