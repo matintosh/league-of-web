@@ -49,7 +49,7 @@ export function MatchFoundModalNearlyExpiredDemo() {
   );
 }
 
-/** Static: no crestSrc — renders the HexCrest fallback placeholder */
+/** Static: no keyartSrc — renders the blue gradient disc fallback; blind-pick glyph still shows */
 export function MatchFoundModalNoCrestDemo() {
   return (
     <div className="relative overflow-hidden [transform:translateZ(0)] h-[560px] w-[520px]">
