@@ -864,8 +864,10 @@ export function ClientShell() {
               than an in-flow shrink-0 sibling, so its transparent gradient reveals
               whatever the content paints beneath it — on home that's the featured
               splash, which bleeds up to y=0 behind the band (splashBleedTop). The
-              content row is padded down by the band height (pt-22) so no screen's
-              own chrome hides under the band. */}
+              content row is padded down by the band height so no screen's own chrome
+              hides under the band. #544: band reduced from h-22 (88px) to h-15
+              (60px); padding updated from pt-22 to pt-16 (64px = 60px nav + 2px
+              border + 2px breathing room). */}
           {!champSelectActive && (
           <div className="absolute inset-x-0 top-0 z-30">
           <TopNavbar
@@ -1138,7 +1140,7 @@ export function ClientShell() {
               screen-content wrapper is overflow-visible ONLY on home to let the
               art escape up; every other screen keeps overflow-hidden (its own
               chrome sits fully below the band, nothing to bleed). */}
-          <div className={`relative flex flex-1 overflow-hidden${champSelectActive ? "" : " pt-22"}`}>
+          <div className={`relative flex flex-1 overflow-hidden${champSelectActive ? "" : " pt-16"}`}>
             {/* Screen content — fills all available width (minus rail when present) */}
             <div className={`relative flex-1 min-w-0 ${view === "home" ? "overflow-visible" : "overflow-hidden"}`}>
               {view === "competitive" ? (

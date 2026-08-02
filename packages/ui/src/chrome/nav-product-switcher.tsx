@@ -95,10 +95,10 @@ function ActiveCell() {
       className="pointer-events-none absolute inset-0"
       style={{
         backgroundImage:
-          "linear-gradient(to top, var(--color-gold-6) 0%, transparent 48%)",
-     
-     
-     
+          "linear-gradient(to top, " +
+          "color-mix(in srgb, var(--color-gold-4) 18%, transparent) 0%, " +
+          "color-mix(in srgb, var(--color-hextech-black) 48%, transparent) 48%, " +
+          "color-mix(in srgb, var(--color-hextech-black) 80%, transparent) 100%)",
       }}
     />
   );
