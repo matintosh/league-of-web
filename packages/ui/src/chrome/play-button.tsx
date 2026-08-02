@@ -60,12 +60,14 @@ interface SizeConfig {
   /** Text left padding inside bar = XAML TextBlock margin-left=30 (scaled) */
   textLeft: number;
   /**
-   * Dark GoldLine backing plate that extends PAST the chevron tip (px).
-   * The clean reference (docs/reference/play-button-reference-clean.png) keeps
-   * only ~0.26× bar-height (~7px at default) of bronze frame to the right of the
-   * teal chevron tip — a short margin, not a rectangle. This lengthens the outer
-   * frame's right run only — it does NOT move the chevron tip, the fill region,
-   * or the PLAY text.
+   * Offset (px) of the recessed backing chevron past the bright teal chevron tip.
+   * The reference (docs/reference/play-button-reference-clean.png) shows a second,
+   * darker chevron outline (teal-frame stroke) behind the bright teal tip, followed
+   * by the bronze GoldLine frame closing on the right. `backingExtend` is the
+   * x-shift of that recessed V — ~0.5× bar-height gives room for both the darker
+   * chevron stroke and the bronze frame closure to read. This lengthens the outer
+   * frame's right run only — it does NOT move the bright chevron tip, the fill
+   * region, or the PLAY text.
    */
   backingExtend: number;
   /** Label font size (px) */
@@ -92,14 +94,14 @@ function makeSize(barH: number, extra: {
   // the PLAY cap-height match. Modest value: over-widening scales the whole
   // button down in the width-normalized composite and undercuts cap-height.
   const dx = sc(14, s);
-  // (#357 → corrected): backing plate past the chevron tip. The hi-res clean
-  // reference (docs/reference/play-button-reference-clean.png) keeps ~0.26×
-  // bar-height of bronze GoldLine frame past the teal chevron tip — that is ~7px
-  // at default (bar=28). The prior value of 30 was tuned against an old
-  // width-normalized cx metric and produced a backing rectangle far wider than the
-  // reference. Reduced to ~0.26× bar-height (sc(7, s)) so only a short bronze
-  // margin shows past the chevron tip, matching the reference.
-  const bx = sc(7, s);
+  // Backing plate past the chevron tip. The reference shows two layers past the
+  // bright teal tip: (a) a darker recessed chevron outline (the same V-shape
+  // shifted right, stroked in teal-frame) and (b) the bronze GoldLine frame
+  // closing around it. `bx` is the offset of that recessed chevron from the
+  // bright tip. ~0.5× bar-height gives room for both the recessed-chevron stroke
+  // and the bronze frame closure to read clearly — the prior value of sc(7) only
+  // covered the flat bronze margin and lost the darker chevron outline detail.
+  const bx = sc(14, s);
   return {
     ...extra,
     bar: barH,
@@ -854,7 +856,7 @@ export function PlayButton({
   const cfg = SIZE_MAP[size];
   const {
     medallion, socket, socketPressed,
-    bar, barWidth, tipNarrowX,
+    bar, barWidth, tipNarrowX, tipY,
     totalH, outerW, outerMarginLeft,
     greenLeft, greenMargin,
     arrowLeft, arrowTop,
@@ -1062,14 +1064,9 @@ export function PlayButton({
             overflow="visible"
             aria-hidden="true"
           >
-            {/* Backing plate: dark bronze fill that runs from the chevron tip to
-                the outer frame's right edge (v9/#357). The hi-res reference keeps
-                ~0.6× bar-height of GoldLine frame past the teal tip; `backingExtend`
-                lengthens the frame there, and this rect fills that run so the tip
-                reads as cutting through a solid plate (not floating in a gap). Width
-                reaches the inner-frame right inset: from tipNarrowX to
-                (outerW - arrowLeft - greenMargin) in this SVG's tip-relative coords.
-                Color: pb-outer-bg (sampled ≈ dark bronze). */}
+            {/* Backing plate: dark fill covering the region past the bright teal
+                chevron tip, so the tip reads as cutting through a solid dark plate.
+                Width reaches the outer frame's right inset. */}
             <rect
               x={tipNarrowX}
               y={0}
@@ -1079,6 +1076,30 @@ export function PlayButton({
               )}
               height={bar}
               fill="var(--color-pb-outer-bg)"
+            />
+
+            {/* Recessed chevron outline — a second V-shape shifted a small amount
+                right of the bright teal tip, stroked in teal-frame (darker teal).
+                This is the "darker recessed chevron backing" visible in the reference
+                (docs/reference/play-button-reference-clean.png) past the bright tip:
+                it gives the right end its layered / recessed appearance instead of a
+                flat dark stub. Offset ~0.21× bar-height keeps it close to the bright
+                tip while staying clearly visible; `backingExtend` (the outer frame
+                extension) is larger so the bronze frame still closes beyond it.
+                Open path (no fill) — the backing rect provides the dark fill. */}
+            <path
+              d={(() => {
+                const rx = Math.round(bar * 0.21); // recessed-chevron x-offset ≈ 6px @default
+                return `M ${tipNarrowX + rx},0 L ${barWidth + rx},${tipY} L ${tipNarrowX + rx},${bar}`;
+              })()}
+              fill="none"
+              stroke={
+                disabled  ? "var(--color-grey-3)" :
+                queueing  ? "var(--color-grey-2)" :
+                "var(--color-teal-frame)"
+              }
+              strokeWidth={strokeInner}
+              strokeLinejoin="miter"
             />
 
             {/* ---- Radial glow layer (magic-button "radial effects"): a bright
