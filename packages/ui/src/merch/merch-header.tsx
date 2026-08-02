@@ -11,7 +11,7 @@
  *
  * Measured from merch.riotgames.com (~1280px desktop):
  *   - Header height: ~60–64px
- *   - Background: near-black #0d0d0d (--color-merch-ink-dark, see merch.css)
+ *   - Background: --color-merch-ink-dark (near-black, see merch.css)
  *   - Left: Riot wordmark/logo ~16–24px from left edge; red accent
  *   - Center: horizontal category nav links — all-caps, ~14px, 500 weight, ~24px gap
  *   - Right: search + cart + account icons ~24px from right edge
@@ -83,8 +83,8 @@ export function MerchHeader({
     <header
       className="sticky top-0 z-50 w-full border-b"
       style={{
-        backgroundColor: "var(--color-merch-ink-dark, #0d0d0d)",
-        borderColor: "var(--color-merch-border-dark, #2a2a2a)",
+        backgroundColor: "var(--color-merch-ink-dark)",
+        borderColor: "var(--color-merch-border-dark)",
       }}
     >
       <div
@@ -108,7 +108,7 @@ export function MerchHeader({
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <rect width="28" height="28" rx="2" fill="var(--color-merch-red, #d13639)" />
+            <rect width="28" height="28" rx="2" fill="var(--color-merch-red)" />
             <text
               x="14"
               y="20"
@@ -116,14 +116,14 @@ export function MerchHeader({
               fontFamily="Arial, sans-serif"
               fontWeight="bold"
               fontSize="16"
-              fill="#fff"
+              fill="var(--color-merch-on-dark)"
             >
               R
             </text>
           </svg>
           <span
             className="text-sm font-bold uppercase tracking-[0.18em]"
-            style={{ color: "#ffffff" }}
+            style={{ color: "var(--color-merch-on-dark)" }}
           >
             Riot Merch
           </span>
@@ -148,9 +148,9 @@ export function MerchHeader({
                 className="relative pb-0.5 text-[13px] font-medium uppercase tracking-[0.07em] transition-colors duration-150"
                 style={{
                   color: isActive || isSale
-                    ? "var(--color-merch-red, #d13639)"
-                    : "#ffffff",
-                  fontFamily: "var(--font-merch, system-ui, sans-serif)",
+                    ? "var(--color-merch-red)"
+                    : "var(--color-merch-on-dark)",
+                  fontFamily: "var(--font-merch)",
                 }}
               >
                 {label}
@@ -158,7 +158,7 @@ export function MerchHeader({
                 {isActive && (
                   <span
                     className="absolute inset-x-0 bottom-0 h-px"
-                    style={{ backgroundColor: "var(--color-merch-red, #d13639)" }}
+                    style={{ backgroundColor: "var(--color-merch-red)" }}
                   />
                 )}
               </button>
@@ -176,7 +176,7 @@ export function MerchHeader({
             aria-label="Search"
             onClick={onSearchClick}
             className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
-            style={{ color: "#ffffff" }}
+            style={{ color: "var(--color-merch-on-dark)" }}
           >
             <svg
               aria-hidden="true"
@@ -200,7 +200,7 @@ export function MerchHeader({
             aria-label={cartCount > 0 ? `Cart — ${cartCount} items` : "Cart"}
             onClick={onCartClick}
             className="relative flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
-            style={{ color: "#ffffff" }}
+            style={{ color: "var(--color-merch-on-dark)" }}
           >
             <svg
               aria-hidden="true"
@@ -221,8 +221,8 @@ export function MerchHeader({
               <span
                 id={badgeId}
                 aria-hidden="true"
-                className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold leading-none text-white"
-                style={{ backgroundColor: "var(--color-merch-red, #d13639)" }}
+                className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold leading-none"
+                style={{ backgroundColor: "var(--color-merch-red)", color: "var(--color-merch-on-dark)" }}
               >
                 {cartCount > 9 ? "9+" : cartCount}
               </span>
@@ -234,7 +234,7 @@ export function MerchHeader({
             type="button"
             onClick={onAccountClick}
             className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
-            style={{ color: "#ffffff" }}
+            style={{ color: "var(--color-merch-on-dark)" }}
             aria-label="Account"
           >
             <svg

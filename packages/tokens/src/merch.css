@@ -44,6 +44,7 @@
   /* ── Header (dark bar sampled from merch.riotgames.com) ────────────── */
   --color-merch-ink-dark:    #0d0d0d; /* header/nav background — near-black          */
   --color-merch-border-dark: #2a2a2a; /* header bottom border separator              */
+  --color-merch-on-dark:     #ffffff; /* white text/icons on the dark header + badge text on dark/red backgrounds */
 
   /* ── Typography ─────────────────────────────────────────────────────── */
   /* Modern e-commerce font stack — system sans-serif by default.

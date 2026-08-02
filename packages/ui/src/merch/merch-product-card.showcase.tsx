@@ -1,10 +1,11 @@
+import { championSplashUrl } from "@low/fixtures";
 import type { ShowcaseEntry } from "../showcase";
 import { MerchProductCard } from "./merch-product-card";
 
-/** Placeholder image — solid warm grey rect from picsum equivalent, CDN-safe */
-const PLACEHOLDER_IMG = "https://ddragonmedia.riotgames.com/cdn/img/champion/splash/Jinx_0.jpg";
-const PLACEHOLDER_DARK = "https://ddragonmedia.riotgames.com/cdn/img/champion/splash/Lux_0.jpg";
-const PLACEHOLDER_RED  = "https://ddragonmedia.riotgames.com/cdn/img/champion/splash/Vi_0.jpg";
+/** Product placeholder images sourced from the Data Dragon CDN (ddragon.leagueoflegends.com). */
+const PLACEHOLDER_IMG = championSplashUrl("Jinx", 0);
+const PLACEHOLDER_DARK = championSplashUrl("Lux", 0);
+const PLACEHOLDER_RED  = championSplashUrl("Vi", 0);
 
 export const merchProductCardShowcase: ShowcaseEntry = {
   slug: "merch-product-card",

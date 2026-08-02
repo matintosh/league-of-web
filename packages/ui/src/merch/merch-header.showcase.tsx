@@ -12,7 +12,7 @@ export const merchHeaderShowcase: ShowcaseEntry = {
       name: "Default — no active category, empty cart",
       notes: "Base state: all links white, no badge on cart icon.",
       render: () => (
-        <div style={{ background: "#f0f0f0", minHeight: "120px" }}>
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "120px" }}>
           <MerchHeader />
         </div>
       ),
@@ -21,7 +21,7 @@ export const merchHeaderShowcase: ShowcaseEntry = {
       name: "Active category — Apparel",
       notes: "Active category link shows red color + underline.",
       render: () => (
-        <div style={{ background: "#f0f0f0", minHeight: "120px" }}>
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "120px" }}>
           <MerchHeader activeCategory="apparel" />
         </div>
       ),
@@ -30,7 +30,7 @@ export const merchHeaderShowcase: ShowcaseEntry = {
       name: "Cart badge — 3 items",
       notes: "Cart icon shows red count badge when cartCount > 0.",
       render: () => (
-        <div style={{ background: "#f0f0f0", minHeight: "120px" }}>
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "120px" }}>
           <MerchHeader cartCount={3} />
         </div>
       ),
@@ -39,7 +39,7 @@ export const merchHeaderShowcase: ShowcaseEntry = {
       name: "Cart badge overflow — 10+ items",
       notes: "Badge shows 9+ when count exceeds 9.",
       render: () => (
-        <div style={{ background: "#f0f0f0", minHeight: "120px" }}>
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "120px" }}>
           <MerchHeader cartCount={12} activeCategory="sale" />
         </div>
       ),

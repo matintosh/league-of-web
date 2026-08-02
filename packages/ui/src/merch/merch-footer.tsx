@@ -10,8 +10,8 @@
  * (no 'use client'), SVG/gradient ids from useId.
  *
  * Measured from merch.riotgames.com footer (~1280px desktop):
- *   - Background: --color-merch-surface (#f5f5f5) — slightly elevated from page white
- *   - Top border: 1px --color-merch-border (#e5e5e5)
+ *   - Background: --color-merch-surface — slightly elevated from page white
+ *   - Top border: 1px --color-merch-border
  *   - Padding: ~48px vertical, max-w-screen-xl centered
  *   - Link columns: 3 columns (Support, Shipping, About) with bold ALL-CAPS heading
  *   - Column heading: ~11–12px, letter-spacing 0.1em, weight 700, ink color
@@ -153,14 +153,14 @@ function NewsletterSection({ onSubscribe }: { onSubscribe: (email: string) => vo
   }
 
   return (
-    <div className="mb-10 border-b pb-10" style={{ borderColor: "var(--color-merch-border, #e5e5e5)" }}>
+    <div className="mb-10 border-b pb-10" style={{ borderColor: "var(--color-merch-border)" }}>
       <p
         className="mb-1 text-[11px] font-bold uppercase tracking-[0.1em]"
-        style={{ color: "var(--color-merch-ink, #1a1a1a)" }}
+        style={{ color: "var(--color-merch-ink)" }}
       >
         Stay in the loop
       </p>
-      <p className="mb-3 text-[13px]" style={{ color: "var(--color-merch-muted, #737373)" }}>
+      <p className="mb-3 text-[13px]" style={{ color: "var(--color-merch-muted)" }}>
         Subscribe for exclusive drops and offers.
       </p>
       <form
@@ -180,15 +180,15 @@ function NewsletterSection({ onSubscribe }: { onSubscribe: (email: string) => vo
           required
           className="flex-1 border px-3 py-2 text-[13px] outline-none transition-colors duration-150 focus:border-current"
           style={{
-            borderColor: "var(--color-merch-border, #e5e5e5)",
-            backgroundColor: "var(--color-merch-bg, #ffffff)",
-            color: "var(--color-merch-ink, #1a1a1a)",
+            borderColor: "var(--color-merch-border)",
+            backgroundColor: "var(--color-merch-bg)",
+            color: "var(--color-merch-ink)",
           }}
         />
         <button
           type="submit"
-          className="px-4 py-2 text-[12px] font-semibold uppercase tracking-wider text-white transition-opacity duration-150 hover:opacity-85"
-          style={{ backgroundColor: "var(--color-merch-red, #d13639)" }}
+          className="px-4 py-2 text-[12px] font-semibold uppercase tracking-wider transition-opacity duration-150 hover:opacity-85"
+          style={{ backgroundColor: "var(--color-merch-red)", color: "var(--color-merch-on-dark)" }}
         >
           Subscribe
         </button>
@@ -216,9 +216,9 @@ export function MerchFooter({
     <footer
       className="w-full border-t"
       style={{
-        backgroundColor: "var(--color-merch-surface, #f5f5f5)",
-        borderColor: "var(--color-merch-border, #e5e5e5)",
-        fontFamily: "var(--font-merch, system-ui, sans-serif)",
+        backgroundColor: "var(--color-merch-surface)",
+        borderColor: "var(--color-merch-border)",
+        fontFamily: "var(--font-merch)",
       }}
     >
       <div className="mx-auto max-w-screen-xl px-6 py-12">
@@ -232,7 +232,7 @@ export function MerchFooter({
             <div key={group.heading} className="flex flex-col gap-3">
               <p
                 className="text-[11px] font-bold uppercase tracking-[0.1em]"
-                style={{ color: "var(--color-merch-ink, #1a1a1a)" }}
+                style={{ color: "var(--color-merch-ink)" }}
               >
                 {group.heading}
               </p>
@@ -243,15 +243,15 @@ export function MerchFooter({
                       href={link.href}
                       className="text-[13px] underline-offset-2 transition-colors duration-150 hover:underline"
                       style={{
-                        color: "var(--color-merch-muted, #737373)",
+                        color: "var(--color-merch-muted)",
                       }}
                       onMouseEnter={(e) => {
                         (e.currentTarget as HTMLAnchorElement).style.color =
-                          "var(--color-merch-ink, #1a1a1a)";
+                          "var(--color-merch-ink)";
                       }}
                       onMouseLeave={(e) => {
                         (e.currentTarget as HTMLAnchorElement).style.color =
-                          "var(--color-merch-muted, #737373)";
+                          "var(--color-merch-muted)";
                       }}
                     >
                       {link.label}
@@ -267,7 +267,7 @@ export function MerchFooter({
             <div className="flex flex-col gap-3 md:ml-auto">
               <p
                 className="text-[11px] font-bold uppercase tracking-[0.1em]"
-                style={{ color: "var(--color-merch-ink, #1a1a1a)" }}
+                style={{ color: "var(--color-merch-ink)" }}
               >
                 Follow Us
               </p>
@@ -278,7 +278,7 @@ export function MerchFooter({
                     href={href}
                     aria-label={platform}
                     className="transition-opacity duration-150 hover:opacity-60"
-                    style={{ color: "var(--color-merch-muted, #737373)" }}
+                    style={{ color: "var(--color-merch-muted)" }}
                   >
                     <SocialIcon platform={platform} />
                   </a>
@@ -291,12 +291,12 @@ export function MerchFooter({
         {/* Bottom bar: copyright + legal */}
         <div
           className="flex flex-col gap-2 border-t pt-6 md:flex-row md:items-center md:justify-between"
-          style={{ borderColor: "var(--color-merch-border, #e5e5e5)" }}
+          style={{ borderColor: "var(--color-merch-border)" }}
         >
           {/* Copyright */}
           <p
             className="text-[12px]"
-            style={{ color: "var(--color-merch-muted, #737373)" }}
+            style={{ color: "var(--color-merch-muted)" }}
           >
             {copyrightText}
           </p>
@@ -309,14 +309,14 @@ export function MerchFooter({
                   key={link.href}
                   href={link.href}
                   className="text-[12px] underline-offset-2 transition-colors duration-150 hover:underline"
-                  style={{ color: "var(--color-merch-muted, #737373)" }}
+                  style={{ color: "var(--color-merch-muted)" }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLAnchorElement).style.color =
-                      "var(--color-merch-ink, #1a1a1a)";
+                      "var(--color-merch-ink)";
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLAnchorElement).style.color =
-                      "var(--color-merch-muted, #737373)";
+                      "var(--color-merch-muted)";
                   }}
                 >
                   {link.label}

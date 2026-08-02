@@ -16,9 +16,9 @@ export function MerchFooterDemo() {
         <p
           className="px-6 py-3 text-center text-[13px]"
           style={{
-            backgroundColor: "var(--color-merch-surface, #f5f5f5)",
-            color: "var(--color-merch-ink, #1a1a1a)",
-            borderBottom: "1px solid var(--color-merch-border, #e5e5e5)",
+            backgroundColor: "var(--color-merch-surface)",
+            color: "var(--color-merch-ink)",
+            borderBottom: "1px solid var(--color-merch-border)",
           }}
         >
           Subscribed: <strong>{subscribed}</strong>

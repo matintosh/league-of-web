@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * MerchProductCard — product tile for the Riot Games merch store clone.
  *
@@ -15,13 +17,11 @@
  *   - Image hover: scale(1.04) over 200ms ease-out
  *   - Info strip: ~12px horizontal, ~8–10px vertical padding
  *   - Title: ~14px, weight 500–600, white, line-clamp 2
- *   - Price: ~14px, weight 400–500, muted (#a0a0a0 → --color-merch-muted)
+ *   - Price: ~14px, weight 400–500, muted (--color-merch-muted)
  *   - Sale: original struck-through in muted + sale price in red
  *   - Badge (top-left absolute): ~10–12px, all-caps, 4px 8px padding
  *     "Sale" → red, "New" → surface-elevated + white, "Out of Stock" → muted border fill
  */
-
-"use client";
 
 import type { MerchProduct } from "@low/fixtures";
 
@@ -54,26 +54,26 @@ function badgeStyle(badge: NonNullable<MerchProductCardProps["badge"]>): React.C
   switch (badge) {
     case "Sale":
       return {
-        backgroundColor: "var(--color-merch-red, #d13639)",
-        color: "#ffffff",
+        backgroundColor: "var(--color-merch-red)",
+        color: "var(--color-merch-on-dark)",
       };
     case "New":
       return {
-        backgroundColor: "var(--color-merch-ink, #1a1a1a)",
-        color: "#ffffff",
+        backgroundColor: "var(--color-merch-ink)",
+        color: "var(--color-merch-on-dark)",
         border: "1px solid rgba(255,255,255,0.15)",
       };
     case "Out of Stock":
       return {
-        backgroundColor: "var(--color-merch-surface, #f5f5f5)",
-        color: "var(--color-merch-muted, #737373)",
-        border: "1px solid var(--color-merch-border, #e5e5e5)",
+        backgroundColor: "var(--color-merch-surface)",
+        color: "var(--color-merch-muted)",
+        border: "1px solid var(--color-merch-border)",
       };
     case "Limited":
       return {
-        backgroundColor: "var(--color-merch-ink, #1a1a1a)",
-        color: "var(--color-merch-red, #d13639)",
-        border: "1px solid var(--color-merch-red, #d13639)",
+        backgroundColor: "var(--color-merch-ink)",
+        color: "var(--color-merch-red)",
+        border: "1px solid var(--color-merch-red)",
       };
   }
 }
@@ -101,7 +101,7 @@ export function MerchProductCard({
     <article
       role="article"
       className="group flex w-full cursor-pointer flex-col"
-      style={{ fontFamily: "var(--font-merch, system-ui, sans-serif)" }}
+      style={{ fontFamily: "var(--font-merch)" }}
       onClick={() => onClick?.(slug)}
     >
       {/* ------------------------------------------------------------------ */}
@@ -111,7 +111,7 @@ export function MerchProductCard({
         className="relative overflow-hidden"
         style={{
           aspectRatio: "1 / 1",
-          backgroundColor: "var(--color-merch-surface, #f5f5f5)",
+          backgroundColor: "var(--color-merch-surface)",
         }}
       >
         {/* Product image — scale on hover */}
@@ -140,12 +140,12 @@ export function MerchProductCard({
       {/* ------------------------------------------------------------------ */}
       <div
         className="flex flex-col gap-0.5 px-0 pt-2.5 pb-1"
-        style={{ backgroundColor: "var(--color-merch-bg, #ffffff)" }}
+        style={{ backgroundColor: "var(--color-merch-bg)" }}
       >
         {/* Title — line-clamp 2 */}
         <p
           className="line-clamp-2 text-[14px] font-medium leading-snug"
-          style={{ color: "var(--color-merch-ink, #1a1a1a)" }}
+          style={{ color: "var(--color-merch-ink)" }}
         >
           {title}
         </p>
@@ -156,19 +156,19 @@ export function MerchProductCard({
             <>
               <span
                 className="line-through"
-                style={{ color: "var(--color-merch-muted, #737373)" }}
+                style={{ color: "var(--color-merch-muted)" }}
               >
                 {originalPrice}
               </span>
               <span
                 className="font-medium"
-                style={{ color: "var(--color-merch-red, #d13639)" }}
+                style={{ color: "var(--color-merch-red)" }}
               >
                 {price}
               </span>
             </>
           ) : (
-            <span style={{ color: "var(--color-merch-muted, #737373)" }}>
+            <span style={{ color: "var(--color-merch-muted)" }}>
               {price}
             </span>
           )}
