@@ -61,12 +61,11 @@ interface SizeConfig {
   textLeft: number;
   /**
    * Dark GoldLine backing plate that extends PAST the chevron tip (px).
-   * The hi-res reference (docs/reference/play-button-hires-full.png) keeps ~0.26×
-   * bar-height of bronze frame to the right of the teal chevron before the frame
-   * ends; the raw XAML had almost none. This lengthens the outer frame's right run
-   * only — it does NOT move the chevron tip, the fill region, or the PLAY text —
-   * so it corrects the frame's right proportion (and closes the #357 width-
-   * normalized PLAY-cx residual) without disturbing fill-region centering.
+   * The clean reference (docs/reference/play-button-reference-clean.png) keeps
+   * only ~0.26× bar-height (~7px at default) of bronze frame to the right of the
+   * teal chevron tip — a short margin, not a rectangle. This lengthens the outer
+   * frame's right run only — it does NOT move the chevron tip, the fill region,
+   * or the PLAY text.
    */
   backingExtend: number;
   /** Label font size (px) */
@@ -93,18 +92,14 @@ function makeSize(barH: number, extra: {
   // the PLAY cap-height match. Modest value: over-widening scales the whole
   // button down in the width-normalized composite and undercuts cap-height.
   const dx = sc(14, s);
-  // v9 (#357): backing plate past the chevron tip. Measured on the hi-res
-  // reference the outer bronze GoldLine frame runs ~0.26× bar-height PAST the teal
-  // chevron tip before it ends; the raw XAML backing was ~5px. Because the PLAY
-  // label is centered in the FILL region (medallion inner edge → chevron
-  // narrowing) and this only extends the frame to the RIGHT of the tip, growing
-  // it lengthens the outer frame (widening the button box) WITHOUT moving the
-  // chevron, the fill region, or the text — which is exactly the lever that pulls
-  // the width-normalized PLAY center left toward the reference (cx≈504) that pure
-  // straight-run `dx` widening could not (fill-centering drags the text right in
-  // lockstep with the frame, leaving normalized-cx near-invariant). Empirically
-  // tuned against tools/compare-ref.mjs; see #357.
-  const bx = sc(30, s);
+  // (#357 → corrected): backing plate past the chevron tip. The hi-res clean
+  // reference (docs/reference/play-button-reference-clean.png) keeps ~0.26×
+  // bar-height of bronze GoldLine frame past the teal chevron tip — that is ~7px
+  // at default (bar=28). The prior value of 30 was tuned against an old
+  // width-normalized cx metric and produced a backing rectangle far wider than the
+  // reference. Reduced to ~0.26× bar-height (sc(7, s)) so only a short bronze
+  // margin shows past the chevron tip, matching the reference.
+  const bx = sc(7, s);
   return {
     ...extra,
     bar: barH,
@@ -227,10 +222,13 @@ function Medallion({ size, greyed, discId, glyphId, swirlId, emblemSrc, emblemHe
   /** Rendered height for the emblem image (px). Width scales proportionally via object-contain. */
   emblemHeight?: number;
   /**
-   * Swap-not-stack (issue #423): the league-logo socket video carries its own
-   * complete L medallion, so when the video layer is active the static
-   * emblem/glyph must hide or the logo doubles. `motion-reduce:flex` keeps the
-   * static emblem for reduced-motion users, where the video layer is hidden.
+   * Hides the static emblem/glyph (true = hidden). Used by PlayButton to
+   * suppress the static L during the intro one-shot, where the video carries its
+   * own L (#423 swap-not-stack — stacking doubled the logo). Once the intro ends,
+   * PlayButton passes false so the static gold L composites at z-[2] above the
+   * loop-idle/loop-active swirl video, reading prominently over the animated
+   * background (defect-2 fix). `motion-reduce:flex` keeps the static emblem for
+   * reduced-motion users, where the video layer is hidden entirely.
    */
   emblemHidden?: boolean;
 }) {
@@ -309,11 +307,15 @@ function Medallion({ size, greyed, discId, glyphId, swirlId, emblemSrc, emblemHe
           style={greyed ? undefined : { mixBlendMode: "color-dodge" }}
         />
       </svg>
+      {/* z-[2]: sits above the MedallionVideoLayer (z-[1]) so the static gold L
+          composites on top of the loop-idle/loop-active swirl video once the
+          intro one-shot finishes (defect-2 fix). Hidden during the intro via
+          emblemHidden so the video's own L is the only one visible. */}
       <div
         className={
           emblemHidden
-            ? "absolute inset-0 hidden motion-reduce:flex items-center justify-center"
-            : "absolute inset-0 flex items-center justify-center"
+            ? "absolute inset-0 z-[2] hidden motion-reduce:flex items-center justify-center"
+            : "absolute inset-0 z-[2] flex items-center justify-center"
         }
       >
         {emblemSrc ? (
@@ -577,16 +579,32 @@ function MedallionVideoLayer({
   sources,
   active,
   magicTick,
+  onIntroDone,
 }: {
   sources: PlayButtonMedallionVideoSources;
   /** True while the button is hovered/engaged → energetic loop-active swirl. */
   active: boolean;
   /** Bumped to (re)fire the one-shot magic accent (e.g. alongside the intro). */
   magicTick: number;
+  /**
+   * Called once when the intro one-shot finishes (or immediately when there is
+   * no intro clip). Used by the caller to un-hide the static emblem/glyph once
+   * the intro video has revealed the socket — the loop clips (loop-idle,
+   * loop-active) are swirl-only at their center and the static gold L composited
+   * on top reads more prominently than the L embedded in the video.
+   */
+  onIntroDone?: () => void;
 }) {
   const [introDone, setIntroDone] = useState(!sources.intro);
   const [magicPlaying, setMagicPlaying] = useState(false);
   const seenMagicTick = useRef(magicTick);
+  const onIntroDoneRef = useRef(onIntroDone);
+  onIntroDoneRef.current = onIntroDone;
+
+  // Notify caller when the intro is done (or immediately when there is no intro).
+  useEffect(() => {
+    if (introDone) onIntroDoneRef.current?.();
+  }, [introDone]);
 
   useEffect(() => {
     if (magicTick !== seenMagicTick.current) {
@@ -614,7 +632,10 @@ function MedallionVideoLayer({
   }[] = [
     { key: "loopIdle", src: sources.loopIdle, loop: true },
     { key: "loopActive", src: sources.loopActive, loop: true },
-    { key: "intro", src: sources.intro, loop: false, onEnded: () => setIntroDone(true) },
+    {
+      key: "intro", src: sources.intro, loop: false,
+      onEnded: () => setIntroDone(true),
+    },
     { key: "magic", src: sources.magic, loop: false, onEnded: () => setMagicPlaying(false) },
   ];
 
@@ -805,6 +826,19 @@ export function PlayButton({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Defect-2 fix: track when the medallion intro one-shot is done. While the
+  // intro clip plays, the video carries its own L so the static emblem/glyph
+  // stays hidden (same as the #423 swap-not-stack behaviour). Once the intro
+  // ends and the loop-idle/loop-active clip takes over, the static gold L is
+  // composited ON TOP of the socket-swirl video at z-[2] — it reads more
+  // prominently than the L embedded in the loop-idle video frame and matches the
+  // reference (gold L dominant over a subtle dark-teal swirl). If no intro clip
+  // is wired, introDone starts true so the static L shows immediately.
+  const [medallionIntroDone, setMedallionIntroDone] = useState(
+    !hasMedallionVideo || !medallionVideoSources?.intro,
+  );
+  const handleMedallionIntroDone = useCallback(() => setMedallionIntroDone(true), []);
+
   const handleMouseDown = useCallback(() => { if (!disabled && !queueing) setPressed(true); }, [disabled, queueing]);
   const handleMouseUp   = useCallback(() => {
     setPressed((wasPressed) => {
@@ -932,6 +966,12 @@ export function PlayButton({
           }}
         >
           
+          {/* Defect-2 fix: hide the static L only while the intro one-shot plays
+              (the intro video carries its own L — showing both doubled the logo,
+              #423). Once intro ends (medallionIntroDone), the loop clips provide
+              the animated swirl background and the static gold L composites on
+              top, reading prominently over the swirl
+              (matches docs/reference/play-button-reference-clean.png). */}
           <Medallion
             size={medallion}
             greyed={greyed}
@@ -940,17 +980,20 @@ export function PlayButton({
             swirlId={swirlId}
             emblemSrc={emblemSrc}
             emblemHeight={totalH}
-            emblemHidden={hasMedallionVideo}
+            emblemHidden={hasMedallionVideo && !medallionIntroDone}
           />
           {/* Real-client league-logo socket video (v8, issue #309, from #316).
-              REPLACES the static emblem while active (#423 — the video carries
-              its own L, stacking doubled the logo); clipped to the circle by
-              this shell. loop-active engages while the button is hovered. */}
+              During intro: REPLACES the static emblem (intro carries its own L).
+              After intro: provides the animated swirl BACKGROUND; the static
+              gold L composites on top via z-[2] on the emblem layer (defect-2
+              fix). Clipped to the circle by this shell. loop-active engages
+              while the button is hovered. */}
           {hasMedallionVideo && medallionVideoSources && (
             <MedallionVideoLayer
               sources={medallionVideoSources}
               active={hovered || pressed}
               magicTick={magicTick}
+              onIntroDone={handleMedallionIntroDone}
             />
           )}
         </div>
