@@ -1,8 +1,11 @@
 /**
- * LandingHub — root hub that links to the three main sections of league-of-web:
+ * LandingHub — root hub that links to the three primary sections of league-of-web:
  *   • /client  — the League of Legends client clone
+ *   • /login   — the LoL sign-in screen
  *   • /merch   — the Riot merch store scaffold
- *   • /showcase — the component showcase
+ *
+ * A secondary utility link (e.g. /showcase) can be supplied via `utilityLink`
+ * and is rendered as a small footer-level text link, not a primary card.
  *
  * Presentational: receives section card definitions and link hrefs; renders
  * no router logic itself. Page wires it with next/link via the `cards` prop.
@@ -26,24 +29,36 @@ export interface LandingHubCard {
   badge?: string;
 }
 
+export interface LandingHubUtilityLink {
+  /** Display label */
+  label: string;
+  /** Route href */
+  href: string;
+}
+
 export interface LandingHubProps {
-  /** Section cards — typically three: client, merch, showcase */
+  /** Primary section cards — typically three: client, login, merch */
   cards: LandingHubCard[];
   /** Project title */
   title?: string;
   /** Project subtitle / tagline */
   subtitle?: string;
+  /**
+   * Optional secondary utility link rendered below the footer (e.g. /showcase).
+   * Displayed as a small muted text link, not a primary card.
+   */
+  utilityLink?: LandingHubUtilityLink;
 }
 
 /**
  * LandingHub renders the portfolio root hub.
  *
- * Layout: a centered dark card with a title block, three clickable section
- * tiles in a row, and a footer note. The hub chrome uses Hextech tokens so it
- * feels at home in the existing token theme; each tile gets a gold border and
- * darkens on hover.
+ * Layout: a centered dark card with a title block, three primary section tiles
+ * in a row, and a footer with project credits plus an optional utility link
+ * (e.g. /showcase). The hub chrome uses Hextech tokens; each tile gets a gold
+ * border and darkens on hover.
  */
-export function LandingHub({ cards, title = "League of Web", subtitle }: LandingHubProps) {
+export function LandingHub({ cards, title = "League of Web", subtitle, utilityLink }: LandingHubProps) {
   return (
     <div className="flex min-h-screen w-screen flex-col items-center justify-center bg-hextech-black px-6 py-16">
       {/* Title block */}
@@ -59,7 +74,7 @@ export function LandingHub({ cards, title = "League of Web", subtitle }: Landing
         )}
       </header>
 
-      {/* Section cards */}
+      {/* Primary section cards */}
       <nav
         aria-label="Sections"
         className="flex w-full max-w-3xl flex-col gap-4 sm:flex-row"
@@ -92,6 +107,14 @@ export function LandingHub({ cards, title = "League of Web", subtitle }: Landing
         <p className="font-body text-xs uppercase tracking-widest text-gold-5">
           league-of-web · portfolio · 2025
         </p>
+        {utilityLink && (
+          <a
+            href={utilityLink.href}
+            className="mt-3 inline-block font-body text-[10px] uppercase tracking-widest text-gold-6 transition-colors duration-150 hover:text-gold-4"
+          >
+            {utilityLink.label}
+          </a>
+        )}
       </footer>
     </div>
   );

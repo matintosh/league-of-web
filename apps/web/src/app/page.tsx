@@ -11,6 +11,14 @@ const HUB_CARDS: LandingHubCard[] = [
     badge: "Hextech design system",
   },
   {
+    id: "login",
+    label: "Login",
+    description:
+      "The League of Legends sign-in screen — animated background, credential form, and Hextech chrome.",
+    href: "/login",
+    badge: "Hextech design system",
+  },
+  {
     id: "merch",
     label: "Merch",
     description:
@@ -18,21 +26,14 @@ const HUB_CARDS: LandingHubCard[] = [
     href: "/merch",
     badge: "Merch design system",
   },
-  {
-    id: "showcase",
-    label: "Showcase",
-    description:
-      "Browse every UI component built for this project: props, variants, and reference screenshots.",
-    href: "/showcase",
-  },
 ];
 
 /**
  * Landing hub — root of league-of-web.
  *
- * Offers three entry points: the LoL client clone (/client), the Riot merch
- * store scaffold (/merch), and the component showcase (/showcase). The login
- * page (/login) is reachable via the client's sign-out path.
+ * Offers three primary entry points: the LoL client clone (/client), the login
+ * screen (/login), and the Riot merch store scaffold (/merch). A secondary
+ * utility link to the component showcase (/showcase) is rendered separately.
  *
  * Uses Hextech tokens for hub chrome (the site-wide token theme is already
  * loaded by the root layout); no merch tokens are needed here.
@@ -43,6 +44,7 @@ export default function Home() {
       title="League of Web"
       subtitle="A portfolio project: a 1:1 web recreation of the LoL client, a Riot merch store scaffold, and a component showcase."
       cards={HUB_CARDS}
+      utilityLink={{ label: "Component Showcase →", href: "/showcase" }}
     />
   );
 }

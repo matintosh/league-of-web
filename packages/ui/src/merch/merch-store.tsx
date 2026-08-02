@@ -50,8 +50,8 @@ export function MerchStore({
     <div
       className="flex min-h-screen flex-col"
       style={{
-        backgroundColor: "var(--color-merch-bg, #ffffff)",
-        color: "var(--color-merch-ink, #1a1a1a)",
+        backgroundColor: "var(--color-merch-bg)",
+        color: "var(--color-merch-ink)",
         fontFamily: "var(--font-merch, system-ui, sans-serif)",
       }}
     >
@@ -61,15 +61,15 @@ export function MerchStore({
       <header
         className="sticky top-0 z-40 border-b"
         style={{
-          backgroundColor: "var(--color-merch-bg, #ffffff)",
-          borderColor: "var(--color-merch-border, #e5e5e5)",
+          backgroundColor: "var(--color-merch-bg)",
+          borderColor: "var(--color-merch-border)",
         }}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           {/* Wordmark */}
           <span
             className="text-lg font-bold uppercase tracking-widest"
-            style={{ color: "var(--color-merch-red, #d13639)" }}
+            style={{ color: "var(--color-merch-red)" }}
           >
             {storeName}
           </span>
@@ -82,7 +82,7 @@ export function MerchStore({
                   key={link.id}
                   href={link.href}
                   className="text-sm uppercase tracking-wider transition-opacity duration-150 hover:opacity-70"
-                  style={{ color: "var(--color-merch-ink, #1a1a1a)" }}
+                  style={{ color: "var(--color-merch-ink)" }}
                 >
                   {link.label}
                 </a>
@@ -95,7 +95,7 @@ export function MerchStore({
             type="button"
             aria-label="Cart"
             className="flex h-8 w-8 items-center justify-center rounded-full transition-opacity duration-150 hover:opacity-70"
-            style={{ color: "var(--color-merch-ink, #1a1a1a)" }}
+            style={{ color: "var(--color-merch-ink)" }}
           >
             <svg
               aria-hidden="true"
@@ -129,16 +129,16 @@ export function MerchStore({
       <footer
         className="border-t py-10"
         style={{
-          backgroundColor: "var(--color-merch-surface, #f5f5f5)",
-          borderColor: "var(--color-merch-border, #e5e5e5)",
-          color: "var(--color-merch-muted, #737373)",
+          backgroundColor: "var(--color-merch-surface)",
+          borderColor: "var(--color-merch-border)",
+          color: "var(--color-merch-muted)",
         }}
       >
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <span
               className="text-sm font-bold uppercase tracking-widest"
-              style={{ color: "var(--color-merch-red, #d13639)" }}
+              style={{ color: "var(--color-merch-red)" }}
             >
               {storeName}
             </span>

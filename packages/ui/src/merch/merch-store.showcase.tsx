@@ -22,17 +22,17 @@ export const merchStoreShowcase: ShowcaseEntry = {
         <MerchStore navLinks={DEMO_NAV}>
           <div
             className="mx-auto flex max-w-7xl flex-col items-center justify-center px-6 py-32 text-center"
-            style={{ color: "var(--color-merch-muted, #737373)" }}
+            style={{ color: "var(--color-merch-muted)" }}
           >
             <p
               className="text-xs uppercase tracking-[0.3em]"
-              style={{ color: "var(--color-merch-red, #d13639)" }}
+              style={{ color: "var(--color-merch-red)" }}
             >
               Coming soon
             </p>
             <h2
               className="mt-4 text-3xl font-bold uppercase tracking-widest"
-              style={{ color: "var(--color-merch-ink, #1a1a1a)" }}
+              style={{ color: "var(--color-merch-ink)" }}
             >
               Riot Merch
             </h2>
@@ -49,7 +49,7 @@ export const merchStoreShowcase: ShowcaseEntry = {
       render: () => (
         <MerchStore>
           <div className="px-6 py-24 text-center">
-            <p style={{ color: "var(--color-merch-muted, #737373)" }}>Main content slot</p>
+            <p style={{ color: "var(--color-merch-muted)" }}>Main content slot</p>
           </div>
         </MerchStore>
       ),

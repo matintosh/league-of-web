@@ -77,7 +77,7 @@ export { HomeNewsScreen } from "./chrome/home-news-screen";
 export type { HomeNewsScreenProps, NewsArticle } from "./chrome/home-news-screen";
 export { JourneyTab, LevelUpRewardsDetail } from "./chrome/journey-tab";
 export { LandingHub } from "./chrome/landing-hub";
-export type { LandingHubProps, LandingHubCard } from "./chrome/landing-hub";
+export type { LandingHubProps, LandingHubCard, LandingHubUtilityLink } from "./chrome/landing-hub";
 export type {
   JourneyTabProps,
   LevelUpRewardsDetailProps,

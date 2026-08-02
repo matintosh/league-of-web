@@ -23,19 +23,19 @@ export default function MerchPage() {
       <section className="mx-auto flex max-w-7xl flex-col items-center justify-center px-6 py-32 text-center">
         <p
           className="text-xs uppercase tracking-[0.3em]"
-          style={{ color: "var(--color-merch-red, #d13639)" }}
+          style={{ color: "var(--color-merch-red)" }}
         >
           Coming soon
         </p>
         <h2
           className="mt-4 text-3xl font-bold uppercase tracking-widest"
-          style={{ color: "var(--color-merch-ink, #1a1a1a)" }}
+          style={{ color: "var(--color-merch-ink)" }}
         >
           Riot Merch
         </h2>
         <p
           className="mt-4 max-w-md text-base"
-          style={{ color: "var(--color-merch-muted, #737373)" }}
+          style={{ color: "var(--color-merch-muted)" }}
         >
           The merch store is coming together. Official Riot Games merchandise
           — apparel, lifestyle, and collectibles — will be available here soon.
@@ -44,8 +44,8 @@ export default function MerchPage() {
           href="/"
           className="mt-10 inline-flex items-center gap-2 border px-6 py-3 text-sm uppercase tracking-wider transition-opacity duration-150 hover:opacity-70"
           style={{
-            borderColor: "var(--color-merch-border, #e5e5e5)",
-            color: "var(--color-merch-ink, #1a1a1a)",
+            borderColor: "var(--color-merch-border)",
+            color: "var(--color-merch-ink)",
           }}
         >
           ← Back to hub
