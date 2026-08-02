@@ -52,7 +52,7 @@ export type {
 export { FilterTabs } from "./chrome/filter-tabs";
 export type { FilterTabsProps } from "./chrome/filter-tabs";
 export { FindingMatchPanel } from "./chrome/finding-match-panel";
-export type { FindingMatchPanelProps } from "./chrome/finding-match-panel";
+export type { FindingMatchPanelProps, ProgressBarVideoSrcs } from "./chrome/finding-match-panel";
 export { FriendGroupHeader } from "./chrome/friend-group-header";
 export type { FriendGroupHeaderProps } from "./chrome/friend-group-header";
 export { FriendRequestsRow } from "./chrome/friend-requests-row";

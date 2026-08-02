@@ -29,7 +29,7 @@ import {
   ObjectivesModal,
   UpdatesFlyout,
 } from "@low/ui";
-import type { NavItem, NavProduct, SettingsSection, FriendGroup, DockButton, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard, UpdateNotification } from "@low/ui";
+import type { NavItem, NavProduct, SettingsSection, FriendGroup, DockButton, OrbOfEnlightenmentPanelProps, TftRankBannerProps, WeeklyMissionsPanelProps, TftBetaPassTrackProps, MissionRow, RewardItem, ClashTournament, ClashTeam, ClashPlayer, ClashScoutingTab, StoreTab, PlayButtonVideoSources, PlayButtonMedallionVideoSources, YourShopIconVideoSources, YourShopCard, UpdateNotification, ProgressBarVideoSrcs } from "@low/ui";
 import {
   demoSummoner,
   demoWallet,
@@ -59,6 +59,7 @@ import {
   friendFinderImageUrl,
   socialMaskUrl,
   uikitSoundUrl,
+  staticVideoUrl,
 } from "@low/fixtures";
 import type { ClashScoutingPlayer } from "@low/fixtures";
 import type { HomeContentRailItem, LeagueHomeFeatured, LeagueHomeSkin } from "@low/ui";
@@ -369,6 +370,18 @@ const PARTY_QUEUE_LABEL = "Normal Draft";
 
 /** Fixture estimated wait label fed to FindingMatchPanel when in queue. */
 const ESTIMATED_LABEL = "Estimated: 3:00";
+
+/**
+ * Official progress-bar webm layers for the FindingMatchPanel (issue #559).
+ * Long bar chosen to match docs/reference/client-finding-match-widget.png — the
+ * reference widget spans the full rail width, so the long-progress-bar set is the
+ * correct length. All three confirmed HTTP 200 (2026-08).
+ */
+const FINDING_MATCH_PROGRESS_BAR: ProgressBarVideoSrcs = {
+  borderSrc: staticVideoUrl("long-progress-bar-border-loop.webm"),
+  mainSrc:   staticVideoUrl("long-progress-bar-main-loop.webm"),
+  tipSrc:    staticVideoUrl("long-progress-bar-tip-loop.webm"),
+};
 
 /**
  * Docked rail width in px.
@@ -1251,6 +1264,7 @@ export function ClientShell() {
                       estimatedLabel={ESTIMATED_LABEL}
                       crestSrc={gameModeMapUrl("sr")}
                       ambientVideoSrc={partiesBgLoopUrl("queue-delay")}
+                      progressBarVideoSrcs={FINDING_MATCH_PROGRESS_BAR}
                       onCancel={() => lobbyCancel.current?.()}
                     />
                   ) : (

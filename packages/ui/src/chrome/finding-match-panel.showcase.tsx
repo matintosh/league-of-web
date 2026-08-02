@@ -6,6 +6,7 @@ import {
   FindingMatchNoEstimateDemo,
   FindingMatchNoCrestDemo,
   FindingMatchInRailDemo,
+  FindingMatchProgressBarDemo,
   FindingMatchCancelDemo,
 } from "./finding-match-panel.demo";
 
@@ -49,6 +50,12 @@ export const findingMatchPanelShowcase: ShowcaseEntry = {
       notes:
         "224px wide with gold-5 rail border — simulates social rail context from client-queue-in-lobby.png",
       render: () => <FindingMatchInRailDemo />,
+    },
+    {
+      name: "With progress-bar webm loops (issue #559)",
+      notes:
+        "progressBarVideoSrcs = long-progress-bar-{border,main,tip}-loop.webm: official straight-alpha overlay loops composited over the CSS fallback bar strip. Long bar chosen to match rail-width reference (client-finding-match-widget.png). Hidden under prefers-reduced-motion; CSS bar stays visible at all times.",
+      render: () => <FindingMatchProgressBarDemo />,
     },
     {
       name: "Interactive — cancel fires callback",

@@ -322,11 +322,14 @@ const DEMO_KEYART_SRC = championSplashUrl("Jinx");
  * WAD ready-check ring videos, streamed from the CommunityDragon static-assets
  * mirror via staticVideoUrl (see docs/reference/VIDEO-ASSETS.md — the whole corpus
  * maps 1:1 into rcp-fe-lol-static-assets/…/videos/). The countdown ring is the
- * visual timer; accepted intro→idle plays if the modal stays mounted.
+ * visual timer; accepted intro→idle plays if the modal stays mounted long enough;
+ * declined plays once when DECLINE fires and the modal stays up.
+ * All four confirmed HTTP 200 (2026-08).
  */
 const MATCH_FOUND_COUNTDOWN_SRC = staticVideoUrl("timer-countdown.webm");
 const MATCH_FOUND_ACCEPTED_INTRO_SRC = staticVideoUrl("timer-accepted-intro.webm");
 const MATCH_FOUND_ACCEPTED_IDLE_SRC = staticVideoUrl("timer-accepted-idle.webm");
+const MATCH_FOUND_DECLINED_SRC = staticVideoUrl("timer-declined.webm");
 
 /**
  * Real-client FIND MATCH state videos (issue #310), streamed from the
@@ -525,6 +528,9 @@ export function PartyLobbyScreen({
   const [queuePhase, setQueuePhase] = useState<QueuePhase>("idle");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [secondsRemaining, setSecondsRemaining] = useState(MATCH_ACCEPT_SECONDS);
+  // Tracks whether the player clicked DECLINE — set immediately so the declined
+  // ring video fires before the modal unmounts. Cleared on every new queue start.
+  const [matchDeclined, setMatchDeclined] = useState(false);
 
   // Stable refs for all timers — allows clearAllTimers() to work reliably
   // regardless of closure age.
@@ -589,6 +595,7 @@ export function PartyLobbyScreen({
   const startQueue = useCallback(() => {
     clearAllTimers();
     setElapsedSeconds(0);
+    setMatchDeclined(false);
     setQueuePhase("queue");
 
     // Tick the elapsed counter every second.
@@ -638,9 +645,12 @@ export function PartyLobbyScreen({
     onAccept();
   }, [clearAllTimers, onAccept]);
 
-  /** Decline or auto-decline — clear timers, return to idle lobby in place. */
+  /** Decline or auto-decline — clear timers, return to idle lobby in place.
+   *  Sets matchDeclined so the declined ring video fires while the modal
+   *  is still in the "found" phase render (the phase update is async). */
   const handleDeclineMatch = useCallback(() => {
     clearAllTimers();
+    setMatchDeclined(true);
     setSecondsRemaining(MATCH_ACCEPT_SECONDS);
     setQueuePhase("idle");
     // onQueuePhaseChange("idle") fires via the effect above.
@@ -1016,6 +1026,8 @@ export function PartyLobbyScreen({
         countdownVideoSrc={MATCH_FOUND_COUNTDOWN_SRC}
         acceptedIntroVideoSrc={MATCH_FOUND_ACCEPTED_INTRO_SRC}
         acceptedIdleVideoSrc={MATCH_FOUND_ACCEPTED_IDLE_SRC}
+        declinedVideoSrc={MATCH_FOUND_DECLINED_SRC}
+        declined={matchDeclined}
       />
     </div>
   );
