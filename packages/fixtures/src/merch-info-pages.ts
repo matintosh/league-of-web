@@ -18,11 +18,39 @@ export interface MerchInfoBlock {
 }
 
 export interface MerchInfoPageContent {
-  /** Page <h1> title, e.g. "Frequently Asked Questions". */
+  /** Section h2 title rendered in the content area, e.g. "Frequently Asked Questions". */
   title: string;
   /** Ordered list of content blocks rendered top-to-bottom. */
   blocks: MerchInfoBlock[];
 }
+
+/**
+ * A single tab in the MerchSupportTabStrip.
+ * Measured from merch.riotgames.com support portal (9 sections).
+ */
+export interface MerchSupportTab {
+  /** URL-safe slug matching /merch/pages/[slug]. */
+  slug: string;
+  /** Display label for the pill button. */
+  label: string;
+}
+
+/**
+ * Ordered list of the 9 support sections matching the real tab strip on
+ * merch.riotgames.com/en-us/faqs/ and sibling pages.
+ * Fixture values only — supplied to components by the page route.
+ */
+export const MERCH_SUPPORT_TABS: MerchSupportTab[] = [
+  { slug: "accessibility",       label: "Accessibility" },
+  { slug: "faqs",                label: "FAQs" },
+  { slug: "shipping",            label: "Shipping Methods" },
+  { slug: "returns",             label: "Return Policy" },
+  { slug: "riot-mart",           label: "Riot Mart" },
+  { slug: "verify-your-product", label: "Verify Your Product" },
+  { slug: "collectability-guide",label: "Collectability Guide" },
+  { slug: "gift-card-balance",   label: "Gift Card Balance" },
+  { slug: "order-status",        label: "Order Status" },
+];
 
 // ---------------------------------------------------------------------------
 // Content map keyed by slug
@@ -477,6 +505,123 @@ export const MERCH_INFO_PAGES: Record<string, MerchInfoPageContent> = {
         type: "paragraph",
         content:
           "For privacy-related inquiries, please contact our Privacy Team at privacy@riotgames.com or write to: Riot Games, Inc., 12333 W Olympic Blvd, Los Angeles, CA 90064.",
+      },
+    ],
+  },
+
+  "riot-mart": {
+    title: "Riot Mart / My Shop",
+    blocks: [
+      { type: "heading2", content: "What Is Riot Mart?" },
+      {
+        type: "paragraph",
+        content:
+          "Riot Mart (also known as My Shop) is a personalised in-client storefront that surfaces curated offers and discounts based on your play history. Offers are unique to your account and are available for a limited time.",
+      },
+      { type: "heading2", content: "How Do I Access My Shop?" },
+      {
+        type: "paragraph",
+        content:
+          "My Shop can be found inside the League of Legends client under the Store tab. If you are eligible, a \"My Shop\" button will appear during the promotion window.",
+      },
+      { type: "heading2", content: "Why Don't I Have a My Shop?" },
+      {
+        type: "ul",
+        content: [
+          "My Shop is not available in all regions.",
+          "You may not meet the activity threshold required for personalised offers.",
+          "The current My Shop promotion window may have ended.",
+        ],
+      },
+    ],
+  },
+
+  "verify-your-product": {
+    title: "Verify Your Product",
+    blocks: [
+      { type: "heading2", content: "Product Authenticity" },
+      {
+        type: "paragraph",
+        content:
+          "Every collectible sold through the official Riot Games Merch Store includes an authenticity mechanism — either a holographic seal, a unique serial number, or a certificate of authenticity included in the packaging.",
+      },
+      { type: "heading2", content: "How to Verify" },
+      {
+        type: "ol",
+        content: [
+          "Locate the serial number printed on the certificate of authenticity or on the holographic seal of your item.",
+          "Visit the Product Validation tool at merch.riotgames.com/verify.",
+          "Enter the serial number and submit.",
+          "The tool will confirm authenticity and display the original purchase details.",
+        ],
+      },
+      { type: "heading2", content: "Suspected Counterfeits" },
+      {
+        type: "paragraph",
+        content:
+          "If your verification fails or you suspect you have received a counterfeit product, please contact our support team immediately with your order number and photos of the item and its packaging.",
+      },
+    ],
+  },
+
+  "gift-card-balance": {
+    title: "Gift Card Balance",
+    blocks: [
+      { type: "heading2", content: "Checking Your Balance" },
+      {
+        type: "paragraph",
+        content:
+          "To check the remaining balance on a Riot Games Merch Store gift card, enter the card number and PIN in the fields below. Gift card balances are stored in USD and can be applied at checkout.",
+      },
+      { type: "heading2", content: "Redeeming a Gift Card" },
+      {
+        type: "ol",
+        content: [
+          "Add items to your cart and proceed to checkout.",
+          "On the payment screen, select \"Gift Card\" as your payment method.",
+          "Enter your gift card number and PIN.",
+          "The balance will be applied automatically. If the order total exceeds the card balance, you may pay the remainder with another method.",
+        ],
+      },
+      { type: "heading2", content: "Gift Card Terms" },
+      {
+        type: "ul",
+        content: [
+          "Gift cards do not expire.",
+          "They cannot be exchanged for cash.",
+          "Lost or stolen cards cannot be replaced.",
+          "Treat gift cards like cash — keep the PIN secure.",
+        ],
+      },
+    ],
+  },
+
+  "order-status": {
+    title: "Order Status / Code Lookup",
+    blocks: [
+      { type: "heading2", content: "Tracking Your Order" },
+      {
+        type: "paragraph",
+        content:
+          "Once your order has shipped, you will receive a tracking number by email. Use that number to check the real-time status of your delivery on our Order Status page or directly on the carrier's website.",
+      },
+      { type: "heading2", content: "Digital Code Lookup" },
+      {
+        type: "paragraph",
+        content:
+          "If you purchased a product that includes a digital code (e.g., in-game skin, RP card), you can retrieve your code at any time by visiting the Order Status page and selecting your order.",
+      },
+      { type: "heading2", content: "My Order Is Delayed" },
+      {
+        type: "paragraph",
+        content:
+          "During peak periods (major game launches, holidays) and due to external carrier disruptions, delivery may take longer than estimated. Please check your tracking number before contacting support.",
+      },
+      { type: "heading3", content: "Contact Support" },
+      {
+        type: "paragraph",
+        content:
+          "If your tracking shows no movement for more than 10 business days or your code has not arrived within 24 hours of purchase, please contact our support team with your order number.",
       },
     ],
   },

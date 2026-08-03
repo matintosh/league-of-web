@@ -297,3 +297,7 @@ export { MerchSizeGuideModal } from "./merch/merch-size-guide-modal";
 export type { MerchSizeGuideModalProps, MerchSizeGuideRow } from "./merch/merch-size-guide-modal";
 export { MerchStore } from "./merch/merch-store";
 export type { MerchStoreProps, MerchNavLink } from "./merch/merch-store";
+export { MerchSupportHero } from "./merch/merch-support-hero";
+export type { MerchSupportHeroProps } from "./merch/merch-support-hero";
+export { MerchSupportTabStrip } from "./merch/merch-support-tab-strip";
+export type { MerchSupportTabStripProps } from "./merch/merch-support-tab-strip";
