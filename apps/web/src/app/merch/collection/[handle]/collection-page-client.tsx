@@ -87,7 +87,7 @@ export function CollectionPageClient({
               price={product.price}
               originalPrice={product.originalPrice}
               badge={product.badge}
-              onClick={() => router.push(`/merch/${product.slug}`)}
+              onClick={() => router.push(`/merch/product/${product.slug}`)}
             />
           ))}
         </MerchProductGrid>
