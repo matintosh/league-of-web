@@ -7,7 +7,7 @@ Separation of concerns: **scouts discover, hands build, supervisor keeps it conv
 |---|---|---|---|---|
 | **Build-loop heartbeat** | `486fd600` | `:11` | hands | Pick up `status:ready` → worktree build → independent review → rebase-in-lane → squash-merge → deploy → verify. Fills to 3 lanes. AUDIT-ON-EMPTY when board is bare. |
 | **Merch-loop** | `08b55d78` | `:37` | scout | Refresh `docs/merch-coverage.md` site map every tick. Page-first discovery: file measured `merch,status:ready` issues for missing/next pages. Skips when a researcher runs or backlog ≥12. |
-| **Fidelity-engine** | (this session) | `:53` | supervisor | Keep the engine alive + ratchet toward PIXEL-PERFECT. Yields when busy; when idle, runs ONE rigorous side-by-side pixel-diff vs the real site on the next `docs/merch-fidelity.md` target and files delta issues. Convergence governor stops the spin once the site is truly pixel-perfect. |
+| **Fidelity-engine** | `6c3a2537` | `:53` | supervisor | Keep the engine alive + ratchet toward PIXEL-PERFECT. Yields when busy; when idle, runs ONE rigorous side-by-side pixel-diff vs the real site on the next `docs/merch-fidelity.md` target and files delta issues. Convergence governor stops the spin once the site is truly pixel-perfect. |
 
 ## How they interlock
 - **Fidelity-engine (scout²)** finds the next pixel-delta → files `status:ready` issues → **Build-loop (hands)** builds/ships them → **Fidelity-engine** re-diffs and marks ✅. **Merch-loop** covers *page coverage* (are all pages built), Fidelity-engine covers *page fidelity* (is each built page pixel-exact).
