@@ -128,11 +128,10 @@ export function MerchPageClient() {
           onSelectFranchise={(slug) => router.push(`/merch/collection/${slug}`)}
         />
 
-        {/* Product grid — real 2-col flush listing matching merch.riotgames.com */}
+        {/* Product grid — real 2-col flush listing matching merch.riotgames.com.
+            Homepage: no result count or REFINE header (real homepage has neither). */}
         <MerchProductGrid
           columns={2}
-          resultCount={PRODUCTS.length}
-          onRefineClick={() => {}}
         >
           {PRODUCTS.map((product) => (
             <MerchProductCard
