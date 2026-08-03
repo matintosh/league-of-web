@@ -3,26 +3,22 @@
 /**
  * SalePageClient — client shell for /merch/sale.
  * Filters MERCH_PRODUCTS to sale items (badge === "Sale" or originalPrice present)
- * and renders a collection listing matching the shop-all template:
- *   MerchCollectionHero → MerchFilterSortBar → MerchProductGrid → MerchFooter.
+ * and renders a listing matching the real /category/sales/ page:
+ *   breadcrumb "Home / Sales (N)" + Refine button → product grid on white.
+ * No dark hero band — the real sale page has none.
  */
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   MerchHeader,
-  MerchCollectionHero,
-  MerchFilterSortBar,
   MerchProductGrid,
   MerchProductCard,
   MerchFooter,
   MerchCartDrawer,
 } from "@low/ui";
-import type { MerchSortOption } from "@low/ui";
 import type { MerchProduct, MerchCartItem } from "@low/fixtures";
 import { useMerchNav } from "@/lib/merch-nav";
-
-const FILTER_OPTIONS = ["All", "New", "Sale", "Limited", "Out of Stock"] as const;
 
 export interface SalePageClientProps {
   /** Products that have a Sale badge or originalPrice — provided by the server page. */
@@ -35,13 +31,6 @@ export function SalePageClient({ products }: SalePageClientProps) {
   const handleNavSelect = useMerchNav();
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems] = useState<MerchCartItem[]>([]);
-  const [activeFilter, setActiveFilter] = useState<string>("All");
-  const [activeSort, setActiveSort] = useState<MerchSortOption>("featured");
-
-  const breadcrumbs = [
-    { label: "Home", href: "/merch" },
-    { label: "Sale" },
-  ];
 
   return (
     <div
@@ -61,45 +50,101 @@ export function SalePageClient({ products }: SalePageClientProps) {
       />
 
       <main className="flex-1">
-        <MerchCollectionHero
-          heading="Sale"
-          itemCount={products.length}
-          breadcrumbs={breadcrumbs}
-          theme="dark"
-        />
+        {/* Breadcrumb + Refine row — matches real /category/sales/ header.
+            No dark hero band; grid opens directly on white page background. */}
+        <div
+          className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3"
+          style={{ borderBottom: "1px solid var(--color-merch-border)" }}
+        >
+          {/* Breadcrumb: Home / Sales (N) ~14px */}
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-1 text-[14px]"
+            style={{ color: "var(--color-merch-muted)" }}
+          >
+            <button
+              type="button"
+              className="transition-colors duration-150 hover:underline"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                color: "var(--color-merch-muted)",
+                fontSize: "inherit",
+              }}
+              onClick={() => router.push("/merch")}
+            >
+              Home
+            </button>
+            <span aria-hidden>/</span>
+            <span style={{ color: "var(--color-merch-ink)" }}>
+              Sales ({products.length})
+            </span>
+          </nav>
+
+          {/* Refine button — red bg, white text, sliders icon */}
+          <button
+            type="button"
+            className="flex items-center gap-1.5 px-4 text-[11px] font-bold uppercase tracking-[0.08em] transition-colors duration-150"
+            style={{
+              height: 36,
+              backgroundColor: "var(--color-merch-red)",
+              color: "var(--color-merch-on-dark)",
+              border: "none",
+              cursor: "pointer",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                "var(--color-merch-red-dark)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                "var(--color-merch-red)";
+            }}
+          >
+            {/* Sliders icon (same as MerchProductGrid's RefineIcon) */}
+            <svg
+              aria-hidden
+              focusable="false"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              style={{ width: 14, height: 14, display: "block" }}
+            >
+              <line x1="2" y1="4" x2="14" y2="4" />
+              <line x1="2" y1="8" x2="14" y2="8" />
+              <line x1="2" y1="12" x2="14" y2="12" />
+              <circle cx="5" cy="4" r="1.5" fill="currentColor" stroke="none" />
+              <circle cx="10" cy="8" r="1.5" fill="currentColor" stroke="none" />
+              <circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none" />
+            </svg>
+            Refine
+          </button>
+        </div>
 
         {products.length > 0 ? (
-          <>
-            <MerchFilterSortBar
-              productCount={products.length}
-              filterOptions={[...FILTER_OPTIONS]}
-              activeFilter={activeFilter}
-              activeSort={activeSort}
-              onFilterChange={setActiveFilter}
-              onSortChange={setActiveSort}
-            />
-
-            <MerchProductGrid
-              columns={2}
-              resultCount={products.length}
-              onRefineClick={() => {}}
-            >
-              {products.map((product) => (
-                <MerchProductCard
-                  key={product.slug}
-                  slug={product.slug}
-                  title={product.title}
-                  imageUrl={product.imageUrl}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                  badge={product.badge}
-                  badges={product.badges}
-                  franchiseLabel={product.franchiseLabel}
-                  onClick={() => router.push(`/merch/product/${product.slug}`)}
-                />
-              ))}
-            </MerchProductGrid>
-          </>
+          <MerchProductGrid
+            columns={2}
+            resultCount={products.length}
+          >
+            {products.map((product) => (
+              <MerchProductCard
+                key={product.slug}
+                slug={product.slug}
+                title={product.title}
+                imageUrl={product.imageUrl}
+                price={product.price}
+                originalPrice={product.originalPrice}
+                badge={product.badge}
+                badges={product.badges}
+                franchiseLabel={product.franchiseLabel}
+                onClick={() => router.push(`/merch/product/${product.slug}`)}
+              />
+            ))}
+          </MerchProductGrid>
         ) : (
           /* Faithful empty state — real merch.riotgames.com/sale shows a
              simple centered message when no sale items are available. */

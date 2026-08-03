@@ -53,7 +53,11 @@
   --color-merch-badge-new:      #7ac043; /* New — green chip                              */
   --color-merch-badge-limited:  #e8c33c; /* Limited Edition — yellow chip                 */
   --color-merch-badge-preorder: #5a5a5a; /* Preorder — grey chip                          */
-  /* Sale badge reuses --color-merch-red */
+  --color-merch-badge-sale:     #8cd50b; /* Sale discount badge — sampled #8CD50B, black text */
+  /* Former "Sale" chip used --color-merch-red; replaced by green %-badge on image */
+
+  /* ── Price treatment ────────────────────────────────────────────────── */
+  --color-merch-price-struck:   #666666; /* struck-through original price (sale items)    */
 
   /* ── Overlays / scrims ──────────────────────────────────────────────── */
   --color-merch-overlay-soft: rgba(0, 0, 0, 0.28); /* nav arrow button bg overlay        */

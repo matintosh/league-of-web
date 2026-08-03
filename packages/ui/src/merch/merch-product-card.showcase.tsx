@@ -12,7 +12,7 @@ export const merchProductCardShowcase: ShowcaseEntry = {
   name: "Merch Product Card",
   area: "merch",
   description:
-    "Real 2-col listing card for the Riot merch store grid. Franchise label text overlay top-left (uppercase white on dark scrim), multi-badge chips stacked top-right, heart/wishlist icon bottom-right, 1px border frame (flush tessellation), image 1/1 aspect-ratio with hover scale. Badge colors: New=green (#7ac043), Limited/Limited Edition=yellow (#e8c33c), Preorder/Restock=grey (#5a5a5a), Sale=red, Out of Stock=muted. Measured from merch.riotgames.com (~640px wide, 2-col flush grid).",
+    "Real 2-col listing card for the Riot merch store grid. Franchise label text overlay top-left (uppercase white on dark scrim), multi-badge chips stacked top-right, heart/wishlist icon bottom-right, 1px border frame (flush tessellation), image 1/1 aspect-ratio with hover scale. Sale items: green -NN% badge top-left of image (--color-merch-badge-sale #8CD50B, black text, 14px), current price in dark ink (not red), struck original in grey (#666) at 16px. Badge colors: New=green (#7ac043), Limited/Limited Edition=yellow (#e8c33c), Preorder/Restock=grey (#5a5a5a), Out of Stock=muted. Measured from merch.riotgames.com /category/sales/ (~640px wide, 2-col flush grid).",
   variants: [
     {
       name: "Default — in-stock, franchise label, no badge",
@@ -31,8 +31,9 @@ export const merchProductCardShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "Sale badge — with sale + original price",
-      notes: "Badge 'Sale' in red; original price struck through, sale price in red.",
+      name: "Sale — green %-badge + dark price + grey struck original",
+      notes:
+        "Sale treatment per real /category/sales/: green -NN% badge top-left of image (below franchise label), current price in dark ink (not red), struck original in grey (#666) at 16px. The 'Sale' label is not rendered as a chip — the %-badge signals the discount.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
@@ -44,6 +45,24 @@ export const merchProductCardShowcase: ShowcaseEntry = {
             originalPrice="$59.99"
             badges={["Sale"]}
             franchiseLabel="Arcane"
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Sale — originalPrice only (no Sale badge), %-badge computed",
+      notes:
+        "When originalPrice differs from price but no explicit 'Sale' badge is passed, the card still shows the green %-badge and correct price treatment.",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductCard
+            slug="lol-classic-hoodie-sale"
+            title="League of Legends Classic Logo Pullover Hoodie"
+            imageUrl={PLACEHOLDER_DARK}
+            price="$19.99"
+            originalPrice="$39.99"
+            franchiseLabel="League of Legends"
           />
         </div>
       ),
@@ -185,8 +204,9 @@ export const merchProductCardShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "Real 2-col flush grid of 4 cards",
-      notes: "2 columns, 0 gap, flush border — matches real shop-all layout at 1280px.",
+      name: "Real 2-col flush grid of 4 cards — mixed sale and non-sale",
+      notes:
+        "2 columns, 0 gap, flush border — matches real shop-all layout at 1280px. Sale card (p2) shows green %-badge + dark price + grey struck; non-sale cards unchanged.",
       backgrounds: ["light"],
       render: () => (
         <div
