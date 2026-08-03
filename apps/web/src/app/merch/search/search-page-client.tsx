@@ -185,7 +185,9 @@ export function SearchPageClient({
         {/* Product grid — empty state handled via emptyMessage prop         */}
         {/* ---------------------------------------------------------------- */}
         <MerchProductGrid
-          columns={4}
+          columns={2}
+          resultCount={results.length}
+          onRefineClick={() => {}}
           emptyMessage={
             query.trim()
               ? `No results for "${query}". Try a different search.`
@@ -201,6 +203,8 @@ export function SearchPageClient({
               price={product.price}
               originalPrice={product.originalPrice}
               badge={product.badge}
+              badges={product.badges}
+              franchiseLabel={product.franchiseLabel}
               onClick={() => router.push(`/merch/product/${product.slug}`)}
             />
           ))}

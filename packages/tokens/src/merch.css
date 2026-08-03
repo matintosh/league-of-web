@@ -79,6 +79,13 @@
   --color-merch-cat-valorant: #f28ea0; /* VALORANT — pink/salmon, white text          */
   --color-merch-cat-2xko:     #c6e04a; /* 2XKO — lime green, dark text                */
 
+  /* ── Card overlays (2-col listing card design) ─────────────────────── */
+  /* Franchise label text overlay (top-left of card image) */
+  --color-merch-franchise-label: #ffffff;      /* white text on semi-transparent dark bg */
+  --color-merch-franchise-bg:    rgba(0, 0, 0, 0.48); /* scrim behind franchise label    */
+  /* Heart / wishlist icon — unfilled outline on card */
+  --color-merch-heart:           #1a1a1a;      /* ink-colored heart outline on light cards */
+
   /* ── Overlay ────────────────────────────────────────────────────────── */
   /* Full-viewport backdrop for modal dialogs (size guide, etc.) */
   --color-merch-overlay: rgba(0, 0, 0, 0.45);

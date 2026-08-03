@@ -30,6 +30,8 @@ const PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Jinx", 0),
     price: "$24.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "Riftbound",
   },
   {
     slug: "arcane-vi-hoodie",
@@ -38,12 +40,15 @@ const PRODUCTS: MerchProduct[] = [
     price: "$39.99",
     originalPrice: "$59.99",
     badge: "Sale",
+    badges: ["Sale"],
+    franchiseLabel: "Arcane",
   },
   {
     slug: "project-lux-art-print",
     title: "PROJECT: Lux Collector's Art Print (18×24)",
     imageUrl: championSplashUrl("Lux", 0),
     price: "$34.99",
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "poro-plush-limited",
@@ -51,6 +56,8 @@ const PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Jinx", 2),
     price: "$29.99",
     badge: "Out of Stock",
+    badges: ["Out of Stock"],
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "arcane-jinx-enamel-pin",
@@ -58,12 +65,15 @@ const PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Jinx", 1),
     price: "$14.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "Arcane",
   },
   {
     slug: "riot-wordmark-tee",
     title: "Riot Games Wordmark Essential T-Shirt",
     imageUrl: championSplashUrl("Ahri", 0),
     price: "$24.99",
+    franchiseLabel: "Riot Games",
   },
   {
     slug: "valorant-agent-hoodie",
@@ -71,12 +81,15 @@ const PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Lux", 1),
     price: "$54.99",
     badge: "Limited",
+    badges: ["Limited Edition"],
+    franchiseLabel: "Valorant",
   },
   {
     slug: "ruination-teemo-plush",
     title: 'Ruined Teemo 12" Collector Plush',
     imageUrl: championSplashUrl("Teemo", 0),
     price: "$19.99",
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "ahri-spirit-blossom-preorder",
@@ -84,6 +97,8 @@ const PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Ahri", 1),
     price: "$89.99",
     badge: "Preorder",
+    badges: ["Preorder", "Limited Edition"],
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "arcane-caitlyn-restock",
@@ -91,12 +106,15 @@ const PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Caitlyn", 0),
     price: "$49.99",
     badge: "Restock",
+    badges: ["Restock"],
+    franchiseLabel: "Arcane",
   },
   {
     slug: "league-classic-cap",
     title: "League of Legends Classic Logo Cap",
     imageUrl: championSplashUrl("Lux", 2),
     price: "$27.99",
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "riftbound-deluxe-set",
@@ -104,6 +122,8 @@ const PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Jinx", 3),
     price: "$74.99",
     badge: "Limited",
+    badges: ["Limited Edition"],
+    franchiseLabel: "Riftbound",
   },
 ];
 
@@ -205,14 +225,11 @@ export function MerchPageClient() {
           onSelectFranchise={(slug) => router.push(`/merch/collection/${slug}`)}
         />
 
-        {/* Product grid — brand-rail collection layout matching merch.riotgames.com */}
+        {/* Product grid — real 2-col flush listing matching merch.riotgames.com */}
         <MerchProductGrid
-          brandRail="League of Legends"
-          filterBadges={[
-            { label: "New" },
-            { label: "Limited Edition" },
-            { label: "Preorder" },
-          ]}
+          columns={2}
+          resultCount={PRODUCTS.length}
+          onRefineClick={() => {}}
         >
           {PRODUCTS.map((product) => (
             <MerchProductCard
@@ -223,6 +240,8 @@ export function MerchPageClient() {
               price={product.price}
               originalPrice={product.originalPrice}
               badge={product.badge}
+              badges={product.badges}
+              franchiseLabel={product.franchiseLabel}
               onClick={() => router.push(`/merch/product/${product.slug}`)}
             />
           ))}

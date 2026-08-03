@@ -265,8 +265,23 @@ export interface MerchProduct {
   price: string;
   /** Original (pre-sale) price string, e.g. "$29.99"; omit if not on sale. */
   originalPrice?: string;
-  /** Optional badge label for the tile. */
+  /**
+   * Optional single badge label for the tile (back-compat).
+   * Prefer `badges` when supplying multiple — card uses `badges` when present.
+   */
   badge?: "New" | "Sale" | "Out of Stock" | "Limited" | "Preorder" | "Restock";
+  /**
+   * Multi-badge array for the 2-col real card design (e.g. ["New", "Limited Edition"]).
+   * When provided, supersedes the single `badge` prop on the card.
+   * Values: "New" | "Sale" | "Out of Stock" | "Limited" | "Preorder" | "Restock".
+   */
+  badges?: string[];
+  /**
+   * Franchise brand label rendered as a text overlay in the top-left of the card image.
+   * Used in the 2-col listing grid as a stand-in for the real franchise logo lockup.
+   * E.g. "LEAGUE OF LEGENDS", "ARCANE", "VALORANT".
+   */
+  franchiseLabel?: string;
 }
 
 /**

@@ -23,15 +23,28 @@ const IMGS = {
 function EightCards() {
   return (
     <>
-      <MerchProductCard slug="p1" title="Riftbound Origins Deck — Jinx" imageUrl={IMGS.jinx0} price="$24.99" badge="New" />
-      <MerchProductCard slug="p2" title="Arcane Vi Graphic Hoodie" imageUrl={IMGS.vi} price="$39.99" originalPrice="$59.99" badge="Sale" />
-      <MerchProductCard slug="p3" title="PROJECT: Lux Collector's Art Print (18×24)" imageUrl={IMGS.lux0} price="$34.99" />
-      <MerchProductCard slug="p4" title="Poro Limited Edition Plush — Season 14" imageUrl={IMGS.jinx2} price="$29.99" badge="Out of Stock" />
-      <MerchProductCard slug="p5" title="Arcane Jinx & Vi Enamel Pin Set" imageUrl={IMGS.jinx1} price="$14.99" badge="New" />
-      <MerchProductCard slug="p6" title="Riot Games Wordmark Essential T-Shirt" imageUrl={IMGS.ahri} price="$24.99" />
-      <MerchProductCard slug="p7" title="VALORANT Agent Collection Pullover Hoodie" imageUrl={IMGS.lux1} price="$54.99" badge="Limited" />
-      <MerchProductCard slug="p8" title={'Ruined Teemo 12" Collector Plush'} imageUrl={IMGS.teemo} price="$19.99" />
+      <MerchProductCard slug="p1" title="Riftbound Origins Deck — Jinx" imageUrl={IMGS.jinx0} price="$24.99" badges={["New"]} franchiseLabel="Riftbound" />
+      <MerchProductCard slug="p2" title="Arcane Vi Graphic Hoodie" imageUrl={IMGS.vi} price="$39.99" originalPrice="$59.99" badges={["Sale"]} franchiseLabel="Arcane" />
+      <MerchProductCard slug="p3" title="PROJECT: Lux Collector's Art Print (18×24)" imageUrl={IMGS.lux0} price="$34.99" franchiseLabel="League of Legends" />
+      <MerchProductCard slug="p4" title="Poro Limited Edition Plush — Season 14" imageUrl={IMGS.jinx2} price="$29.99" badges={["Out of Stock"]} franchiseLabel="League of Legends" />
+      <MerchProductCard slug="p5" title="Arcane Jinx & Vi Enamel Pin Set" imageUrl={IMGS.jinx1} price="$14.99" badges={["New"]} franchiseLabel="Arcane" />
+      <MerchProductCard slug="p6" title="Riot Games Wordmark Essential T-Shirt" imageUrl={IMGS.ahri} price="$24.99" franchiseLabel="Riot Games" />
+      <MerchProductCard slug="p7" title="VALORANT Agent Collection Pullover Hoodie" imageUrl={IMGS.lux1} price="$54.99" badges={["Limited Edition"]} franchiseLabel="Valorant" />
+      <MerchProductCard slug="p8" title={'Ruined Teemo 12" Collector Plush'} imageUrl={IMGS.teemo} price="$19.99" franchiseLabel="League of Legends" />
     </>
+  );
+}
+
+/** 2-col flush listing with REFINE button and result count — real shop-all model. */
+export function MerchProductGrid2ColDemo() {
+  return (
+    <MerchProductGrid
+      columns={2}
+      resultCount={8}
+      onRefineClick={() => {}}
+    >
+      <EightCards />
+    </MerchProductGrid>
   );
 }
 
@@ -60,6 +73,30 @@ export function MerchProductGridEmptyDemo() {
       heading="Sale Items"
       onShopAll={() => {}}
       emptyMessage="No products are currently on sale. Check back soon!"
+    />
+  );
+}
+
+/** 2-col listing with optional heading prop — collection page model. */
+export function MerchProductGrid2ColWithHeadingDemo() {
+  return (
+    <MerchProductGrid columns={2} heading="Apparel" resultCount={4} onRefineClick={() => {}}>
+      <MerchProductCard slug="c1" title="Arcane Vi Graphic Hoodie" imageUrl={championSplashUrl("Vi", 0)} price="$39.99" originalPrice="$59.99" badges={["Sale"]} franchiseLabel="Arcane" />
+      <MerchProductCard slug="c2" title="Riot Games Wordmark Tee" imageUrl={championSplashUrl("Ahri", 0)} price="$24.99" badges={["New"]} franchiseLabel="Riot Games" />
+      <MerchProductCard slug="c3" title="VALORANT Agent Pullover Hoodie" imageUrl={championSplashUrl("Lux", 1)} price="$54.99" badges={["Limited Edition"]} franchiseLabel="Valorant" />
+      <MerchProductCard slug="c4" title="PROJECT: Lux Bomber Jacket" imageUrl={championSplashUrl("Lux", 0)} price="$89.99" badges={["New"]} franchiseLabel="League of Legends" />
+    </MerchProductGrid>
+  );
+}
+
+/** Empty state for 2-col listing mode. */
+export function MerchProductGrid2ColEmptyDemo() {
+  return (
+    <MerchProductGrid
+      columns={2}
+      resultCount={0}
+      onRefineClick={() => {}}
+      emptyMessage='No results for "xyz". Try a different search.'
     />
   );
 }
