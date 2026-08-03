@@ -7,47 +7,51 @@ export const merchFooterShowcase: ShowcaseEntry = {
   name: "Merch Footer",
   area: "merch",
   description:
-    "Global footer for the Riot merch store: link columns (Support, Shipping, About), optional newsletter signup stub, optional social icons, and a bottom bar with copyright + legal links. Measured from merch.riotgames.com: --color-merch-surface background, 48px vertical padding, max-w-screen-xl centered.",
+    "Global footer for the Riot merch store: pure-black background, Riot wordmark, Shop + Support link columns, a Contact Us form (Name / Email / Order # / Country / Tracking # / Subject / How can we help + SEND), and a legal row at bottom. Measured from merch.riotgames.com: --color-merch-ink-dark background, 64px vertical padding, max-w-screen-xl centered.",
   variants: [
     {
-      name: "Default — real-store link groups, no newsletter",
-      notes: "All three link columns with defaults; no newsletter section.",
-      backgrounds: ["light"],
+      name: "Default — real-store columns, static form",
+      notes: "All columns with defaults; form is presentational (no onContactSubmit wired).",
+      backgrounds: ["dark"],
       render: () => (
         <MerchFooter copyrightText="Copyright Riot Games 2025" />
       ),
     },
     {
-      name: "With newsletter section",
-      notes: "onSubscribe prop causes newsletter email input + Subscribe button to appear above columns.",
+      name: "Interactive — controlled form state",
+      notes: "Form wired to useState in MerchFooterDemo (*.demo.tsx client component).",
       render: () => <MerchFooterDemo />,
     },
     {
-      name: "With social links",
-      notes: "Social icon row appears right-aligned in columns section.",
-      backgrounds: ["light"],
+      name: "Custom legal links only",
+      notes: "Minimal footer: real link columns but shortened legal row.",
+      backgrounds: ["dark"],
       render: () => (
         <MerchFooter
-          socialLinks={[
-            { platform: "Instagram", href: "#" },
-            { platform: "Twitter",   href: "#" },
-            { platform: "YouTube",   href: "#" },
-            { platform: "Facebook",  href: "#" },
+          copyrightText="© 2025 Riot Games, Inc."
+          legalLinks={[
+            { label: "Privacy Policy",     href: "/merch/pages/privacy" },
+            { label: "Terms & Conditions", href: "/merch/pages/terms" },
           ]}
         />
       ),
     },
     {
-      name: "Minimal — no social, no newsletter, custom copyright",
-      notes: "Minimal footer: only link columns + bottom bar.",
-      backgrounds: ["light"],
+      name: "Custom Shop + Support links",
+      notes: "Override default link groups with shorter lists.",
+      backgrounds: ["dark"],
       render: () => (
         <MerchFooter
-          copyrightText="© 2025 Riot Games, Inc."
-          legalLinks={[
-            { label: "Privacy Policy", href: "/privacy" },
-            { label: "Terms of Service", href: "/terms" },
+          shopLinks={[
+            { label: "Apparel",      href: "/merch/shop-all?category=apparel" },
+            { label: "Collectibles", href: "/merch/shop-all?category=collectibles" },
           ]}
+          supportLinks={[
+            { label: "FAQs",                href: "/merch/pages/faqs" },
+            { label: "Shipping Information",href: "/merch/pages/shipping" },
+            { label: "Return Policy",       href: "/merch/pages/returns" },
+          ]}
+          copyrightText="Copyright Riot Games 2025"
         />
       ),
     },
