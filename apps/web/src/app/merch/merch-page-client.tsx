@@ -15,10 +15,11 @@ import {
   MerchHeroBanner,
   MerchProductGrid,
   MerchCategoryStrip,
+  MerchCartDrawer,
 } from "@low/ui";
 import type { MerchContactFormValues, MerchGiftCard, MerchFranchiseChip } from "@low/ui";
 import { championSplashUrl } from "@low/fixtures";
-import type { MerchProduct } from "@low/fixtures";
+import type { MerchProduct, MerchCartItem } from "@low/fixtures";
 import type { MerchHeroSlide } from "@low/ui";
 import { useRouter } from "next/navigation";
 
@@ -164,6 +165,8 @@ const ANNOUNCEMENT =
 export function MerchPageClient() {
   const router = useRouter();
   const [announcement, setAnnouncement] = useState<string | undefined>(ANNOUNCEMENT);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cartItems] = useState<MerchCartItem[]>([]);
 
   function handleContactSubmit(values: MerchContactFormValues) {
     // Presentational stub — a real implementation would POST to a support API.
@@ -181,13 +184,14 @@ export function MerchPageClient() {
       {/* Header */}
       <MerchHeader
         activeCategory="shop-all"
-        cartCount={0}
+        cartCount={cartItems.length}
         announcement={announcement}
         onDismissAnnouncement={() => setAnnouncement(undefined)}
         onCategoryClick={(slug) => {
           if (slug === "shop-all") router.push("/merch/shop-all");
         }}
         onSearchClick={() => router.push("/merch/search")}
+        onCartClick={() => setCartOpen(true)}
       />
 
       {/* Main content */}
@@ -219,7 +223,7 @@ export function MerchPageClient() {
               price={product.price}
               originalPrice={product.originalPrice}
               badge={product.badge}
-              onClick={() => router.push(`/merch/shop-all`)}
+              onClick={() => router.push(`/merch/product/${product.slug}`)}
             />
           ))}
         </MerchProductGrid>
@@ -235,6 +239,15 @@ export function MerchPageClient() {
       <MerchFooter
         copyrightText="Copyright Riot Games 2025"
         onContactSubmit={handleContactSubmit}
+      />
+
+      <MerchCartDrawer
+        open={cartOpen}
+        items={cartItems}
+        subtotal="$0.00"
+        onClose={() => setCartOpen(false)}
+        onContinueShopping={() => setCartOpen(false)}
+        onCheckout={() => router.push("/merch/cart")}
       />
     </div>
   );

@@ -1,15 +1,15 @@
 /**
  * /merch/product/[handle] — canonical PDP route.
- * Wires MerchProductGallery (left column) + MerchPurchasePanel (right column)
- * with static fixture data. The merch layout.tsx already imports merch.css.
+ * Thin server component: resolves fixture data and delegates to ProductPageClient
+ * (which provides MerchHeader + MerchFooter + MerchCartDrawer shell).
  *
- * This is the new canonical path (1:1 with merch.riotgames.com/en-us/product/<handle>).
+ * This is the canonical path (1:1 with merch.riotgames.com/en-us/product/<handle>).
  * The old /merch/[handle] route issues a 308 permanentRedirect here.
  *
  * For interactive demos (variant switching, qty stepper) see the /showcase entries.
  */
 import { championSplashUrl } from "@low/fixtures";
-import { MerchProductGallery, MerchPurchasePanel } from "@low/ui";
+import { ProductPageClient } from "./product-page-client";
 
 /** Static fixture product for PDP demo. */
 const DEMO_PRODUCT = {
@@ -45,65 +45,15 @@ export default async function MerchProductPage({ params }: Props) {
   const { handle: _handle } = await params;
 
   return (
-    <main
-      style={{
-        maxWidth: 1280,
-        margin: "0 auto",
-        padding: "40px 32px",
-        fontFamily: "var(--font-merch)",
-        backgroundColor: "var(--color-merch-bg)",
-        minHeight: "100vh",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          gap: 48,
-          alignItems: "flex-start",
-        }}
-      >
-        {/* Left: gallery — ~560px */}
-        <div style={{ flex: "0 0 560px", maxWidth: 560 }}>
-          <MerchProductGallery
-            images={DEMO_PRODUCT.images}
-            alt={DEMO_PRODUCT.title}
-            selectedIndex={0}
-          />
-        </div>
-
-        {/* Right: purchase panel — flex-1 */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <MerchPurchasePanel
-            title={DEMO_PRODUCT.title}
-            price={DEMO_PRODUCT.price}
-            originalPrice={DEMO_PRODUCT.originalPrice}
-            badges={DEMO_PRODUCT.badges}
-            description={DEMO_PRODUCT.description}
-            breadcrumb={DEMO_PRODUCT.breadcrumb}
-            variants={DEMO_PRODUCT.variants}
-            variantLabel="Size"
-            selectedVariant="M"
-            quantity={1}
-          />
-        </div>
-      </div>
-
-      <p
-        style={{
-          marginTop: 32,
-          fontSize: 12,
-          color: "var(--color-merch-muted)",
-        }}
-      >
-        Demo route — static props. For interactive variant/qty/cart demo see{" "}
-        <a
-          href="/showcase/merch-purchase-panel"
-          style={{ color: "var(--color-merch-red)" }}
-        >
-          /showcase/merch-purchase-panel
-        </a>
-        .
-      </p>
-    </main>
+    <ProductPageClient
+      title={DEMO_PRODUCT.title}
+      price={DEMO_PRODUCT.price}
+      originalPrice={DEMO_PRODUCT.originalPrice}
+      badges={DEMO_PRODUCT.badges}
+      description={DEMO_PRODUCT.description}
+      breadcrumb={DEMO_PRODUCT.breadcrumb}
+      variants={DEMO_PRODUCT.variants}
+      images={DEMO_PRODUCT.images}
+    />
   );
 }
