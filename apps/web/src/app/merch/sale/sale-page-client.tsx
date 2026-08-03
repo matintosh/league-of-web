@@ -128,7 +128,6 @@ export function SalePageClient({ products }: SalePageClientProps) {
         {products.length > 0 ? (
           <MerchProductGrid
             columns={2}
-            resultCount={products.length}
           >
             {products.map((product) => (
               <MerchProductCard
