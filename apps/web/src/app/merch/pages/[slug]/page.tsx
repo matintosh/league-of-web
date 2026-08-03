@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { MERCH_INFO_PAGES } from "@low/fixtures";
-import { MerchHeader, MerchInfoPage, MerchFooter } from "@low/ui";
+import { MerchInfoPage, MerchFooter } from "@low/ui";
+import { InfoPageHeader } from "./info-page-client";
 
 /**
  * /merch/pages/[slug] — info-page template route.
@@ -40,7 +41,7 @@ export default async function MerchInfoPageRoute({ params }: Props) {
       className="flex min-h-screen flex-col"
       style={{ backgroundColor: "var(--color-merch-bg)", fontFamily: "var(--font-merch)" }}
     >
-      <MerchHeader />
+      <InfoPageHeader />
       <MerchInfoPage title={content.title} blocks={content.blocks} />
       <MerchFooter />
     </div>

@@ -8,6 +8,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useMerchNav } from "@/lib/merch-nav";
 import {
   MerchHeader,
   MerchSearchBar,
@@ -92,6 +93,7 @@ export function SearchPageClient({
   initialResults,
 }: SearchPageClientProps) {
   const router = useRouter();
+  const handleNavSelect = useMerchNav();
 
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems] = useState<MerchCartItem[]>([]);
@@ -131,6 +133,8 @@ export function SearchPageClient({
         onSearchClick={() => {
           // Already on the search page — focus is handled by the search bar below
         }}
+        onCategoryClick={handleNavSelect}
+        onLogoClick={() => router.push("/merch")}
       />
 
       <main className="flex-1">

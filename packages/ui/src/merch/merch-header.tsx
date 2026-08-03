@@ -17,13 +17,21 @@
  *   Tier 2 — ~50px red dismissible announcement marquee
  *
  * Nav links: 14px/700, non-uppercased, white; hover → --color-merch-red.
- * MY SHOP: --color-merch-gold. Dropdowns: presentational carets only.
+ * MY SHOP: --color-merch-gold. Dropdowns: real menus on click/hover.
  * SIGN IN: bg --color-merch-signin-bg, border-radius 6px, padding 8px 16px, 600/16px uppercase.
+ *
+ * Dropdown menus open on click and close on:
+ *   - Outside click (mousedown on document)
+ *   - Escape key
+ * aria-expanded + role=menu + role=menuitem for a11y.
+ *
+ * Mobile (<lg): hamburger toggles a full-width nav drawer listing all items.
+ * No horizontal overflow at 390px.
  */
 
 "use client";
 
-import { useId } from "react";
+import { useId, useState, useEffect, useRef, useCallback } from "react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -33,10 +41,18 @@ import { useId } from "react";
 export interface MerchNavItem {
   slug: string;
   label: string;
-  /** If true, renders a chevron-down caret (dropdown affordance). */
+  /** If true, renders a chevron-down caret and opens a dropdown on click. */
   hasDropdown?: boolean;
   /** If true, renders with --color-merch-gold instead of default white. */
   isGold?: boolean;
+}
+
+/** A single item in a dropdown menu (Categories or Featured). */
+export interface MerchNavMenuItem {
+  /** Slug used in the URL: /merch/collection/<slug> (or a full override via href). */
+  slug: string;
+  /** Display label, e.g. "Apparel". */
+  label: string;
 }
 
 export interface MerchHeaderProps {
@@ -48,7 +64,10 @@ export interface MerchHeaderProps {
   announcement?: string;
   /** Fired when the announcement dismiss ✕ button is clicked. */
   onDismissAnnouncement?: () => void;
-  /** Fired when any nav link is clicked; receives the item's slug. */
+  /**
+   * Fired when any nav link is clicked; receives the item's slug.
+   * For dropdown items, receives the item's slug (not the parent slug).
+   */
   onCategoryClick?: (slug: string) => void;
   /** Fired when cart icon is clicked. */
   onCartClick?: () => void;
@@ -64,7 +83,23 @@ export interface MerchHeaderProps {
   onLogoClick?: () => void;
   /** Override the default nav items if needed. */
   navItems?: MerchNavItem[];
-  /** Fired when the hamburger/menu button is clicked (mobile only). */
+  /**
+   * Items for the Categories dropdown.
+   * Defaults to DEFAULT_CATEGORIES_MENU if omitted.
+   * Each slug is navigated as /merch/collection/<slug>.
+   */
+  categoriesMenu?: MerchNavMenuItem[];
+  /**
+   * Items for the Featured dropdown.
+   * Defaults to DEFAULT_FEATURED_MENU if omitted.
+   * Each slug is navigated as /merch/collection/<slug>.
+   */
+  featuredMenu?: MerchNavMenuItem[];
+  /**
+   * Fired when the hamburger/menu button is clicked (mobile only).
+   * @deprecated Internal mobile drawer is now built-in; this callback still fires
+   *   for external consumers that need the signal.
+   */
   onMenuClick?: () => void;
 }
 
@@ -80,8 +115,98 @@ const DEFAULT_NAV: MerchNavItem[] = [
   { slug: "my-shop",    label: "My Shop",    isGold: true },
 ];
 
+/** Default Categories dropdown — product category collections. */
+const DEFAULT_CATEGORIES_MENU: MerchNavMenuItem[] = [
+  { slug: "apparel",       label: "Apparel" },
+  { slug: "collectibles",  label: "Collectibles" },
+  { slug: "accessories",   label: "Accessories" },
+  { slug: "art",           label: "Art & Prints" },
+  { slug: "home-office",   label: "Home & Office" },
+  { slug: "gaming",        label: "Gaming" },
+];
+
+/** Default Featured dropdown — franchise / campaign collections. */
+const DEFAULT_FEATURED_MENU: MerchNavMenuItem[] = [
+  { slug: "league-of-legends", label: "League of Legends" },
+  { slug: "riftbound",         label: "Riftbound" },
+  { slug: "arcane",            label: "Arcane" },
+  { slug: "valorant",          label: "VALORANT" },
+  { slug: "teamfight-tactics", label: "Teamfight Tactics" },
+  { slug: "lol-esports",       label: "LoL Esports" },
+];
+
 const DEFAULT_ANNOUNCEMENT =
   "We're upgrading our warehouse! Orders placed between July 3–7 may be delayed. We apologize for the inconvenience.";
+
+// ---------------------------------------------------------------------------
+// Sub-component: Dropdown menu
+// ---------------------------------------------------------------------------
+
+interface DropdownMenuProps {
+  items: MerchNavMenuItem[];
+  onSelect: (slug: string) => void;
+  menuId: string;
+}
+
+function DropdownMenu({ items, onSelect, menuId }: DropdownMenuProps) {
+  return (
+    <ul
+      id={menuId}
+      role="menu"
+      style={{
+        position: "absolute",
+        top: "calc(100% + 4px)",
+        left: 0,
+        zIndex: 200,
+        minWidth: "180px",
+        backgroundColor: "var(--color-merch-ink-dark)",
+        border: "1px solid var(--color-merch-border-dark)",
+        borderRadius: "4px",
+        padding: "6px 0",
+        listStyle: "none",
+        margin: 0,
+        boxShadow: "0 8px 24px var(--color-merch-scrim-strong)",
+      }}
+    >
+      {items.map(({ slug, label }) => (
+        <li key={slug} role="none">
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => onSelect(slug)}
+            style={{
+              display: "block",
+              width: "100%",
+              padding: "9px 16px",
+              textAlign: "left",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: 400,
+              color: "var(--color-merch-on-dark)",
+              transition: "color 0.12s, background-color 0.12s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.color =
+                "var(--color-merch-red)";
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                "var(--color-merch-dropdown-hover-bg)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.color =
+                "var(--color-merch-on-dark)";
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                "transparent";
+            }}
+          >
+            {label}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Component
@@ -92,6 +217,9 @@ const DEFAULT_ANNOUNCEMENT =
  *   Tier 1: ~80px black nav bar — wordmark (left), nav links (left-aligned after
  *           logo), right cluster (search · globe · SIGN IN · cart).
  *   Tier 2: optional ~50px red dismissible announcement marquee.
+ *
+ * Dropdowns (Categories▾, Featured▾) open on click; close on outside click or Esc.
+ * Mobile hamburger (<lg) toggles a slide-down nav drawer.
  */
 export function MerchHeader({
   activeCategory,
@@ -106,14 +234,94 @@ export function MerchHeader({
   onLocaleClick,
   onLogoClick,
   navItems = DEFAULT_NAV,
+  categoriesMenu = DEFAULT_CATEGORIES_MENU,
+  featuredMenu = DEFAULT_FEATURED_MENU,
   onMenuClick,
 }: MerchHeaderProps) {
-  const badgeId = useId();
-  const globeId = useId();
-  const cartId  = useId();
+  const badgeId   = useId();
+  const globeId   = useId();
+  const cartId    = useId();
+  const catMenuId = useId();
+  const featMenuId = useId();
+  const hamburgerId = useId();
+
+  // Track which dropdown is open: "categories" | "featured" | null
+  const [openDropdown, setOpenDropdown] = useState<"categories" | "featured" | null>(null);
+  // Mobile nav drawer open state
+  const [mobileOpen, setMobileOpen] = useState(false);
+  // Expanded mobile section for sub-items
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+
+  // Ref to the nav bar for outside-click detection
+  const navRef = useRef<HTMLDivElement>(null);
 
   // Resolve the sign-in handler: onSignIn takes precedence, fall back to legacy onAccountClick.
   const handleSignIn = onSignIn ?? onAccountClick;
+
+  // Close dropdown on outside mousedown or Escape
+  const handleOutsideClick = useCallback(
+    (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setOpenDropdown(null);
+      }
+    },
+    [],
+  );
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpenDropdown(null);
+        setMobileOpen(false);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleOutsideClick, handleKeyDown]);
+
+  /** Toggle a dropdown by slug; close if already open. */
+  function toggleDropdown(slug: "categories" | "featured") {
+    setOpenDropdown((prev) => (prev === slug ? null : slug));
+  }
+
+  /** Fire the nav callback for a menu item slug. */
+  function handleMenuItemSelect(slug: string) {
+    setOpenDropdown(null);
+    setMobileOpen(false);
+    onCategoryClick?.(slug);
+  }
+
+  /** Top-level nav button click — handles both plain links and dropdown toggles. */
+  function handleNavClick(item: MerchNavItem) {
+    if (item.slug === "categories") {
+      toggleDropdown("categories");
+    } else if (item.slug === "featured") {
+      toggleDropdown("featured");
+    } else {
+      setOpenDropdown(null);
+      onCategoryClick?.(item.slug);
+    }
+  }
+
+  /** Mobile hamburger click — toggle drawer + fire external callback. */
+  function handleHamburgerClick() {
+    setMobileOpen((prev) => !prev);
+    setMobileExpanded(null);
+    onMenuClick?.();
+  }
+
+  /** Mobile: toggle sub-list expand. */
+  function toggleMobileSection(slug: string) {
+    setMobileExpanded((prev) => (prev === slug ? null : slug));
+  }
 
   return (
     <header
@@ -127,6 +335,7 @@ export function MerchHeader({
           widening scrollWidth on narrow viewports. Unlike overflow-x:hidden
           it doesn't create a new BFC or break sticky positioning. */}
       <div
+        ref={navRef}
         className="w-full overflow-x-clip"
         style={{ backgroundColor: "var(--color-merch-ink-dark)" }}
       >
@@ -177,61 +386,83 @@ export function MerchHeader({
           </button>
 
           {/* -------------------------------------------------------------- */}
-          {/* Nav links — left-aligned, right after the logo                  */}
+          {/* Nav links — left-aligned, right after the logo (desktop only)   */}
           {/* -------------------------------------------------------------- */}
           <nav
             aria-label="Store navigation"
             className="hidden flex-1 items-center gap-7 lg:flex"
           >
-            {navItems.map(({ slug, label, hasDropdown, isGold }) => {
+            {navItems.map((item) => {
+              const { slug, label, hasDropdown, isGold } = item;
               const isActive = activeCategory === slug;
+              const isDropdownOpen =
+                (slug === "categories" && openDropdown === "categories") ||
+                (slug === "featured"   && openDropdown === "featured");
+              const menuId =
+                slug === "categories" ? catMenuId :
+                slug === "featured"   ? featMenuId : undefined;
 
               return (
-                <button
-                  key={slug}
-                  type="button"
-                  onClick={() => onCategoryClick?.(slug)}
-                  className="relative flex items-center gap-1 pb-0.5 transition-colors duration-150 hover:opacity-80"
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    letterSpacing: "normal",
-                    textTransform: "none",
-                    color: isGold
-                      ? "var(--color-merch-gold)"
-                      : isActive
-                        ? "var(--color-merch-on-dark)"
+                <div key={slug} style={{ position: "relative" }}>
+                  <button
+                    type="button"
+                    onClick={() => handleNavClick(item)}
+                    aria-expanded={hasDropdown ? isDropdownOpen : undefined}
+                    aria-controls={hasDropdown ? menuId : undefined}
+                    aria-haspopup={hasDropdown ? "menu" : undefined}
+                    className="relative flex items-center gap-1 pb-0.5 transition-colors duration-150 hover:opacity-80"
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: 700,
+                      letterSpacing: "normal",
+                      textTransform: "none",
+                      color: isGold
+                        ? "var(--color-merch-gold)"
                         : "var(--color-merch-on-dark)",
-                  }}
-                >
-                  {label}
-                  {/* Dropdown chevron */}
-                  {hasDropdown && (
-                    <svg
-                      aria-hidden="true"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M2 4 L6 8 L10 4"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                    }}
+                  >
+                    {label}
+                    {/* Dropdown chevron — rotates when open */}
+                    {hasDropdown && (
+                      <svg
+                        aria-hidden="true"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{
+                          transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+                          transition: "transform 0.15s",
+                        }}
+                      >
+                        <path
+                          d="M2 4 L6 8 L10 4"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                    {/* Active underline */}
+                    {isActive && (
+                      <span
+                        className="absolute inset-x-0 bottom-0 h-0.5"
+                        style={{ backgroundColor: "var(--color-merch-red)" }}
                       />
-                    </svg>
-                  )}
-                  {/* Active underline */}
-                  {isActive && (
-                    <span
-                      className="absolute inset-x-0 bottom-0 h-0.5"
-                      style={{ backgroundColor: "var(--color-merch-red)" }}
+                    )}
+                  </button>
+
+                  {/* Dropdown menu panel */}
+                  {hasDropdown && isDropdownOpen && (
+                    <DropdownMenu
+                      items={slug === "categories" ? categoriesMenu : featuredMenu}
+                      onSelect={handleMenuItemSelect}
+                      menuId={menuId!}
                     />
                   )}
-                </button>
+                </div>
               );
             })}
           </nav>
@@ -315,25 +546,46 @@ export function MerchHeader({
             {/* Hamburger — mobile only (hidden at lg+) */}
             <button
               type="button"
-              aria-label="Open navigation menu"
-              onClick={onMenuClick}
+              id={hamburgerId}
+              aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={mobileOpen}
+              aria-controls="merch-mobile-nav"
+              onClick={handleHamburgerClick}
               className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70 lg:hidden"
               style={{ color: "var(--color-merch-on-dark)" }}
             >
-              <svg
-                aria-hidden="true"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
+              {mobileOpen ? (
+                /* X close icon */
+                <svg
+                  aria-hidden="true"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              ) : (
+                /* Hamburger icon */
+                <svg
+                  aria-hidden="true"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+              )}
             </button>
 
             {/* Cart */}
@@ -376,6 +628,118 @@ export function MerchHeader({
             </button>
           </div>
         </div>
+
+        {/* ------------------------------------------------------------------ */}
+        {/* Mobile nav drawer — shown below the nav bar when mobileOpen        */}
+        {/* ------------------------------------------------------------------ */}
+        {mobileOpen && (
+          <nav
+            id="merch-mobile-nav"
+            aria-label="Mobile store navigation"
+            style={{
+              borderTop: "1px solid var(--color-merch-border-dark)",
+              backgroundColor: "var(--color-merch-ink-dark)",
+              width: "100%",
+              maxWidth: "100vw",
+              overflow: "hidden",
+            }}
+          >
+            <ul style={{ listStyle: "none", margin: 0, padding: "8px 0 16px" }}>
+              {navItems.map((item) => {
+                const { slug, label, hasDropdown, isGold } = item;
+                const subItems =
+                  slug === "categories" ? categoriesMenu :
+                  slug === "featured"   ? featuredMenu   : null;
+                const isExpanded = mobileExpanded === slug;
+
+                return (
+                  <li key={slug}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (hasDropdown && subItems) {
+                          toggleMobileSection(slug);
+                        } else {
+                          handleMenuItemSelect(slug);
+                        }
+                      }}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
+                        padding: "13px 24px",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "15px",
+                        fontWeight: 600,
+                        color: isGold
+                          ? "var(--color-merch-gold)"
+                          : "var(--color-merch-on-dark)",
+                        textAlign: "left",
+                      }}
+                      aria-expanded={hasDropdown ? isExpanded : undefined}
+                    >
+                      {label}
+                      {hasDropdown && (
+                        <svg
+                          aria-hidden="true"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{
+                            transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                            transition: "transform 0.15s",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <path
+                            d="M2 4 L6 8 L10 4"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </button>
+
+                    {/* Sub-items expanded section */}
+                    {hasDropdown && isExpanded && subItems && (
+                      <ul style={{ listStyle: "none", margin: 0, padding: "0 0 4px" }}>
+                        {subItems.map(({ slug: subSlug, label: subLabel }) => (
+                          <li key={subSlug}>
+                            <button
+                              type="button"
+                              onClick={() => handleMenuItemSelect(subSlug)}
+                              style={{
+                                display: "block",
+                                width: "100%",
+                                padding: "10px 24px 10px 36px",
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                fontSize: "14px",
+                                fontWeight: 400,
+                                color: "var(--color-merch-muted-on-dark)",
+                                textAlign: "left",
+                              }}
+                            >
+                              {subLabel}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        )}
       </div>
 
       {/* ================================================================ */}

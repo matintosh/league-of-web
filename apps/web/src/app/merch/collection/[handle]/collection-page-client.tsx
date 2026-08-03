@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMerchNav } from "@/lib/merch-nav";
 import {
   MerchHeader,
   MerchCollectionHero,
@@ -35,6 +36,7 @@ export function CollectionPageClient({
   products,
 }: CollectionPageClientProps) {
   const router = useRouter();
+  const handleNavSelect = useMerchNav();
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems] = useState<MerchCartItem[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("All");
@@ -58,6 +60,9 @@ export function CollectionPageClient({
         activeCategory={handle}
         cartCount={cartItems.length}
         onCartClick={() => setCartOpen(true)}
+        onSearchClick={() => router.push("/merch/search")}
+        onCategoryClick={handleNavSelect}
+        onLogoClick={() => router.push("/merch")}
       />
 
       <main className="flex-1">

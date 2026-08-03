@@ -9,6 +9,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMerchNav } from "@/lib/merch-nav";
 import {
   MerchHeader,
   MerchFooter,
@@ -58,6 +59,7 @@ export function ProductPageClient({
   carouselBannerImageUrl,
 }: ProductPageClientProps) {
   const router = useRouter();
+  const handleNavSelect = useMerchNav();
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems] = useState<MerchCartItem[]>([]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
@@ -75,9 +77,8 @@ export function ProductPageClient({
         cartCount={cartItems.length}
         onCartClick={() => setCartOpen(true)}
         onSearchClick={() => router.push("/merch/search")}
-        onCategoryClick={(slug) => {
-          if (slug === "shop-all") router.push("/merch/shop-all");
-        }}
+        onCategoryClick={handleNavSelect}
+        onLogoClick={() => router.push("/merch")}
       />
 
       <main
