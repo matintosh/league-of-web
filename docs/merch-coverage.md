@@ -5,7 +5,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 **Legend:** ✅ page live · 🔨 in progress (open issue) · ⬜ page missing · ⛔ out of scope (real commerce/auth backend)
 
-**Status:** last updated 2026-08-03 · **5 / 9 page types live** · **12 components** shipped · **2 pages 🔨 in progress** (#586 collections index · #587 info pages)
+**Status:** last updated 2026-08-03 · **6 / 9 page types live** · **13 components** shipped · **1 page 🔨 in progress** (#586 collections index)
 
 > The real store prefixes with `/` (e.g. `/product/<handle>`); our clone nests everything under
 > `/merch`. This map tracks PAGES (routes) first; the component table at the bottom tracks the parts
@@ -24,18 +24,17 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | **Collection / category** | `/collection/<handle>` | `/merch/collection/[handle]` | ✅ | CollectionHero · FilterSortBar · ProductGrid |
 | **Cart page** | `/cart` | `/merch/cart` | ✅ | full-page cart: MerchCartPage (line items · summary · checkout) |
 | **Search** | `/search` | `/merch/search` | ⬜ | SearchOverlay ⬜ · results ProductGrid |
-| **Info pages** (About / FAQ / Shipping / Returns / Contact / Terms / Privacy) | `/pages/<slug>` | `/merch/pages/[slug]` | 🔨 #587 | InfoPage template 🔨 #587 (footer links target these) |
+| **Info pages** (FAQ / Shipping / Returns / Collectability / Accessibility / Legal / Cookies / Terms / Privacy) | `/pages/<slug>` | `/merch/pages/[slug]` | ✅ | InfoPage template (9 slugs, footer links wired + resolve 200) |
 | **Account / sign-in** | `/account` | `/merch/account` | ⬜ / ⛔ | presentational stub only (no real auth) |
 
 \* PDP currently lives at `/merch/[handle]`; consider moving to `/merch/product/[handle]` to match the real URL 1:1.
 
 ## PAGES — next up (build order)
 
-1. **Collections index** `/merch/collection` — grid of category tiles (needs CategoryTileGrid)
+1. **Collections index** `/merch/collection` — grid of category tiles (🔨 #586, in review)
 2. **Search** `/merch/search` — search overlay + results
-3. **Info pages** `/merch/pages/[slug]` — one template + About/FAQ/Shipping/Returns/Contact/Terms/Privacy content
-4. **Account** `/merch/account` — presentational sign-in stub
-5. PDP URL 1:1 — move `/merch/[handle]` → `/merch/product/[handle]`
+3. **Account** `/merch/account` — presentational sign-in stub
+4. PDP URL 1:1 — move `/merch/[handle]` → `/merch/product/[handle]`
 
 ---
 
@@ -61,7 +60,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | PDP description accordions | ⬜ | PDP |
 | Size guide modal | ⬜ | PDP |
 | Search overlay | ⬜ | header |
-| Info-page template (`MerchInfoPage`) | 🔨 #587 | Info pages |
+| Info-page template (`MerchInfoPage`) | ✅ | Info pages |
 | `MerchCartPage` (full-page cart: line items table + order summary) | ✅ | Cart page |
 
 ---
