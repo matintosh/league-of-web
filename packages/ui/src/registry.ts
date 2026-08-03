@@ -103,9 +103,12 @@ import { storeItemTileShowcase } from "./store/store-item-tile.showcase";
 import { storeSubNavBarShowcase } from "./store/store-sub-nav-bar.showcase";
 import { yourShopIconShowcase } from "./store/your-shop-icon.showcase";
 import { yourShopScreenShowcase } from "./store/your-shop-screen.showcase";
+import { merchCollectionHeroShowcase } from "./merch/merch-collection-hero.showcase";
 import { merchFooterShowcase } from "./merch/merch-footer.showcase";
 import { merchHeaderShowcase } from "./merch/merch-header.showcase";
+import { merchHeroBannerShowcase } from "./merch/merch-hero-banner.showcase";
 import { merchProductCardShowcase } from "./merch/merch-product-card.showcase";
+import { merchProductGridShowcase } from "./merch/merch-product-grid.showcase";
 import { merchStoreShowcase } from "./merch/merch-store.showcase";
 
 /**
@@ -224,9 +227,12 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
-  // merch — alphabetical: MerchFooter < MerchHeader < MerchProductCard < MerchStore
+  // merch — alphabetical: MerchCollectionHero < MerchFooter < MerchHeader < MerchHeroBanner < MerchProductCard < MerchProductGrid < MerchStore
+  merchCollectionHeroShowcase,
   merchFooterShowcase,
   merchHeaderShowcase,
+  merchHeroBannerShowcase,
   merchProductCardShowcase,
+  merchProductGridShowcase,
   merchStoreShowcase,
 ];
