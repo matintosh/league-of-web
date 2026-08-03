@@ -22,6 +22,8 @@ const APPAREL_PRODUCTS: MerchProduct[] = [
     price: "$39.99",
     originalPrice: "$59.99",
     badge: "Sale",
+    badges: ["Sale"],
+    franchiseLabel: "Arcane",
   },
   {
     slug: "riot-wordmark-tee",
@@ -29,6 +31,8 @@ const APPAREL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Ahri", 0),
     price: "$24.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "Riot Games",
   },
   {
     slug: "valorant-agent-hoodie",
@@ -36,6 +40,8 @@ const APPAREL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Lux", 1),
     price: "$54.99",
     badge: "Limited",
+    badges: ["Limited Edition"],
+    franchiseLabel: "Valorant",
   },
   {
     slug: "project-lux-bomber",
@@ -43,6 +49,8 @@ const APPAREL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Lux", 0),
     price: "$89.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "arcane-jinx-tee",
@@ -50,13 +58,16 @@ const APPAREL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Jinx", 0),
     price: "$29.99",
     badge: "Sale",
+    badges: ["Sale"],
     originalPrice: "$39.99",
+    franchiseLabel: "Arcane",
   },
   {
     slug: "rift-wanderer-zip-hoodie",
     title: "Rift Wanderer Zip-Up Hoodie",
     imageUrl: championSplashUrl("Teemo", 0),
     price: "$64.99",
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "arcane-sisters-crewneck",
@@ -64,12 +75,15 @@ const APPAREL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Vi", 1),
     price: "$49.99",
     badge: "Out of Stock",
+    badges: ["Out of Stock"],
+    franchiseLabel: "Arcane",
   },
   {
     slug: "legends-crest-cap",
     title: "Legends Crest Structured Cap",
     imageUrl: championSplashUrl("Ahri", 1),
     price: "$29.99",
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "arcane-caitlyn-tee",
@@ -77,12 +91,15 @@ const APPAREL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Caitlyn", 0),
     price: "$34.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "Arcane",
   },
   {
     slug: "rift-classic-polo",
     title: "Rift Classic League Polo",
     imageUrl: championSplashUrl("Jinx", 2),
     price: "$44.99",
+    franchiseLabel: "League of Legends",
   },
 ];
 
@@ -93,12 +110,15 @@ const COLLECTIBLES_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Jinx", 2),
     price: "$29.99",
     badge: "Out of Stock",
+    badges: ["Out of Stock"],
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "ruination-teemo-plush",
     title: 'Ruined Teemo 12" Collector Plush',
     imageUrl: championSplashUrl("Teemo", 0),
     price: "$19.99",
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "riftbound-origins-jinx-deck",
@@ -106,12 +126,15 @@ const COLLECTIBLES_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Jinx", 0),
     price: "$24.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "Riftbound",
   },
   {
     slug: "project-lux-art-print",
     title: "PROJECT: Lux Collector's Art Print (18×24)",
     imageUrl: championSplashUrl("Lux", 0),
     price: "$34.99",
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "arcane-jinx-enamel-pin",
@@ -119,7 +142,9 @@ const COLLECTIBLES_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Jinx", 1),
     price: "$14.99",
     badge: "Sale",
+    badges: ["Sale"],
     originalPrice: "$19.99",
+    franchiseLabel: "Arcane",
   },
   {
     slug: "ahri-statue-limited",
@@ -127,6 +152,8 @@ const COLLECTIBLES_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Ahri", 2),
     price: "$129.99",
     badge: "Limited",
+    badges: ["Limited Edition"],
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "arcane-teemo-minifig",
@@ -134,12 +161,15 @@ const COLLECTIBLES_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Teemo", 1),
     price: "$39.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "Arcane",
   },
   {
     slug: "league-chess-set",
     title: "League of Legends Champion Chess Set",
     imageUrl: championSplashUrl("Ahri", 0),
     price: "$89.99",
+    franchiseLabel: "League of Legends",
   },
 ];
 

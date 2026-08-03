@@ -77,7 +77,7 @@ export function CollectionPageClient({
           onSortChange={setActiveSort}
         />
 
-        <MerchProductGrid columns={4}>
+        <MerchProductGrid columns={2} resultCount={products.length} onRefineClick={() => {}}>
           {products.map((product) => (
             <MerchProductCard
               key={product.slug}
@@ -87,6 +87,8 @@ export function CollectionPageClient({
               price={product.price}
               originalPrice={product.originalPrice}
               badge={product.badge}
+              badges={product.badges}
+              franchiseLabel={product.franchiseLabel}
               onClick={() => router.push(`/merch/product/${product.slug}`)}
             />
           ))}

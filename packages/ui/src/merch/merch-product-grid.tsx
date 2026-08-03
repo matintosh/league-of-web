@@ -13,18 +13,19 @@
  * product image URLs via championSplashUrl from the page, never fetched in
  * @low/ui), showcase server-safe (no 'use client'), SVG/gradient ids from useId.
  *
- * Measured from merch.riotgames.com (~1280px desktop, shop-all / collection pages):
- *   - Grid: 4 columns, ~20px gap at md+; 2 columns, 12px gap below md
- *   - Brand-rail label: small uppercase, muted, vertical on left or top-left of grid block
- *   - Filter-badge row: top-right filter chips (New / Limited Edition / Preorder)
- *   - Section heading: 24px, font-weight 700, uppercase, letter-spacing 0.04em, ink
- *   - Heading bottom margin: 24px (mb-6)
- *   - "Shop All →" link: 13px, uppercase, letter-spacing 0.08em, red / red-dark on hover
- *   - Section padding: py-12 (48px top + bottom)
- *   - Container: max-w-7xl mx-auto px-6
+ * Real 2-col grid (measured from merch.riotgames.com shop-all at 1280px):
+ *   - Grid: 2 columns, 0 gap (flush cards sharing 1px border dividers)
+ *   - Card width: ~640px each
+ *   - REFINE button: top-right, red bg, white text, sliders icon, uppercase
+ *   - Result count: shown left of (or near) heading, e.g. "(16)"
+ *   - Section padding: py-0 for the 2-col listing (no extra spacing, flush to hero)
+ *
+ * Brand-rail layout (homepage model):
+ *   - Left vertical brand label + optional top-right filter-badge chips
+ *   - 4-column grid, 20px gap (the real homepage uses the narrower 4-col)
  */
 
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -52,6 +53,7 @@ export interface MerchProductGridProps {
   /**
    * Optional filter-badge chips shown in the top-right of the header row
    * (e.g. New / Limited Edition / Preorder). Omit to hide the filter row.
+   * Used in the brand-rail homepage layout only.
    */
   filterBadges?: MerchFilterBadge[];
   /**
@@ -65,22 +67,41 @@ export interface MerchProductGridProps {
   /** Product card nodes — render MerchProductCard elements here. */
   children?: ReactNode;
   /**
-   * Number of columns at the lg breakpoint.
+   * Number of columns at the desktop breakpoint.
+   * - 2: real 2-col flush listing (shop-all, collection, search) — gap 0, border dividers
+   * - 3: 3-col at md+
+   * - 4: 4-col at lg+ (homepage brand-rail default)
    * @default 4
    */
   columns?: 2 | 3 | 4;
   /** Shown when children is empty or undefined. */
   emptyMessage?: string;
+  /**
+   * Total result count shown in the listing header (e.g. 16).
+   * Rendered as "(16)" beside the heading/breadcrumb. Only shown when > 0.
+   */
+  resultCount?: number;
+  /**
+   * Called when the "REFINE" button is clicked.
+   * When provided (or `showRefine` is true), the REFINE button renders top-right.
+   */
+  onRefineClick?: () => void;
+  /**
+   * Force-render the REFINE button even without an onRefineClick handler.
+   * Useful for presentational showcase demos.
+   */
+  showRefine?: boolean;
 }
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Returns the grid-cols Tailwind class string for a given columns value. */
+/** Returns Tailwind grid-cols classes for a given columns value. */
 function gridColsClasses(columns: 2 | 3 | 4): string {
   switch (columns) {
     case 2:
+      // 2-col flush at sm+; single col on very narrow (below sm)
       return "grid-cols-2";
     case 3:
       return "grid-cols-2 md:grid-cols-3";
@@ -91,6 +112,33 @@ function gridColsClasses(columns: 2 | 3 | 4): string {
 }
 
 // ---------------------------------------------------------------------------
+// Refine button icon (sliders / filter icon)
+// ---------------------------------------------------------------------------
+
+function RefineIcon({ id }: { id: string }) {
+  return (
+    <svg
+      aria-hidden
+      focusable="false"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      style={{ width: 14, height: 14, display: "block" }}
+      aria-labelledby={id}
+    >
+      <line x1="2" y1="4" x2="14" y2="4" />
+      <line x1="2" y1="8" x2="14" y2="8" />
+      <line x1="2" y1="12" x2="14" y2="12" />
+      <circle cx="5" cy="4" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="10" cy="8" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -98,24 +146,26 @@ function gridColsClasses(columns: 2 | 3 | 4): string {
  * MerchProductGrid — section wrapper that renders a responsive product grid.
  * Pass `MerchProductCard` elements as children.
  *
- * Supports two layout models:
- * 1. Legacy heading + Shop All — pass `heading` and/or `onShopAll`.
- * 2. Brand-rail collection grid — pass `brandRail` and optionally `filterBadges`.
- *    Renders a vertical brand label to the left and filter chips top-right,
- *    matching the real merch.riotgames.com homepage collection grid.
+ * Supports three layout models:
+ * 1. **2-col flush listing** (columns=2) — the real shop-all/collection design:
+ *    gap-0 (flush cards sharing border dividers), REFINE button top-right,
+ *    result count beside heading. Pass `resultCount` and `onRefineClick`.
+ * 2. **Brand-rail collection grid** (brandRail prop) — homepage model:
+ *    vertical brand label left, filter-badge chips top-right.
+ * 3. **Legacy heading + Shop All** — fallback for older page clients.
+ *
+ * @example
+ * // 2-col flush listing (shop-all, collection, search)
+ * <MerchProductGrid columns={2} resultCount={products.length} onRefineClick={() => {}}>
+ *   {products.map(p => <MerchProductCard key={p.slug} {...p} />)}
+ * </MerchProductGrid>
  *
  * @example
  * // Brand-rail model (homepage)
  * <MerchProductGrid
  *   brandRail="League of Legends"
- *   filterBadges={[{ label: "New" }, { label: "Limited Edition" }, { label: "Preorder" }]}
+ *   filterBadges={[{ label: "New" }, { label: "Limited Edition" }]}
  * >
- *   {products.map(p => <MerchProductCard key={p.slug} {...p} />)}
- * </MerchProductGrid>
- *
- * @example
- * // Shop All model (shop-all / collection pages)
- * <MerchProductGrid heading="New Arrivals" onShopAll={() => router.push('/shop-all')}>
  *   {products.map(p => <MerchProductCard key={p.slug} {...p} />)}
  * </MerchProductGrid>
  */
@@ -128,7 +178,12 @@ export function MerchProductGrid({
   children,
   columns = 4,
   emptyMessage = "No products found.",
+  resultCount,
+  onRefineClick,
+  showRefine,
 }: MerchProductGridProps) {
+  const refineIconId = useId();
+
   const isEmpty =
     children === undefined ||
     children === null ||
@@ -137,17 +192,97 @@ export function MerchProductGrid({
   const hasBrandRail = Boolean(brandRail);
   const hasFilterBadges = filterBadges && filterBadges.length > 0;
   const hasLegacyHeader = Boolean(heading || onShopAll);
+  const showRefineButton = Boolean(onRefineClick) || Boolean(showRefine);
+  const showResultCount = resultCount !== undefined && resultCount > 0;
 
-  return (
-    <section
-      className="py-12"
-      style={{ fontFamily: "var(--font-merch)" }}
-    >
-      <div className="mx-auto max-w-7xl px-6">
-        {/* ---------------------------------------------------------------- */}
-        {/* Brand-rail layout — left label + top-right filter chips          */}
-        {/* ---------------------------------------------------------------- */}
-        {hasBrandRail ? (
+  // ── 2-col flush listing layout ────────────────────────────────────────────
+  if (columns === 2) {
+    return (
+      <section
+        style={{ fontFamily: "var(--font-merch)" }}
+      >
+        {/* Listing header: result count (left) + REFINE button (right) */}
+        {(showResultCount || showRefineButton || heading) && (
+          <div
+            className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4"
+          >
+            <div className="flex items-baseline gap-2">
+              {heading && (
+                <h2
+                  className="text-[18px] font-bold uppercase tracking-[0.04em]"
+                  style={{ color: "var(--color-merch-ink)" }}
+                >
+                  {heading}
+                </h2>
+              )}
+              {showResultCount && (
+                <span
+                  className="text-[14px]"
+                  style={{ color: "var(--color-merch-muted)" }}
+                >
+                  ({resultCount})
+                </span>
+              )}
+            </div>
+
+            {showRefineButton && (
+              <button
+                type="button"
+                onClick={onRefineClick}
+                className="flex items-center gap-1.5 px-4 text-[11px] font-bold uppercase tracking-[0.08em] transition-colors duration-150"
+                style={{
+                  height: 36,
+                  backgroundColor: "var(--color-merch-red)",
+                  color: "var(--color-merch-on-dark)",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    "var(--color-merch-red-dark)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    "var(--color-merch-red)";
+                }}
+              >
+                <RefineIcon id={refineIconId} />
+                Refine
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Flush 2-col grid — no padding, no outer gap */}
+        {isEmpty ? (
+          <div className="mx-auto max-w-7xl px-6">
+            <p
+              className="py-16 text-center text-sm"
+              style={{ color: "var(--color-merch-muted)" }}
+            >
+              {emptyMessage}
+            </p>
+          </div>
+        ) : (
+          <div
+            className="grid grid-cols-2"
+            style={{ borderTop: "1px solid var(--color-merch-border)" }}
+          >
+            {children}
+          </div>
+        )}
+      </section>
+    );
+  }
+
+  // ── Brand-rail layout (homepage) ──────────────────────────────────────────
+  if (hasBrandRail) {
+    return (
+      <section
+        className="py-12"
+        style={{ fontFamily: "var(--font-merch)" }}
+      >
+        <div className="mx-auto max-w-7xl px-6">
           <div className="flex gap-8">
             {/* Left brand-rail label — vertical on lg+, top on mobile */}
             <div className="hidden flex-shrink-0 lg:flex lg:w-10 lg:flex-col lg:items-center lg:pt-1">
@@ -220,57 +355,62 @@ export function MerchProductGrid({
               )}
             </div>
           </div>
-        ) : (
-          /* ---------------------------------------------------------------- */
-          /* Legacy layout — optional heading + Shop All row                  */
-          /* ---------------------------------------------------------------- */
-          <>
-            {hasLegacyHeader && (
-              <div className="mb-6 flex items-baseline justify-between">
-                {heading && (
-                  <h2
-                    className="text-2xl font-bold uppercase tracking-[0.04em]"
-                    style={{ color: "var(--color-merch-ink)" }}
-                  >
-                    {heading}
-                  </h2>
-                )}
+        </div>
+      </section>
+    );
+  }
 
-                {onShopAll && (
-                  <button
-                    type="button"
-                    onClick={onShopAll}
-                    className="border-0 bg-transparent p-0 text-[13px] font-semibold uppercase tracking-[0.08em] transition-colors duration-150 hover:underline"
-                    style={{ color: "var(--color-merch-red)", cursor: "pointer" }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.color =
-                        "var(--color-merch-red-dark)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.color =
-                        "var(--color-merch-red)";
-                    }}
-                  >
-                    {shopAllLabel} →
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Grid or empty state */}
-            {isEmpty ? (
-              <p
-                className="py-16 text-center text-sm"
-                style={{ color: "var(--color-merch-muted)" }}
+  // ── Legacy layout — optional heading + Shop All row ───────────────────────
+  return (
+    <section
+      className="py-12"
+      style={{ fontFamily: "var(--font-merch)" }}
+    >
+      <div className="mx-auto max-w-7xl px-6">
+        {hasLegacyHeader && (
+          <div className="mb-6 flex items-baseline justify-between">
+            {heading && (
+              <h2
+                className="text-2xl font-bold uppercase tracking-[0.04em]"
+                style={{ color: "var(--color-merch-ink)" }}
               >
-                {emptyMessage}
-              </p>
-            ) : (
-              <div className={`grid ${gridColsClasses(columns)} gap-3 md:gap-5`}>
-                {children}
-              </div>
+                {heading}
+              </h2>
             )}
-          </>
+
+            {onShopAll && (
+              <button
+                type="button"
+                onClick={onShopAll}
+                className="border-0 bg-transparent p-0 text-[13px] font-semibold uppercase tracking-[0.08em] transition-colors duration-150 hover:underline"
+                style={{ color: "var(--color-merch-red)", cursor: "pointer" }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.color =
+                    "var(--color-merch-red-dark)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.color =
+                    "var(--color-merch-red)";
+                }}
+              >
+                {shopAllLabel} →
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Grid or empty state */}
+        {isEmpty ? (
+          <p
+            className="py-16 text-center text-sm"
+            style={{ color: "var(--color-merch-muted)" }}
+          >
+            {emptyMessage}
+          </p>
+        ) : (
+          <div className={`grid ${gridColsClasses(columns)} gap-3 md:gap-5`}>
+            {children}
+          </div>
         )}
       </div>
     </section>

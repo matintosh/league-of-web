@@ -24,6 +24,8 @@ const ALL_PRODUCTS: MerchProduct[] = [
     price: "$39.99",
     originalPrice: "$59.99",
     badge: "Sale",
+    badges: ["Sale"],
+    franchiseLabel: "Arcane",
   },
   {
     slug: "riot-wordmark-tee",
@@ -31,6 +33,8 @@ const ALL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Ahri", 0),
     price: "$24.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "Riot Games",
   },
   {
     slug: "valorant-agent-hoodie",
@@ -38,6 +42,8 @@ const ALL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Lux", 1),
     price: "$54.99",
     badge: "Limited",
+    badges: ["Limited Edition"],
+    franchiseLabel: "Valorant",
   },
   {
     slug: "project-lux-bomber",
@@ -45,6 +51,8 @@ const ALL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Lux", 0),
     price: "$89.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "League of Legends",
   },
   // Collectibles
   {
@@ -53,6 +61,8 @@ const ALL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Jinx", 2),
     price: "$29.99",
     badge: "Out of Stock",
+    badges: ["Out of Stock"],
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "riftbound-origins-jinx-deck",
@@ -60,6 +70,8 @@ const ALL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Jinx", 0),
     price: "$24.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "Riftbound",
   },
   {
     slug: "ahri-statue-limited",
@@ -67,6 +79,8 @@ const ALL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Ahri", 2),
     price: "$129.99",
     badge: "Limited",
+    badges: ["Limited Edition"],
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "arcane-jinx-enamel-pin",
@@ -74,7 +88,9 @@ const ALL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Jinx", 1),
     price: "$14.99",
     badge: "Sale",
+    badges: ["Sale"],
     originalPrice: "$19.99",
+    franchiseLabel: "Arcane",
   },
   // Art
   {
@@ -83,12 +99,15 @@ const ALL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Lux", 2),
     price: "$34.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "arcane-vi-jinx-art-print",
     title: "Arcane Vi & Jinx Lithograph (24×36)",
     imageUrl: championSplashUrl("Vi", 1),
     price: "$49.99",
+    franchiseLabel: "Arcane",
   },
   // Accessories
   {
@@ -96,6 +115,7 @@ const ALL_PRODUCTS: MerchProduct[] = [
     title: "Legends Crest Structured Cap",
     imageUrl: championSplashUrl("Ahri", 1),
     price: "$29.99",
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "ruined-king-backpack",
@@ -103,6 +123,8 @@ const ALL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Teemo", 0),
     price: "$79.99",
     badge: "New",
+    badges: ["New"],
+    franchiseLabel: "League of Legends",
   },
   // Misc
   {
@@ -110,6 +132,7 @@ const ALL_PRODUCTS: MerchProduct[] = [
     title: "Rift Wanderer Zip-Up Hoodie",
     imageUrl: championSplashUrl("Teemo", 1),
     price: "$64.99",
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "arcane-caitlyn-tee",
@@ -117,13 +140,16 @@ const ALL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Caitlyn", 0),
     price: "$34.99",
     badge: "Sale",
+    badges: ["Sale"],
     originalPrice: "$44.99",
+    franchiseLabel: "Arcane",
   },
   {
     slug: "ruination-teemo-plush",
     title: 'Ruined Teemo 12" Collector Plush',
     imageUrl: championSplashUrl("Teemo", 2),
     price: "$19.99",
+    franchiseLabel: "League of Legends",
   },
   {
     slug: "arcane-sisters-crewneck",
@@ -131,6 +157,8 @@ const ALL_PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Vi", 2),
     price: "$49.99",
     badge: "Out of Stock",
+    badges: ["Out of Stock"],
+    franchiseLabel: "Arcane",
   },
 ];
 
