@@ -96,31 +96,6 @@ export function MerchPurchasePanel({
         width: "100%",
       }}
     >
-      {/* ── Breadcrumb ──────────────────────────────────────────────────── */}
-      {breadcrumb && breadcrumb.length > 0 && (
-        <nav aria-label="Breadcrumb" style={{ marginBottom: 16 }}>
-          <ol
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "4px",
-              listStyle: "none",
-              padding: 0,
-              margin: 0,
-              fontSize: 16,
-              color: "var(--color-merch-muted)",
-            }}
-          >
-            {breadcrumb.map((seg, idx) => (
-              <li key={idx} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                {idx > 0 && <span aria-hidden="true">›</span>}
-                <span>{seg}</span>
-              </li>
-            ))}
-          </ol>
-        </nav>
-      )}
-
       {/* ── Title ───────────────────────────────────────────────────────── */}
       <h1
         style={{
