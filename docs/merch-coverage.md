@@ -5,7 +5,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 **Legend:** ✅ page live · 🔨 in progress (open issue) · ⬜ page missing · ⛔ out of scope (real commerce/auth backend)
 
-**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **22 components** shipped · site map COMPLETE + PDP depth shipped (info-tabs #615 · shop-carousel #616 · size-guide #617). **NOW IN PROGRESS: MOBILE pixel-perfect pass** (user bar expanded — every page must match real mobile at ~390px; audit-mobile sweeping).
+**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **22 components** shipped · desktop + PDP depth complete · **MOBILE pixel-perfect pass ✅ SHIPPED** — all 6 responsive fixes deployed (#618 cart-drawer · #619 PDP stack · #620 search-bar · #621 header hamburger · #622 hero portrait · #623 footer form); every page `scrollWidth ≤ 390` at 390px, desktop 1280 unchanged. Both desktop AND mobile now measured/verified.
 
 > The real store prefixes with `/` (e.g. `/product/<handle>`); our clone nests everything under
 > `/merch`. This map tracks PAGES (routes) first; the component table at the bottom tracks the parts
