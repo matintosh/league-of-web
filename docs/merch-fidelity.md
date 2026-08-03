@@ -15,7 +15,7 @@ the row. The build-loop (:11) then builds them. See `docs/loops/` for the loop b
 
 | Target | Real URL | Our route | Verdict | Last diff | Residual deltas |
 |---|---|---|---|---|---|
-| Homepage | `/` | `/merch` | ✅ | 2026-08-03 | header/footer/hero/grid pixel-audited; real hero+products; scrim removed |
+| Homepage | `/` | `/merch` | ⚠️ #646 #647 | 2026-08-03 | re-verify: largely matches. 2 NEW deltas: nav typography 14/700/title-case → 16/600/UPPERCASE (#646, merch-header.tsx); stray (N) count + REFINE on homepage grid (real homepage has neither — leaked from #629 shared grid) → #647 (merch-page-client stops passing resultCount/onRefineClick; shop-all/collection/sale keep it) |
 | PDP | `/product/<h>` | `/merch/product/[handle]` | ✅ | 2026-08-03 | typography #627 + gallery 62/38 #628 shipped; real gallery+carousel |
 | Shop All | `/shop-all/` | `/merch/shop-all` | ✅* | 2026-08-03 | 2-col flush + real 8 products. *open: chip-strip still shown where real = REFINE only |
 | Collections index | `/collection/` | `/merch/collection` | ✅ | 2026-08-03 | FIXED (#637/#638, PR #639): stacked collection strips (MerchCollectionList — banner + rotated name tab + card row) + "All Collections" 48/600 heading. Residual (non-blocking): heading top ~20px short; 2 strips vs real 4 (fixture has 2 franchises); banners = champion-splash placeholders (real Sanity banners unavailable) |
@@ -45,3 +45,4 @@ page diff isolates the gap to one component.
 - 2026-08-03 — CLOSED: #640+#641 built+shipped (PR #642, MerchSupportHero + MerchSupportTabStrip + white-bg fix). Info pages ⚠️→✅. Next up: ⬜ Sale.
 - 2026-08-03 — ratchet: Sale diffed vs real `/category/sales/` (our `/sale/` ref 500s) → 2 deltas (#643 drop hero band, #644 sale-price dark+grey-struck+green-%-badge). Row ⬜→⚠️. Next up: re-verify oldest ✅ (round-robin) after Sale closes.
 - 2026-08-03 — CLOSED: #643+#644 built (builder died post-work → controller salvaged) + reviewed (dup-count fix) + shipped (PR #645). Sale ⚠️→✅. ALL scorecard rows now ✅ (non-⛔). Next: round-robin re-verify oldest ✅ (Homepage) OR convergence-govern if 2 rotations file zero.
+- 2026-08-03 — ratchet: Homepage re-verified → 2 NEW deltas (#646 nav typography, #647 stray homepage-grid REFINE/count). Row ✅→⚠️. Re-verify caught leaks the per-page audits missed → NOT converged. Next up: build #646/#647, then re-diff.
