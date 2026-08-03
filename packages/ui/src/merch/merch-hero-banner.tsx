@@ -152,18 +152,18 @@ export function MerchHeroBanner({
   const hasOverlay =
     !!(currentSlide.eyebrow || currentSlide.headline || currentSlide.body || currentSlide.ctaLabel);
 
-  // Overlay position classes
+  // Overlay position classes — mobile defaults to bottom-center, desktop follows ctaCorner
   const overlayPositionCls = isBottomRight
-    ? "absolute bottom-6 right-8 flex flex-col items-end text-right"
+    ? "absolute bottom-4 right-0 left-0 flex flex-col items-center text-center md:bottom-6 md:right-8 md:left-auto md:items-end md:text-right"
     : isCenter
-      ? "absolute inset-0 flex flex-col justify-center items-center px-5 py-8 text-center"
-      : "absolute inset-0 flex flex-col justify-center items-start px-10 py-12";
+      ? "absolute inset-0 flex flex-col justify-end items-center px-5 py-6 text-center md:justify-center md:py-8"
+      : "absolute inset-0 flex flex-col justify-end items-center px-4 py-6 text-center md:justify-center md:items-start md:px-10 md:py-12 md:text-left";
 
   return (
     <section
       aria-label={ariaLabel}
-      className="relative w-full overflow-hidden"
-      style={{ aspectRatio: "64 / 27", fontFamily: "var(--font-merch)" }}
+      className="relative w-full overflow-hidden aspect-[3/4] md:aspect-[64/27]"
+      style={{ fontFamily: "var(--font-merch)" }}
     >
       {/* Hidden gradient def for SVG-based gradient ids if needed */}
       <svg width="0" height="0" aria-hidden className="absolute">
