@@ -266,7 +266,7 @@ export interface MerchProduct {
   /** Original (pre-sale) price string, e.g. "$29.99"; omit if not on sale. */
   originalPrice?: string;
   /** Optional badge label for the tile. */
-  badge?: "New" | "Sale" | "Out of Stock" | "Limited";
+  badge?: "New" | "Sale" | "Out of Stock" | "Limited" | "Preorder" | "Restock";
 }
 
 /**

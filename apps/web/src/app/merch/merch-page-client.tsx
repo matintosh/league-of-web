@@ -77,6 +77,33 @@ const PRODUCTS: MerchProduct[] = [
     imageUrl: championSplashUrl("Teemo", 0),
     price: "$19.99",
   },
+  {
+    slug: "ahri-spirit-blossom-preorder",
+    title: "Ahri Spirit Blossom Statue — Limited Preorder",
+    imageUrl: championSplashUrl("Ahri", 1),
+    price: "$89.99",
+    badge: "Preorder",
+  },
+  {
+    slug: "arcane-caitlyn-restock",
+    title: "Arcane Caitlyn Collector's Resin Figure",
+    imageUrl: championSplashUrl("Caitlyn", 0),
+    price: "$49.99",
+    badge: "Restock",
+  },
+  {
+    slug: "league-classic-cap",
+    title: "League of Legends Classic Logo Cap",
+    imageUrl: championSplashUrl("Lux", 2),
+    price: "$27.99",
+  },
+  {
+    slug: "riftbound-deluxe-set",
+    title: "Riftbound Origins Deluxe Champion Set",
+    imageUrl: championSplashUrl("Jinx", 3),
+    price: "$74.99",
+    badge: "Limited",
+  },
 ];
 
 const HERO_SLIDES: MerchHeroSlide[] = [
@@ -173,11 +200,14 @@ export function MerchPageClient() {
           onSelectFranchise={(slug) => router.push(`/merch/collection/${slug}`)}
         />
 
-        {/* Product grid */}
+        {/* Product grid — brand-rail collection layout matching merch.riotgames.com */}
         <MerchProductGrid
-          heading="New Arrivals"
-          onShopAll={() => router.push("/merch/shop-all")}
-          shopAllLabel="Shop All"
+          brandRail="League of Legends"
+          filterBadges={[
+            { label: "New" },
+            { label: "Limited Edition" },
+            { label: "Preorder" },
+          ]}
         >
           {PRODUCTS.map((product) => (
             <MerchProductCard
@@ -188,6 +218,7 @@ export function MerchPageClient() {
               price={product.price}
               originalPrice={product.originalPrice}
               badge={product.badge}
+              onClick={() => router.push(`/merch/shop-all`)}
             />
           ))}
         </MerchProductGrid>

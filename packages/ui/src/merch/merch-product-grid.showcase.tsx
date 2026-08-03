@@ -6,6 +6,8 @@ import {
   MerchProductGridWithShopAllDemo,
   MerchProductGridShopAllOnlyDemo,
   MerchProductGridEmptyDemo,
+  MerchProductGridBrandRailDemo,
+  MerchProductGridBrandRailFilterDemo,
 } from "./merch-product-grid.demo";
 
 /** Placeholder images from Data Dragon CDN (ddragon.leagueoflegends.com). */
@@ -25,12 +27,26 @@ export const merchProductGridShowcase: ShowcaseEntry = {
   name: "Merch Product Grid",
   area: "merch",
   description:
-    "Responsive section wrapper for MerchProductCard tiles. 4 columns at lg (≥1024px), 3 at md, 2 on mobile — 20px gap at md+, 12px below. Optional section heading and 'Shop All →' link row. Empty-state paragraph when no children. Measured from merch.riotgames.com shop-all and collection pages.",
+    "Responsive section wrapper for MerchProductCard tiles. Supports two layout models: (1) brand-rail — left vertical label + top-right filter chips matching merch.riotgames.com homepage; (2) legacy heading + 'Shop All →' for shop-all and collection pages. 4 columns at lg (≥1024px), 3 at md, 2 on mobile — 20px gap at md+, 12px below. Measured from merch.riotgames.com.",
   variants: [
+    {
+      name: "Brand-rail — League of Legends collection grid",
+      notes:
+        "Homepage model: left vertical 'LEAGUE OF LEGENDS' label + full product grid. Matches the real store's homepage body layout.",
+      backgrounds: ["light"],
+      render: () => <MerchProductGridBrandRailDemo />,
+    },
+    {
+      name: "Brand-rail + filter badges (New / Limited Edition / Preorder)",
+      notes:
+        "Brand-rail with top-right filter chip row. Active badge has ink background.",
+      backgrounds: ["light"],
+      render: () => <MerchProductGridBrandRailFilterDemo />,
+    },
     {
       name: "Full 4-col grid — heading + Shop All",
       notes:
-        "8 cards, 4-column layout (default), with section heading and Shop All link.",
+        "Legacy model: 8 cards, 4-column layout (default), with section heading and Shop All link.",
       backgrounds: ["light"],
       render: () => <MerchProductGridWithShopAllDemo />,
     },

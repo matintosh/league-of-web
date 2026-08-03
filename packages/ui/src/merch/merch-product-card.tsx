@@ -13,14 +13,15 @@
  *
  * Measured from merch.riotgames.com shop-all / collection pages (~1280px, 4-up):
  *   - Card width: ~280–300px; 4-column grid, ~20px gap
- *   - Image: aspect-ratio 1/1 (square), object-fit: cover
+ *   - Image: aspect-ratio 1/1 (square), object-fit: cover (or contain on white for packshots)
  *   - Image hover: scale(1.04) over 200ms ease-out
  *   - Info strip: ~12px horizontal, ~8–10px vertical padding
- *   - Title: ~14px, weight 500–600, white, line-clamp 2
- *   - Price: ~14px, weight 400–500, muted (--color-merch-muted)
+ *   - Title: 16px, weight 700, #000 (--color-merch-ink), line-clamp 2
+ *   - Price: ~16px area, dark, separate line under title
  *   - Sale: original struck-through in muted + sale price in red
  *   - Badge (top-left absolute): ~10–12px, all-caps, 4px 8px padding
- *     "Sale" → red, "New" → surface-elevated + white, "Out of Stock" → muted border fill
+ *     "New" → green (#7ac043), "Limited"/"Limited Edition" → yellow (#e8c33c),
+ *     "Preorder"/"Restock" → grey (#5a5a5a), "Sale" → red, "Out of Stock" → muted border fill
  */
 
 import type { MerchProduct } from "@low/fixtures";
@@ -42,6 +43,12 @@ export interface MerchProductCardProps {
   originalPrice?: string;
   /** Optional badge label. */
   badge?: MerchProduct["badge"];
+  /**
+   * Controls how the product image is fitted inside its square container.
+   * Use `"contain"` on white for packshot photography; `"cover"` for lifestyle shots.
+   * @default "cover"
+   */
+  imageFit?: "cover" | "contain";
   /** Called when the card is clicked. */
   onClick?: (slug: string) => void;
 }
@@ -52,28 +59,32 @@ export interface MerchProductCardProps {
 
 function badgeStyle(badge: NonNullable<MerchProductCardProps["badge"]>): React.CSSProperties {
   switch (badge) {
+    case "New":
+    case "Restock":
+      return {
+        backgroundColor: "var(--color-merch-badge-new)",
+        color: "var(--color-merch-on-dark)",
+      };
+    case "Limited":
+      return {
+        backgroundColor: "var(--color-merch-badge-limited)",
+        color: "var(--color-merch-ink)",
+      };
+    case "Preorder":
+      return {
+        backgroundColor: "var(--color-merch-badge-preorder)",
+        color: "var(--color-merch-on-dark)",
+      };
     case "Sale":
       return {
         backgroundColor: "var(--color-merch-red)",
         color: "var(--color-merch-on-dark)",
-      };
-    case "New":
-      return {
-        backgroundColor: "var(--color-merch-ink)",
-        color: "var(--color-merch-on-dark)",
-        border: "1px solid rgba(255,255,255,0.15)",
       };
     case "Out of Stock":
       return {
         backgroundColor: "var(--color-merch-surface)",
         color: "var(--color-merch-muted)",
         border: "1px solid var(--color-merch-border)",
-      };
-    case "Limited":
-      return {
-        backgroundColor: "var(--color-merch-ink)",
-        color: "var(--color-merch-red)",
-        border: "1px solid var(--color-merch-red)",
       };
   }
 }
@@ -93,6 +104,7 @@ export function MerchProductCard({
   price,
   originalPrice,
   badge,
+  imageFit = "cover",
   onClick,
 }: MerchProductCardProps) {
   const isOnSale = badge === "Sale" || (originalPrice !== undefined && originalPrice !== price);
@@ -111,7 +123,7 @@ export function MerchProductCard({
         className="relative overflow-hidden"
         style={{
           aspectRatio: "1 / 1",
-          backgroundColor: "var(--color-merch-surface)",
+          backgroundColor: imageFit === "contain" ? "var(--color-merch-bg)" : "var(--color-merch-surface)",
         }}
       >
         {/* Product image — scale on hover */}
@@ -120,7 +132,7 @@ export function MerchProductCard({
           src={imageUrl}
           alt={title}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-200 ease-out group-hover:scale-[1.04]"
+          className={`h-full w-full transition-transform duration-200 ease-out group-hover:scale-[1.04] ${imageFit === "contain" ? "object-contain" : "object-cover"}`}
           style={{ display: "block" }}
         />
 
@@ -142,9 +154,9 @@ export function MerchProductCard({
         className="flex flex-col gap-0.5 px-0 pt-2.5 pb-1"
         style={{ backgroundColor: "var(--color-merch-bg)" }}
       >
-        {/* Title — line-clamp 2 */}
+        {/* Title — 16px/700 sentence-case, line-clamp 2 */}
         <p
-          className="line-clamp-2 text-[14px] font-medium leading-snug"
+          className="line-clamp-2 text-[16px] font-bold leading-snug"
           style={{ color: "var(--color-merch-ink)" }}
         >
           {title}

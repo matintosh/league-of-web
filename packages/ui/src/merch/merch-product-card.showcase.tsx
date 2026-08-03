@@ -12,7 +12,7 @@ export const merchProductCardShowcase: ShowcaseEntry = {
   name: "Merch Product Card",
   area: "merch",
   description:
-    "Atomic product tile for the Riot merch store grid: square image (hover scale), title (line-clamp 2), price, optional badge (New/Sale/Out of Stock/Limited). Sale state shows struck-through original + red sale price. Measured from merch.riotgames.com (~280px wide, 4-column grid with 20px gap).",
+    "Atomic product tile for the Riot merch store grid: square image (hover scale), title 16px/700 (line-clamp 2), price, optional badge. Badge colors: New=green (#7ac043), Limited=yellow (#e8c33c), Preorder/Restock=grey (#5a5a5a), Sale=red. imageFit='contain' for packshot photography on white. Measured from merch.riotgames.com (~280px wide, 4-column grid with 20px gap).",
   variants: [
     {
       name: "Default — in-stock, no badge",
@@ -47,8 +47,8 @@ export const merchProductCardShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "New badge",
-      notes: "Badge 'New' in dark surface with white text.",
+      name: "New badge — green",
+      notes: "Badge 'New' in green (#7ac043) with white text, matching real store filter chip.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 280, fontFamily: "system-ui, sans-serif" }}>
@@ -58,6 +58,54 @@ export const merchProductCardShowcase: ShowcaseEntry = {
             imageUrl={PLACEHOLDER_DARK}
             price="$34.99"
             badge="New"
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Limited badge — yellow",
+      notes: "Badge 'Limited' in yellow (#e8c33c) with ink text, matching real store filter chip.",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 280, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductCard
+            slug="valorant-agent-hoodie"
+            title="VALORANT Agent Collection Pullover Hoodie"
+            imageUrl={PLACEHOLDER_DARK}
+            price="$54.99"
+            badge="Limited"
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Preorder badge — grey",
+      notes: "Badge 'Preorder' in grey (#5a5a5a) with white text, matching real store filter chip.",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 280, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductCard
+            slug="ahri-spirit-blossom-preorder"
+            title="Ahri Spirit Blossom Statue — Limited Preorder"
+            imageUrl={PLACEHOLDER_IMG}
+            price="$89.99"
+            badge="Preorder"
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Restock badge — green",
+      notes: "Badge 'Restock' shares the green badge color with 'New'.",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 280, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductCard
+            slug="arcane-caitlyn-restock"
+            title="Arcane Caitlyn Collector's Resin Figure"
+            imageUrl={PLACEHOLDER_RED}
+            price="$49.99"
+            badge="Restock"
           />
         </div>
       ),
@@ -74,6 +122,22 @@ export const merchProductCardShowcase: ShowcaseEntry = {
             imageUrl={PLACEHOLDER_IMG}
             price="$29.99"
             badge="Out of Stock"
+          />
+        </div>
+      ),
+    },
+    {
+      name: "imageFit=contain — packshot on white",
+      notes: "object-contain on white bg for product photography; image is not cropped.",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 280, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductCard
+            slug="league-classic-cap"
+            title="League of Legends Classic Logo Cap"
+            imageUrl={PLACEHOLDER_DARK}
+            price="$27.99"
+            imageFit="contain"
           />
         </div>
       ),
@@ -96,7 +160,7 @@ export const merchProductCardShowcase: ShowcaseEntry = {
     },
     {
       name: "Grid of 4 cards",
-      notes: "Cards inside a typical 4-column grid at ~280px each, 20px gap.",
+      notes: "Cards inside a typical 4-column grid at ~280px each, 20px gap — all badge variants.",
       backgrounds: ["light"],
       render: () => (
         <div
@@ -111,8 +175,8 @@ export const merchProductCardShowcase: ShowcaseEntry = {
         >
           <MerchProductCard slug="p1" title="Riftbound Origins Deck" imageUrl={PLACEHOLDER_IMG} price="$24.99" badge="New" />
           <MerchProductCard slug="p2" title="Arcane Vi Hoodie" imageUrl={PLACEHOLDER_RED} price="$39.99" originalPrice="$59.99" badge="Sale" />
-          <MerchProductCard slug="p3" title="PROJECT: Lux Art Print" imageUrl={PLACEHOLDER_DARK} price="$34.99" />
-          <MerchProductCard slug="p4" title="Poro Plush Season 14 Limited Edition Collector's Bundle" imageUrl={PLACEHOLDER_IMG} price="$29.99" badge="Out of Stock" />
+          <MerchProductCard slug="p3" title="PROJECT: Lux Art Print" imageUrl={PLACEHOLDER_DARK} price="$34.99" badge="Limited" />
+          <MerchProductCard slug="p4" title="Poro Plush Season 14 Limited Edition Collector's Bundle" imageUrl={PLACEHOLDER_IMG} price="$29.99" badge="Preorder" />
         </div>
       ),
     },
