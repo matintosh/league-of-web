@@ -4,8 +4,8 @@ import { CollectionPageClient } from "./collection-page-client";
 
 /**
  * /merch/collection/[handle] — collection/category browse page.
- * Composed of: MerchHeader + MerchCollectionHero + MerchFilterSortBar +
- *              MerchProductGrid(cards) + MerchFooter.
+ * Composed of: MerchHeader + white breadcrumb bar (Home / <Name> (N) + REFINE) +
+ *              MerchFilterSortBar + MerchProductGrid(cards) + MerchFooter.
  * Merch tokens (--color-merch-*) are loaded by the /merch layout.
  * All interactive callbacks are delegated to CollectionPageClient.
  */
