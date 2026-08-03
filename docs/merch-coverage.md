@@ -30,10 +30,10 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 ### Nav-destination routes (header nav must reach these)
 | Page | Real URL | Our route | Status | Notes |
 |---|---|---|---|---|
-| **Sale** | `/sale/` | `/merch/sale` | 🔨 nav-build | sale-filtered listing (part of the full-working-nav build) |
-| **Categories ▾** | nav dropdown | menu → `/merch/collection/<cat>` | 🔨 nav-build | dropdown menu of product categories |
-| **Featured ▾** | nav dropdown | menu → `/merch/collection/<slug>` | 🔨 nav-build | dropdown menu of featured collections/franchises |
-| **My Shop** | `/account` (gold) | `/merch/account` | 🔨 nav-build | gold nav item → account |
+| **Sale** | `/sale/` | `/merch/sale` | ✅ | sale-filtered listing (2 real sale items, struck price); empty-state ready |
+| **Categories ▾** | nav dropdown | menu → `/merch/collection/<cat>` | ✅ | functional dropdown (Apparel/Collectibles/Accessories/Art/Home/Gaming) + mobile submenu |
+| **Featured ▾** | nav dropdown | menu → `/merch/collection/<slug>` | ✅ | functional dropdown (LoL/Riftbound/Arcane/VALORANT/TFT/Esports) + mobile submenu |
+| **My Shop** | `/account` (gold) | `/merch/account` | ✅ | gold nav item → account |
 
 ### Supporting routes (not store pages, but real routes in our app)
 | Page | Our route | Status | Notes |
@@ -46,11 +46,10 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 ## PAGES — next up (build order)
 
-**All 9 store page types shipped.** Active + remaining:
+**All 9 store page types shipped + full working nav ✅.** Remaining:
 
-1. **Full working nav** 🔨 — dropdown menus (Categories/Featured) + `/merch/sale` + mobile menu + wire onCategoryClick on every page (user-directed; builder-nav in flight)
-2. **PDP sub-components** — related-products carousel ✅ · description accordions ✅ · size-guide ✅ (shipped; remaining: none critical)
-3. **Ongoing 1:1 fidelity polish** — the fidelity-engine meta-loop (:53) pixel-diffs each store page vs the real site and files residual deltas
+1. **Public `sitemap.xml` + `robots.txt`** — the deployed site serves neither (both 404); real store has a sitemap. Add `app/sitemap.ts` + `app/robots.ts` enumerating all routes (dynamic ones from @low/fixtures). ⬜ proposed.
+2. **Ongoing 1:1 fidelity polish** — the fidelity-engine meta-loop (:53) pixel-diffs each store page vs the real site and files residual deltas.
 
 ---
 
