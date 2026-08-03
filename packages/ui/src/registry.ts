@@ -108,9 +108,9 @@ import { merchCartPageShowcase } from "./merch/merch-cart-page.showcase";
 import { merchCollectionHeroShowcase } from "./merch/merch-collection-hero.showcase";
 import { merchFilterSortBarShowcase } from "./merch/merch-filter-sort-bar.showcase";
 import { merchFooterShowcase } from "./merch/merch-footer.showcase";
-import { merchInfoPageShowcase } from "./merch/merch-info-page.showcase";
 import { merchHeaderShowcase } from "./merch/merch-header.showcase";
 import { merchHeroBannerShowcase } from "./merch/merch-hero-banner.showcase";
+import { merchInfoPageShowcase } from "./merch/merch-info-page.showcase";
 import { merchProductCardShowcase } from "./merch/merch-product-card.showcase";
 import { merchProductGalleryShowcase } from "./merch/merch-product-gallery.showcase";
 import { merchProductGridShowcase } from "./merch/merch-product-grid.showcase";
@@ -239,9 +239,9 @@ export const registry: ShowcaseEntry[] = [
   merchCollectionHeroShowcase,
   merchFilterSortBarShowcase,
   merchFooterShowcase,
-  merchInfoPageShowcase,
   merchHeaderShowcase,
   merchHeroBannerShowcase,
+  merchInfoPageShowcase,
   merchProductCardShowcase,
   merchProductGalleryShowcase,
   merchProductGridShowcase,
