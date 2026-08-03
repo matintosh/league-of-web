@@ -25,6 +25,7 @@ const HUB_CARDS: LandingHubCard[] = [
       "Riot merch store scaffold — a new section with its own modern e-commerce design language.",
     href: "/merch",
     badge: "Merch design system",
+    showcaseLink: { label: "Browse components →", href: "/merch/showcase" },
   },
 ];
 
