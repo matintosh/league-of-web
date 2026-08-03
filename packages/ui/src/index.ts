@@ -243,7 +243,7 @@ export { YourShopIcon } from "./store/your-shop-icon";
 export type { YourShopIconProps, YourShopIconVideoSources } from "./store/your-shop-icon";
 export { YourShopScreen } from "./store/your-shop-screen";
 export type { YourShopScreenProps, YourShopCard } from "./store/your-shop-screen";
-// merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCollectionHero < MerchFilterSortBar < MerchFooter < MerchHeader < MerchHeroBanner < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchPurchasePanel < MerchStore
+// merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCollectionHero < MerchFilterSortBar < MerchFooter < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchPurchasePanel < MerchStore
 export { MerchCartDrawer } from "./merch/merch-cart-drawer";
 export type { MerchCartDrawerProps, MerchCartItem } from "./merch/merch-cart-drawer";
 export { MerchCartPage } from "./merch/merch-cart-page";
@@ -262,6 +262,8 @@ export { MerchHeader } from "./merch/merch-header";
 export type { MerchHeaderProps } from "./merch/merch-header";
 export { MerchHeroBanner } from "./merch/merch-hero-banner";
 export type { MerchHeroBannerProps, MerchHeroSlide } from "./merch/merch-hero-banner";
+export { MerchInfoPage } from "./merch/merch-info-page";
+export type { MerchInfoPageProps } from "./merch/merch-info-page";
 export { MerchProductCard } from "./merch/merch-product-card";
 export type { MerchProductCardProps } from "./merch/merch-product-card";
 export { MerchProductGallery } from "./merch/merch-product-gallery";

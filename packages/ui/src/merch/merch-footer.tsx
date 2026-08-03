@@ -63,30 +63,30 @@ const DEFAULT_LINK_GROUPS: MerchFooterLinkGroup[] = [
       { label: "Order Status",        href: "/en-us/order-lookup/" },
       { label: "Gift Card Balance",    href: "/en-us/gift-card-balance/" },
       { label: "Verify Your Product",  href: "/en-us/product-validation/" },
-      { label: "FAQs",                 href: "/en-us/faqs/" },
+      { label: "FAQs",                 href: "/merch/pages/faqs" },
     ],
   },
   {
     heading: "Shipping",
     links: [
-      { label: "Shipping Information", href: "/en-us/faqs/" },
-      { label: "Returns",              href: "/en-us/faqs/" },
+      { label: "Shipping Information", href: "/merch/pages/shipping" },
+      { label: "Returns",              href: "/merch/pages/returns" },
     ],
   },
   {
     heading: "About",
     links: [
-      { label: "Collectability Guide", href: "/en-us/collectability-guide/" },
-      { label: "Accessibility",        href: "/en-us/accessibility/" },
+      { label: "Collectability Guide", href: "/merch/pages/collectability-guide" },
+      { label: "Accessibility",        href: "/merch/pages/accessibility" },
     ],
   },
 ];
 
 const DEFAULT_LEGAL_LINKS: MerchFooterLink[] = [
-  { label: "Legal Info",          href: "/en-us/legal/" },
-  { label: "Cookie Preferences",  href: "/en-us/cookies/" },
-  { label: "Terms & Conditions",  href: "/en-us/terms/" },
-  { label: "Privacy Policy",      href: "/en-us/privacy/" },
+  { label: "Legal Info",          href: "/merch/pages/legal" },
+  { label: "Cookie Preferences",  href: "/merch/pages/cookies" },
+  { label: "Terms & Conditions",  href: "/merch/pages/terms" },
+  { label: "Privacy Policy",      href: "/merch/pages/privacy" },
 ];
 
 // ---------------------------------------------------------------------------

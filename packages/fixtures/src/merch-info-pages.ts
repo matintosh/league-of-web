@@ -1,0 +1,483 @@
+/**
+ * Typed dummy content for the /merch/pages/[slug] info-page route.
+ *
+ * MERCH FIXTURES — values only. Types are exported for @low/ui to import.
+ * Content is intentionally representative (FAQ / Shipping / Returns style)
+ * to match the real merch.riotgames.com prose pages.
+ */
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export interface MerchInfoBlock {
+  /** Block type drives rendering: heading vs prose vs list. */
+  type: "paragraph" | "heading2" | "heading3" | "ul" | "ol";
+  /** Raw text for headings/paragraphs; array of strings for ul/ol items. */
+  content: string | string[];
+}
+
+export interface MerchInfoPageContent {
+  /** Page <h1> title, e.g. "Frequently Asked Questions". */
+  title: string;
+  /** Ordered list of content blocks rendered top-to-bottom. */
+  blocks: MerchInfoBlock[];
+}
+
+// ---------------------------------------------------------------------------
+// Content map keyed by slug
+// ---------------------------------------------------------------------------
+
+export const MERCH_INFO_PAGES: Record<string, MerchInfoPageContent> = {
+  faqs: {
+    title: "Frequently Asked Questions",
+    blocks: [
+      { type: "heading2", content: "Orders" },
+      {
+        type: "paragraph",
+        content:
+          "Once your order is placed you will receive a confirmation email. Orders are typically processed within 1–3 business days before shipping.",
+      },
+      { type: "heading3", content: "Can I change or cancel my order?" },
+      {
+        type: "paragraph",
+        content:
+          "Orders can be modified or cancelled within 1 hour of placement. Please contact our support team as quickly as possible for assistance.",
+      },
+      { type: "heading3", content: "What payment methods do you accept?" },
+      {
+        type: "ul",
+        content: [
+          "Credit and debit cards (Visa, Mastercard, American Express)",
+          "PayPal",
+          "Riot Games Gift Cards",
+          "Apple Pay and Google Pay (where available)",
+        ],
+      },
+      { type: "heading2", content: "Shipping" },
+      {
+        type: "paragraph",
+        content:
+          "We ship to most countries worldwide. Shipping times and costs vary depending on your location and the shipping method selected at checkout.",
+      },
+      { type: "heading3", content: "How do I track my order?" },
+      {
+        type: "paragraph",
+        content:
+          "Once your order ships you will receive a tracking number via email. You can use this number on our Order Status page or directly on the carrier's website.",
+      },
+      { type: "heading2", content: "Returns & Exchanges" },
+      {
+        type: "paragraph",
+        content:
+          "We accept returns and exchanges within 30 days of delivery for most items. Please see our Returns page for full details.",
+      },
+      { type: "heading3", content: "What items are non-returnable?" },
+      {
+        type: "ul",
+        content: [
+          "Opened collectibles or limited-edition items",
+          "Digital content or codes",
+          "Customized or personalized products",
+          "Items marked as Final Sale",
+        ],
+      },
+      { type: "heading2", content: "Product Questions" },
+      { type: "heading3", content: "Are your products officially licensed?" },
+      {
+        type: "paragraph",
+        content:
+          "Yes. All products sold in the Riot Games Merch Store are officially licensed and produced to Riot's quality standards.",
+      },
+      { type: "heading3", content: "How do I know if an item is authentic?" },
+      {
+        type: "paragraph",
+        content:
+          "Collectibles purchased through our official store include a certificate of authenticity or holographic seal where applicable. Use our Product Validation tool to verify your item.",
+      },
+    ],
+  },
+
+  shipping: {
+    title: "Shipping Information",
+    blocks: [
+      { type: "heading2", content: "Processing Times" },
+      {
+        type: "paragraph",
+        content:
+          "Orders are processed within 1–3 business days (Monday–Friday, excluding holidays). You will receive an email confirmation once your order ships.",
+      },
+      { type: "heading2", content: "Domestic Shipping (United States)" },
+      {
+        type: "paragraph",
+        content: "We offer the following shipping options for US orders:",
+      },
+      {
+        type: "ol",
+        content: [
+          "Standard Shipping (5–7 business days) — Free on orders over $50",
+          "Expedited Shipping (2–3 business days) — Flat rate $12.99",
+          "Overnight Shipping (next business day) — Flat rate $24.99",
+        ],
+      },
+      { type: "heading2", content: "International Shipping" },
+      {
+        type: "paragraph",
+        content:
+          "We ship to over 60 countries. International delivery typically takes 7–21 business days depending on the destination and customs processing times.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Please note that the recipient is responsible for any customs duties, taxes, or import fees imposed by their country.",
+      },
+      { type: "heading3", content: "Countries we do not currently ship to" },
+      {
+        type: "paragraph",
+        content:
+          "Some regions are unavailable due to shipping restrictions or regulatory requirements. Please check at checkout whether your country is supported.",
+      },
+      { type: "heading2", content: "Order Tracking" },
+      {
+        type: "paragraph",
+        content:
+          "A tracking number is emailed once your order leaves our warehouse. Use the Order Status page or paste the tracking number directly on the carrier's website for real-time updates.",
+      },
+      { type: "heading2", content: "Shipping Delays" },
+      {
+        type: "paragraph",
+        content:
+          "During peak seasons (major game launches, holiday periods) and due to external factors like carrier disruptions or customs backlogs, delivery may take longer than the estimates above. We will communicate any known delays via email.",
+      },
+    ],
+  },
+
+  returns: {
+    title: "Returns & Exchanges",
+    blocks: [
+      { type: "heading2", content: "Return Policy Overview" },
+      {
+        type: "paragraph",
+        content:
+          "We want you to love your purchase. If for any reason you are not satisfied, we accept returns and exchanges within 30 days of the delivery date.",
+      },
+      { type: "heading2", content: "How to Start a Return" },
+      {
+        type: "ol",
+        content: [
+          "Visit our Order Status page and locate your order.",
+          "Select the item(s) you wish to return and choose a reason.",
+          "Print the prepaid return shipping label (US orders only).",
+          "Drop your package at any authorized carrier location.",
+          "Refunds are processed within 5–10 business days of receipt.",
+        ],
+      },
+      { type: "heading2", content: "Eligibility Requirements" },
+      {
+        type: "paragraph",
+        content:
+          "To be eligible for a return, items must meet all of the following conditions:",
+      },
+      {
+        type: "ul",
+        content: [
+          "Returned within 30 days of delivery",
+          "Unworn, unused, and in original condition",
+          "Original tags and packaging intact",
+          "Accompanied by proof of purchase",
+        ],
+      },
+      { type: "heading2", content: "Non-Returnable Items" },
+      {
+        type: "ul",
+        content: [
+          "Opened or displayed collectibles and limited-edition items",
+          "Digital codes and downloadable content",
+          "Personalized or customized products",
+          "Final Sale items (clearly marked at purchase)",
+          "Gift cards",
+        ],
+      },
+      { type: "heading2", content: "Exchanges" },
+      {
+        type: "paragraph",
+        content:
+          "Exchanges for a different size or colour are subject to product availability. If the requested variant is out of stock, we will issue a refund instead.",
+      },
+      { type: "heading2", content: "Damaged or Defective Items" },
+      {
+        type: "paragraph",
+        content:
+          "If your item arrived damaged or defective, please contact us within 7 days of delivery with photos of the damage and your order number. We will arrange a replacement or full refund at no cost to you.",
+      },
+    ],
+  },
+
+  "collectability-guide": {
+    title: "Collectability Guide",
+    blocks: [
+      { type: "heading2", content: "What Is the Collectability Guide?" },
+      {
+        type: "paragraph",
+        content:
+          "This guide helps you understand the rarity and collectability ratings we assign to products in the Riot Games Merch Store, so you can make informed purchasing decisions.",
+      },
+      { type: "heading2", content: "Rarity Tiers" },
+      { type: "heading3", content: "Standard" },
+      {
+        type: "paragraph",
+        content:
+          "Standard items are available year-round without a quantity cap. These include everyday apparel, accessories, and most plush items.",
+      },
+      { type: "heading3", content: "Limited Edition" },
+      {
+        type: "paragraph",
+        content:
+          "Limited Edition items are produced in a defined run (quantity noted on the product page). Once sold out, they will not be restocked.",
+      },
+      { type: "heading3", content: "Numbered Edition" },
+      {
+        type: "paragraph",
+        content:
+          "Numbered Edition collectibles include an individually numbered certificate of authenticity. These are strictly limited to the stated print or production run.",
+      },
+      { type: "heading3", content: "Exclusive" },
+      {
+        type: "paragraph",
+        content:
+          "Exclusive items are available only during a specific event window (e.g., Worlds, MSI, or a game anniversary). They cannot be purchased outside that window.",
+      },
+      { type: "heading2", content: "Authenticity Verification" },
+      {
+        type: "paragraph",
+        content:
+          "Use our Product Validation tool to confirm the authenticity of any collectible you have purchased. Enter the serial number or scan the holographic seal to verify.",
+      },
+      { type: "heading2", content: "Care & Display" },
+      {
+        type: "paragraph",
+        content:
+          "To preserve the value and appearance of your collectibles, we recommend keeping them away from direct sunlight and humidity. Numbered edition statues and figures ship in collector-grade packaging that doubles as a display case.",
+      },
+    ],
+  },
+
+  accessibility: {
+    title: "Accessibility",
+    blocks: [
+      { type: "heading2", content: "Our Commitment" },
+      {
+        type: "paragraph",
+        content:
+          "Riot Games is committed to making the Merch Store accessible to everyone, including people with disabilities. We aim to meet or exceed the Web Content Accessibility Guidelines (WCAG) 2.1 AA standard.",
+      },
+      { type: "heading2", content: "Features" },
+      {
+        type: "ul",
+        content: [
+          "Keyboard navigation for all interactive elements",
+          "Screen reader–compatible markup with descriptive ARIA labels",
+          "Sufficient color contrast ratios across all text and interactive elements",
+          "Text resizes up to 200% without loss of functionality",
+          "Alternative text on all meaningful images",
+          "Focus indicators visible on all focusable elements",
+        ],
+      },
+      { type: "heading2", content: "Known Limitations" },
+      {
+        type: "paragraph",
+        content:
+          "We are actively working to improve accessibility across all parts of the store. Some third-party widgets (e.g., payment processing overlays) may not yet meet our target standards. We work with our partners to resolve these as quickly as possible.",
+      },
+      { type: "heading2", content: "Contact Us" },
+      {
+        type: "paragraph",
+        content:
+          "If you experience any accessibility barriers while using the Riot Games Merch Store, please contact our support team. We will do our best to provide the content or functionality you need through an alternative means.",
+      },
+    ],
+  },
+
+  legal: {
+    title: "Legal Information",
+    blocks: [
+      { type: "heading2", content: "Intellectual Property" },
+      {
+        type: "paragraph",
+        content:
+          "All content on this website — including text, graphics, logos, images, and software — is the property of Riot Games, Inc. and is protected by applicable intellectual property laws. Unauthorized reproduction or distribution is prohibited.",
+      },
+      { type: "heading2", content: "Trademarks" },
+      {
+        type: "paragraph",
+        content:
+          'Riot Games, League of Legends, VALORANT, Teamfight Tactics, Legends of Runeterra, and their respective logos are trademarks or registered trademarks of Riot Games, Inc. All other trademarks are the property of their respective owners.',
+      },
+      { type: "heading2", content: "Limitation of Liability" },
+      {
+        type: "paragraph",
+        content:
+          "To the fullest extent permitted by law, Riot Games shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of this website or the purchase of products.",
+      },
+      { type: "heading2", content: "Governing Law" },
+      {
+        type: "paragraph",
+        content:
+          "These terms are governed by the laws of the State of California, United States, without regard to its conflict of law principles.",
+      },
+      { type: "heading2", content: "Dispute Resolution" },
+      {
+        type: "paragraph",
+        content:
+          "Any dispute arising from your use of this store or these terms shall first be addressed through informal negotiation. If unresolved, disputes shall be settled by binding arbitration in Los Angeles, California.",
+      },
+    ],
+  },
+
+  cookies: {
+    title: "Cookie Preferences",
+    blocks: [
+      { type: "heading2", content: "What Are Cookies?" },
+      {
+        type: "paragraph",
+        content:
+          "Cookies are small text files stored on your device when you visit a website. They allow the site to remember your preferences, keep you signed in, and understand how you interact with our store.",
+      },
+      { type: "heading2", content: "Types of Cookies We Use" },
+      { type: "heading3", content: "Strictly Necessary" },
+      {
+        type: "paragraph",
+        content:
+          "These cookies are required for the store to function. They enable core features like your shopping cart, checkout, and account login. You cannot opt out of these.",
+      },
+      { type: "heading3", content: "Performance & Analytics" },
+      {
+        type: "paragraph",
+        content:
+          "These cookies help us understand how visitors use our site — which pages are popular, where users drop off, and how performance can be improved. All data is aggregated and anonymized.",
+      },
+      { type: "heading3", content: "Functional" },
+      {
+        type: "paragraph",
+        content:
+          "Functional cookies remember your preferences such as language, currency, and region so you don't have to re-enter them each visit.",
+      },
+      { type: "heading3", content: "Advertising & Targeting" },
+      {
+        type: "paragraph",
+        content:
+          "We may use these cookies to deliver relevant advertising on third-party platforms. You can opt out below or via your browser settings.",
+      },
+      { type: "heading2", content: "Managing Your Preferences" },
+      {
+        type: "paragraph",
+        content:
+          "You can update your cookie preferences at any time by visiting this page. You can also control cookies through your browser settings; however, disabling certain cookies may affect site functionality.",
+      },
+    ],
+  },
+
+  terms: {
+    title: "Terms & Conditions",
+    blocks: [
+      { type: "heading2", content: "Acceptance of Terms" },
+      {
+        type: "paragraph",
+        content:
+          "By accessing or purchasing from the Riot Games Merch Store, you agree to be bound by these Terms & Conditions and our Privacy Policy. If you do not agree, please do not use this store.",
+      },
+      { type: "heading2", content: "Eligibility" },
+      {
+        type: "paragraph",
+        content:
+          "You must be at least 13 years of age (or the minimum age of digital consent in your country) to use this store. If you are under 18, you must have parental or guardian consent.",
+      },
+      { type: "heading2", content: "Orders & Pricing" },
+      {
+        type: "ul",
+        content: [
+          "Prices are listed in USD unless otherwise indicated.",
+          "We reserve the right to refuse or cancel orders at our discretion.",
+          "Prices and availability are subject to change without notice.",
+          "Promotional prices apply only during the stated promotion period.",
+        ],
+      },
+      { type: "heading2", content: "Product Descriptions" },
+      {
+        type: "paragraph",
+        content:
+          "We make every effort to display product images and descriptions accurately. However, color representation may vary depending on your monitor settings. We do not warrant that product descriptions are error-free.",
+      },
+      { type: "heading2", content: "Prohibited Uses" },
+      {
+        type: "paragraph",
+        content:
+          "You may not use this store to resell products for commercial gain without our written consent, or to engage in any fraudulent activity.",
+      },
+      { type: "heading2", content: "Changes to Terms" },
+      {
+        type: "paragraph",
+        content:
+          "We reserve the right to update these Terms & Conditions at any time. Continued use of the store after changes are posted constitutes acceptance of the revised terms.",
+      },
+    ],
+  },
+
+  privacy: {
+    title: "Privacy Policy",
+    blocks: [
+      { type: "heading2", content: "Information We Collect" },
+      {
+        type: "paragraph",
+        content:
+          "When you visit the Riot Games Merch Store or make a purchase, we may collect the following categories of information:",
+      },
+      {
+        type: "ul",
+        content: [
+          "Contact information: name, email address, phone number, shipping/billing address",
+          "Payment information: processed securely through our payment provider — we do not store full card numbers",
+          "Account information: Riot ID, linked game account data",
+          "Usage data: pages visited, items viewed, device and browser type, IP address",
+          "Communications: any messages you send us via support channels",
+        ],
+      },
+      { type: "heading2", content: "How We Use Your Information" },
+      {
+        type: "ol",
+        content: [
+          "Process and fulfill your orders",
+          "Send order confirmations, shipping updates, and customer support communications",
+          "Improve our website and product offerings",
+          "Send marketing communications (with your consent where required by law)",
+          "Detect and prevent fraudulent transactions",
+          "Comply with legal obligations",
+        ],
+      },
+      { type: "heading2", content: "Sharing Your Information" },
+      {
+        type: "paragraph",
+        content:
+          "We do not sell your personal information. We may share it with trusted service providers who assist us in operating our store (e.g., payment processors, shipping carriers, analytics platforms), each bound by strict data processing agreements.",
+      },
+      { type: "heading2", content: "Data Retention" },
+      {
+        type: "paragraph",
+        content:
+          "We retain your personal data only as long as necessary to fulfill the purposes described in this policy, or as required by law (e.g., tax and accounting requirements).",
+      },
+      { type: "heading2", content: "Your Rights" },
+      {
+        type: "paragraph",
+        content:
+          "Depending on your jurisdiction, you may have rights including: access to your data, rectification, erasure, restriction of processing, data portability, and the right to object. Contact our privacy team to exercise these rights.",
+      },
+      { type: "heading2", content: "Contact" },
+      {
+        type: "paragraph",
+        content:
+          "For privacy-related inquiries, please contact our Privacy Team at privacy@riotgames.com or write to: Riot Games, Inc., 12333 W Olympic Blvd, Los Angeles, CA 90064.",
+      },
+    ],
+  },
+};
