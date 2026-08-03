@@ -243,11 +243,15 @@ export { YourShopIcon } from "./store/your-shop-icon";
 export type { YourShopIconProps, YourShopIconVideoSources } from "./store/your-shop-icon";
 export { YourShopScreen } from "./store/your-shop-screen";
 export type { YourShopScreenProps, YourShopCard } from "./store/your-shop-screen";
-// merch — alphabetical: MerchCartDrawer < MerchCollectionHero < MerchFooter < MerchHeader < MerchHeroBanner < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchPurchasePanel < MerchStore
+// merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCollectionHero < MerchFilterSortBar < MerchFooter < MerchHeader < MerchHeroBanner < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchPurchasePanel < MerchStore
 export { MerchCartDrawer } from "./merch/merch-cart-drawer";
 export type { MerchCartDrawerProps, MerchCartItem } from "./merch/merch-cart-drawer";
+export { MerchCartPage } from "./merch/merch-cart-page";
+export type { MerchCartPageProps } from "./merch/merch-cart-page";
 export { MerchCollectionHero } from "./merch/merch-collection-hero";
 export type { MerchCollectionHeroProps, MerchBreadcrumb } from "./merch/merch-collection-hero";
+export { MerchFilterSortBar } from "./merch/merch-filter-sort-bar";
+export type { MerchFilterSortBarProps, MerchSortOption } from "./merch/merch-filter-sort-bar";
 export { MerchFooter } from "./merch/merch-footer";
 export type {
   MerchFooterProps,
