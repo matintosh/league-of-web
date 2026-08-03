@@ -23,7 +23,7 @@ the row. The build-loop (:11) then builds them. See `docs/loops/` for the loop b
 | Cart | `/cart` | `/merch/cart` | ✅ | 2026-08-03 | audited DRY (real returns 500) — matches spec |
 | Search | `/search` | `/merch/search` | ✅ | 2026-08-03 | search bar + results + empty state |
 | Info pages | `/faqs/`,`/shipping/`,`/returns/` | `/merch/pages/[slug]` | ✅ | 2026-08-03 | FIXED (#640/#641, PR #642): SUPPORT hero (h1 48px) + 9-pill section-tab strip (MerchSupportHero + MerchSupportTabStrip) + h2 38/28px + body 16px + white bg (was dark rgb(1,10,19) bug). Residual: mascot = champion-splash placeholder (real mascot art unavailable) |
-| Sale | `/category/sales/` | `/merch/sale` | ⚠️ #643 #644 | 2026-08-03 | real SALE = `/category/sales/` (NOT `/sale/` which 500s): NO hero band, breadcrumb `Home/Sales(N)` + Refine + grid on white → #643 (drop hero on sale route). Sale-price = dark-ink current + grey #666 struck 16px + green `-NN%` badge (not red pill) → #644 (shared MerchProductCard change) |
+| Sale | `/category/sales/` | `/merch/sale` | ✅ | 2026-08-03 | FIXED (#643/#644, PR #645): dropped hero → breadcrumb+grid on white; sale-price = dark current + grey #666 struck 16px + green `-NN%` badge (tokens --color-merch-badge-sale/-price-struck). Non-sale cards verified unchanged |
 | Account | `/account` | `/merch/account` | ⛔ | 2026-08-03 | real is SSO wall — presentational stub, no 1:1 target |
 
 ## KNOWN RESIDUAL DELTAS (open, awaiting user call or build)
@@ -44,3 +44,4 @@ page diff isolates the gap to one component.
 - 2026-08-03 — ratchet: Info pages diffed → real is store-chrome SUPPORT portal → 2 deltas (#640 hero+tab-nav, #641 typography+bg). Row 🔁→⚠️. Added Sale ⬜. Next up: ⬜ Sale, then re-verify.
 - 2026-08-03 — CLOSED: #640+#641 built+shipped (PR #642, MerchSupportHero + MerchSupportTabStrip + white-bg fix). Info pages ⚠️→✅. Next up: ⬜ Sale.
 - 2026-08-03 — ratchet: Sale diffed vs real `/category/sales/` (our `/sale/` ref 500s) → 2 deltas (#643 drop hero band, #644 sale-price dark+grey-struck+green-%-badge). Row ⬜→⚠️. Next up: re-verify oldest ✅ (round-robin) after Sale closes.
+- 2026-08-03 — CLOSED: #643+#644 built (builder died post-work → controller salvaged) + reviewed (dup-count fix) + shipped (PR #645). Sale ⚠️→✅. ALL scorecard rows now ✅ (non-⛔). Next: round-robin re-verify oldest ✅ (Homepage) OR convergence-govern if 2 rotations file zero.
