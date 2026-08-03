@@ -5,7 +5,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 **Legend:** ✅ page live · 🔨 in progress (open issue) · ⬜ page missing · ⛔ out of scope (real commerce/auth backend)
 
-**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **22 components** shipped · mobile pixel-perfect ✅ (#618-#623) · **desktop 1:1 fidelity pass ✅ COMPLETE** — PDP typography+proportions #627/#628 (PR #630) + listing 2-col flush redesign #629 (PR #631: real cards w/ franchise overlay + multi-badge + REFINE across all 4 pages, homepage corrected 4-col→2-col, MerchProduct badge→+badges[]+franchiseLabel). Cart = DRY. Every page measured/verified at BOTH 1280 + 390. **Real imagery ✅ SHIPPED** (#632) — uses the actual merch.riotgames.com Sanity-CDN hero banners + 8 real products (hotlink via Next remotePatterns + `merchAssetUrl` helper); champion-splash art gone from /merch. **Independent `/merch/showcase` ✅ SHIPPED** (#633) — under the /merch layout, all 22 merch components render with real merch tokens + Inter (fixed the tokenless-render bug); branded "Merch Design System" page, linked from landing hub. **Hero fixed ✅** — scrim removed (#634) + reselected to VIVID real full-art banners (#635: "League of Legends Classic" crew banner + Riftbound Vendetta Akali art; dropped the purple text-backdrop strip). Hero reads as genuine campaign art at 1280 + 390, verified live.
+**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **22 components** shipped · mobile pixel-perfect ✅ (#618-#623) · **desktop 1:1 fidelity pass ✅ COMPLETE** — PDP typography+proportions #627/#628 (PR #630) + listing 2-col flush redesign #629 (PR #631: real cards w/ franchise overlay + multi-badge + REFINE across all 4 pages, homepage corrected 4-col→2-col, MerchProduct badge→+badges[]+franchiseLabel). Cart = DRY. Every page measured/verified at BOTH 1280 + 390. **Real imagery ✅ SHIPPED** (#632) — uses the actual merch.riotgames.com Sanity-CDN hero banners + 8 real products (hotlink via Next remotePatterns + `merchAssetUrl` helper); champion-splash art gone from /merch. **Independent `/merch/showcase` ✅ SHIPPED** (#633) — under the /merch layout, all 22 merch components render with real merch tokens + Inter (fixed the tokenless-render bug); branded "Merch Design System" page, linked from landing hub. **Hero fixed ✅** — scrim removed (#634) + reselected to VIVID real full-art banners (#635). **Full working nav 🔨** (user-directed) — Categories/Featured dropdown menus + `/merch/sale` + mobile menu + onCategoryClick wired on EVERY page (was only Shop-All, only on 3 pages). **Site map now COMPREHENSIVE** — every `page.tsx` route is listed (store pages + nav-destination routes + supporting routes like /merch/showcase + the [handle] redirect).
 
 > The real store prefixes with `/` (e.g. `/product/<handle>`); our clone nests everything under
 > `/merch`. This map tracks PAGES (routes) first; the component table at the bottom tracks the parts
@@ -27,13 +27,30 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | **Info pages** (FAQ / Shipping / Returns / Collectability / Accessibility / Legal / Cookies / Terms / Privacy) | `/pages/<slug>` | `/merch/pages/[slug]` | ✅ | InfoPage template (9 slugs, footer links wired + resolve 200) |
 | **Account / sign-in** | `/account` | `/merch/account` | ✅ | MerchSignInPanel — presentational sign-in stub (no real auth) |
 
+### Nav-destination routes (header nav must reach these)
+| Page | Real URL | Our route | Status | Notes |
+|---|---|---|---|---|
+| **Sale** | `/sale/` | `/merch/sale` | 🔨 nav-build | sale-filtered listing (part of the full-working-nav build) |
+| **Categories ▾** | nav dropdown | menu → `/merch/collection/<cat>` | 🔨 nav-build | dropdown menu of product categories |
+| **Featured ▾** | nav dropdown | menu → `/merch/collection/<slug>` | 🔨 nav-build | dropdown menu of featured collections/franchises |
+| **My Shop** | `/account` (gold) | `/merch/account` | 🔨 nav-build | gold nav item → account |
+
+### Supporting routes (not store pages, but real routes in our app)
+| Page | Our route | Status | Notes |
+|---|---|---|---|
+| **PDP legacy redirect** | `/merch/[handle]` | ✅ | 308 → `/merch/product/[handle]` (kept so old links resolve) |
+| **Component showcase** | `/merch/showcase` | ✅ | independent merch design-system browser (22 components, real tokens) |
+| **Showcase detail** | `/merch/showcase/[slug]` | ✅ | per-component variants |
+
+> Every `page.tsx` under `apps/web/src/app/merch/` is represented in one of the three tables above. Store-page fidelity is tracked in `docs/merch-fidelity.md`.
+
 ## PAGES — next up (build order)
 
-**All 9 page types shipped.** Remaining is depth/fidelity, not new pages:
+**All 9 store page types shipped.** Active + remaining:
 
-1. **PDP sub-components** — related-products carousel · description accordions · size-guide modal (PDP `related, accordions ⬜`)
-2. **Homepage category-tile grid** — the `CategoryTileGrid` also belongs on the homepage (real store shows category tiles there)
-3. **Ongoing 1:1 fidelity polish** — periodic Playwright audits of each page vs the real store (like the homepage pixel-audit) to close residual pixel gaps
+1. **Full working nav** 🔨 — dropdown menus (Categories/Featured) + `/merch/sale` + mobile menu + wire onCategoryClick on every page (user-directed; builder-nav in flight)
+2. **PDP sub-components** — related-products carousel ✅ · description accordions ✅ · size-guide ✅ (shipped; remaining: none critical)
+3. **Ongoing 1:1 fidelity polish** — the fidelity-engine meta-loop (:53) pixel-diffs each store page vs the real site and files residual deltas
 
 ---
 
