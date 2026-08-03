@@ -5,7 +5,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 **Legend:** ✅ page live · 🔨 in progress (open issue) · ⬜ page missing · ⛔ out of scope (real commerce/auth backend)
 
-**Status:** last updated 2026-08-03 · **5 / 9 page types live** · **12 components** shipped · **PR #585 merged + deployed** (collection · shop-all · cart)
+**Status:** last updated 2026-08-03 · **5 / 9 page types live** · **12 components** shipped · **2 pages 🔨 in progress** (#586 collections index · #587 info pages)
 
 > The real store prefixes with `/` (e.g. `/product/<handle>`); our clone nests everything under
 > `/merch`. This map tracks PAGES (routes) first; the component table at the bottom tracks the parts
@@ -20,11 +20,11 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | **Homepage** | `/` | `/merch` | ✅ | Header · HeroBanner · ProductGrid · Footer |
 | **Product detail (PDP)** | `/product/<handle>` | `/merch/product/[handle]` * | ✅ (at `/merch/[handle]`) | Gallery · PurchasePanel · (related, accordions ⬜) |
 | **Shop All** | `/shop-all/` | `/merch/shop-all` | ✅ | CollectionHero · FilterSortBar · ProductGrid |
-| **Collections index** | `/collection/` | `/merch/collection` | ⬜ | CollectionHero · CategoryTileGrid ⬜ |
+| **Collections index** | `/collection/` | `/merch/collection` | 🔨 #586 | heading · CategoryTileGrid 🔨 #586 |
 | **Collection / category** | `/collection/<handle>` | `/merch/collection/[handle]` | ✅ | CollectionHero · FilterSortBar · ProductGrid |
 | **Cart page** | `/cart` | `/merch/cart` | ✅ | full-page cart: MerchCartPage (line items · summary · checkout) |
 | **Search** | `/search` | `/merch/search` | ⬜ | SearchOverlay ⬜ · results ProductGrid |
-| **Info pages** (About / FAQ / Shipping / Returns / Contact / Terms / Privacy) | `/pages/<slug>` | `/merch/pages/[slug]` | ⬜ | InfoPage template ⬜ (footer links target these) |
+| **Info pages** (About / FAQ / Shipping / Returns / Contact / Terms / Privacy) | `/pages/<slug>` | `/merch/pages/[slug]` | 🔨 #587 | InfoPage template 🔨 #587 (footer links target these) |
 | **Account / sign-in** | `/account` | `/merch/account` | ⬜ / ⛔ | presentational stub only (no real auth) |
 
 \* PDP currently lives at `/merch/[handle]`; consider moving to `/merch/product/[handle]` to match the real URL 1:1.
@@ -55,13 +55,13 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | `MerchProductGallery` | ✅ | PDP |
 | `MerchPurchasePanel` | ✅ | PDP |
 | `MerchCartDrawer` | ✅ | all (header cart) |
-| Category tile grid | ⬜ | Homepage, Collections index |
+| Category tile grid (`CategoryTileGrid` + `CategoryTile`) | 🔨 #586 | Homepage, Collections index |
 | `MerchFilterSortBar` (filter chips + sort dropdown) | ✅ | Collection, Shop All |
 | PDP related-products carousel | ⬜ | PDP |
 | PDP description accordions | ⬜ | PDP |
 | Size guide modal | ⬜ | PDP |
 | Search overlay | ⬜ | header |
-| Info-page template | ⬜ | Info pages |
+| Info-page template (`MerchInfoPage`) | 🔨 #587 | Info pages |
 | `MerchCartPage` (full-page cart: line items table + order summary) | ✅ | Cart page |
 
 ---
