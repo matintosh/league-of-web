@@ -18,7 +18,7 @@ the row. The build-loop (:11) then builds them. See `docs/loops/` for the loop b
 | Homepage | `/` | `/merch` | ✅ | 2026-08-03 | header/footer/hero/grid pixel-audited; real hero+products; scrim removed |
 | PDP | `/product/<h>` | `/merch/product/[handle]` | ✅ | 2026-08-03 | typography #627 + gallery 62/38 #628 shipped; real gallery+carousel |
 | Shop All | `/shop-all/` | `/merch/shop-all` | ✅* | 2026-08-03 | 2-col flush + real 8 products. *open: chip-strip still shown where real = REFINE only |
-| Collections index | `/collection/` | `/merch/collection` | ⚠️ #637 #638 | 2026-08-03 | STRUCTURAL: real = stacked shop-carousel strips (banner + rotated name tab + 4-card row), NOT our tile grid → #637 (new MerchCollectionList reusing MerchShopCarousel). Heading "All Collections" 48/600 vs ours "Collections" 36/800 → #638 |
+| Collections index | `/collection/` | `/merch/collection` | ✅ | 2026-08-03 | FIXED (#637/#638, PR #639): stacked collection strips (MerchCollectionList — banner + rotated name tab + card row) + "All Collections" 48/600 heading. Residual (non-blocking): heading top ~20px short; 2 strips vs real 4 (fixture has 2 franchises); banners = champion-splash placeholders (real Sanity banners unavailable) |
 | Collection/category | `/collection/<h>` | `/merch/collection/[handle]` | ✅* | 2026-08-03 | same 2-col template; *chip-strip vs REFINE |
 | Cart | `/cart` | `/merch/cart` | ✅ | 2026-08-03 | audited DRY (real returns 500) — matches spec |
 | Search | `/search` | `/merch/search` | ✅ | 2026-08-03 | search bar + results + empty state |
@@ -39,3 +39,4 @@ page diff isolates the gap to one component.
 ## Rotation log (meta-loop appends one line per tick)
 - 2026-08-03 — scorecard seeded from session audits (homepage pixel-audit, desktop fidelity pass, mobile pass, real-image swap, hero fix, post-real-image selfcheck = DRY). Next up: 🔁 Collections index, 🔁 Info pages.
 - 2026-08-03 — ratchet: Collections index diffed → 2 deltas (#637 structural layout=carousel-strips, #638 heading). Row 🔁→⚠️. Next up: 🔁 Info pages.
+- 2026-08-03 — CLOSED: #637+#638 built+shipped (PR #639, MerchCollectionList strip layout + heading). Collections index ⚠️→✅. Next up: 🔁 Info pages.
