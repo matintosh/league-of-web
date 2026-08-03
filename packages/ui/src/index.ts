@@ -280,7 +280,7 @@ export type { MerchProductCardProps } from "./merch/merch-product-card";
 export { MerchProductGallery } from "./merch/merch-product-gallery";
 export type { MerchProductGalleryProps } from "./merch/merch-product-gallery";
 export { MerchProductGrid } from "./merch/merch-product-grid";
-export type { MerchProductGridProps } from "./merch/merch-product-grid";
+export type { MerchFilterBadge, MerchProductGridProps } from "./merch/merch-product-grid";
 export { MerchPurchasePanel } from "./merch/merch-purchase-panel";
 export type { MerchPurchasePanelProps, MerchVariant } from "./merch/merch-purchase-panel";
 export { MerchStore } from "./merch/merch-store";

@@ -63,3 +63,28 @@ export function MerchProductGridEmptyDemo() {
     />
   );
 }
+
+/** Brand-rail collection grid — homepage model, no filter chips. */
+export function MerchProductGridBrandRailDemo() {
+  return (
+    <MerchProductGrid brandRail="League of Legends">
+      <EightCards />
+    </MerchProductGrid>
+  );
+}
+
+/** Brand-rail + top-right filter chips (New / Limited Edition / Preorder). */
+export function MerchProductGridBrandRailFilterDemo() {
+  return (
+    <MerchProductGrid
+      brandRail="League of Legends"
+      filterBadges={[
+        { label: "New", active: true, onClick: () => {} },
+        { label: "Limited Edition", onClick: () => {} },
+        { label: "Preorder", onClick: () => {} },
+      ]}
+    >
+      <EightCards />
+    </MerchProductGrid>
+  );
+}
