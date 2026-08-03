@@ -14,7 +14,7 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
   name: "Merch Product Gallery",
   area: "merch",
   description:
-    "PDP left column: main image (4:5 portrait, ~560px) + thumbnail strip (72×72, 8px gap). Active thumb: 2px ink border. Inactive: 1px border. Strip hidden for single image. Controlled via selectedIndex + onSelect. Measured from merch.riotgames.com apparel PDPs.",
+    "PDP left column: main image (1:1 square, object-fit contain — product art floats on the surface) + thumbnail strip (72×72, 8px gap). Active thumb: 2px ink border. Inactive: 1px border. Strip hidden for single image. Controlled via selectedIndex + onSelect. Measured from merch.riotgames.com PDPs.",
   variants: [
     {
       name: "4-image gallery — first selected (static)",
@@ -74,15 +74,15 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "1:1 aspect ratio override",
-      notes: "aspectRatio='1 / 1' for non-apparel products (e.g. accessories).",
+      name: "4:5 portrait override",
+      notes: "aspectRatio='4 / 5' override (1:1 square is now the default, matching the real PDP).",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 480, fontFamily: "system-ui, sans-serif" }}>
           <MerchProductGallery
             images={[IMG_B, IMG_C, IMG_D]}
             alt="Collector's Print"
-            aspectRatio="1 / 1"
+            aspectRatio="4 / 5"
             selectedIndex={0}
           />
         </div>
