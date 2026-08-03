@@ -23,18 +23,18 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | **Collections index** | `/collection/` | `/merch/collection` | ✅ | heading · CategoryTileGrid (3-col tile grid) |
 | **Collection / category** | `/collection/<handle>` | `/merch/collection/[handle]` | ✅ | CollectionHero · FilterSortBar · ProductGrid |
 | **Cart page** | `/cart` | `/merch/cart` | ✅ | full-page cart: MerchCartPage (line items · summary · checkout) |
-| **Search** | `/search` | `/merch/search` | ⬜ | SearchOverlay ⬜ · results ProductGrid |
+| **Search** | `/search` | `/merch/search` | 🔨 #599 | MerchSearchBar 🔨 #599 · results ProductGrid |
 | **Info pages** (FAQ / Shipping / Returns / Collectability / Accessibility / Legal / Cookies / Terms / Privacy) | `/pages/<slug>` | `/merch/pages/[slug]` | ✅ | InfoPage template (9 slugs, footer links wired + resolve 200) |
-| **Account / sign-in** | `/account` | `/merch/account` | ⬜ / ⛔ | presentational stub only (no real auth) |
+| **Account / sign-in** | `/account` | `/merch/account` | 🔨 #601 | MerchSignInPanel 🔨 #601 — presentational stub (no real auth) |
 
-\* PDP currently lives at `/merch/[handle]`; consider moving to `/merch/product/[handle]` to match the real URL 1:1.
+\* PDP currently lives at `/merch/[handle]`; 🔨 #603 moves canonical to `/merch/product/[handle]` (old path → permanentRedirect) to match the real URL 1:1.
 
 ## PAGES — next up (build order)
 
-1. **Homepage pixel-audit** — deep 1:1 pass vs merch.riotgames.com homepage (user-requested; issues incoming from analysis-home)
-2. **Search** `/merch/search` — search overlay + results
-3. **Account** `/merch/account` — presentational sign-in stub
-4. PDP URL 1:1 — move `/merch/[handle]` → `/merch/product/[handle]`
+1. **Homepage pixel-audit** — Wave 1 shipped; Wave 2 🔨 #591 (cat-strip, PR #602) · #593 (hero, PR #600) · #594 (grid/cards)
+2. **Search** `/merch/search` — 🔨 #599 (MerchSearchBar + results grid) — *spec inferred, Playwright-verify at build*
+3. **Account** `/merch/account` — 🔨 #601 (MerchSignInPanel stub) — *spec inferred, Playwright-verify at build*
+4. **PDP URL 1:1** — 🔨 #603 (`/merch/product/[handle]` canonical + redirect)
 
 ---
 
