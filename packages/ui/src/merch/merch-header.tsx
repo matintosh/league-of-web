@@ -64,6 +64,8 @@ export interface MerchHeaderProps {
   onLogoClick?: () => void;
   /** Override the default nav items if needed. */
   navItems?: MerchNavItem[];
+  /** Fired when the hamburger/menu button is clicked (mobile only). */
+  onMenuClick?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -104,6 +106,7 @@ export function MerchHeader({
   onLocaleClick,
   onLogoClick,
   navItems = DEFAULT_NAV,
+  onMenuClick,
 }: MerchHeaderProps) {
   const badgeId = useId();
   const globeId = useId();
@@ -287,12 +290,12 @@ export function MerchHeader({
               </svg>
             </button>
 
-            {/* SIGN IN button */}
+            {/* SIGN IN button — desktop only (hidden at < lg) */}
             <button
               type="button"
               aria-label="Sign in to your account"
               onClick={handleSignIn}
-              className="flex items-center justify-center transition-opacity duration-150 hover:opacity-85"
+              className="hidden items-center justify-center transition-opacity duration-150 hover:opacity-85 lg:flex"
               style={{
                 backgroundColor: "var(--color-merch-signin-bg)",
                 color: "var(--color-merch-on-dark)",
@@ -307,6 +310,30 @@ export function MerchHeader({
               }}
             >
               Sign In
+            </button>
+
+            {/* Hamburger — mobile only (hidden at lg+) */}
+            <button
+              type="button"
+              aria-label="Open navigation menu"
+              onClick={onMenuClick}
+              className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70 lg:hidden"
+              style={{ color: "var(--color-merch-on-dark)" }}
+            >
+              <svg
+                aria-hidden="true"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
             </button>
 
             {/* Cart */}
@@ -376,13 +403,16 @@ export function MerchHeader({
             ✕
           </button>
 
-          {/* Announcement text — centered */}
+          {/* Announcement text — centered; single-line truncation on mobile */}
           <p
             className="flex-1 text-center"
             style={{
               fontSize: "16px",
               fontWeight: 400,
               margin: 0,
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
             }}
           >
             {announcement}
