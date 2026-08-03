@@ -187,6 +187,7 @@ export function MerchPageClient() {
         onCategoryClick={(slug) => {
           if (slug === "shop-all") router.push("/merch/shop-all");
         }}
+        onSearchClick={() => router.push("/merch/search")}
       />
 
       {/* Main content */}
