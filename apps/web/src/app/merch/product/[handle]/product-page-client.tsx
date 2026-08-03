@@ -61,6 +61,7 @@ export function ProductPageClient({
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems] = useState<MerchCartItem[]>([]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [sizeGuideUnit, setSizeGuideUnit] = useState<"in" | "cm">("in");
 
   return (
     <div
@@ -109,7 +110,7 @@ export function ProductPageClient({
               variantLabel="Size"
               selectedVariant="M"
               quantity={1}
-              showSizeGuideLink={true}
+              showSizeGuideLink
               onSizeGuideClick={() => setSizeGuideOpen(true)}
             />
             <MerchProductInfoTabs
@@ -170,6 +171,8 @@ export function ProductPageClient({
       <MerchSizeGuideModal
         open={sizeGuideOpen}
         onClose={() => setSizeGuideOpen(false)}
+        unit={sizeGuideUnit}
+        onUnitChange={setSizeGuideUnit}
         rows={[
           { size: "S",   measurements: { a: 25,   b: 26.5,  c: 24.25 } },
           { size: "M",   measurements: { a: 26,   b: 27.5,  c: 24.5  } },

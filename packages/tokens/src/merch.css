@@ -83,6 +83,10 @@
   /* Full-viewport backdrop for modal dialogs (size guide, etc.) */
   --color-merch-overlay: rgba(0, 0, 0, 0.45);
 
+  /* ── Shadows ─────────────────────────────────────────────────────────── */
+  /* Raw rgba allowed here (tokens file); raw rgba NOT allowed in components */
+  --shadow-merch-modal: 0 8px 32px rgba(0, 0, 0, 0.18); /* centered dialog elevation */
+
   /* ── Typography ─────────────────────────────────────────────────────── */
   /* Inter loaded via next/font in apps/web/src/app/merch/layout.tsx and
      exposed via --font-merch. Fallback stack mirrors the real store's

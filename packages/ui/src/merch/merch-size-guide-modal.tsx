@@ -15,7 +15,7 @@
  * Fully presentational — no internal useState.
  * Callers control open/unit selection via props.
  */
-import React, { useId, useEffect } from "react";
+import React, { useId, useEffect, useRef } from "react";
 
 export interface MerchSizeGuideRow {
   /** Size label, e.g. "S", "M", "L" */
@@ -86,6 +86,12 @@ export function MerchSizeGuideModal({
   const uid = useId().replace(/:/g, "");
   const headingId = `msg-heading-${uid}`;
   const closeXId = `msg-x-${uid}`;
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Move focus to the dialog when it opens (a11y)
+  useEffect(() => {
+    if (open) dialogRef.current?.focus();
+  }, [open]);
 
   // ESC to close
   useEffect(() => {
@@ -117,6 +123,7 @@ export function MerchSizeGuideModal({
 
       {/* ── Dialog ────────────────────────────────────────────────────── */}
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={headingId}
@@ -132,7 +139,7 @@ export function MerchSizeGuideModal({
           fontFamily: "var(--font-merch)",
           display: "flex",
           flexDirection: "column",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+          boxShadow: "var(--shadow-merch-modal)",
           outline: "none",
         }}
         // Allow focus to land on dialog for a11y
