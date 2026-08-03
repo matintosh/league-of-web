@@ -79,6 +79,10 @@
   --color-merch-cat-valorant: #f28ea0; /* VALORANT — pink/salmon, white text          */
   --color-merch-cat-2xko:     #c6e04a; /* 2XKO — lime green, dark text                */
 
+  /* ── Overlay ────────────────────────────────────────────────────────── */
+  /* Full-viewport backdrop for modal dialogs (size guide, etc.) */
+  --color-merch-overlay: rgba(0, 0, 0, 0.45);
+
   /* ── Typography ─────────────────────────────────────────────────────── */
   /* Inter loaded via next/font in apps/web/src/app/merch/layout.tsx and
      exposed via --font-merch. Fallback stack mirrors the real store's

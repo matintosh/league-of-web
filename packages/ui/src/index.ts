@@ -291,5 +291,7 @@ export { MerchShopCarousel } from "./merch/merch-shop-carousel";
 export type { MerchShopCarouselProps } from "./merch/merch-shop-carousel";
 export { MerchSignInPanel } from "./merch/merch-sign-in-panel";
 export type { MerchSignInPanelProps } from "./merch/merch-sign-in-panel";
+export { MerchSizeGuideModal } from "./merch/merch-size-guide-modal";
+export type { MerchSizeGuideModalProps, MerchSizeGuideRow } from "./merch/merch-size-guide-modal";
 export { MerchStore } from "./merch/merch-store";
 export type { MerchStoreProps, MerchNavLink } from "./merch/merch-store";

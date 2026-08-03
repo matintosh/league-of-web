@@ -17,6 +17,7 @@ import {
   MerchPurchasePanel,
   MerchCartDrawer,
   MerchShopCarousel,
+  MerchSizeGuideModal,
 } from "@low/ui";
 import type { MerchCartItem, MerchProduct } from "@low/fixtures";
 
@@ -59,6 +60,7 @@ export function ProductPageClient({
   const router = useRouter();
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems] = useState<MerchCartItem[]>([]);
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
   return (
     <div
@@ -107,6 +109,8 @@ export function ProductPageClient({
               variantLabel="Size"
               selectedVariant="M"
               quantity={1}
+              showSizeGuideLink={true}
+              onSizeGuideClick={() => setSizeGuideOpen(true)}
             />
             <MerchProductInfoTabs
               tabs={[
@@ -161,6 +165,18 @@ export function ProductPageClient({
         onClose={() => setCartOpen(false)}
         onContinueShopping={() => setCartOpen(false)}
         onCheckout={() => router.push("/merch/cart")}
+      />
+
+      <MerchSizeGuideModal
+        open={sizeGuideOpen}
+        onClose={() => setSizeGuideOpen(false)}
+        rows={[
+          { size: "S",   measurements: { a: 25,   b: 26.5,  c: 24.25 } },
+          { size: "M",   measurements: { a: 26,   b: 27.5,  c: 24.5  } },
+          { size: "L",   measurements: { a: 27,   b: 28.5,  c: 24.75 } },
+          { size: "XL",  measurements: { a: 28,   b: 29.5,  c: 25    } },
+          { size: "2XL", measurements: { a: 29,   b: 30.5,  c: 25.25 } },
+        ]}
       />
     </div>
   );

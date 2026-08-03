@@ -51,6 +51,10 @@ export interface MerchPurchasePanelProps {
   onAddToCart?: () => void;
   /** If true, CTA is disabled and shows "Out of Stock". */
   outOfStock?: boolean;
+  /** If true, renders a "Size Guide" text link in the variant-label row. */
+  showSizeGuideLink?: boolean;
+  /** Called when the "Size Guide" link is clicked. */
+  onSizeGuideClick?: () => void;
 }
 
 const DIVIDER: React.CSSProperties = {
@@ -77,6 +81,8 @@ export function MerchPurchasePanel({
   onQuantityChange,
   onAddToCart,
   outOfStock = false,
+  showSizeGuideLink = false,
+  onSizeGuideClick,
 }: MerchPurchasePanelProps) {
   const isSale = Boolean(originalPrice && originalPrice !== price);
   const safeQty = Math.max(1, quantity);
@@ -200,19 +206,53 @@ export function MerchPurchasePanel({
         <>
           <div style={DIVIDER} />
           <div>
-            <p
+            <div
               style={{
-                fontSize: 12,
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-                color: "var(--color-merch-body)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
                 marginBottom: 10,
               }}
             >
-              {variantLabel}
-              {selectedVariant && `: ${selectedVariant}`}
-            </p>
+              <p
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  color: "var(--color-merch-body)",
+                  margin: 0,
+                }}
+              >
+                {variantLabel}
+                {selectedVariant && `: ${selectedVariant}`}
+              </p>
+              {showSizeGuideLink && (
+                <button
+                  type="button"
+                  onClick={onSizeGuideClick}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: 13,
+                    fontWeight: 400,
+                    color: "var(--color-merch-muted)",
+                    fontFamily: "inherit",
+                    padding: 0,
+                    textDecoration: "none",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.textDecoration = "underline";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.textDecoration = "none";
+                  }}
+                >
+                  Size Guide
+                </button>
+              )}
+            </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {variants.map((v) => {
                 const isActive = v.label === selectedVariant;
