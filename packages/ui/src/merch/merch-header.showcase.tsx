@@ -1,46 +1,90 @@
 import type { ShowcaseEntry } from "../showcase";
 import { MerchHeader } from "./merch-header";
+import {
+  MerchHeaderWithDismissDemo,
+  MerchHeaderActiveCategoryDemo,
+} from "./merch-header.demo";
 
 export const merchHeaderShowcase: ShowcaseEntry = {
   slug: "merch-header",
   name: "Merch Header",
   area: "merch",
   description:
-    "Sticky top navigation bar for the Riot merch store: Riot wordmark (left), category nav links (center), search + cart + account icons (right). Dark near-black background matching merch.riotgames.com. Cart badge renders when cartCount > 0.",
+    "Two-tier sticky header for the Riot merch store: ~80px black nav bar (Riot wordmark + fist emblem, left-aligned nav links, right cluster with search · globe · SIGN IN · cart) plus an optional ~50px red dismissible announcement marquee strip below it.",
   variants: [
     {
-      name: "Default — no active category, empty cart",
-      notes: "Base state: all links white, no badge on cart icon.",
+      name: "Default — two-tier with announcement",
+      notes:
+        "Full two-tier layout: dark nav bar + red marquee. No active category, empty cart.",
       render: () => (
-        <div style={{ background: "var(--color-merch-surface)", minHeight: "120px" }}>
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "160px" }}>
           <MerchHeader />
         </div>
       ),
     },
     {
-      name: "Active category — Apparel",
-      notes: "Active category link shows red color + underline.",
+      name: "Nav bar only — no announcement",
+      notes: "Announcement omitted (undefined); only the ~80px nav tier renders.",
       render: () => (
         <div style={{ background: "var(--color-merch-surface)", minHeight: "120px" }}>
-          <MerchHeader activeCategory="apparel" />
+          <MerchHeader announcement={undefined} />
         </div>
       ),
     },
     {
-      name: "Cart badge — 3 items",
-      notes: "Cart icon shows red count badge when cartCount > 0.",
+      name: "Active category — Shop All",
+      notes:
+        "Shop All link has a red underline indicator. Cart badge shows 3 items.",
       render: () => (
-        <div style={{ background: "var(--color-merch-surface)", minHeight: "120px" }}>
-          <MerchHeader cartCount={3} />
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "160px" }}>
+          <MerchHeader activeCategory="shop-all" cartCount={3} />
+        </div>
+      ),
+    },
+    {
+      name: "Active category — Featured (dropdown link)",
+      notes: "Featured link (has caret) is active; underline appears on dropdown links too.",
+      render: () => (
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "160px" }}>
+          <MerchHeader activeCategory="featured" />
+        </div>
+      ),
+    },
+    {
+      name: "Active category — My Shop (gold link)",
+      notes: "My Shop renders in --color-merch-gold; active underline is red.",
+      render: () => (
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "160px" }}>
+          <MerchHeader activeCategory="my-shop" />
         </div>
       ),
     },
     {
       name: "Cart badge overflow — 10+ items",
-      notes: "Badge shows 9+ when count exceeds 9.",
+      notes: "Badge shows '9+' when cartCount exceeds 9.",
       render: () => (
-        <div style={{ background: "var(--color-merch-surface)", minHeight: "120px" }}>
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "160px" }}>
           <MerchHeader cartCount={12} activeCategory="sale" />
+        </div>
+      ),
+    },
+    {
+      name: "Interactive — dismissible announcement (stateful)",
+      notes:
+        "Click ✕ to dismiss the announcement strip. State is held in the client demo wrapper.",
+      render: () => (
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "160px" }}>
+          <MerchHeaderWithDismissDemo />
+        </div>
+      ),
+    },
+    {
+      name: "Interactive — active category toggle (stateful)",
+      notes:
+        "Click any nav link to make it active. Cart badge shows 3 items. Custom announcement text.",
+      render: () => (
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "160px" }}>
+          <MerchHeaderActiveCategoryDemo />
         </div>
       ),
     },

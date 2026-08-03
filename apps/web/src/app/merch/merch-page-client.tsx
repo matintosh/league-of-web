@@ -6,6 +6,7 @@
  * Receives pre-built product cards and hero slides as children/props.
  */
 
+import { useState } from "react";
 import {
   MerchHeader,
   MerchProductCard,
@@ -121,9 +122,13 @@ const GIFT_CARDS: [MerchGiftCard, MerchGiftCard] = [
   },
 ];
 
+const ANNOUNCEMENT =
+  "We're upgrading our warehouse! Orders placed between July 3–7 may be delayed. We apologize for the inconvenience.";
+
 /** /merch interactive page shell — client component hosting all callbacks. */
 export function MerchPageClient() {
   const router = useRouter();
+  const [announcement, setAnnouncement] = useState<string | undefined>(ANNOUNCEMENT);
 
   function handleContactSubmit(values: MerchContactFormValues) {
     // Presentational stub — a real implementation would POST to a support API.
@@ -139,7 +144,15 @@ export function MerchPageClient() {
       }}
     >
       {/* Header */}
-      <MerchHeader activeCategory="shop-all" cartCount={0} />
+      <MerchHeader
+        activeCategory="shop-all"
+        cartCount={0}
+        announcement={announcement}
+        onDismissAnnouncement={() => setAnnouncement(undefined)}
+        onCategoryClick={(slug) => {
+          if (slug === "shop-all") router.push("/merch/shop-all");
+        }}
+      />
 
       {/* Main content */}
       <main className="flex-1">

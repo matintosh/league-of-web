@@ -49,6 +49,12 @@
   --color-merch-on-dark:       #ffffff; /* white text/icons on dark backgrounds        */
   --color-merch-muted-on-dark: #a0a0a0; /* muted grey links/labels on black backgrounds */
 
+  /* ── Nav extras ─────────────────────────────────────────────────────── */
+  /* MY SHOP gold link color — sampled from merch.riotgames.com rgb(224,180,60) */
+  --color-merch-gold:      #e0b43c;
+  /* SIGN IN button bg — translucent grey overlay on dark nav bar */
+  --color-merch-signin-bg: rgba(128, 128, 128, 0.2);
+
   /* ── Typography ─────────────────────────────────────────────────────── */
   /* Inter loaded via next/font in apps/web/src/app/merch/layout.tsx and
      exposed via --font-merch. Fallback stack mirrors the real store's
