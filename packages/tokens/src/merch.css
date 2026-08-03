@@ -59,6 +59,9 @@
   --color-merch-overlay-soft: rgba(0, 0, 0, 0.28); /* nav arrow button bg overlay        */
   --color-merch-scrim-strong: rgba(0, 0, 0, 0.45); /* banner scrim left stop (logo reads) */
   --color-merch-scrim-soft:   rgba(0, 0, 0, 0.15); /* banner scrim mid stop (fade)        */
+  /* ── Carousel dot nav ───────────────────────────────────────────────── */
+  --color-merch-dot-inactive:       rgba(255, 255, 255, 0.35); /* inactive slide dot        */
+  --color-merch-dot-inactive-hover: rgba(255, 255, 255, 0.65); /* hovered inactive dot      */
 
   /* ── Nav extras ─────────────────────────────────────────────────────── */
   /* MY SHOP gold link color — sampled from merch.riotgames.com rgb(224,180,60) */

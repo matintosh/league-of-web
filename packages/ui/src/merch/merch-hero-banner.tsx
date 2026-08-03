@@ -30,7 +30,7 @@
  *   - Scrim: ~0.25 max opacity; art is typically pre-composed
  */
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -101,7 +101,6 @@ export function MerchHeroBanner({
   ariaLabel = "Featured products",
 }: MerchHeroBannerProps) {
   const [active, setActive] = useState(0);
-  const gradId = useId();
   const pausedRef = useRef(false);
 
   // Auto-advance
@@ -123,15 +122,6 @@ export function MerchHeroBanner({
   const ctaVariant = currentSlide.ctaVariant ?? "light";
   const ctaCorner = currentSlide.ctaCorner ?? "center-left";
   const isBottomRight = ctaCorner === "bottom-right";
-
-  // Softened scrim — art is pre-composed; max ~0.25 opacity
-  const scrimStyle: React.CSSProperties = isCenter
-    ? {
-        background: `radial-gradient(ellipse at center, rgba(0,0,0,0.22) 0%, transparent 70%)`,
-      }
-    : {
-        background: `linear-gradient(to right, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.08) 60%, transparent 100%)`,
-      };
 
   function handleCtaClick() {
     pausedRef.current = true;
@@ -165,17 +155,6 @@ export function MerchHeroBanner({
       className="relative w-full overflow-hidden aspect-[3/4] md:aspect-[64/27]"
       style={{ fontFamily: "var(--font-merch)" }}
     >
-      {/* Hidden gradient def for SVG-based gradient ids if needed */}
-      <svg width="0" height="0" aria-hidden className="absolute">
-        <defs>
-          <linearGradient id={`${gradId}-left`} x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="rgba(0,0,0,0.25)" />
-            <stop offset="60%" stopColor="rgba(0,0,0,0.08)" />
-            <stop offset="100%" stopColor="rgba(0,0,0,0)" />
-          </linearGradient>
-        </defs>
-      </svg>
-
       {/* Background image */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -185,9 +164,6 @@ export function MerchHeroBanner({
         loading="eager"
         draggable={false}
       />
-
-      {/* Scrim overlay */}
-      <div className="absolute inset-0" style={scrimStyle} aria-hidden />
 
       {/* Text / CTA overlay — suppressed when slide is art-forward (no text) */}
       {hasOverlay && (
@@ -270,7 +246,7 @@ export function MerchHeroBanner({
             onClick={goPrev}
             className="absolute left-3 top-1/2 -translate-y-1/2 cursor-pointer border-0 p-2 transition-opacity duration-150 hover:opacity-80"
             style={{
-              background: "rgba(0,0,0,0.35)",
+              background: "var(--color-merch-overlay-soft)",
               color: "var(--color-merch-on-dark)",
               borderRadius: "2px",
               fontSize: "20px",
@@ -285,7 +261,7 @@ export function MerchHeroBanner({
             onClick={goNext}
             className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer border-0 p-2 transition-opacity duration-150 hover:opacity-80"
             style={{
-              background: "rgba(0,0,0,0.35)",
+              background: "var(--color-merch-overlay-soft)",
               color: "var(--color-merch-on-dark)",
               borderRadius: "2px",
               fontSize: "20px",
@@ -322,19 +298,19 @@ export function MerchHeroBanner({
                 backgroundColor:
                   i === active
                     ? "var(--color-merch-red)"
-                    : "rgba(255,255,255,0.35)",
+                    : "var(--color-merch-dot-inactive)",
                 cursor: "pointer",
               }}
               onMouseEnter={(e) => {
                 if (i !== active) {
                   (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    "rgba(255,255,255,0.65)";
+                    "var(--color-merch-dot-inactive-hover)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (i !== active) {
                   (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    "rgba(255,255,255,0.35)";
+                    "var(--color-merch-dot-inactive)";
                 }
               }}
             />
