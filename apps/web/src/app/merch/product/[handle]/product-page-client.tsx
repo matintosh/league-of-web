@@ -16,8 +16,9 @@ import {
   MerchProductInfoTabs,
   MerchPurchasePanel,
   MerchCartDrawer,
+  MerchShopCarousel,
 } from "@low/ui";
-import type { MerchCartItem } from "@low/fixtures";
+import type { MerchCartItem, MerchProduct } from "@low/fixtures";
 
 export interface ProductPageClientProps {
   /** Product title — displayed in the purchase panel. */
@@ -36,6 +37,10 @@ export interface ProductPageClientProps {
   variants: { label: string; available: boolean }[];
   /** Ordered list of gallery image URLs. */
   images: string[];
+  /** Products for the "Shop More" franchise carousel below the product section. */
+  carouselProducts?: MerchProduct[];
+  /** Banner image URL for the franchise carousel (e.g. a wide splash from Data Dragon). */
+  carouselBannerImageUrl?: string;
 }
 
 /** /merch/product/[handle] interactive page shell. */
@@ -48,6 +53,8 @@ export function ProductPageClient({
   breadcrumb,
   variants,
   images,
+  carouselProducts,
+  carouselBannerImageUrl,
 }: ProductPageClientProps) {
   const router = useRouter();
   const [cartOpen, setCartOpen] = useState(false);
@@ -131,6 +138,20 @@ export function ProductPageClient({
           .
         </p>
       </main>
+
+      {/* Franchise carousel — rendered below the product section when products are supplied */}
+      {carouselProducts && carouselProducts.length > 0 && carouselBannerImageUrl && (
+        <section style={{ maxWidth: 1280, margin: "0 auto", width: "100%", padding: "0 32px" }}>
+          <MerchShopCarousel
+            franchiseName="League of Legends"
+            bannerImageUrl={carouselBannerImageUrl}
+            shopNowHref="/merch/shop-all"
+            products={carouselProducts}
+            onProductClick={(slug) => router.push(`/merch/product/${slug}`)}
+            onShopNowClick={() => router.push("/merch/shop-all")}
+          />
+        </section>
+      )}
 
       <MerchFooter copyrightText="Copyright Riot Games 2025" />
 
