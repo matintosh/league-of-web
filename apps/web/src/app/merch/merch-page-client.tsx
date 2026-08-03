@@ -10,10 +10,11 @@ import {
   MerchHeader,
   MerchProductCard,
   MerchFooter,
+  MerchGiftCardBand,
   MerchHeroBanner,
   MerchProductGrid,
 } from "@low/ui";
-import type { MerchContactFormValues } from "@low/ui";
+import type { MerchContactFormValues, MerchGiftCard } from "@low/ui";
 import { championSplashUrl } from "@low/fixtures";
 import type { MerchProduct } from "@low/fixtures";
 import type { MerchHeroSlide } from "@low/ui";
@@ -109,6 +110,17 @@ const HERO_SLIDES: MerchHeroSlide[] = [
   },
 ];
 
+const GIFT_CARDS: [MerchGiftCard, MerchGiftCard] = [
+  {
+    imageUrl: championSplashUrl("Jinx", 0),
+    label: "Riot merch gift card — OMEN 16 Edition",
+  },
+  {
+    imageUrl: championSplashUrl("Vi", 0),
+    label: "Riot merch gift card — VALORANT Edition",
+  },
+];
+
 /** /merch interactive page shell — client component hosting all callbacks. */
 export function MerchPageClient() {
   const router = useRouter();
@@ -153,6 +165,12 @@ export function MerchPageClient() {
           ))}
         </MerchProductGrid>
       </main>
+
+      {/* Gift card promo band — above footer, ~447px */}
+      <MerchGiftCardBand
+        cards={GIFT_CARDS}
+        onCtaClick={() => router.push("/merch/shop-all")}
+      />
 
       {/* Footer */}
       <MerchFooter

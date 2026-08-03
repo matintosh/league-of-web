@@ -38,9 +38,10 @@
   --color-merch-muted:   #737373; /* secondary, captions, footer copy              */
 
   /* ── Surfaces ───────────────────────────────────────────────────────── */
-  --color-merch-bg:      #ffffff; /* page background                               */
-  --color-merch-surface: #f5f5f5; /* card / panel / footer background              */
-  --color-merch-border:  #e5e5e5; /* dividers, card outlines                       */
+  --color-merch-bg:          #ffffff; /* page background                               */
+  --color-merch-surface:     #f5f5f5; /* card / panel / footer background              */
+  --color-merch-surface-alt: #f7f7f7; /* gift-card band / alternate section bg          */
+  --color-merch-border:      #e5e5e5; /* dividers, card outlines                       */
 
   /* ── Header / Footer (dark bar sampled from merch.riotgames.com) ──── */
   --color-merch-ink-dark:      #000000; /* header/footer background — pure black       */
@@ -49,8 +50,9 @@
   --color-merch-muted-on-dark: #a0a0a0; /* muted grey links/labels on black backgrounds */
 
   /* ── Typography ─────────────────────────────────────────────────────── */
-  /* Modern e-commerce font stack — system sans-serif by default.
-     A later build step may swap in a Riot-approved web font here. */
-  --font-merch: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
-    Arial, sans-serif;
+  /* Inter loaded via next/font in apps/web/src/app/merch/layout.tsx and
+     exposed via --font-merch. Fallback stack mirrors the real store's
+     "Inter Fallback" chain for SSR and no-JS environments. */
+  --font-merch: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Helvetica, Arial, sans-serif;
 }
