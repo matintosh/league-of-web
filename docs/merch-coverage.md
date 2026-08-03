@@ -5,7 +5,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 **Legend:** ✅ page live · 🔨 in progress (open issue) · ⬜ page missing · ⛔ out of scope (real commerce/auth backend)
 
-**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **22 components** shipped · mobile pixel-perfect ✅ shipped (#618-#623) · **NOW: desktop 1:1 fidelity pass** 🔨 — per-page deep audit (like the homepage's) found real deltas: PDP panel typography #627 + PDP proportions #628; **listing redesign #629** (real 2-col flush cards + franchise overlay + multi-badge + REFINE — USER: "match real everywhere", replaces #594's homepage brand-rail grid; migrates MerchProduct badge→badges[] + franchiseLabel). Cart page audited = DRY (matches). Both desktop+mobile measured/verified.
+**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **22 components** shipped · mobile pixel-perfect ✅ shipped (#618-#623) · **desktop 1:1 fidelity pass:** PDP panel typography #627 + PDP proportions #628 ✅ SHIPPED (PR #630); **listing 2-col redesign #629 🔨 in review** (PR #631 — real 2-col flush cards + franchise overlay + multi-badge + REFINE across all 4 pages; USER: "match real everywhere", replaces #594's homepage brand-rail; migrates MerchProduct badge→+badges[]+franchiseLabel). Cart audited = DRY. Both desktop+mobile measured/verified.
 
 > The real store prefixes with `/` (e.g. `/product/<handle>`); our clone nests everything under
 > `/merch`. This map tracks PAGES (routes) first; the component table at the bottom tracks the parts
