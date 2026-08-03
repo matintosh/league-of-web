@@ -268,7 +268,7 @@ export type {
 export { MerchGiftCardBand } from "./merch/merch-gift-card-band";
 export type { MerchGiftCardBandProps, MerchGiftCard } from "./merch/merch-gift-card-band";
 export { MerchHeader } from "./merch/merch-header";
-export type { MerchHeaderProps } from "./merch/merch-header";
+export type { MerchHeaderProps, MerchNavItem } from "./merch/merch-header";
 export { MerchHeroBanner } from "./merch/merch-hero-banner";
 export type { MerchHeroBannerProps, MerchHeroSlide } from "./merch/merch-hero-banner";
 export { MerchInfoPage } from "./merch/merch-info-page";
