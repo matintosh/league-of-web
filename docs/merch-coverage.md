@@ -55,10 +55,10 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | `MerchCartDrawer` | ✅ | all (header cart) |
 | Category tile grid (`CategoryTileGrid` + `CategoryTile`) | ✅ | Homepage, Collections index |
 | `MerchFilterSortBar` (filter chips + sort dropdown) | ✅ | Collection, Shop All |
-| PDP related-products carousel | ⬜ | PDP |
-| PDP description accordions | ⬜ | PDP |
-| Size guide modal | ⬜ | PDP |
-| Search overlay | ⬜ | header |
+| `MerchShopCarousel` (franchise product carousel) | 🔨 #612 | PDP |
+| `MerchProductInfoTabs` (Description tab below buy panel) | 🔨 #613 | PDP |
+| `MerchSizeGuideModal` (apparel size table) + PurchasePanel amend | 🔨 #614 | PDP |
+| Correction: homepage needs NO separate category-tile grid (hero+chip-strip+grid already matches real) | ✅ DRY | — |
 | Info-page template (`MerchInfoPage`) | ✅ | Info pages |
 | `MerchCartPage` (full-page cart: line items table + order summary) | ✅ | Cart page |
 
