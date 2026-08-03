@@ -16,7 +16,7 @@
  *     Right: search · globe/locale · boxed SIGN IN button · cart
  *   Tier 2 — ~50px red dismissible announcement marquee
  *
- * Nav links: 14px/700, non-uppercased, white; hover → --color-merch-red.
+ * Nav links: 16px/600, uppercase, white; hover → --color-merch-red.
  * MY SHOP: --color-merch-gold. Dropdowns: real menus on click/hover.
  * SIGN IN: bg --color-merch-signin-bg, border-radius 6px, padding 8px 16px, 600/16px uppercase.
  *
@@ -412,10 +412,10 @@ export function MerchHeader({
                     aria-haspopup={hasDropdown ? "menu" : undefined}
                     className="relative flex items-center gap-1 pb-0.5 transition-colors duration-150 hover:opacity-80"
                     style={{
-                      fontSize: "14px",
-                      fontWeight: 700,
-                      letterSpacing: "normal",
-                      textTransform: "none",
+                      fontSize: "16px",
+                      fontWeight: 600,
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
                       color: isGold
                         ? "var(--color-merch-gold)"
                         : "var(--color-merch-on-dark)",
