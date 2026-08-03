@@ -27,6 +27,11 @@ export interface LandingHubCard {
   href: string;
   /** Optional badge / system note shown below the description */
   badge?: string;
+  /**
+   * Optional secondary "browse components" link shown inside the card footer.
+   * E.g. { label: "Browse components →", href: "/merch/showcase" }.
+   */
+  showcaseLink?: { label: string; href: string };
 }
 
 export interface LandingHubUtilityLink {
@@ -80,25 +85,37 @@ export function LandingHub({ cards, title = "League of Web", subtitle, utilityLi
         className="flex w-full max-w-3xl flex-col gap-4 sm:flex-row"
       >
         {cards.map((card) => (
-          /* next/link is rendered at the page layer (href wired via <a>);
-             the component itself renders a plain <a> so it stays server-safe. */
-          <a
-            key={card.id}
-            href={card.href}
-            className="group flex flex-1 flex-col gap-3 border border-gold-5 bg-blue-7 px-6 py-8 transition-colors duration-200 hover:border-gold-3 hover:bg-blue-6"
-          >
-            <span className="font-display text-xl uppercase tracking-widest text-gold-2 transition-colors duration-200 group-hover:text-gold-1">
-              {card.label}
-            </span>
-            <span className="text-sm leading-relaxed text-grey-1">
-              {card.description}
-            </span>
-            {card.badge && (
-              <span className="mt-auto self-start border border-gold-5 px-2 py-0.5 font-body text-[10px] uppercase tracking-widest text-gold-4">
-                {card.badge}
+          /* Each card slot is a flex column so the primary card link and the
+             optional secondary showcase link stack vertically without nesting
+             <a> inside <a> (invalid HTML) and without event handlers. */
+          <div key={card.id} className="flex flex-1 flex-col gap-1">
+            {/* Primary card — navigates to the section */}
+            <a
+              href={card.href}
+              className="group flex flex-col gap-3 border border-gold-5 bg-blue-7 px-6 py-8 transition-colors duration-200 hover:border-gold-3 hover:bg-blue-6"
+            >
+              <span className="font-display text-xl uppercase tracking-widest text-gold-2 transition-colors duration-200 group-hover:text-gold-1">
+                {card.label}
               </span>
+              <span className="text-sm leading-relaxed text-grey-1">
+                {card.description}
+              </span>
+              {card.badge && (
+                <span className="mt-auto self-start border border-gold-5 px-2 py-0.5 font-body text-[10px] uppercase tracking-widest text-gold-4">
+                  {card.badge}
+                </span>
+              )}
+            </a>
+            {/* Optional showcase link — sibling to the card, not nested inside */}
+            {card.showcaseLink && (
+              <a
+                href={card.showcaseLink.href}
+                className="self-start px-1 font-body text-[10px] uppercase tracking-widest text-gold-5 underline underline-offset-2 transition-colors duration-150 hover:text-gold-3"
+              >
+                {card.showcaseLink.label}
+              </a>
             )}
-          </a>
+          </div>
         ))}
       </nav>
 
