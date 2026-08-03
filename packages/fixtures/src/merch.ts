@@ -129,4 +129,25 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
     badge: "Out of Stock",
     franchiseLabel: "Riftbound",
   },
+  // Sale items — added to represent the /merch/sale listing
+  {
+    slug: "lol-classic-cap",
+    title: "League of Legends Classic Cap",
+    imageUrl: merchAssetUrl("a87ba685e599a287b6f56c32fb629d0d8515c828-2560x2560.png"),
+    price: "$19.99",
+    originalPrice: "$34.99",
+    badges: ["Sale"],
+    badge: "Sale",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "amumu-plush-mini",
+    title: "Amumu Mini Plush — Sale",
+    imageUrl: merchAssetUrl("bac8ecd0218d8af9d8f0d78d4fca40cb27a8a803-2560x2560.png"),
+    price: "$14.99",
+    originalPrice: "$24.99",
+    badges: ["Sale"],
+    badge: "Sale",
+    franchiseLabel: "League of Legends",
+  },
 ];

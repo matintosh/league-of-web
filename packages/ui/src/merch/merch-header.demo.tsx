@@ -3,8 +3,8 @@
 /**
  * MerchHeaderDemo — stateful demo wrappers for the merch header showcase.
  * These are CLIENT components because they hold useState for dismissal /
- * active-category toggling. They are imported by merch-header.showcase.tsx
- * which stays server-safe (no 'use client').
+ * active-category toggling / dropdown open state. They are imported by
+ * merch-header.showcase.tsx which stays server-safe (no 'use client').
  */
 
 import { useState } from "react";
@@ -37,5 +37,37 @@ export function MerchHeaderActiveCategoryDemo() {
       onCategoryClick={setActive}
       announcement="Summer Sale — Up to 50% off select items. Limited time only."
     />
+  );
+}
+
+/**
+ * Demo: functional dropdown menus.
+ * Click Categories▾ or Featured▾ to open the real dropdown; click an item
+ * to capture its slug. Esc and outside-click close the menu.
+ */
+export function MerchHeaderDropdownDemo() {
+  const [lastSlug, setLastSlug] = useState<string | null>(null);
+
+  return (
+    <div>
+      <MerchHeader
+        activeCategory={lastSlug ?? undefined}
+        cartCount={0}
+        onCategoryClick={setLastSlug}
+      />
+      {lastSlug && (
+        <p
+          style={{
+            marginTop: 12,
+            fontSize: 13,
+            color: "var(--color-merch-muted)",
+            padding: "0 24px",
+          }}
+        >
+          Last nav slug selected:{" "}
+          <strong style={{ color: "var(--color-merch-ink)" }}>{lastSlug}</strong>
+        </p>
+      )}
+    </div>
   );
 }

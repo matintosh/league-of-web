@@ -3,6 +3,7 @@ import { MerchHeader } from "./merch-header";
 import {
   MerchHeaderWithDismissDemo,
   MerchHeaderActiveCategoryDemo,
+  MerchHeaderDropdownDemo,
 } from "./merch-header.demo";
 
 export const merchHeaderShowcase: ShowcaseEntry = {
@@ -10,7 +11,7 @@ export const merchHeaderShowcase: ShowcaseEntry = {
   name: "Merch Header",
   area: "merch",
   description:
-    "Two-tier sticky header for the Riot merch store: ~80px black nav bar (Riot wordmark + fist emblem, left-aligned nav links, right cluster with search · globe · SIGN IN · cart) plus an optional ~50px red dismissible announcement marquee strip below it.",
+    "Two-tier sticky header for the Riot merch store: ~80px black nav bar (Riot wordmark + fist emblem, left-aligned nav links with real dropdown menus for Categories▾ and Featured▾, right cluster with search · globe · SIGN IN · cart) plus an optional ~50px red dismissible announcement marquee strip below it. Mobile hamburger (<lg) opens a full-height nav drawer.",
   variants: [
     {
       name: "Default — two-tier with announcement",
@@ -85,6 +86,16 @@ export const merchHeaderShowcase: ShowcaseEntry = {
       render: () => (
         <div style={{ background: "var(--color-merch-surface)", minHeight: "160px" }}>
           <MerchHeaderActiveCategoryDemo />
+        </div>
+      ),
+    },
+    {
+      name: "Interactive — dropdown menus (stateful)",
+      notes:
+        "Click Categories▾ or Featured▾ to open real dropdown menus. Click a menu item to see its slug. Esc or outside-click closes the menu.",
+      render: () => (
+        <div style={{ background: "var(--color-merch-surface)", minHeight: "320px" }}>
+          <MerchHeaderDropdownDemo />
         </div>
       ),
     },

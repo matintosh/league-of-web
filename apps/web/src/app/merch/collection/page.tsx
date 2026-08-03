@@ -1,10 +1,10 @@
 import { championSplashUrl } from "@low/fixtures";
 import {
-  MerchHeader,
   MerchCategoryTile,
   MerchCategoryTileGrid,
   MerchFooter,
 } from "@low/ui";
+import { CollectionIndexHeader } from "./collection-index-client";
 
 /**
  * /merch/collection — Collections index page.
@@ -97,7 +97,7 @@ export default function CollectionIndexPage() {
         fontFamily: "var(--font-merch)",
       }}
     >
-      <MerchHeader activeCategory="collection" />
+      <CollectionIndexHeader />
 
       <main className="flex-1">
         <MerchCategoryTileGrid heading="Collections">

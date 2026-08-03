@@ -7,10 +7,12 @@
 
 import { useRouter } from "next/navigation";
 import { MerchHeader, MerchFooter, MerchSignInPanel } from "@low/ui";
+import { useMerchNav } from "@/lib/merch-nav";
 
 /** /merch/account interactive page shell. */
 export function AccountPageClient() {
   const router = useRouter();
+  const handleNavSelect = useMerchNav();
 
   return (
     <div
@@ -21,13 +23,11 @@ export function AccountPageClient() {
       }}
     >
       <MerchHeader
-        activeCategory="account"
+        activeCategory="my-shop"
         onSignIn={() => router.push("/merch/account")}
         onLogoClick={() => router.push("/merch")}
-        onCategoryClick={(slug) => {
-          if (slug === "shop-all") router.push("/merch/shop-all");
-          else router.push(`/merch/${slug}`);
-        }}
+        onSearchClick={() => router.push("/merch/search")}
+        onCategoryClick={handleNavSelect}
       />
 
       <main className="flex flex-1 items-start justify-center py-20 px-6">

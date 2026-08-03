@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMerchNav } from "@/lib/merch-nav";
 import {
   MerchHeader,
   MerchFooter,
@@ -41,6 +42,7 @@ function computeSubtotal(items: MerchCartItem[]): string {
 /** /merch/cart interactive page shell. */
 export function CartPageClient({ initialItems }: CartPageClientProps) {
   const router = useRouter();
+  const handleNavSelect = useMerchNav();
   const [items, setItems] = useState<MerchCartItem[]>(initialItems);
   const [promoCode, setPromoCode] = useState("");
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
@@ -77,6 +79,9 @@ export function CartPageClient({ initialItems }: CartPageClientProps) {
       <MerchHeader
         cartCount={items.length}
         onCartClick={() => setCartDrawerOpen(true)}
+        onSearchClick={() => router.push("/merch/search")}
+        onCategoryClick={handleNavSelect}
+        onLogoClick={() => router.push("/merch")}
       />
 
       <main className="flex-1">

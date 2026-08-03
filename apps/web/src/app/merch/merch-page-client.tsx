@@ -22,6 +22,7 @@ import { championSplashUrl, MERCH_PRODUCTS, merchAssetUrl } from "@low/fixtures"
 import type { MerchCartItem } from "@low/fixtures";
 import type { MerchHeroSlide } from "@low/ui";
 import { useRouter } from "next/navigation";
+import { useMerchNav } from "@/lib/merch-nav";
 
 // Real 8 products from merch.riotgames.com — sourced from MERCH_PRODUCTS fixture.
 const PRODUCTS = MERCH_PRODUCTS;
@@ -87,6 +88,7 @@ const ANNOUNCEMENT =
 /** /merch interactive page shell — client component hosting all callbacks. */
 export function MerchPageClient() {
   const router = useRouter();
+  const handleNavSelect = useMerchNav();
   const [announcement, setAnnouncement] = useState<string | undefined>(ANNOUNCEMENT);
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems] = useState<MerchCartItem[]>([]);
@@ -110,9 +112,7 @@ export function MerchPageClient() {
         cartCount={cartItems.length}
         announcement={announcement}
         onDismissAnnouncement={() => setAnnouncement(undefined)}
-        onCategoryClick={(slug) => {
-          if (slug === "shop-all") router.push("/merch/shop-all");
-        }}
+        onCategoryClick={handleNavSelect}
         onSearchClick={() => router.push("/merch/search")}
         onCartClick={() => setCartOpen(true)}
       />
