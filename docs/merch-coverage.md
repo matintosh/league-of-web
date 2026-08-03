@@ -5,7 +5,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 **Legend:** ✅ page live · 🔨 in progress (open issue) · ⬜ page missing · ⛔ out of scope (real commerce/auth backend)
 
-**Status:** last updated 2026-08-03 · **6 / 9 page types live** · **13 components** shipped · **1 page 🔨 in progress** (#586 collections index)
+**Status:** last updated 2026-08-03 · **7 / 9 page types live** · **15 components** shipped · **homepage pixel-audit in progress** (issues incoming)
 
 > The real store prefixes with `/` (e.g. `/product/<handle>`); our clone nests everything under
 > `/merch`. This map tracks PAGES (routes) first; the component table at the bottom tracks the parts
@@ -20,7 +20,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | **Homepage** | `/` | `/merch` | ✅ | Header · HeroBanner · ProductGrid · Footer |
 | **Product detail (PDP)** | `/product/<handle>` | `/merch/product/[handle]` * | ✅ (at `/merch/[handle]`) | Gallery · PurchasePanel · (related, accordions ⬜) |
 | **Shop All** | `/shop-all/` | `/merch/shop-all` | ✅ | CollectionHero · FilterSortBar · ProductGrid |
-| **Collections index** | `/collection/` | `/merch/collection` | 🔨 #586 | heading · CategoryTileGrid 🔨 #586 |
+| **Collections index** | `/collection/` | `/merch/collection` | ✅ | heading · CategoryTileGrid (3-col tile grid) |
 | **Collection / category** | `/collection/<handle>` | `/merch/collection/[handle]` | ✅ | CollectionHero · FilterSortBar · ProductGrid |
 | **Cart page** | `/cart` | `/merch/cart` | ✅ | full-page cart: MerchCartPage (line items · summary · checkout) |
 | **Search** | `/search` | `/merch/search` | ⬜ | SearchOverlay ⬜ · results ProductGrid |
@@ -31,7 +31,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 ## PAGES — next up (build order)
 
-1. **Collections index** `/merch/collection` — grid of category tiles (🔨 #586, in review)
+1. **Homepage pixel-audit** — deep 1:1 pass vs merch.riotgames.com homepage (user-requested; issues incoming from analysis-home)
 2. **Search** `/merch/search` — search overlay + results
 3. **Account** `/merch/account` — presentational sign-in stub
 4. PDP URL 1:1 — move `/merch/[handle]` → `/merch/product/[handle]`
@@ -54,7 +54,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | `MerchProductGallery` | ✅ | PDP |
 | `MerchPurchasePanel` | ✅ | PDP |
 | `MerchCartDrawer` | ✅ | all (header cart) |
-| Category tile grid (`CategoryTileGrid` + `CategoryTile`) | 🔨 #586 | Homepage, Collections index |
+| Category tile grid (`CategoryTileGrid` + `CategoryTile`) | ✅ | Homepage, Collections index |
 | `MerchFilterSortBar` (filter chips + sort dropdown) | ✅ | Collection, Shop All |
 | PDP related-products carousel | ⬜ | PDP |
 | PDP description accordions | ⬜ | PDP |
