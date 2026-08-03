@@ -13,48 +13,74 @@ export const merchHeroBannerShowcase: ShowcaseEntry = {
   name: "Merch Hero Banner",
   area: "merch",
   description:
-    "Full-width homepage hero for the Riot merch store. Aspect ratio ~16:5 (matching 3296×1030 source images). Supports single or multi-slide carousel with auto-advance, dot navigation, text overlay (eyebrow/headline/body/CTA), and configurable text alignment. Measured from merch.riotgames.com.",
+    "Full-width homepage hero for the Riot merch store. Aspect ratio ~64:27 (≈2.37, matching 1280×535 from merch.riotgames.com). Art-forward: text overlay is optional so baked-in artwork carries the branding. CTA defaults to white pill + black text (radius 2px, sentence-case); red variant available. Multi-slide: dot nav + ‹ › arrow controls.",
   variants: [
     {
       name: "Multi-slide carousel (auto-advance)",
       notes:
-        "Three-slide carousel with 4s auto-advance. Left-aligned slide 1 & 3; center-aligned slide 2. Dot nav visible below.",
+        "Three-slide carousel with 4s auto-advance. Art-forward slides with light CTA (white pill, bottom-right). Arrow controls + dot nav visible.",
       backgrounds: ["dark"],
       render: () => <MerchHeroBannerDemo />,
     },
     {
-      name: "Single slide — left aligned, no dots",
+      name: "Single slide — art-forward, light CTA bottom-right",
       notes:
-        "Single slide with no carousel. Dot nav hidden. CTA button present.",
+        "Single slide; no carousel. Light CTA (white pill + black text, radius 2px) anchored bottom-right matching the real store's MSI 26 slide.",
       backgrounds: ["dark"],
       render: () => <MerchHeroBannerSingleDemo />,
     },
     {
-      name: "Center-aligned text overlay",
+      name: "Light CTA — center-left (default position)",
       notes:
-        "Slide with align='center' — uses radial scrim; text block centered.",
+        "Slide with eyebrow + headline + light CTA aligned center-left. Text overlay with softened scrim.",
       backgrounds: ["dark"],
       render: () => (
         <MerchHeroBanner
           autoPlayMs={0}
           slides={[
             {
-              id: "center-demo",
+              id: "light-left",
               imageUrl: IMG_LUX,
               imageAlt: "Lux PROJECT Collection banner",
               eyebrow: "Limited Edition",
               headline: "PROJECT Collection",
               body: "Exclusive apparel and collectibles for the Rift's elite.",
-              ctaLabel: "Explore",
-              align: "center",
+              ctaLabel: "Shop All",
+              ctaVariant: "light",
+              align: "left",
             },
           ]}
         />
       ),
     },
     {
-      name: "No text overlay — image only",
-      notes: "Hero with no eyebrow, headline, body, or CTA — pure image banner.",
+      name: "Red CTA — alternate variant",
+      notes:
+        "Red CTA (--color-merch-red bg, white text, uppercase) — legacy Riot red style, e.g. 'Shop Now' on sale slides.",
+      backgrounds: ["dark"],
+      render: () => (
+        <MerchHeroBanner
+          autoPlayMs={0}
+          slides={[
+            {
+              id: "red-cta",
+              imageUrl: IMG_VI,
+              imageAlt: "Arcane Vi hoodie banner",
+              eyebrow: "Sale — Up to 40% Off",
+              headline: "Arcane Collection",
+              body: "Gear up with officially licensed merch from the hit animated series.",
+              ctaLabel: "Shop Now",
+              ctaVariant: "red",
+              align: "left",
+            },
+          ]}
+        />
+      ),
+    },
+    {
+      name: "No text overlay — pure art-forward",
+      notes:
+        "Hero with no eyebrow, headline, body, or CTA — image only. Scrim suppressed. Art carries all branding.",
       backgrounds: ["dark"],
       render: () => (
         <MerchHeroBanner
@@ -62,16 +88,17 @@ export const merchHeroBannerShowcase: ShowcaseEntry = {
           slides={[
             {
               id: "image-only",
-              imageUrl: IMG_VI,
-              imageAlt: "Arcane Vi banner",
+              imageUrl: IMG_JINX,
+              imageAlt: "Jinx Riftbound Origins banner",
             },
           ]}
         />
       ),
     },
     {
-      name: "Two slides — manual navigation",
-      notes: "Two slides with no auto-advance; use dots to switch.",
+      name: "Two slides — arrow + dot navigation",
+      notes:
+        "Two slides with no auto-advance; use ‹ › arrows or dots to switch.",
       backgrounds: ["dark"],
       render: () => (
         <MerchHeroBanner
@@ -81,18 +108,18 @@ export const merchHeroBannerShowcase: ShowcaseEntry = {
               id: "s1",
               imageUrl: IMG_JINX,
               imageAlt: "Jinx Riftbound Origins",
-              eyebrow: "New Arrivals",
-              headline: "Riftbound Origins",
-              ctaLabel: "Shop Now",
+              ctaLabel: "Shop All",
+              ctaVariant: "light",
+              ctaCorner: "bottom-right",
               align: "left",
             },
             {
               id: "s2",
               imageUrl: IMG_VI,
               imageAlt: "Arcane Vi hoodie",
-              eyebrow: "Sale — Up to 40% Off",
-              headline: "Arcane Collection",
-              ctaLabel: "View Deals",
+              ctaLabel: "Shop Now",
+              ctaVariant: "red",
+              ctaCorner: "bottom-right",
               align: "left",
             },
           ]}
