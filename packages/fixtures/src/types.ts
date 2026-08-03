@@ -268,3 +268,31 @@ export interface MerchProduct {
   /** Optional badge label for the tile. */
   badge?: "New" | "Sale" | "Out of Stock" | "Limited";
 }
+
+/**
+ * A size or colour variant chip on the PDP purchase panel.
+ */
+export interface MerchVariant {
+  /** Chip label, e.g. "S", "M", "L", "XL". */
+  label: string;
+  /** Whether this variant is available to purchase. */
+  available: boolean;
+}
+
+/**
+ * A line item in the merch cart drawer.
+ */
+export interface MerchCartItem {
+  /** Unique line item id. */
+  id: string;
+  /** Product title. */
+  title: string;
+  /** Thumbnail URL (80×80, object-fit: cover). */
+  imageUrl: string;
+  /** Variant label shown below title, e.g. "Size: M" or "Color: Black / Size: L". */
+  variantLabel?: string;
+  /** Display price for one unit, e.g. "$39.99". */
+  unitPrice: string;
+  /** Current quantity (min 1). */
+  quantity: number;
+}
