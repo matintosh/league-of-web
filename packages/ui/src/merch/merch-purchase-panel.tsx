@@ -6,9 +6,9 @@
  *
  * Measured from merch.riotgames.com (~1280px desktop):
  *   Panel width: ~38% of page width (~485px at 1280px — proportional grid)
- *   Title: clamp(32px, 3.75vw, 48px) / 700 / line-height 1.1 / var(--color-merch-ink)
+ *   Title: clamp(38px, 3.75vw, 48px) / 700 / line-height 1.1 / --color-merch-ink-dark / uppercase / -0.03em tracking
  *   Badges: 10px uppercase / 2px 8px padding / ink bg / on-dark text
- *   Price: 16px / 400; sale = struck original (muted) + red current
+ *   Price: 28px / 400 / --color-merch-ink-dark; sale = struck original 16px (muted) + red 28px current
  *   Variant chips: 8px 16px padding / 13px / flex-wrap / 8px gap
  *   Active chip: ink bg + on-dark text + 2px ink border
  *   Disabled chip: 0.35 opacity + line-through + not-allowed cursor
@@ -124,10 +124,12 @@ export function MerchPurchasePanel({
       {/* ── Title ───────────────────────────────────────────────────────── */}
       <h1
         style={{
-          fontSize: "clamp(32px, 3.75vw, 48px)",
+          fontSize: "clamp(38px, 3.75vw, 48px)",
           fontWeight: 700,
           lineHeight: 1.1,
-          color: "var(--color-merch-ink)",
+          color: "var(--color-merch-ink-dark)",
+          textTransform: "uppercase",
+          letterSpacing: "-0.03em",
           margin: 0,
         }}
       >
@@ -181,7 +183,7 @@ export function MerchPurchasePanel({
             </span>
             <span
               style={{
-                fontSize: 16,
+                fontSize: 28,
                 fontWeight: 400,
                 color: "var(--color-merch-red)",
               }}
@@ -192,9 +194,9 @@ export function MerchPurchasePanel({
         ) : (
           <span
             style={{
-              fontSize: 16,
+              fontSize: 28,
               fontWeight: 400,
-              color: "var(--color-merch-ink)",
+              color: "var(--color-merch-ink-dark)",
             }}
           >
             {price}

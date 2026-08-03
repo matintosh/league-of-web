@@ -3,8 +3,8 @@
 /**
  * MerchProductGallery — PDP left column: main image + thumbnail strip.
  *
- * Measured from merch.riotgames.com apparel PDPs (~1280px desktop):
- *   Main image: ~560px wide, 4:5 aspect, object-fit cover, --color-merch-surface bg
+ * Measured from merch.riotgames.com PDPs (~1280px desktop):
+ *   Main image: ~690×690 SQUARE (1:1), object-fit contain (art floats on surface, not cropped)
  *   Thumbnail strip: flex, 8px gap, margin-top 12px
  *   Thumbnail: 72×72px, 1:1, object-fit cover
  *   Active border: 2px solid --color-merch-ink
@@ -22,7 +22,7 @@ export interface MerchProductGalleryProps {
   images: string[];
   /** Alt text for the main image (product title). */
   alt: string;
-  /** Aspect ratio for the main image container. Default "4 / 5". */
+  /** Aspect ratio for the main image container. Default "1 / 1" (square, matching real PDP). */
   aspectRatio?: string;
   /** Index of the currently selected image — controlled. Defaults to 0. */
   selectedIndex?: number;
@@ -37,7 +37,7 @@ export interface MerchProductGalleryProps {
 export function MerchProductGallery({
   images,
   alt,
-  aspectRatio = "4 / 5",
+  aspectRatio = "1 / 1",
   selectedIndex = 0,
   onSelect,
 }: MerchProductGalleryProps) {
@@ -63,7 +63,7 @@ export function MerchProductGallery({
           style={{
             width: "100%",
             height: "100%",
-            objectFit: "cover",
+            objectFit: "contain",
             display: "block",
           }}
         />
