@@ -5,15 +5,16 @@
  * quantity stepper, Add to Cart CTA, optional description.
  *
  * Measured from merch.riotgames.com (~1280px desktop):
- *   Panel width: ~520–560px (flex-1 right column)
- *   Title: 28–32px / 700 / line-height 1.2 / var(--color-merch-ink)
+ *   Panel width: ~38% of page width (~485px at 1280px — proportional grid)
+ *   Title: clamp(32px, 3.75vw, 48px) / 700 / line-height 1.1 / var(--color-merch-ink)
  *   Badges: 10px uppercase / 2px 8px padding / ink bg / on-dark text
- *   Price: 20px / 600; sale = struck original (muted) + red current
+ *   Price: 16px / 400; sale = struck original (muted) + red current
  *   Variant chips: 8px 16px padding / 13px / flex-wrap / 8px gap
  *   Active chip: ink bg + on-dark text + 2px ink border
  *   Disabled chip: 0.35 opacity + line-through + not-allowed cursor
  *   Qty stepper: 40×40px per cell / 1px border
- *   Add to Cart: 52px tall / full-width / merch-red bg / 700 uppercase 14px
+ *   Add to Cart: 50px tall / full-width / merch-red bg / 600 uppercase 16px
+ *   Breadcrumb: 16px / muted color
  *
  * Fully presentational — no internal useState.
  */
@@ -106,7 +107,7 @@ export function MerchPurchasePanel({
               listStyle: "none",
               padding: 0,
               margin: 0,
-              fontSize: 11,
+              fontSize: 16,
               color: "var(--color-merch-muted)",
             }}
           >
@@ -123,9 +124,9 @@ export function MerchPurchasePanel({
       {/* ── Title ───────────────────────────────────────────────────────── */}
       <h1
         style={{
-          fontSize: "clamp(28px, 2.5vw, 32px)",
+          fontSize: "clamp(32px, 3.75vw, 48px)",
           fontWeight: 700,
-          lineHeight: 1.2,
+          lineHeight: 1.1,
           color: "var(--color-merch-ink)",
           margin: 0,
         }}
@@ -170,8 +171,8 @@ export function MerchPurchasePanel({
           <>
             <span
               style={{
-                fontSize: 20,
-                fontWeight: 600,
+                fontSize: 16,
+                fontWeight: 400,
                 color: "var(--color-merch-muted)",
                 textDecoration: "line-through",
               }}
@@ -180,8 +181,8 @@ export function MerchPurchasePanel({
             </span>
             <span
               style={{
-                fontSize: 20,
-                fontWeight: 600,
+                fontSize: 16,
+                fontWeight: 400,
                 color: "var(--color-merch-red)",
               }}
             >
@@ -191,8 +192,8 @@ export function MerchPurchasePanel({
         ) : (
           <span
             style={{
-              fontSize: 20,
-              fontWeight: 600,
+              fontSize: 16,
+              fontWeight: 400,
               color: "var(--color-merch-ink)",
             }}
           >
@@ -378,13 +379,13 @@ export function MerchPurchasePanel({
           style={{
             display: "block",
             width: "100%",
-            height: 52,
+            height: 50,
             backgroundColor: outOfStock
               ? "var(--color-merch-muted)"
               : "var(--color-merch-red)",
             color: "var(--color-merch-on-dark)",
-            fontSize: 14,
-            fontWeight: 700,
+            fontSize: 16,
+            fontWeight: 600,
             textTransform: "uppercase",
             letterSpacing: "0.1em",
             border: "none",

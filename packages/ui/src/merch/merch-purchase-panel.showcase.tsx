@@ -15,7 +15,7 @@ export const merchPurchasePanelShowcase: ShowcaseEntry = {
   name: "Merch Purchase Panel",
   area: "merch",
   description:
-    "PDP right column: title (28–32px/700), inline badge chips, price (sale = struck original + red), size chip strip (active ink bg+border, disabled 0.35 opacity+line-through), qty stepper (40×40, minus disabled at 1), full-width Add to Cart (52px, merch-red). Measured from merch.riotgames.com PDP.",
+    "PDP right column: title (clamp 32–48px/700), inline badge chips, price (16px/400; sale = struck original + red), size chip strip (active ink bg+border, disabled 0.35 opacity+line-through), qty stepper (40×40, minus disabled at 1), full-width Add to Cart (50px, 16px/600, merch-red). Measured from merch.riotgames.com PDP.",
   variants: [
     {
       name: "Normal — sizes, one selected",
