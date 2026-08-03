@@ -26,15 +26,19 @@ import { useRouter } from "next/navigation";
 // Real 8 products from merch.riotgames.com — sourced from MERCH_PRODUCTS fixture.
 const PRODUCTS = MERCH_PRODUCTS;
 
-// Real hero banners — baked-in campaign art (no headline overlay needed).
-// Slide A: League Classic campaign (dataset: consumer_products, 1680x589)
-// Slide B: Riftbound Vendetta campaign (dataset: consumer_products_live, 3296x1030)
+// Real hero banners — full-art campaign banners sourced from cdn.sanity.io (hotlinkable).
+// Slide A: League of Legends Classic campaign (consumer_products_live, 3296x1030) — vivid
+//   warm beige tones, LoL Classic logo, merch + product art, reads well full-bleed.
+// Slide B: Riftbound Vendetta Akali (consumer_products_live, 3296x1030) — vivid
+//   crimson background, character art centered, wide landscape ~3.2:1 ratio.
+// DROPPED: d9528f9cc6c88034bb963709002e0dfde2520fb7-1680x589 (consumer_products) — purple
+//   duotone text-backdrop; reads as flat purple wash when shown bare without overlaid text.
 const HERO_SLIDES: MerchHeroSlide[] = [
   {
     id: "slide-classic",
-    imageUrl: merchAssetUrl("d9528f9cc6c88034bb963709002e0dfde2520fb7-1680x589.webp", {
+    imageUrl: merchAssetUrl("3dbbf5ce0d30940b0db3741cdb9d1bed12afce48-3296x1030.png", {
       w: 1920,
-      dataset: "consumer_products",
+      dataset: "consumer_products_live",
     }),
     imageAlt: "League of Legends Classic — Shop the Collection",
     ctaLabel: "Shop All",
