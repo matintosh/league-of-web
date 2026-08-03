@@ -51,6 +51,7 @@ export function ShopAllPageClient({ products }: ShopAllPageClientProps) {
         activeCategory="shop-all"
         cartCount={cartItems.length}
         onCartClick={() => setCartOpen(true)}
+        onSearchClick={() => router.push("/merch/search")}
       />
 
       <main className="flex-1">
