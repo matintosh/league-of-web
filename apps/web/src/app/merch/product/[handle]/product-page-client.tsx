@@ -13,6 +13,7 @@ import {
   MerchHeader,
   MerchFooter,
   MerchProductGallery,
+  MerchProductInfoTabs,
   MerchPurchasePanel,
   MerchCartDrawer,
 } from "@low/ui";
@@ -99,6 +100,16 @@ export function ProductPageClient({
               variantLabel="Size"
               selectedVariant="M"
               quantity={1}
+            />
+            <MerchProductInfoTabs
+              tabs={[
+                {
+                  id: "description",
+                  label: "Description",
+                  content: <p style={{ margin: 0 }}>{description}</p>,
+                },
+              ]}
+              selectedTab="description"
             />
           </div>
         </div>
