@@ -42,7 +42,7 @@
   --color-merch-border:  #e5e5e5; /* dividers, card outlines                       */
 
   /* ── Header (dark bar sampled from merch.riotgames.com) ────────────── */
-  --color-merch-ink-dark:    #0d0d0d; /* header/nav background — near-black          */
+  --color-merch-ink-dark:    #000000; /* header/nav background — pure black (sampled: rgb(0,0,0)) */
   --color-merch-border-dark: #2a2a2a; /* header bottom border separator              */
   --color-merch-on-dark:     #ffffff; /* white text/icons on the dark header + badge text on dark/red backgrounds */
 
