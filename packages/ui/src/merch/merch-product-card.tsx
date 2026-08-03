@@ -96,9 +96,11 @@ function badgeStyle(badge: BadgeLabel): React.CSSProperties {
     };
   }
   if (b === "sale") {
+    // "Sale" chip replaced by green %-discount badge on the image — skip here
     return {
-      backgroundColor: "var(--color-merch-red)",
-      color: "var(--color-merch-on-dark)",
+      backgroundColor: "var(--color-merch-surface)",
+      color: "var(--color-merch-muted)",
+      border: "1px solid var(--color-merch-border)",
     };
   }
   if (b === "out of stock") {
@@ -171,7 +173,7 @@ export function MerchProductCard({
   const heartTitleId = useId();
 
   // Resolve the badge list: `badges` takes precedence over `badge`
-  const activeBadges: string[] =
+  const allBadges: string[] =
     badges && badges.length > 0
       ? badges
       : badge
@@ -179,8 +181,21 @@ export function MerchProductCard({
       : [];
 
   const isOnSale =
-    activeBadges.some((b) => b.toLowerCase() === "sale") ||
+    allBadges.some((b) => b.toLowerCase() === "sale") ||
     (originalPrice !== undefined && originalPrice !== price);
+
+  // Compute discount percentage from price strings (e.g. "$59.99" → 59.99).
+  // Robustly handles missing/unparseable prices — badge is hidden if NaN.
+  const discountPct: number | null = (() => {
+    if (!isOnSale || !originalPrice || originalPrice === price) return null;
+    const orig = parseFloat(originalPrice.replace(/[^0-9.]/g, ""));
+    const curr = parseFloat(price.replace(/[^0-9.]/g, ""));
+    if (!isFinite(orig) || !isFinite(curr) || orig <= 0) return null;
+    return Math.round((1 - curr / orig) * 100);
+  })();
+
+  // Render non-sale badges only; the "Sale" label is replaced by the %-badge on the image.
+  const activeBadges = allBadges.filter((b) => b.toLowerCase() !== "sale");
 
   return (
     <article
@@ -226,6 +241,25 @@ export function MerchProductCard({
               style={{ color: "var(--color-merch-franchise-label)" }}
             >
               {franchiseLabel}
+            </span>
+          </div>
+        )}
+
+        {/* Discount %-badge — top-left of image (below franchise label when both present).
+            Green bg (#8CD50B), black text, 14px/400. Only rendered when on sale + parseable prices. */}
+        {discountPct !== null && (
+          <div
+            className="absolute left-0"
+            style={{ top: franchiseLabel ? "calc(1px + 1.75rem)" : 0 }}
+          >
+            <span
+              className="block px-2 py-0.5 text-[14px] font-normal leading-tight"
+              style={{
+                backgroundColor: "var(--color-merch-badge-sale)",
+                color: "var(--color-merch-ink-dark)",
+              }}
+            >
+              -{discountPct}%
             </span>
           </div>
         )}
@@ -290,25 +324,30 @@ export function MerchProductCard({
           {title}
         </p>
 
-        {/* Price row */}
-        <div className="flex items-center gap-2 text-[13px]">
+        {/* Price row.
+            Sale: struck original in grey (#666) at 16px, current price in dark ink (not red).
+            Non-sale: price in muted grey. Matches real /category/sales/ measurements. */}
+        <div className="flex items-center gap-2">
           {isOnSale && originalPrice ? (
             <>
               <span
-                className="line-through"
-                style={{ color: "var(--color-merch-muted)" }}
+                className="line-through text-[16px]"
+                style={{ color: "var(--color-merch-price-struck)" }}
               >
                 {originalPrice}
               </span>
               <span
-                className="font-medium"
-                style={{ color: "var(--color-merch-red)" }}
+                className="text-[13px] font-medium"
+                style={{ color: "var(--color-merch-ink)" }}
               >
                 {price}
               </span>
             </>
           ) : (
-            <span style={{ color: "var(--color-merch-muted)" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "var(--color-merch-muted)" }}
+            >
               {price}
             </span>
           )}
