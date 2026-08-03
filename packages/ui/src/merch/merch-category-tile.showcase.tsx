@@ -1,6 +1,8 @@
 import { championSplashUrl } from "@low/fixtures";
 import type { ShowcaseEntry } from "../showcase";
 import { MerchCategoryTile } from "./merch-category-tile";
+import { MerchCategoryTileGrid } from "./merch-category-tile-grid";
+import { MerchCategoryTileInteractiveDemo } from "./merch-category-tile.demo";
 
 /** Placeholder images sourced from the Data Dragon CDN (ddragon.leagueoflegends.com). */
 const IMGS = {
@@ -63,22 +65,21 @@ export const merchCategoryTileShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "Grid of 3 tiles",
-      notes: "Three tiles side-by-side, matching the lg desktop grid columns.",
+      name: "Standalone interactive tile",
+      notes: "When onClick is provided the tile gains tabIndex and keyboard support (Enter/Space). Used for standalone usage without a wrapping <a>. Click or press Enter/Space to activate.",
+      backgrounds: ["light"],
+      render: () => <MerchCategoryTileInteractiveDemo />,
+    },
+    {
+      name: "Grid of 3 tiles — MerchCategoryTileGrid",
+      notes: "Three tiles rendered through the real MerchCategoryTileGrid, matching the lg desktop layout.",
       backgrounds: ["light"],
       render: () => (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-            gap: "24px",
-            maxWidth: 1100,
-          }}
-        >
+        <MerchCategoryTileGrid heading="Collections">
           <MerchCategoryTile slug="arcane" name="Arcane" imageUrl={IMGS.vi0} />
           <MerchCategoryTile slug="project" name="PROJECT" imageUrl={IMGS.lux0} />
           <MerchCategoryTile slug="star-guardian" name="Star Guardian" imageUrl={IMGS.lux1} />
-        </div>
+        </MerchCategoryTileGrid>
       ),
     },
   ],

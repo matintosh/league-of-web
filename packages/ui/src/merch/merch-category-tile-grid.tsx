@@ -48,13 +48,12 @@ export function MerchCategoryTileGrid({
   children,
 }: MerchCategoryTileGridProps) {
   return (
-    <section style={{ fontFamily: "var(--font-merch)" }}>
+    // aria-labelledby ties the section's accessible name to the visible heading
+    <section aria-labelledby="collections-heading" style={{ fontFamily: "var(--font-merch)" }}>
       {/* Page heading */}
-      <div
-        className="mx-auto max-w-7xl px-6 py-10"
-        style={{ fontFamily: "var(--font-merch)" }}
-      >
+      <div className="mx-auto max-w-7xl px-6 py-10">
         <h1
+          id="collections-heading"
           className="text-4xl font-extrabold uppercase tracking-[0.04em]"
           style={{ color: "var(--color-merch-ink)" }}
         >

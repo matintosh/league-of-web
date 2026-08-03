@@ -23,6 +23,16 @@ interface CollectionEntry {
   imageUrl: string;
 }
 
+/**
+ * FIXTURE NOTE: Data Dragon (ddragon.leagueoflegends.com) only hosts League of
+ * Legends assets — there is no Riot-hosted VALORANT or TFT CDN equivalent.
+ * Non-LoL collections (VALORANT, Teamfight Tactics) therefore use thematically
+ * representative LoL champion splashes as stand-ins:
+ *   - VALORANT   → Jinx 0  (energy, gunslinger theme)
+ *   - TFT        → Teemo 0 (tactical/cute mascot theme)
+ * These are fixture placeholders only; a real implementation would source
+ * per-game assets from each title's own CDN.
+ */
 const COLLECTIONS: CollectionEntry[] = [
   {
     slug: "league-classic",
@@ -37,11 +47,13 @@ const COLLECTIONS: CollectionEntry[] = [
   {
     slug: "valorant",
     name: "VALORANT",
+    // Stand-in: Jinx (gunslinger energy) — no VALORANT CDN available via Data Dragon
     imageUrl: championSplashUrl("Jinx", 0),
   },
   {
     slug: "teamfight-tactics",
     name: "Teamfight Tactics",
+    // Stand-in: Teemo (TFT mascot theme) — no TFT-specific CDN available via Data Dragon
     imageUrl: championSplashUrl("Teemo", 0),
   },
   {
@@ -89,17 +101,22 @@ export default function CollectionIndexPage() {
 
       <main className="flex-1">
         <MerchCategoryTileGrid heading="Collections">
-          {COLLECTIONS.map((col) => (
+          {COLLECTIONS.map((col, index) => (
+            // The <a> is the sole interactive/focusable element.
+            // CategoryTile renders as a plain presentational article (no onClick prop).
+            // aria-label is intentionally omitted — the visible tile text names the link.
             <a
               key={col.slug}
               href={`/merch/collection/${col.slug}`}
               style={{ textDecoration: "none", display: "block" }}
-              aria-label={col.name}
             >
               <MerchCategoryTile
                 slug={col.slug}
                 name={col.name}
                 imageUrl={col.imageUrl}
+                // First 3 tiles (top row at lg) are LCP candidates — load eagerly.
+                // Remaining tiles are below the fold and can lazy-load.
+                loading={index < 3 ? "eager" : "lazy"}
               />
             </a>
           ))}

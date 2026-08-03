@@ -19,7 +19,7 @@
  *   - Label text: 15px, font-weight 700, uppercase, letter-spacing 0.06em
  *   - Label color: --color-merch-on-dark (white on dark strip)
  *   - Card border: none by default; 1px solid --color-merch-border on focus
- *   - Cursor: pointer; entire tile is clickable
+ *   - Cursor: pointer when onClick is provided; default otherwise
  */
 
 // ---------------------------------------------------------------------------
@@ -35,8 +35,19 @@ export interface MerchCategoryTileProps {
   imageUrl: string;
   /** Alt text for the tile image. Defaults to `name` if omitted. */
   imageAlt?: string;
-  /** Called when the tile is clicked. Receives the slug. */
+  /**
+   * Called when the tile is clicked. Receives the slug.
+   * When omitted the article renders as a plain presentational element with no
+   * extra tab stop — the parent `<a>` (or similar) is the sole interactive element.
+   * When provided, tabIndex/onKeyDown are added so the tile is independently operable.
+   */
   onClick?: (slug: string) => void;
+  /**
+   * Native img loading hint. Use "eager" for above-the-fold tiles (LCP candidates)
+   * and "lazy" (the default) for below-the-fold tiles.
+   * @default "lazy"
+   */
+  loading?: "lazy" | "eager";
 }
 
 // ---------------------------------------------------------------------------
@@ -48,7 +59,17 @@ export interface MerchCategoryTileProps {
  * Grid usage: place inside `MerchCategoryTileGrid` or a
  * `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6` container.
  *
+ * When used inside an `<a>` (the standard page pattern) omit `onClick` so the
+ * tile renders as a plain presentational article with no extra tab stop.
+ *
  * @example
+ * // Page pattern — <a> is the interactive element; tile is presentational
+ * <a href={`/merch/collection/${slug}`}>
+ *   <MerchCategoryTile slug={slug} name={name} imageUrl={imageUrl} />
+ * </a>
+ *
+ * @example
+ * // Standalone / showcase pattern — tile handles its own click
  * <MerchCategoryTile
  *   slug="league-classic"
  *   name="League Classic"
@@ -62,20 +83,31 @@ export function MerchCategoryTile({
   imageUrl,
   imageAlt,
   onClick,
+  loading = "lazy",
 }: MerchCategoryTileProps) {
+  // When onClick is provided the article is a standalone interactive control:
+  // add tabIndex, keyboard handler, and pointer cursor so it is keyboard-operable.
+  // When onClick is absent (e.g. wrapped in an <a>) the article is purely
+  // presentational — no extra tab stop, no removed focus ring.
+  const isInteractive = onClick != null;
+
   return (
     <article
-      role="article"
-      className="group flex w-full cursor-pointer flex-col overflow-hidden"
-      style={{ fontFamily: "var(--font-merch)", outline: "none" }}
-      tabIndex={0}
-      onClick={() => onClick?.(slug)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick?.(slug);
-        }
-      }}
+      className={[
+        "group flex w-full flex-col overflow-hidden",
+        isInteractive ? "cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-merch-border]" : "",
+      ].join(" ").trim()}
+      style={{ fontFamily: "var(--font-merch)" }}
+      {...(isInteractive && {
+        tabIndex: 0,
+        onClick: () => onClick(slug),
+        onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick(slug);
+          }
+        },
+      })}
     >
       {/* ------------------------------------------------------------------ */}
       {/* Image container — 16:9 aspect ratio                                  */}
@@ -91,7 +123,7 @@ export function MerchCategoryTile({
         <img
           src={imageUrl}
           alt={imageAlt ?? name}
-          loading="lazy"
+          loading={loading}
           className="h-full w-full object-cover transition-transform duration-200 ease-out group-hover:scale-[1.04]"
           style={{ display: "block" }}
         />
