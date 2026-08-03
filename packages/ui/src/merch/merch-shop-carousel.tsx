@@ -169,6 +169,7 @@ export function MerchShopCarousel({
         paddingBottom: 48,
         fontFamily: "var(--font-merch)",
         position: "relative",
+        overflowX: "hidden",
       }}
     >
       {/* ------------------------------------------------------------------ */}

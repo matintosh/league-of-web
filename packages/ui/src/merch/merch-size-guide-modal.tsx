@@ -133,7 +133,7 @@ export function MerchSizeGuideModal({
           left: "50%",
           transform: "translate(-50%, -50%)",
           zIndex: 61,
-          width: 800,
+          width: "min(800px, calc(100vw - 32px))",
           minHeight: 484,
           backgroundColor: "var(--color-merch-bg)",
           fontFamily: "var(--font-merch)",
