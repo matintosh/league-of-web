@@ -5,7 +5,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 **Legend:** ✅ page live · 🔨 in progress (open issue) · ⬜ page missing · ⛔ out of scope (real commerce/auth backend)
 
-**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **22 components** shipped · mobile pixel-perfect ✅ (#618-#623) · **desktop 1:1 fidelity pass ✅ COMPLETE** — PDP typography+proportions #627/#628 (PR #630) + listing 2-col flush redesign #629 (PR #631: real cards w/ franchise overlay + multi-badge + REFINE across all 4 pages, homepage corrected 4-col→2-col, MerchProduct badge→+badges[]+franchiseLabel). Cart = DRY. Every page measured/verified at BOTH 1280 + 390. **Real imagery ✅ SHIPPED** (#632) — uses the actual merch.riotgames.com Sanity-CDN hero banners + 8 real products (hotlink via Next remotePatterns + `merchAssetUrl` helper); champion-splash art gone from /merch. **Independent `/merch/showcase` ✅ SHIPPED** (#633) — under the /merch layout, all 22 merch components render with real merch tokens + Inter (fixed the tokenless-render bug); branded "Merch Design System" page, linked from landing hub. **Hero fixed ✅** — scrim removed (#634) + reselected to VIVID real full-art banners (#635). **Full working nav 🔨** (user-directed) — Categories/Featured dropdown menus + `/merch/sale` + mobile menu + onCategoryClick wired on EVERY page (was only Shop-All, only on 3 pages). **Site map now COMPREHENSIVE** — every `page.tsx` route is listed (store pages + nav-destination routes + supporting routes like /merch/showcase + the [handle] redirect).
+**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **23 components** shipped · mobile pixel-perfect ✅ (#618-#623) · **desktop 1:1 fidelity pass ✅ COMPLETE** — PDP typography+proportions #627/#628 (PR #630) + listing 2-col flush redesign #629 (PR #631: real cards w/ franchise overlay + multi-badge + REFINE across all 4 pages, homepage corrected 4-col→2-col, MerchProduct badge→+badges[]+franchiseLabel). Cart = DRY. Every page measured/verified at BOTH 1280 + 390. **Real imagery ✅ SHIPPED** (#632) — uses the actual merch.riotgames.com Sanity-CDN hero banners + 8 real products (hotlink via Next remotePatterns + `merchAssetUrl` helper); champion-splash art gone from /merch. **Independent `/merch/showcase` ✅ SHIPPED** (#633) — under the /merch layout, all 22 merch components render with real merch tokens + Inter (fixed the tokenless-render bug); branded "Merch Design System" page, linked from landing hub. **Hero fixed ✅** — scrim removed (#634) + reselected to VIVID real full-art banners (#635). **Full working nav ✅ SHIPPED** (#636) — Categories/Featured dropdown menus + `/merch/sale` + mobile menu + onCategoryClick wired on EVERY page (was only Shop-All, only on 3 pages). **Collections index restructured ✅** (#637/#638, PR #639) — stacked shop-carousel strips (MerchCollectionList) matching the real /collection/, not a tile grid. **Site map now COMPREHENSIVE** — every `page.tsx` route is listed (store pages + nav-destination routes + supporting routes like /merch/showcase + the [handle] redirect).
 
 > The real store prefixes with `/` (e.g. `/product/<handle>`); our clone nests everything under
 > `/merch`. This map tracks PAGES (routes) first; the component table at the bottom tracks the parts
@@ -20,7 +20,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | **Homepage** | `/` | `/merch` | ✅ | Header · HeroBanner · ProductGrid · Footer |
 | **Product detail (PDP)** | `/product/<handle>` | `/merch/product/[handle]` | ✅ (canonical; `/merch/[handle]` → 308 redirect) | Gallery · PurchasePanel · (related, accordions ⬜) |
 | **Shop All** | `/shop-all/` | `/merch/shop-all` | ✅ | CollectionHero · FilterSortBar · ProductGrid |
-| **Collections index** | `/collection/` | `/merch/collection` | ✅ | heading · CategoryTileGrid (3-col tile grid) |
+| **Collections index** | `/collection/` | `/merch/collection` | ✅ | "All Collections" heading · MerchCollectionList (stacked shop-carousel strips) |
 | **Collection / category** | `/collection/<handle>` | `/merch/collection/[handle]` | ✅ | CollectionHero · FilterSortBar · ProductGrid |
 | **Cart page** | `/cart` | `/merch/cart` | ✅ | full-page cart: MerchCartPage (line items · summary · checkout) |
 | **Search** | `/search` | `/merch/search` | ✅ | MerchSearchBar · results ProductGrid · empty state |
@@ -39,7 +39,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | Page | Our route | Status | Notes |
 |---|---|---|---|
 | **PDP legacy redirect** | `/merch/[handle]` | ✅ | 308 → `/merch/product/[handle]` (kept so old links resolve) |
-| **Component showcase** | `/merch/showcase` | ✅ | independent merch design-system browser (22 components, real tokens) |
+| **Component showcase** | `/merch/showcase` | ✅ | independent merch design-system browser (23 components, real tokens) |
 | **Showcase detail** | `/merch/showcase/[slug]` | ✅ | per-component variants |
 
 > Every `page.tsx` under `apps/web/src/app/merch/` is represented in one of the three tables above. Store-page fidelity is tracked in `docs/merch-fidelity.md`.
@@ -69,7 +69,11 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | `MerchProductGallery` | ✅ | PDP |
 | `MerchPurchasePanel` | ✅ | PDP |
 | `MerchCartDrawer` | ✅ | all (header cart) |
-| Category tile grid (`CategoryTileGrid` + `CategoryTile`) | ✅ | Homepage, Collections index |
+| Category tile grid (`CategoryTileGrid` + `CategoryTile`) | ✅ | (category pages) |
+| `MerchCollectionList` (stacked collection strips: banner · rotated name tab · card row) | ✅ | Collections index |
+| `MerchShopCarousel` (franchise product carousel) | ✅ | PDP |
+| `MerchSearchBar` · `MerchSignInPanel` · `MerchGiftCardBand` · `MerchCategoryStrip` | ✅ | Search · Account · Homepage |
+| Full working nav (dropdowns · mobile menu · `merch-nav.ts` helper) | ✅ | header (all pages) |
 | `MerchFilterSortBar` (filter chips + sort dropdown) | ✅ | Collection, Shop All |
 | `MerchShopCarousel` (franchise product carousel) | ✅ | PDP |
 | `MerchProductInfoTabs` (Description tab below buy panel) | ✅ | PDP |
