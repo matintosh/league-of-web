@@ -243,11 +243,13 @@ export { YourShopIcon } from "./store/your-shop-icon";
 export type { YourShopIconProps, YourShopIconVideoSources } from "./store/your-shop-icon";
 export { YourShopScreen } from "./store/your-shop-screen";
 export type { YourShopScreenProps, YourShopCard } from "./store/your-shop-screen";
-// merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchPurchasePanel < MerchStore
+// merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchPurchasePanel < MerchStore
 export { MerchCartDrawer } from "./merch/merch-cart-drawer";
 export type { MerchCartDrawerProps, MerchCartItem } from "./merch/merch-cart-drawer";
 export { MerchCartPage } from "./merch/merch-cart-page";
 export type { MerchCartPageProps } from "./merch/merch-cart-page";
+export { MerchCategoryStrip } from "./merch/merch-category-strip";
+export type { MerchCategoryStripProps, MerchFranchiseChip } from "./merch/merch-category-strip";
 export { MerchCategoryTile } from "./merch/merch-category-tile";
 export type { MerchCategoryTileProps } from "./merch/merch-category-tile";
 export { MerchCategoryTileGrid } from "./merch/merch-category-tile-grid";
