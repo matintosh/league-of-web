@@ -8,45 +8,40 @@
  *
  * For interactive demos (variant switching, qty stepper) see the /showcase entries.
  */
-import { championSplashUrl } from "@low/fixtures";
+import { MERCH_PRODUCTS, merchAssetUrl } from "@low/fixtures";
 import type { MerchProduct } from "@low/fixtures";
 import { ProductPageClient } from "./product-page-client";
 
-/** Static fixture product for PDP demo. */
+// Real product shot for the Collector's Box PDP (primary listing image, same as product card).
+const COLLECTORS_BOX_IMAGE = merchAssetUrl(
+  "ed593ec11a590c788d3ec1b634ce0b72a63b1059-2560x2560.png",
+  { w: 1200 }
+);
+
+/** Static fixture product for PDP demo — Collector's Box with real imagery. */
 const DEMO_PRODUCT = {
-  title: "MSI 2026 Tee",
-  price: "$39.99",
+  title: "League of Legends Classic Collector's Box",
+  price: "$89.99",
   originalPrice: undefined as string | undefined,
-  badges: ["New"] as string[],
+  badges: ["New", "Limited Edition", "Preorder"] as string[],
   description:
-    "Celebrate Midseason Showdown with this officially licensed apparel. 100% cotton preshrunk jersey tee. Machine washable. Unisex sizing.",
-  breadcrumb: ["Home", "Apparel", "MSI 2026 Tee"],
-  variants: [
-    { label: "XS", available: true },
-    { label: "S", available: true },
-    { label: "M", available: true },
-    { label: "L", available: false },
-    { label: "XL", available: true },
-    { label: "XXL", available: false },
-  ],
+    "The ultimate League of Legends collector's set. Includes exclusive in-game content, premium physical collectibles, and limited-edition artwork. While supplies last.",
+  breadcrumb: ["Home", "Collectibles", "League of Legends Classic Collector's Box"],
+  variants: [] as { label: string; available: boolean }[],
+  // Gallery: primary shot repeated at different Sanity transform widths for zoom demo
   images: [
-    championSplashUrl("Jinx", 0),
-    championSplashUrl("Lux", 0),
-    championSplashUrl("Vi", 0),
-    championSplashUrl("Ahri", 0),
+    COLLECTORS_BOX_IMAGE,
+    // Additional views from the real PDP gallery (first 3 non-primary images)
+    merchAssetUrl("90fbdec8c3eb880925465c353ec3008232884399-2560x2560.png", { w: 1200 }),
+    merchAssetUrl("8c31457af6be19f63c1c7db02a17cf35b294f69f-2560x2560.png", { w: 1200 }),
+    merchAssetUrl("6c5085455d8e8802cb29dd2d38b660e16aa446e4-2560x2560.png", { w: 1200 }),
   ],
 };
 
-/** Fixture products for the franchise carousel below the product section. */
-const CAROUSEL_PRODUCTS: MerchProduct[] = [
-  { slug: "arcane-vi-hoodie",         title: "Arcane Vi Graphic Hoodie",                imageUrl: championSplashUrl("Vi", 0),      price: "$39.99", originalPrice: "$59.99", badge: "Sale" },
-  { slug: "jinx-chaos-tee",           title: "Jinx Chaos Agent Graphic Tee",            imageUrl: championSplashUrl("Jinx", 0),    price: "$24.99", badge: "New" },
-  { slug: "lol-classic-cap",          title: "League of Legends Classic Logo Cap",      imageUrl: championSplashUrl("Lux", 0),     price: "$27.99" },
-  { slug: "project-lux-art-print",    title: "PROJECT: Lux Collector's Art Print",      imageUrl: championSplashUrl("Lux", 0),     price: "$34.99", badge: "Limited" },
-  { slug: "poro-plush-s14",           title: "Poro Limited Edition Plush — Season 14",  imageUrl: championSplashUrl("Jinx", 0),    price: "$29.99", badge: "Preorder" },
-  { slug: "arcane-caitlyn-figure",    title: "Arcane Caitlyn Collector's Resin Figure", imageUrl: championSplashUrl("Caitlyn", 0), price: "$49.99", badge: "Restock" },
-  { slug: "lol-classic-collectors-box", title: "League Classic Collector's Box",        imageUrl: championSplashUrl("Ahri", 0),    price: "$89.99" },
-];
+/** Carousel uses the real 8 products (excluding the PDP product itself). */
+const CAROUSEL_PRODUCTS: MerchProduct[] = MERCH_PRODUCTS.filter(
+  (p) => p.slug !== "league-classic-collectors-box"
+);
 
 interface Props {
   params: Promise<{ handle: string }>;
@@ -67,7 +62,7 @@ export default async function MerchProductPage({ params }: Props) {
       variants={DEMO_PRODUCT.variants}
       images={DEMO_PRODUCT.images}
       carouselProducts={CAROUSEL_PRODUCTS}
-      carouselBannerImageUrl={championSplashUrl("Vi", 0)}
+      carouselBannerImageUrl={COLLECTORS_BOX_IMAGE}
     />
   );
 }

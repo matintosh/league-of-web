@@ -18,138 +18,37 @@ import {
   MerchCartDrawer,
 } from "@low/ui";
 import type { MerchContactFormValues, MerchGiftCard, MerchFranchiseChip } from "@low/ui";
-import { championSplashUrl } from "@low/fixtures";
-import type { MerchProduct, MerchCartItem } from "@low/fixtures";
+import { championSplashUrl, MERCH_PRODUCTS, merchAssetUrl } from "@low/fixtures";
+import type { MerchCartItem } from "@low/fixtures";
 import type { MerchHeroSlide } from "@low/ui";
 import { useRouter } from "next/navigation";
 
-const PRODUCTS: MerchProduct[] = [
-  {
-    slug: "riftbound-origins-champion-deck-jinx",
-    title: "Riftbound Origins Champion Deck - Jinx",
-    imageUrl: championSplashUrl("Jinx", 0),
-    price: "$24.99",
-    badge: "New",
-    badges: ["New"],
-    franchiseLabel: "Riftbound",
-  },
-  {
-    slug: "arcane-vi-hoodie",
-    title: "Arcane Vi Graphic Hoodie",
-    imageUrl: championSplashUrl("Vi", 0),
-    price: "$39.99",
-    originalPrice: "$59.99",
-    badge: "Sale",
-    badges: ["Sale"],
-    franchiseLabel: "Arcane",
-  },
-  {
-    slug: "project-lux-art-print",
-    title: "PROJECT: Lux Collector's Art Print (18×24)",
-    imageUrl: championSplashUrl("Lux", 0),
-    price: "$34.99",
-    franchiseLabel: "League of Legends",
-  },
-  {
-    slug: "poro-plush-limited",
-    title: "Poro Limited Edition Plush — Season 14",
-    imageUrl: championSplashUrl("Jinx", 2),
-    price: "$29.99",
-    badge: "Out of Stock",
-    badges: ["Out of Stock"],
-    franchiseLabel: "League of Legends",
-  },
-  {
-    slug: "arcane-jinx-enamel-pin",
-    title: "Arcane Jinx & Vi Enamel Pin Set",
-    imageUrl: championSplashUrl("Jinx", 1),
-    price: "$14.99",
-    badge: "New",
-    badges: ["New"],
-    franchiseLabel: "Arcane",
-  },
-  {
-    slug: "riot-wordmark-tee",
-    title: "Riot Games Wordmark Essential T-Shirt",
-    imageUrl: championSplashUrl("Ahri", 0),
-    price: "$24.99",
-    franchiseLabel: "Riot Games",
-  },
-  {
-    slug: "valorant-agent-hoodie",
-    title: "VALORANT Agent Collection Pullover Hoodie",
-    imageUrl: championSplashUrl("Lux", 1),
-    price: "$54.99",
-    badge: "Limited",
-    badges: ["Limited Edition"],
-    franchiseLabel: "Valorant",
-  },
-  {
-    slug: "ruination-teemo-plush",
-    title: 'Ruined Teemo 12" Collector Plush',
-    imageUrl: championSplashUrl("Teemo", 0),
-    price: "$19.99",
-    franchiseLabel: "League of Legends",
-  },
-  {
-    slug: "ahri-spirit-blossom-preorder",
-    title: "Ahri Spirit Blossom Statue — Limited Preorder",
-    imageUrl: championSplashUrl("Ahri", 1),
-    price: "$89.99",
-    badge: "Preorder",
-    badges: ["Preorder", "Limited Edition"],
-    franchiseLabel: "League of Legends",
-  },
-  {
-    slug: "arcane-caitlyn-restock",
-    title: "Arcane Caitlyn Collector's Resin Figure",
-    imageUrl: championSplashUrl("Caitlyn", 0),
-    price: "$49.99",
-    badge: "Restock",
-    badges: ["Restock"],
-    franchiseLabel: "Arcane",
-  },
-  {
-    slug: "league-classic-cap",
-    title: "League of Legends Classic Logo Cap",
-    imageUrl: championSplashUrl("Lux", 2),
-    price: "$27.99",
-    franchiseLabel: "League of Legends",
-  },
-  {
-    slug: "riftbound-deluxe-set",
-    title: "Riftbound Origins Deluxe Champion Set",
-    imageUrl: championSplashUrl("Jinx", 3),
-    price: "$74.99",
-    badge: "Limited",
-    badges: ["Limited Edition"],
-    franchiseLabel: "Riftbound",
-  },
-];
+// Real 8 products from merch.riotgames.com — sourced from MERCH_PRODUCTS fixture.
+const PRODUCTS = MERCH_PRODUCTS;
 
+// Real hero banners — baked-in campaign art (no headline overlay needed).
+// Slide A: League Classic campaign (dataset: consumer_products, 1680x589)
+// Slide B: Riftbound Vendetta campaign (dataset: consumer_products_live, 3296x1030)
 const HERO_SLIDES: MerchHeroSlide[] = [
   {
-    id: "slide-jinx",
-    imageUrl: championSplashUrl("Jinx", 0),
-    imageAlt: "Riftbound Origins Champion Deck — Jinx",
+    id: "slide-classic",
+    imageUrl: merchAssetUrl("d9528f9cc6c88034bb963709002e0dfde2520fb7-1680x589.webp", {
+      w: 1920,
+      dataset: "consumer_products",
+    }),
+    imageAlt: "League of Legends Classic — Shop the Collection",
     ctaLabel: "Shop All",
     ctaVariant: "light",
     ctaCorner: "bottom-right",
     align: "left",
   },
   {
-    id: "slide-lux",
-    imageUrl: championSplashUrl("Lux", 0),
-    imageAlt: "PROJECT Lux — Collector's Art Print",
-    ctaLabel: "Shop All",
-    ctaVariant: "light",
-    ctaCorner: "bottom-right",
-    align: "left",
-  },
-  {
-    id: "slide-vi",
-    imageUrl: championSplashUrl("Vi", 0),
-    imageAlt: "Arcane Vi Graphic Hoodie",
+    id: "slide-vendetta",
+    imageUrl: merchAssetUrl("a01262bae9dcf03621b7f850c89b86535b76638a-3296x1030.jpg", {
+      w: 1920,
+      dataset: "consumer_products_live",
+    }),
+    imageAlt: "Riftbound Vendetta — New TCG Products",
     ctaLabel: "Shop Now",
     ctaVariant: "red",
     ctaCorner: "bottom-right",
