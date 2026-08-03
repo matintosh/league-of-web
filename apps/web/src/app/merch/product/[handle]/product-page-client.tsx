@@ -81,12 +81,17 @@ export function ProductPageClient({
       />
 
       <main
-        className="flex-1 px-4 py-8 md:px-8 md:py-10"
-        style={{ maxWidth: 1280, margin: "0 auto", width: "100%" }}
+        className="flex-1 px-4 py-8 md:px-6 md:py-10"
+        style={{ maxWidth: "80rem", margin: "0 auto", width: "100%" }}
       >
-        <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-12">
-          {/* Left: gallery — full-width on mobile, 560px fixed on desktop */}
-          <div className="w-full md:w-[560px] md:flex-shrink-0">
+        {/*
+         * Desktop: grid with gallery ~62% / panel ~38% — gallery is the dominant column.
+         * Mobile: single column stack (flex-col), gallery full-width, no overflow.
+         * Measured real site at 1280px: gallery 688–828px, panel ~452px (grid, no gap).
+         */}
+        <div className="flex flex-col gap-6 md:grid md:gap-0 md:items-start" style={{ gridTemplateColumns: "62% 38%" }}>
+          {/* Left: gallery — full-width on mobile, ~62% on desktop */}
+          <div className="w-full">
             <MerchProductGallery
               images={images}
               alt={title}
@@ -94,8 +99,8 @@ export function ProductPageClient({
             />
           </div>
 
-          {/* Right: purchase panel — full-width on mobile, flex-1 on desktop */}
-          <div className="min-w-0 flex-1">
+          {/* Right: purchase panel — full-width on mobile, ~38% on desktop with left padding */}
+          <div className="min-w-0" style={{ paddingLeft: "clamp(0px, 2.5vw, 40px)" }}>
             <MerchPurchasePanel
               title={title}
               price={price}
