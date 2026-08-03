@@ -22,8 +22,6 @@
  *   - Gap between strip bottom and hero: ~0; small gap (~16px) to grid below
  */
 
-import { useId } from "react";
-
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -78,8 +76,6 @@ export function MerchCategoryStrip({
   onSelectFranchise,
   ariaLabel = "Shop by franchise",
 }: MerchCategoryStripProps) {
-  const arrowId = useId();
-
   return (
     <nav
       aria-label={ariaLabel}
@@ -90,15 +86,6 @@ export function MerchCategoryStrip({
         height: 56,
       }}
     >
-      {/* Hidden SVG defs for any future icon gradients keyed by useId */}
-      <svg width="0" height="0" aria-hidden className="absolute">
-        <defs>
-          <symbol id={`${arrowId}-chevron`} viewBox="0 0 10 16">
-            <path d="M2 2l6 6-6 6" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-          </symbol>
-        </defs>
-      </svg>
-
       {/* Scrollable chip row */}
       <ul
         className="flex h-full list-none items-stretch overflow-x-auto"
@@ -106,10 +93,12 @@ export function MerchCategoryStrip({
           /* Hide scrollbar but allow scroll */
           scrollbarWidth: "none",
           msOverflowStyle: "none",
+          margin: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+          paddingLeft: 0,
           /* Right padding leaves space for the › affordance */
           paddingRight: 40,
-          margin: 0,
-          padding: 0,
         }}
         /* Webkit scrollbar hidden via inline style is insufficient; use a global
            CSS class if needed. Strip is self-contained so we leave it minimal. */
@@ -117,7 +106,14 @@ export function MerchCategoryStrip({
         {categories.map((chip) => {
           const textVar = chip.textColorVar ?? "--color-merch-on-dark";
           return (
-            <li key={chip.slug} className="flex shrink-0 items-stretch">
+            <li
+              key={chip.slug}
+              className="flex shrink-0 items-stretch"
+              /* Skewed tiles leave a thin dark sliver at their diagonal edges;
+                 a small negative inline-end margin overlaps neighbours so the
+                 parallelograms tessellate seamlessly like the real store. */
+              style={{ marginInlineEnd: -8 }}
+            >
               <button
                 type="button"
                 onClick={() => onSelectFranchise?.(chip.slug)}
@@ -173,11 +169,19 @@ export function MerchCategoryStrip({
         <svg
           width={10}
           height={16}
+          viewBox="0 0 10 16"
+          fill="none"
           className="absolute right-4"
           aria-hidden
           style={{ color: "var(--color-merch-on-dark)", opacity: 0.7 }}
         >
-          <use href={`#${arrowId}-chevron`} />
+          <path
+            d="M2 2l6 6-6 6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </div>
     </nav>
