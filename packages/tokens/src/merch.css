@@ -55,6 +55,11 @@
   --color-merch-badge-preorder: #5a5a5a; /* Preorder — grey chip                          */
   /* Sale badge reuses --color-merch-red */
 
+  /* ── Overlays / scrims ──────────────────────────────────────────────── */
+  --color-merch-overlay-soft: rgba(0, 0, 0, 0.28); /* nav arrow button bg overlay        */
+  --color-merch-scrim-strong: rgba(0, 0, 0, 0.45); /* banner scrim left stop (logo reads) */
+  --color-merch-scrim-soft:   rgba(0, 0, 0, 0.15); /* banner scrim mid stop (fade)        */
+
   /* ── Nav extras ─────────────────────────────────────────────────────── */
   /* MY SHOP gold link color — sampled from merch.riotgames.com rgb(224,180,60) */
   --color-merch-gold:      #e0b43c;

@@ -27,7 +27,6 @@ export function MerchShopCarouselDemo() {
         franchiseName="League of Legends"
         bannerImageUrl={championSplashUrl("Vi", 0)}
         franchiseLogoUrl={championSplashUrl("Lux", 0)}
-        shopNowHref="/merch/shop-all"
         products={DEMO_PRODUCTS}
         onProductClick={(slug) => alert(`Clicked: ${slug}`)}
         onShopNowClick={() => alert("Shop Now clicked")}

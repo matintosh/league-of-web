@@ -145,7 +145,6 @@ export function ProductPageClient({
           <MerchShopCarousel
             franchiseName="League of Legends"
             bannerImageUrl={carouselBannerImageUrl}
-            shopNowHref="/merch/shop-all"
             products={carouselProducts}
             onProductClick={(slug) => router.push(`/merch/product/${slug}`)}
             onShopNowClick={() => router.push("/merch/shop-all")}

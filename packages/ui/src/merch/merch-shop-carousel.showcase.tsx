@@ -51,7 +51,6 @@ export const merchShopCarouselShowcase: ShowcaseEntry = {
             franchiseName="League of Legends"
             bannerImageUrl={BANNER_URL}
             franchiseLogoUrl={LOGO_URL}
-            shopNowHref="/merch/shop-all"
             products={LOL_PRODUCTS}
           />
         </div>
@@ -67,7 +66,6 @@ export const merchShopCarouselShowcase: ShowcaseEntry = {
           <MerchShopCarousel
             franchiseName="VALORANT"
             bannerImageUrl={BANNER_URL}
-            shopNowHref="/merch/shop-all"
             products={LOL_PRODUCTS}
           />
         </div>
@@ -84,7 +82,6 @@ export const merchShopCarouselShowcase: ShowcaseEntry = {
             franchiseName="Arcane"
             bannerImageUrl={BANNER_URL}
             franchiseLogoUrl={LOGO_URL}
-            shopNowHref="/merch/shop-all"
             products={FEW_PRODUCTS}
           />
         </div>

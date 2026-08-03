@@ -39,8 +39,6 @@ export interface MerchShopCarouselProps {
   bannerImageUrl: string;
   /** Franchise logo image URL shown in the banner (supplied by page). */
   franchiseLogoUrl?: string;
-  /** "Shop Now" CTA href — navigates on click if provided. */
-  shopNowHref?: string;
   /** Product cards to render in the scroll track. */
   products: MerchProduct[];
   /** Called when a product card is clicked; passes the product slug. */
@@ -92,7 +90,7 @@ function CarouselArrow({
         height: CARD_H,
         width: 40,
         [direction === "prev" ? "left" : "right"]: 0,
-        backgroundColor: "rgba(0,0,0,0.28)",
+        backgroundColor: "var(--color-merch-overlay-soft)",
         color: "var(--color-merch-on-dark)",
         borderRadius: 0,
         zIndex: 2,
@@ -146,7 +144,6 @@ export function MerchShopCarousel({
   franchiseName,
   bannerImageUrl,
   franchiseLogoUrl,
-  shopNowHref,
   products,
   onProductClick,
   onShopNowClick,
@@ -201,7 +198,7 @@ export function MerchShopCarousel({
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to right, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)",
+              "linear-gradient(to right, var(--color-merch-scrim-strong) 0%, var(--color-merch-scrim-soft) 55%, transparent 100%)",
           }}
           aria-hidden
         />
