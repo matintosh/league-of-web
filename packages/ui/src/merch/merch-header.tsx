@@ -114,7 +114,7 @@ export function MerchHeader({
 
   return (
     <header
-      className="sticky top-0 z-50 w-full"
+      className="sticky top-0 z-50 w-full overflow-x-hidden"
       style={{ fontFamily: "var(--font-merch)" }}
     >
       {/* ================================================================ */}

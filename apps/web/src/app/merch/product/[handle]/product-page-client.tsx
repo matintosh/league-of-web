@@ -80,16 +80,13 @@ export function ProductPageClient({
         }}
       />
 
-      <main className="flex-1" style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 32px", width: "100%" }}>
-        <div
-          style={{
-            display: "flex",
-            gap: 48,
-            alignItems: "flex-start",
-          }}
-        >
-          {/* Left: gallery — ~560px */}
-          <div style={{ flex: "0 0 560px", maxWidth: 560 }}>
+      <main
+        className="flex-1 px-4 py-8 md:px-8 md:py-10"
+        style={{ maxWidth: 1280, margin: "0 auto", width: "100%" }}
+      >
+        <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-12">
+          {/* Left: gallery — full-width on mobile, 560px fixed on desktop */}
+          <div className="w-full md:w-[560px] md:flex-shrink-0">
             <MerchProductGallery
               images={images}
               alt={title}
@@ -97,8 +94,8 @@ export function ProductPageClient({
             />
           </div>
 
-          {/* Right: purchase panel — flex-1 */}
-          <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Right: purchase panel — full-width on mobile, flex-1 on desktop */}
+          <div className="min-w-0 flex-1">
             <MerchPurchasePanel
               title={title}
               price={price}
@@ -146,7 +143,10 @@ export function ProductPageClient({
 
       {/* Franchise carousel — rendered below the product section when products are supplied */}
       {carouselProducts && carouselProducts.length > 0 && carouselBannerImageUrl && (
-        <section style={{ maxWidth: 1280, margin: "0 auto", width: "100%", padding: "0 32px" }}>
+        <section
+          className="px-4 md:px-8"
+          style={{ maxWidth: 1280, margin: "0 auto", width: "100%" }}
+        >
           <MerchShopCarousel
             franchiseName="League of Legends"
             bannerImageUrl={carouselBannerImageUrl}
