@@ -283,5 +283,7 @@ export { MerchProductGrid } from "./merch/merch-product-grid";
 export type { MerchFilterBadge, MerchProductGridProps } from "./merch/merch-product-grid";
 export { MerchPurchasePanel } from "./merch/merch-purchase-panel";
 export type { MerchPurchasePanelProps, MerchVariant } from "./merch/merch-purchase-panel";
+export { MerchSignInPanel } from "./merch/merch-sign-in-panel";
+export type { MerchSignInPanelProps } from "./merch/merch-sign-in-panel";
 export { MerchStore } from "./merch/merch-store";
 export type { MerchStoreProps, MerchNavLink } from "./merch/merch-store";
