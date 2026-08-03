@@ -57,6 +57,17 @@
   /* SIGN IN button border — translucent white hairline on dark nav bar */
   --color-merch-signin-border: rgba(255, 255, 255, 0.15);
 
+  /* ── Franchise category chip colors ────────────────────────────────── */
+  /* Brand palette for the homepage category chip strip (MerchCategoryStrip).
+     Sampled from merch.riotgames.com/en-us/ at 1280px. Hex only here. */
+  --color-merch-cat-lol:      #4a6b8a; /* League of Legends — steel blue, white text  */
+  --color-merch-cat-riftbound:#e8791f; /* Riftbound — orange, white text              */
+  --color-merch-cat-esports:  #67d3e0; /* LoL Esports — cyan, dark text               */
+  --color-merch-cat-tft:      #9a8fd6; /* Teamfight Tactics — lavender, white text    */
+  --color-merch-cat-vct:      #4a4a4a; /* VCT — dark grey, white text                 */
+  --color-merch-cat-valorant: #f28ea0; /* VALORANT — pink/salmon, white text          */
+  --color-merch-cat-2xko:     #c6e04a; /* 2XKO — lime green, dark text                */
+
   /* ── Typography ─────────────────────────────────────────────────────── */
   /* Inter loaded via next/font in apps/web/src/app/merch/layout.tsx and
      exposed via --font-merch. Fallback stack mirrors the real store's

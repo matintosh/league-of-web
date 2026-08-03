@@ -14,8 +14,9 @@ import {
   MerchGiftCardBand,
   MerchHeroBanner,
   MerchProductGrid,
+  MerchCategoryStrip,
 } from "@low/ui";
-import type { MerchContactFormValues, MerchGiftCard } from "@low/ui";
+import type { MerchContactFormValues, MerchGiftCard, MerchFranchiseChip } from "@low/ui";
 import { championSplashUrl } from "@low/fixtures";
 import type { MerchProduct } from "@low/fixtures";
 import type { MerchHeroSlide } from "@low/ui";
@@ -122,6 +123,16 @@ const GIFT_CARDS: [MerchGiftCard, MerchGiftCard] = [
   },
 ];
 
+const FRANCHISE_CATEGORIES: MerchFranchiseChip[] = [
+  { slug: "league-of-legends", label: "League of Legends", colorVar: "--color-merch-cat-lol", textColorVar: "--color-merch-on-dark" },
+  { slug: "riftbound", label: "Riftbound", colorVar: "--color-merch-cat-riftbound", textColorVar: "--color-merch-on-dark", subLabel: "League of Legends" },
+  { slug: "lol-esports", label: "LoL Esports", colorVar: "--color-merch-cat-esports", textColorVar: "--color-merch-ink" },
+  { slug: "tft", label: "Teamfight Tactics", colorVar: "--color-merch-cat-tft", textColorVar: "--color-merch-on-dark" },
+  { slug: "vct", label: "VCT", colorVar: "--color-merch-cat-vct", textColorVar: "--color-merch-on-dark" },
+  { slug: "valorant", label: "Valorant", colorVar: "--color-merch-cat-valorant", textColorVar: "--color-merch-on-dark" },
+  { slug: "2xko", label: "2XKO", colorVar: "--color-merch-cat-2xko", textColorVar: "--color-merch-ink" },
+];
+
 const ANNOUNCEMENT =
   "We're upgrading our warehouse! Orders placed between July 3–7 may be delayed. We apologize for the inconvenience.";
 
@@ -158,6 +169,12 @@ export function MerchPageClient() {
       <main className="flex-1">
         {/* Hero banner */}
         <MerchHeroBanner slides={HERO_SLIDES} autoPlayMs={5000} />
+
+        {/* Franchise category chip strip */}
+        <MerchCategoryStrip
+          categories={FRANCHISE_CATEGORIES}
+          onSelectFranchise={(slug) => router.push(`/merch/collection/${slug}`)}
+        />
 
         {/* Product grid */}
         <MerchProductGrid
