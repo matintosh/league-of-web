@@ -119,6 +119,7 @@ import { merchProductCardShowcase } from "./merch/merch-product-card.showcase";
 import { merchProductGalleryShowcase } from "./merch/merch-product-gallery.showcase";
 import { merchProductGridShowcase } from "./merch/merch-product-grid.showcase";
 import { merchPurchasePanelShowcase } from "./merch/merch-purchase-panel.showcase";
+import { merchSignInPanelShowcase } from "./merch/merch-sign-in-panel.showcase";
 import { merchStoreShowcase } from "./merch/merch-store.showcase";
 
 /**
@@ -237,7 +238,7 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
-  // merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchPurchasePanel < MerchStore
+  // merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchPurchasePanel < MerchSignInPanel < MerchStore
   merchCartDrawerShowcase,
   merchCartPageShowcase,
   merchCategoryStripShowcase,
@@ -254,5 +255,6 @@ export const registry: ShowcaseEntry[] = [
   merchProductGalleryShowcase,
   merchProductGridShowcase,
   merchPurchasePanelShowcase,
+  merchSignInPanelShowcase,
   merchStoreShowcase,
 ];
