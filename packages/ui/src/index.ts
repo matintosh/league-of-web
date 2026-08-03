@@ -258,6 +258,8 @@ export type {
   MerchFooterLink,
   MerchFooterLinkGroup,
 } from "./merch/merch-footer";
+export { MerchInfoPage } from "./merch/merch-info-page";
+export type { MerchInfoPageProps } from "./merch/merch-info-page";
 export { MerchHeader } from "./merch/merch-header";
 export type { MerchHeaderProps } from "./merch/merch-header";
 export { MerchHeroBanner } from "./merch/merch-hero-banner";
