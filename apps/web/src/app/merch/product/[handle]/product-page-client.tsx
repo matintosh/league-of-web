@@ -81,10 +81,59 @@ export function ProductPageClient({
         onLogoClick={() => router.push("/merch")}
       />
 
-      <main
-        className="flex-1 px-4 py-8 md:px-6 md:py-10"
-        style={{ maxWidth: "80rem", margin: "0 auto", width: "100%" }}
-      >
+      <main className="flex-1">
+        {/*
+         * Breadcrumb bar — FULL WIDTH, above the 2-col gallery/panel row.
+         * Real site: ~1280×60 bar at y≈130, spanning the page container.
+         * White bg, 14px muted text, ~60px line-height to match real.
+         */}
+        {breadcrumb && breadcrumb.length > 0 && (
+          <div
+            style={{
+              width: "100%",
+              backgroundColor: "var(--color-merch-bg)",
+              borderBottom: "1px solid var(--color-merch-border)",
+            }}
+          >
+            <nav
+              aria-label="Breadcrumb"
+              style={{
+                maxWidth: "80rem",
+                margin: "0 auto",
+                padding: "0 1.5rem",
+                height: 60,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <ol
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "4px",
+                  listStyle: "none",
+                  padding: 0,
+                  margin: 0,
+                  fontSize: 14,
+                  color: "var(--color-merch-muted)",
+                }}
+              >
+                {breadcrumb.map((seg, idx) => (
+                  <li key={idx} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    {idx > 0 && <span aria-hidden="true">›</span>}
+                    <span>{seg}</span>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          </div>
+        )}
+
+        {/* 2-col gallery + purchase panel */}
+        <div
+          className="px-4 py-8 md:px-6 md:py-10"
+          style={{ maxWidth: "80rem", margin: "0 auto", width: "100%" }}
+        >
         {/*
          * Desktop: grid with gallery ~62% / panel ~38% — gallery is the dominant column.
          * Mobile: single column stack (flex-col), gallery full-width, no overflow.
@@ -145,6 +194,7 @@ export function ProductPageClient({
           </a>
           .
         </p>
+        </div>
       </main>
 
       {/* Franchise carousel — rendered below the product section when products are supplied */}
