@@ -100,18 +100,17 @@ export function MerchSearchBar({
       }}
     >
       <div
+        className="flex items-center gap-3 md:gap-12"
         style={{
           maxWidth: "80rem" /* max-w-7xl */,
           margin: "0 auto",
           padding: "0 24px",
           height: "56px",
-          display: "flex",
-          alignItems: "center",
-          gap: "48px",
         }}
       >
-        {/* Left: "Search Results" heading label */}
+        {/* Left: "Search Results" heading label — hidden on mobile to prevent overflow */}
         <span
+          className="hidden md:inline-block"
           style={{
             fontSize: "18px",
             fontWeight: 700,

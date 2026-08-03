@@ -179,7 +179,7 @@ export function MerchCartDrawer({
           top: 0,
           right: 0,
           bottom: 0,
-          width: 400,
+          width: "min(400px, 100vw)",
           zIndex: 50,
           backgroundColor: "var(--color-merch-bg)",
           display: "flex",
