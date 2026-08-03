@@ -5,7 +5,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 **Legend:** ✅ page live · 🔨 in progress (open issue) · ⬜ page missing · ⛔ out of scope (real commerce/auth backend)
 
-**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **19 components** shipped · full site map COMPLETE (homepage pixel-audit ✅ + search #599 + account #601 + PDP-move #603 all shipped). Remaining work is fidelity/polish + optional PDP sub-components (related carousel · accordions · size guide) and the homepage category-tile grid.
+**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **22 components** shipped · site map COMPLETE + PDP depth shipped (info-tabs #615 · shop-carousel #616 · size-guide #617). **NOW IN PROGRESS: MOBILE pixel-perfect pass** (user bar expanded — every page must match real mobile at ~390px; audit-mobile sweeping).
 
 > The real store prefixes with `/` (e.g. `/product/<handle>`); our clone nests everything under
 > `/merch`. This map tracks PAGES (routes) first; the component table at the bottom tracks the parts
@@ -55,9 +55,9 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | `MerchCartDrawer` | ✅ | all (header cart) |
 | Category tile grid (`CategoryTileGrid` + `CategoryTile`) | ✅ | Homepage, Collections index |
 | `MerchFilterSortBar` (filter chips + sort dropdown) | ✅ | Collection, Shop All |
-| `MerchShopCarousel` (franchise product carousel) | 🔨 #612 | PDP |
-| `MerchProductInfoTabs` (Description tab below buy panel) | 🔨 #613 | PDP |
-| `MerchSizeGuideModal` (apparel size table) + PurchasePanel amend | 🔨 #614 | PDP |
+| `MerchShopCarousel` (franchise product carousel) | ✅ | PDP |
+| `MerchProductInfoTabs` (Description tab below buy panel) | ✅ | PDP |
+| `MerchSizeGuideModal` (apparel size table) + PurchasePanel amend | ✅ | PDP |
 | Correction: homepage needs NO separate category-tile grid (hero+chip-strip+grid already matches real) | ✅ DRY | — |
 | Info-page template (`MerchInfoPage`) | ✅ | Info pages |
 | `MerchCartPage` (full-page cart: line items table + order summary) | ✅ | Cart page |
