@@ -1,91 +1,75 @@
-# Merch Store — Coverage Map
+# Merch Store — Site Map & Coverage
 
-A living map of our **/merch** clone vs the real store at <https://merch.riotgames.com/en-us/>.
-Goal: 1:1 with the real site — real brand assets, Playwright-measured values, no placeholders.
+A living **site map** of our **/merch** clone vs the real store at <https://merch.riotgames.com/>.
+Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright-measured, no placeholders.
 
-**Legend:** ✅ done (on `main`) · 🔨 in progress (open issue) · ⬜ not started · ⛔ out of scope (checkout/auth/real commerce)
+**Legend:** ✅ page live · 🔨 in progress (open issue) · ⬜ page missing · ⛔ out of scope (real commerce/auth backend)
 
-**Status:** last updated 2026-08-03 · **10 / ~18** in-scope components shipped · 0 open merch issues
+**Status:** last updated 2026-08-03 · **2 / 9 page types live** · **10 components** shipped
 
-> Maintained by the merch loop: the research cron refreshes this map each tick, and it's
-> refreshed on idle (when the build board is empty). Components live in `packages/ui/src/merch/`;
-> the store uses its own `--color-merch-*` design system (see `packages/tokens/src/merch.css`).
-
----
-
-## Global chrome
-
-| Component | Status | Notes |
-|---|---|---|
-| Header / top nav (logo, categories, search, cart, account) | ✅ `MerchHeader` | Real Riot Games wordmark SVG (extracted from live site) |
-| Announcement / promo bar (above header) | ⬜ | Never confirmed visible on the real site — verify first |
-| Footer (link columns, newsletter, social, legal) | ✅ `MerchFooter` | Social icons are real brand marks |
-
-## Homepage (`/merch`)
-
-| Component | Status | Notes |
-|---|---|---|
-| Hero banner / carousel | ✅ `MerchHeroBanner` | Autoplay carousel w/ slides + dot nav |
-| Category tile grid (Apparel / Collectibles / Art / Accessories) | ⬜ | Image tiles below the hero |
-| Product grid section ("New Arrivals" + Shop All) | ✅ `MerchProductGrid` | Composes `MerchProductCard` |
-| Product card (image, title, price, badge, hover) | ✅ `MerchProductCard` | |
-
-## Collection / category page
-
-| Component | Status | Notes |
-|---|---|---|
-| Collection hero / banner (breadcrumb, heading) | ✅ `MerchCollectionHero` | Dark + light themes |
-| Filter / sort bar | ⬜ | Sidebar vs top-bar, filter chips, sort dropdown |
-| Product grid | ✅ (reuses `MerchProductGrid`) | |
-
-## Product-detail page (`/merch/[handle]`)
-
-| Component | Status | Notes |
-|---|---|---|
-| Product gallery (main image + thumbnail strip) | ✅ `MerchProductGallery` | Controlled selectedIndex |
-| Purchase panel (title, price, variants, qty, Add to Cart) | ✅ `MerchPurchasePanel` | Variant chips, qty stepper, sale/OOS states |
-| Description / spec accordions | ⬜ | Collapsible product info sections |
-| Related products / "Shop the Collection" carousel | ⬜ | Horizontal scroll, 4–6 items |
-| Size guide modal | ⬜ | Linked from the size selector |
-
-## Cart
-
-| Component | Status | Notes |
-|---|---|---|
-| Cart drawer (line items, subtotal, checkout, empty state) | ✅ `MerchCartDrawer` | 400px right slide-in + scrim |
-| Full cart page | ⬜ | Standalone `/merch/cart` (if the real site has one) |
-
-## Search
-
-| Component | Status | Notes |
-|---|---|---|
-| Search overlay / results | ⬜ | Triggered from the header search icon |
-
-## Personalization / other
-
-| Component | Status | Notes |
-|---|---|---|
-| "My Shop" / Riot Mart tab | ⬜ | Personalized picks section |
-| Store shell / layout | ✅ `MerchStore` | Page scaffold |
-| Checkout flow | ⛔ | Out of scope (no real commerce) |
-| Account / auth pages | ⛔ | Out of scope |
+> The real store prefixes with `/` (e.g. `/product/<handle>`); our clone nests everything under
+> `/merch`. This map tracks PAGES (routes) first; the component table at the bottom tracks the parts
+> each page composes. Maintained by the merch loop (refreshed every tick, incl. idle).
 
 ---
 
-## Next up (research rotation)
+## PAGES (the site map)
 
-Ordered by visibility / foundational value:
+| Page | Real URL | Our route | Status | Composes |
+|---|---|---|---|---|
+| **Homepage** | `/` | `/merch` | ✅ | Header · HeroBanner · ProductGrid · Footer |
+| **Product detail (PDP)** | `/product/<handle>` | `/merch/product/[handle]` * | ✅ (at `/merch/[handle]`) | Gallery · PurchasePanel · (related, accordions ⬜) |
+| **Shop All** | `/shop-all/` | `/merch/shop-all` | ⬜ | CollectionHero · FilterSortBar ⬜ · ProductGrid |
+| **Collections index** | `/collection/` | `/merch/collection` | ⬜ | CollectionHero · CategoryTileGrid ⬜ |
+| **Collection / category** | `/collection/<handle>` | `/merch/collection/[handle]` | ⬜ | CollectionHero · FilterSortBar ⬜ · ProductGrid |
+| **Cart page** | `/cart` | `/merch/cart` | ⬜ | full-page cart (line items · summary · checkout) — drawer exists, page ⬜ |
+| **Search** | `/search` | `/merch/search` | ⬜ | SearchOverlay ⬜ · results ProductGrid |
+| **Info pages** (About / FAQ / Shipping / Returns / Contact / Terms / Privacy) | `/pages/<slug>` | `/merch/pages/[slug]` | ⬜ | InfoPage template ⬜ (footer links target these) |
+| **Account / sign-in** | `/account` | `/merch/account` | ⬜ / ⛔ | presentational stub only (no real auth) |
 
-1. **Category tile grid** (homepage, below hero) — high visibility
-2. **Filter / sort bar** (collection pages) — needed for a real category browse
-3. **PDP related-products carousel** ("Shop the Collection")
-4. **Description / spec accordions** (PDP)
-5. **Size guide modal** (PDP)
-6. **Search overlay** (header)
-7. Verify the **promo bar** exists before building
-8. **My Shop** personalization tab
+\* PDP currently lives at `/merch/[handle]`; consider moving to `/merch/product/[handle]` to match the real URL 1:1.
 
-## Routes live on prod
+## PAGES — next up (build order)
 
-- `/merch` — homepage (header → hero → grid → footer)
-- `/merch/[handle]` — product-detail page (gallery + purchase panel)
+1. **Collection / category page** `/merch/collection/[handle]` — the core browse page; needs FilterSortBar
+2. **Shop All** `/merch/shop-all` — all products, same template as a collection
+3. **Cart page** `/merch/cart` — full-page cart (promote the drawer content to a page)
+4. **Collections index** `/merch/collection` — grid of category tiles
+5. **Search** `/merch/search` — search overlay + results
+6. **Info pages** `/merch/pages/[slug]` — one template + About/FAQ/Shipping/Returns/Contact/Terms/Privacy content
+7. **Account** `/merch/account` — presentational sign-in stub
+8. PDP URL 1:1 — move `/merch/[handle]` → `/merch/product/[handle]`
+
+---
+
+## COMPONENTS (the parts pages compose)
+
+**Legend:** ✅ done · 🔨 open issue · ⬜ not started
+
+| Component | Status | Used by |
+|---|---|---|
+| `MerchHeader` (real Riot logo) | ✅ | all |
+| `MerchFooter` | ✅ | all |
+| `MerchStore` (shell) | ✅ | all |
+| `MerchHeroBanner` | ✅ | Homepage |
+| `MerchProductCard` | ✅ | grids |
+| `MerchProductGrid` | ✅ | Homepage, Collection, Shop All, Search |
+| `MerchCollectionHero` | ✅ | Collection, Shop All |
+| `MerchProductGallery` | ✅ | PDP |
+| `MerchPurchasePanel` | ✅ | PDP |
+| `MerchCartDrawer` | ✅ | all (header cart) |
+| Category tile grid | ⬜ | Homepage, Collections index |
+| Filter / sort bar | ⬜ | Collection, Shop All |
+| PDP related-products carousel | ⬜ | PDP |
+| PDP description accordions | ⬜ | PDP |
+| Size guide modal | ⬜ | PDP |
+| Search overlay | ⬜ | header |
+| Info-page template | ⬜ | Info pages |
+| Full cart-page layout | ⬜ | Cart page |
+
+---
+
+## Out of scope
+
+- Checkout flow, payment, real auth/account backend — no real commerce (presentational stubs only where a page is expected).
+- Individual product/collection *instances* — we clone page *templates* + representative dummy data (champion splashes via `championSplashUrl`), not Riot's full catalog.
