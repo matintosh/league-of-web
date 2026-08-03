@@ -165,7 +165,7 @@ function DropdownMenu({ items, onSelect, menuId }: DropdownMenuProps) {
         padding: "6px 0",
         listStyle: "none",
         margin: 0,
-        boxShadow: "0 8px 24px rgba(0,0,0,0.45)",
+        boxShadow: "0 8px 24px var(--color-merch-scrim-strong)",
       }}
     >
       {items.map(({ slug, label }) => (
@@ -191,7 +191,7 @@ function DropdownMenu({ items, onSelect, menuId }: DropdownMenuProps) {
               (e.currentTarget as HTMLButtonElement).style.color =
                 "var(--color-merch-red)";
               (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                "rgba(255,255,255,0.05)";
+                "var(--color-merch-dropdown-hover-bg)";
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.color =
