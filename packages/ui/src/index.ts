@@ -261,6 +261,9 @@ export type {
   MerchFooterProps,
   MerchFooterLink,
   MerchFooterLinkGroup,
+  MerchContactFormValues,
+  MerchContactFormState,
+  MerchContactFormProps,
 } from "./merch/merch-footer";
 export { MerchHeader } from "./merch/merch-header";
 export type { MerchHeaderProps } from "./merch/merch-header";

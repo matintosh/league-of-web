@@ -13,6 +13,7 @@ import {
   MerchHeroBanner,
   MerchProductGrid,
 } from "@low/ui";
+import type { MerchContactFormValues } from "@low/ui";
 import { championSplashUrl } from "@low/fixtures";
 import type { MerchProduct } from "@low/fixtures";
 import type { MerchHeroSlide } from "@low/ui";
@@ -112,6 +113,11 @@ const HERO_SLIDES: MerchHeroSlide[] = [
 export function MerchPageClient() {
   const router = useRouter();
 
+  function handleContactSubmit(values: MerchContactFormValues) {
+    // Presentational stub — a real implementation would POST to a support API.
+    console.log("[MerchFooter] Contact form submitted:", values);
+  }
+
   return (
     <div
       className="flex min-h-screen flex-col"
@@ -149,7 +155,10 @@ export function MerchPageClient() {
       </main>
 
       {/* Footer */}
-      <MerchFooter copyrightText="Copyright Riot Games 2025" />
+      <MerchFooter
+        copyrightText="Copyright Riot Games 2025"
+        onContactSubmit={handleContactSubmit}
+      />
     </div>
   );
 }
