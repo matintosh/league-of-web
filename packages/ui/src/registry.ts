@@ -105,6 +105,8 @@ import { yourShopIconShowcase } from "./store/your-shop-icon.showcase";
 import { yourShopScreenShowcase } from "./store/your-shop-screen.showcase";
 import { merchCartDrawerShowcase } from "./merch/merch-cart-drawer.showcase";
 import { merchCartPageShowcase } from "./merch/merch-cart-page.showcase";
+import { merchCategoryTileShowcase } from "./merch/merch-category-tile.showcase";
+import { merchCategoryTileGridShowcase } from "./merch/merch-category-tile-grid.showcase";
 import { merchCollectionHeroShowcase } from "./merch/merch-collection-hero.showcase";
 import { merchFilterSortBarShowcase } from "./merch/merch-filter-sort-bar.showcase";
 import { merchFooterShowcase } from "./merch/merch-footer.showcase";
@@ -233,9 +235,11 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
-  // merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCollectionHero < MerchFilterSortBar < MerchFooter < MerchHeader < MerchHeroBanner < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchPurchasePanel < MerchStore
+  // merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchFilterSortBar < MerchFooter < MerchHeader < MerchHeroBanner < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchPurchasePanel < MerchStore
   merchCartDrawerShowcase,
   merchCartPageShowcase,
+  merchCategoryTileShowcase,
+  merchCategoryTileGridShowcase,
   merchCollectionHeroShowcase,
   merchFilterSortBarShowcase,
   merchFooterShowcase,
