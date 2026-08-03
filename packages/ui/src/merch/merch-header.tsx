@@ -120,8 +120,11 @@ export function MerchHeader({
       {/* ================================================================ */}
       {/* Tier 1 — ~80px dark nav bar                                      */}
       {/* ================================================================ */}
+      {/* overflow-x:clip prevents the cart badge's -right-1.5 offset from
+          widening scrollWidth on narrow viewports. Unlike overflow-x:hidden
+          it doesn't create a new BFC or break sticky positioning. */}
       <div
-        className="w-full"
+        className="w-full overflow-x-clip"
         style={{ backgroundColor: "var(--color-merch-ink-dark)" }}
       >
         <div className="mx-auto flex h-20 max-w-screen-xl items-center gap-8 px-6">
