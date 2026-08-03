@@ -157,7 +157,6 @@ export function ProductPageClient({
               originalPrice={originalPrice}
               badges={badges}
               description={description}
-              breadcrumb={breadcrumb}
               variants={variants}
               variantLabel="Size"
               selectedVariant="M"
