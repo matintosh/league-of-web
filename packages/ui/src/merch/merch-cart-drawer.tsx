@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * MerchCartDrawer — slide-in cart panel from the right edge.
  *

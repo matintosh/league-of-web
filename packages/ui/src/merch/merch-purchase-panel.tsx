@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * MerchPurchasePanel — PDP right column: title, badges, price, variant chips,
  * quantity stepper, Add to Cart CTA, optional description.

@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * MerchProductGallery — PDP left column: main image + thumbnail strip.
  *
