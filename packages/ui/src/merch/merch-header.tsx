@@ -299,7 +299,7 @@ export function MerchHeader({
                 fontWeight: 600,
                 textTransform: "uppercase",
                 letterSpacing: "0.04em",
-                border: "1px solid rgba(255,255,255,0.15)",
+                border: "1px solid var(--color-merch-signin-border)",
                 whiteSpace: "nowrap",
               }}
             >

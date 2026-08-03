@@ -54,6 +54,8 @@
   --color-merch-gold:      #e0b43c;
   /* SIGN IN button bg — translucent grey overlay on dark nav bar */
   --color-merch-signin-bg: rgba(128, 128, 128, 0.2);
+  /* SIGN IN button border — translucent white hairline on dark nav bar */
+  --color-merch-signin-border: rgba(255, 255, 255, 0.15);
 
   /* ── Typography ─────────────────────────────────────────────────────── */
   /* Inter loaded via next/font in apps/web/src/app/merch/layout.tsx and
