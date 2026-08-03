@@ -5,7 +5,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 **Legend:** ✅ page live · 🔨 in progress (open issue) · ⬜ page missing · ⛔ out of scope (real commerce/auth backend)
 
-**Status:** last updated 2026-08-03 · **7 / 9 page types live** · **15 components** shipped · **homepage pixel-audit in progress** (issues incoming)
+**Status:** last updated 2026-08-03 · **7 / 9 page types live** · **16 components** shipped · **homepage pixel-audit:** Wave 1 shipped (header·footer·Inter·gift-band #590/#592/#595/#596/#597/#598), Wave 2 🔨 (#591 cat-strip · #593 hero · #594 grid/cards)
 
 > The real store prefixes with `/` (e.g. `/product/<handle>`); our clone nests everything under
 > `/merch`. This map tracks PAGES (routes) first; the component table at the bottom tracks the parts
