@@ -9,14 +9,13 @@
  * Measured from merch.riotgames.com info pages (/en-us/faqs/, /en-us/shipping/):
  *   - Page background: --color-merch-bg (white)
  *   - Content container: max-w-screen-md centered, left-aligned prose
- *   - Page title (h1): ~28–32px, font-weight 700, --color-merch-ink, uppercase
- *   - Section headings (h2): ~16–18px, font-weight 700, uppercase, letter-spacing 0.05em
+ *   - Section headings (h2): 28px mobile / 38px desktop, font-weight 700, uppercase
  *   - Sub-headings (h3): ~15px, font-weight 600, --color-merch-ink
- *   - Body paragraph: 14–15px, line-height ~1.6, --color-merch-body
- *   - Lists: default browser list style, 14px, --color-merch-body, left-indented ~1.5rem
+ *   - Body paragraph: 16px, line-height ~1.6, --color-merch-body
+ *   - Lists: default browser list style, 16px, --color-merch-body, left-indented ~1.5rem
  *   - Section divider: 1px --color-merch-border between major h2 sections
  *   - Page top padding: ~40–48px (py-10 md:py-12); bottom ~64px (pb-16)
- *   - No breadcrumb on info pages
+ *   - No breadcrumb on info pages; no standalone h1 (shared hero provides it)
  */
 
 import type { MerchInfoBlock } from "@low/fixtures";
@@ -26,7 +25,7 @@ import type { MerchInfoBlock } from "@low/fixtures";
 // ---------------------------------------------------------------------------
 
 export interface MerchInfoPageProps {
-  /** Page title rendered as <h1>. */
+  /** Section title rendered as <h2> in the content area (the shared SUPPORT h1 is in MerchSupportHero). */
   title: string;
   /** Ordered list of content blocks — paragraphs, headings, lists. */
   blocks: MerchInfoBlock[];
@@ -49,8 +48,9 @@ function Block({ block, index }: { block: MerchInfoBlock; index: number }) {
             style={{ borderColor: "var(--color-merch-border)" }}
           />
         )}
+        {/* 28px on mobile → 38px on md+ (measured from real merch.riotgames.com) */}
         <h2
-          className="mb-3 mt-6 text-[17px] font-bold uppercase tracking-[0.05em] first:mt-0"
+          className="mb-3 mt-6 text-[28px] font-bold uppercase tracking-[0.05em] first:mt-0 md:text-[38px]"
           style={{ color: "var(--color-merch-ink)" }}
         >
           {content as string}
@@ -72,8 +72,9 @@ function Block({ block, index }: { block: MerchInfoBlock; index: number }) {
 
   if (type === "paragraph") {
     return (
+      /* 16px measured from real merch.riotgames.com (was 14px) */
       <p
-        className="mb-4 text-[14px] leading-relaxed"
+        className="mb-4 text-[16px] leading-relaxed"
         style={{ color: "var(--color-merch-body)" }}
       >
         {content as string}
@@ -84,7 +85,7 @@ function Block({ block, index }: { block: MerchInfoBlock; index: number }) {
   if (type === "ul") {
     return (
       <ul
-        className="mb-4 list-disc pl-6 text-[14px] leading-relaxed"
+        className="mb-4 list-disc pl-6 text-[16px] leading-relaxed"
         style={{ color: "var(--color-merch-body)" }}
       >
         {(content as string[]).map((item, i) => (
@@ -100,7 +101,7 @@ function Block({ block, index }: { block: MerchInfoBlock; index: number }) {
   if (type === "ol") {
     return (
       <ol
-        className="mb-4 list-decimal pl-6 text-[14px] leading-relaxed"
+        className="mb-4 list-decimal pl-6 text-[16px] leading-relaxed"
         style={{ color: "var(--color-merch-body)" }}
       >
         {(content as string[]).map((item, i) => (
@@ -121,9 +122,11 @@ function Block({ block, index }: { block: MerchInfoBlock; index: number }) {
 // ---------------------------------------------------------------------------
 
 /**
- * MerchInfoPage — renders a title + prose block list inside a centered
- * max-w-screen-md container, matching the real store's info-page template.
- * Wrap with MerchHeader + MerchFooter in the page route.
+ * MerchInfoPage — renders a section title (h2) + prose block list inside a
+ * centered max-w-screen-md container, matching the real store's info-page template.
+ * The shared page h1 ("SUPPORT") is rendered by MerchSupportHero, which wraps this.
+ * Wrap with MerchHeader + MerchSupportHero + MerchSupportTabStrip + MerchFooter
+ * in the page route.
  */
 export function MerchInfoPage({ title, blocks }: MerchInfoPageProps) {
   return (
@@ -131,14 +134,14 @@ export function MerchInfoPage({ title, blocks }: MerchInfoPageProps) {
       className="w-full flex-1"
       style={{ backgroundColor: "var(--color-merch-bg)", fontFamily: "var(--font-merch)" }}
     >
-      <div className="mx-auto max-w-screen-md px-6 py-10 md:py-12 pb-16">
-        {/* Page title */}
-        <h1
-          className="mb-8 text-[30px] font-bold uppercase"
+      <div className="mx-auto max-w-screen-md px-6 pb-16 pt-10 md:pt-12">
+        {/* Section title — h2 because the page h1 is "SUPPORT" in the shared hero */}
+        <h2
+          className="mb-8 text-[28px] font-bold uppercase md:text-[38px]"
           style={{ color: "var(--color-merch-ink)" }}
         >
           {title}
-        </h1>
+        </h2>
 
         {/* Content blocks */}
         <div>
