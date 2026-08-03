@@ -22,7 +22,8 @@ the row. The build-loop (:11) then builds them. See `docs/loops/` for the loop b
 | Collection/category | `/collection/<h>` | `/merch/collection/[handle]` | ✅* | 2026-08-03 | same 2-col template; *chip-strip vs REFINE |
 | Cart | `/cart` | `/merch/cart` | ✅ | 2026-08-03 | audited DRY (real returns 500) — matches spec |
 | Search | `/search` | `/merch/search` | ✅ | 2026-08-03 | search bar + results + empty state |
-| Info pages | `/pages/<slug>` | `/merch/pages/[slug]` | 🔁 | inferred | spec was WebFetch-inferred (SSO/Zendesk) — re-diff a real info page |
+| Info pages | `/faqs/`,`/shipping/`,`/returns/` | `/merch/pages/[slug]` | ⚠️ #640 #641 | 2026-08-03 | RESOLVED: real = store-chrome SUPPORT portal (not Zendesk). Missing SUPPORT hero + section-tab nav → #640; h2 17→38px, body 14→16px, page bg DARK rgb(1,10,19)→white → #641. Real URL is `/en-us/faqs/`, not `/pages/faqs` |
+| Sale | `/sale/` | `/merch/sale` | ⬜ | never | new route (nav build) — never diffed; queue for ratchet |
 | Account | `/account` | `/merch/account` | ⛔ | 2026-08-03 | real is SSO wall — presentational stub, no 1:1 target |
 
 ## KNOWN RESIDUAL DELTAS (open, awaiting user call or build)
@@ -40,3 +41,4 @@ page diff isolates the gap to one component.
 - 2026-08-03 — scorecard seeded from session audits (homepage pixel-audit, desktop fidelity pass, mobile pass, real-image swap, hero fix, post-real-image selfcheck = DRY). Next up: 🔁 Collections index, 🔁 Info pages.
 - 2026-08-03 — ratchet: Collections index diffed → 2 deltas (#637 structural layout=carousel-strips, #638 heading). Row 🔁→⚠️. Next up: 🔁 Info pages.
 - 2026-08-03 — CLOSED: #637+#638 built+shipped (PR #639, MerchCollectionList strip layout + heading). Collections index ⚠️→✅. Next up: 🔁 Info pages.
+- 2026-08-03 — ratchet: Info pages diffed → real is store-chrome SUPPORT portal → 2 deltas (#640 hero+tab-nav, #641 typography+bg). Row 🔁→⚠️. Added Sale ⬜. Next up: ⬜ Sale, then re-verify.
