@@ -117,10 +117,15 @@ export default function MerchShowcasePage() {
             </span>
           </div>
 
-          {/* Right: back link to main showcase */}
-          <Link href="/showcase" className="msc-header-link">
-            ← All components
-          </Link>
+          {/* Right: utility links */}
+          <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+            <Link href="/merch/status" className="msc-header-link">
+              Build status
+            </Link>
+            <Link href="/showcase" className="msc-header-link">
+              ← All components
+            </Link>
+          </div>
         </div>
       </header>
 

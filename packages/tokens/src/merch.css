@@ -54,6 +54,7 @@
   --color-merch-badge-limited:  #e8c33c; /* Limited Edition — yellow chip                 */
   --color-merch-badge-preorder: #5a5a5a; /* Preorder — grey chip                          */
   --color-merch-badge-sale:     #8cd50b; /* Sale discount badge — sampled #8CD50B, black text */
+  --color-merch-badge-progress: #f0a500; /* build-status "in progress / deltas open" amber badge */
   /* Former "Sale" chip used --color-merch-red; replaced by green %-badge on image */
 
   /* ── Price treatment ────────────────────────────────────────────────── */
