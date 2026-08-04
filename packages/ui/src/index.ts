@@ -274,7 +274,19 @@ export type { MerchGiftCardBandProps, MerchGiftCard } from "./merch/merch-gift-c
 export { MerchHeader } from "./merch/merch-header";
 export type { MerchHeaderProps, MerchNavItem } from "./merch/merch-header";
 export { MerchHeroBanner } from "./merch/merch-hero-banner";
-export type { MerchHeroBannerProps, MerchHeroSlide } from "./merch/merch-hero-banner";
+export type { MerchHeroBannerProps, MerchHeroSlide, MerchHeroFranchise } from "./merch/merch-hero-banner";
+export {
+  FranchiseLogos,
+  FRANCHISE_LOGOS,
+  LolWordmark,
+  RiftboundLogo,
+  LolEsportsLogo,
+  TftLogo,
+  VctLogo,
+  ValorantLogo,
+  TwoXkoLogo,
+  ArcaneLogo,
+} from "./merch/franchise-logos";
 export { MerchInfoPage } from "./merch/merch-info-page";
 export type { MerchInfoPageProps } from "./merch/merch-info-page";
 export { MerchProductCard } from "./merch/merch-product-card";

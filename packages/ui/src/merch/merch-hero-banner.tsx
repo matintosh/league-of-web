@@ -14,6 +14,9 @@
  * @low/ui), showcase server-safe (no 'use client'), SVG/gradient ids from useId.
  *
  * Measured from merch.riotgames.com (~1280px desktop):
+ *   - Hero: 1280×535px (y=130 below ~130px header)
+ *   - Control bar: 64px tall, sitting INSIDE the hero at its bottom edge,
+ *     ~40px above the hero's bottom. Gutter from viewport edges: ~40px.
  *   - Source images: 1280×535 px → aspect-ratio ~64/27 (≈2.37)
  *   - Background: full-bleed object-fit cover, no letter-box, no side padding
  *   - Text overlay: optional — art-forward slides carry branding in the image
@@ -28,9 +31,22 @@
  *   - Dots position: absolute bottom-center, bottom: 16px
  *   - Arrows: ‹ › side controls for multi-slide
  *   - Scrim: ~0.25 max opacity; art is typically pre-composed
+ *
+ * Franchise control-bar measurements (Playwright, 1280px):
+ *   - Strip height: 64px
+ *   - Tile width: 170px each
+ *   - Left gutter: 40px (hero content + control bar both inset 40px from edge)
+ *   - Background image stays FULL-BLEED (no gutter on the <img>)
+ *   - Clip-path angle offset: 20px
+ *   - First tile clip-path: polygon(0px 0px, 100% 0px, calc(100%-20px) 100%, 0px 100%) — square left edge
+ *   - Other tiles:          polygon(20px 0px, 100% 0px, calc(100%-20px) 100%, 0px 100%) — parallelogram
+ *   - Tile overlap (negative margin): -8px so parallelograms tessellate seamlessly
+ *   - Active tile: bottom white underline bar (3px), full opacity
+ *   - Inactive tile: 0.6 opacity on hover
+ *   - Progress bar: runs across top of active tile (white), auto-advances with slide
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -73,6 +89,40 @@ export interface MerchHeroSlide {
   ctaCorner?: "bottom-right" | "center-left";
 }
 
+/**
+ * A single franchise entry for the hero control bar.
+ * When `slideId` matches a slide's `id`, clicking the tile activates that slide.
+ * When `slideId` is omitted (or no slide matches), `onSelectFranchise` is called
+ * so the parent can route to a collection page.
+ */
+export interface MerchHeroFranchise {
+  /** URL-safe slug, e.g. "league-of-legends". Passed to `onSelectFranchise`. */
+  slug: string;
+  /** Accessible label for the tile button. */
+  label: string;
+  /**
+   * Logo rendered inside the tile. Typically one of the components from
+   * `franchise-logos.tsx`, but any ReactNode is accepted.
+   */
+  logo: ReactNode;
+  /**
+   * CSS custom property name for the tile background, e.g. `"--color-merch-cat-lol"`.
+   * Must exist in packages/tokens/src/merch.css.
+   */
+  colorVar: string;
+  /**
+   * Optional CSS custom property for logo/text color inside the tile.
+   * Defaults to `"--color-merch-on-dark"` (white).
+   * Use `"--color-merch-ink"` for tiles with a light background (e.g. esports cyan, 2XKO lime).
+   */
+  textColorVar?: string;
+  /**
+   * Optional slide id this tile selects when clicked.
+   * If missing or no slide matches, the click triggers `onSelectFranchise(slug)`.
+   */
+  slideId?: string;
+}
+
 export interface MerchHeroBannerProps {
   /** One or more slides. */
   slides: MerchHeroSlide[];
@@ -83,6 +133,17 @@ export interface MerchHeroBannerProps {
   autoPlayMs?: number;
   /** Accessible label for the carousel landmark. */
   ariaLabel?: string;
+  /**
+   * Franchise tiles for the control bar.
+   * When provided, the control bar replaces the dot-nav at the hero's bottom.
+   * When absent, the original dot-nav + arrow controls render as before.
+   */
+  franchises?: MerchHeroFranchise[];
+  /**
+   * Called when a franchise tile is clicked AND no matching slide was found
+   * (or when slideId is omitted). The parent can route to a collection page.
+   */
+  onSelectFranchise?: (slug: string) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -93,15 +154,24 @@ export interface MerchHeroBannerProps {
  * MerchHeroBanner — full-width hero carousel for the /merch homepage.
  * Aspect ratio ~64/27 (≈2.37) matching 1280×535 from the real store.
  * Art-forward: text overlay is optional; CTA defaults to white pill + black text.
- * Multi-slide: dot nav + ‹ › arrow controls.
+ * Multi-slide: dot nav + ‹ › arrow controls (no-franchise mode).
+ * Franchise mode: franchise control bar replaces dot-nav; tiles select slides.
  */
 export function MerchHeroBanner({
   slides,
   autoPlayMs = 5000,
   ariaLabel = "Featured products",
+  franchises,
+  onSelectFranchise,
 }: MerchHeroBannerProps) {
   const [active, setActive] = useState(0);
   const pausedRef = useRef(false);
+  // Progress bar width (0–100) for the active tile in franchise mode
+  const [progress, setProgress] = useState(0);
+  const progressRef = useRef(0);
+  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const hasFranchises = !!franchises && franchises.length > 0;
 
   // Auto-advance
   useEffect(() => {
@@ -113,6 +183,23 @@ export function MerchHeroBanner({
     }, autoPlayMs);
     return () => clearInterval(timer);
   }, [autoPlayMs, slides.length]);
+
+  // Progress bar for franchise mode — counts from 0→100 over autoPlayMs
+  useEffect(() => {
+    if (!hasFranchises || !autoPlayMs || slides.length <= 1) return;
+    progressRef.current = 0;
+    setProgress(0);
+    const step = 50; // ms per tick
+    progressTimerRef.current = setInterval(() => {
+      if (!pausedRef.current) {
+        progressRef.current = Math.min(progressRef.current + (step / autoPlayMs) * 100, 100);
+        setProgress(progressRef.current);
+      }
+    }, step);
+    return () => {
+      if (progressTimerRef.current) clearInterval(progressTimerRef.current);
+    };
+  }, [active, autoPlayMs, hasFranchises, slides.length]);
 
   const slide: MerchHeroSlide | undefined = slides[active];
   if (!slide) return null;
@@ -138,13 +225,28 @@ export function MerchHeroBanner({
     pausedRef.current = false;
   }
 
+  function handleFranchiseClick(franchise: MerchHeroFranchise) {
+    // Try to find a matching slide by slideId
+    if (franchise.slideId) {
+      const idx = slides.findIndex((s) => s.id === franchise.slideId);
+      if (idx !== -1) {
+        setActive(idx);
+        pausedRef.current = false;
+        return;
+      }
+    }
+    // No slide match — let parent route to collection
+    onSelectFranchise?.(franchise.slug);
+  }
+
   // Whether any text overlay content is present
   const hasOverlay =
     !!(currentSlide.eyebrow || currentSlide.headline || currentSlide.body || currentSlide.ctaLabel);
 
   // Overlay position classes — mobile defaults to bottom-center, desktop follows ctaCorner
+  // In franchise mode, content is inset ~40px from sides (matching the real store)
   const overlayPositionCls = isBottomRight
-    ? "absolute bottom-4 right-0 left-0 flex flex-col items-center text-center md:bottom-6 md:right-8 md:left-auto md:items-end md:text-right"
+    ? "absolute bottom-4 right-0 left-0 flex flex-col items-center text-center md:bottom-6 md:right-10 md:left-auto md:items-end md:text-right"
     : isCenter
       ? "absolute inset-0 flex flex-col justify-end items-center px-5 py-6 text-center md:justify-center md:py-8"
       : "absolute inset-0 flex flex-col justify-end items-center px-4 py-6 text-center md:justify-center md:items-start md:px-10 md:py-12 md:text-left";
@@ -155,7 +257,7 @@ export function MerchHeroBanner({
       className="relative w-full overflow-hidden aspect-[3/4] md:aspect-[64/27]"
       style={{ fontFamily: "var(--font-merch)" }}
     >
-      {/* Background image */}
+      {/* Background image — always full-bleed, no gutter */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={currentSlide.imageUrl}
@@ -237,85 +339,204 @@ export function MerchHeroBanner({
         </div>
       )}
 
-      {/* Arrow controls — visible when more than one slide */}
-      {slides.length > 1 && (
-        <>
-          <button
-            type="button"
-            aria-label="Previous slide"
-            onClick={goPrev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 cursor-pointer border-0 p-2 transition-opacity duration-150 hover:opacity-80"
-            style={{
-              background: "var(--color-merch-overlay-soft)",
-              color: "var(--color-merch-on-dark)",
-              borderRadius: "2px",
-              fontSize: "20px",
-              lineHeight: 1,
-            }}
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            aria-label="Next slide"
-            onClick={goNext}
-            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer border-0 p-2 transition-opacity duration-150 hover:opacity-80"
-            style={{
-              background: "var(--color-merch-overlay-soft)",
-              color: "var(--color-merch-on-dark)",
-              borderRadius: "2px",
-              fontSize: "20px",
-              lineHeight: 1,
-            }}
-          >
-            ›
-          </button>
-        </>
-      )}
-
-      {/* Carousel dot nav — hidden when only one slide */}
-      {slides.length > 1 && (
+      {/* ── Franchise Control Bar (replaces dot-nav when franchises provided) ── */}
+      {hasFranchises ? (
         <div
-          className="absolute bottom-4 left-0 right-0 flex justify-center gap-2"
-          role="tablist"
-          aria-label="Slide navigation"
+          aria-label="Shop by franchise"
+          role="navigation"
+          className="absolute bottom-0 left-0 right-0 overflow-x-auto"
+          style={{
+            height: 64,
+            /* Dark bg fills any gap behind tiles */
+            backgroundColor: "var(--color-merch-hero-control-bar)",
+            /* Horizontal scroll on mobile — hide scrollbar */
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
         >
-          {slides.map((s, i) => (
-            <button
-              key={s.id}
-              type="button"
-              role="tab"
-              aria-selected={i === active}
-              aria-label={`Slide ${i + 1}`}
-              onClick={() => {
-                setActive(i);
-                pausedRef.current = false;
-              }}
-              className="rounded-full border-0 p-0 transition-colors duration-150"
-              style={{
-                width: 8,
-                height: 8,
-                backgroundColor:
-                  i === active
-                    ? "var(--color-merch-red)"
-                    : "var(--color-merch-dot-inactive)",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) => {
-                if (i !== active) {
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    "var(--color-merch-dot-inactive-hover)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (i !== active) {
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    "var(--color-merch-dot-inactive)";
-                }
-              }}
-            />
-          ))}
+          {/* Tile row — left-inset 40px, tiles overlap via negative margin */}
+          <div
+            className="flex h-full items-stretch"
+            style={{ paddingLeft: 40, paddingRight: 0 }}
+          >
+            {franchises!.map((franchise, idx) => {
+              const isFirst = idx === 0;
+              // Active: any franchise whose slideId matches the current slide,
+              // or — if none have slideIds — the franchise at position `active`.
+              const hasSlideMapping = franchises!.some((f) => !!f.slideId);
+              const isActive = hasSlideMapping
+                ? franchise.slideId === currentSlide.id
+                : idx === active % franchises!.length;
+              const logoColor = franchise.textColorVar ?? "--color-merch-on-dark";
+
+              // Clip-path: first tile has square left edge (90°), rest are parallelogram
+              const clipPath = isFirst
+                ? "polygon(0px 0px, 100% 0px, calc(100% - 20px) 100%, 0px 100%)"
+                : "polygon(20px 0px, 100% 0px, calc(100% - 20px) 100%, 0px 100%)";
+
+              return (
+                <div
+                  key={franchise.slug}
+                  className="relative flex shrink-0 items-stretch"
+                  /* Negative margin makes parallelograms tessellate seamlessly */
+                  style={{ marginInlineEnd: -8 }}
+                >
+                  <button
+                    type="button"
+                    aria-label={franchise.label}
+                    aria-pressed={isActive}
+                    onClick={() => handleFranchiseClick(franchise)}
+                    className="group relative flex h-full cursor-pointer items-center justify-center border-0 transition-opacity duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px]"
+                    style={{
+                      clipPath,
+                      backgroundColor: `var(${franchise.colorVar})`,
+                      color: `var(${logoColor})`,
+                      minWidth: 170,
+                      paddingInline: 24,
+                      borderRadius: 0,
+                      opacity: isActive ? 1 : 0.75,
+                      outlineColor: `var(${logoColor})`,
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        (e.currentTarget as HTMLButtonElement).style.opacity = "0.9";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        (e.currentTarget as HTMLButtonElement).style.opacity = "0.75";
+                      }
+                    }}
+                  >
+                    {/* Logo */}
+                    <span className="pointer-events-none flex items-center justify-center">
+                      {franchise.logo}
+                    </span>
+
+                    {/* Active underline bar — bottom edge of tile */}
+                    {isActive && (
+                      <span
+                        className="absolute bottom-0 left-0 right-0"
+                        style={{
+                          height: 3,
+                          backgroundColor: "var(--color-merch-hero-tile-active-border)",
+                        }}
+                      />
+                    )}
+
+                    {/* Progress bar — top edge of active tile, fills over autoPlayMs */}
+                    {isActive && autoPlayMs > 0 && slides.length > 1 && (
+                      <>
+                        {/* Track */}
+                        <span
+                          className="absolute left-0 right-0 top-0"
+                          style={{
+                            height: 3,
+                            backgroundColor: "var(--color-merch-hero-progress-bg)",
+                          }}
+                        />
+                        {/* Fill */}
+                        <span
+                          className="absolute left-0 top-0"
+                          style={{
+                            height: 3,
+                            width: `${progress}%`,
+                            backgroundColor: "var(--color-merch-hero-progress-bar)",
+                            transition: "width 50ms linear",
+                          }}
+                        />
+                      </>
+                    )}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
+      ) : (
+        /* ── Legacy dot-nav (shown when no franchises prop) ── */
+        <>
+          {/* Arrow controls — visible when more than one slide */}
+          {slides.length > 1 && (
+            <>
+              <button
+                type="button"
+                aria-label="Previous slide"
+                onClick={goPrev}
+                className="absolute left-3 top-1/2 -translate-y-1/2 cursor-pointer border-0 p-2 transition-opacity duration-150 hover:opacity-80"
+                style={{
+                  background: "var(--color-merch-overlay-soft)",
+                  color: "var(--color-merch-on-dark)",
+                  borderRadius: "2px",
+                  fontSize: "20px",
+                  lineHeight: 1,
+                }}
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                aria-label="Next slide"
+                onClick={goNext}
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer border-0 p-2 transition-opacity duration-150 hover:opacity-80"
+                style={{
+                  background: "var(--color-merch-overlay-soft)",
+                  color: "var(--color-merch-on-dark)",
+                  borderRadius: "2px",
+                  fontSize: "20px",
+                  lineHeight: 1,
+                }}
+              >
+                ›
+              </button>
+            </>
+          )}
+
+          {/* Carousel dot nav — hidden when only one slide */}
+          {slides.length > 1 && (
+            <div
+              className="absolute bottom-4 left-0 right-0 flex justify-center gap-2"
+              role="tablist"
+              aria-label="Slide navigation"
+            >
+              {slides.map((s, i) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={i === active}
+                  aria-label={`Slide ${i + 1}`}
+                  onClick={() => {
+                    setActive(i);
+                    pausedRef.current = false;
+                  }}
+                  className="rounded-full border-0 p-0 transition-colors duration-150"
+                  style={{
+                    width: 8,
+                    height: 8,
+                    backgroundColor:
+                      i === active
+                        ? "var(--color-merch-red)"
+                        : "var(--color-merch-dot-inactive)",
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (i !== active) {
+                      (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                        "var(--color-merch-dot-inactive-hover)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (i !== active) {
+                      (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                        "var(--color-merch-dot-inactive)";
+                    }
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </section>
   );

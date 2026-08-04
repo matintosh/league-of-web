@@ -1,7 +1,11 @@
 import { championSplashUrl } from "@low/fixtures";
 import type { ShowcaseEntry } from "../showcase";
 import { MerchHeroBanner } from "./merch-hero-banner";
-import { MerchHeroBannerDemo, MerchHeroBannerSingleDemo } from "./merch-hero-banner.demo";
+import {
+  MerchHeroBannerDemo,
+  MerchHeroBannerSingleDemo,
+  MerchHeroBannerWithFranchisesDemo,
+} from "./merch-hero-banner.demo";
 
 /** Showcase image placeholders from Data Dragon CDN. */
 const IMG_JINX = championSplashUrl("Jinx", 0);
@@ -13,12 +17,19 @@ export const merchHeroBannerShowcase: ShowcaseEntry = {
   name: "Merch Hero Banner",
   area: "merch",
   description:
-    "Full-width homepage hero for the Riot merch store. Aspect ratio ~64:27 (≈2.37, matching 1280×535 from merch.riotgames.com). Art-forward: text overlay is optional so baked-in artwork carries the branding. CTA defaults to white pill + black text (radius 2px, sentence-case); red variant available. Multi-slide: dot nav + ‹ › arrow controls.",
+    "Full-width homepage hero for the Riot merch store. Aspect ratio ~64:27 (≈2.37, matching 1280×535 from merch.riotgames.com). Art-forward: text overlay is optional so baked-in artwork carries the branding. CTA defaults to white pill + black text (radius 2px, sentence-case); red variant available. Two modes: (1) legacy dot-nav + arrow controls; (2) franchise control bar — clip-path parallelogram tiles (first tile square-left) that select hero slides, with progress indicator. Control bar sits INSIDE the hero at its bottom edge (~40px gutter from sides).",
   variants: [
     {
-      name: "Multi-slide carousel (auto-advance)",
+      name: "With franchise control bar (1:1 real site)",
       notes:
-        "Three-slide carousel with 4s auto-advance. Art-forward slides with light CTA (white pill, bottom-right). Arrow controls + dot nav visible.",
+        "Franchise control bar embedded at the hero's bottom edge. First tile has square left edge; others are parallelograms. Active tile highlighted with white underline + progress bar. Tiles select slides. 5s auto-advance. ~40px side gutter on content + control bar; background is full-bleed.",
+      backgrounds: ["dark"],
+      render: () => <MerchHeroBannerWithFranchisesDemo />,
+    },
+    {
+      name: "Multi-slide carousel (auto-advance, no franchise bar)",
+      notes:
+        "Three-slide carousel with 4s auto-advance. Art-forward slides with light CTA (white pill, bottom-right). Arrow controls + dot nav visible. Backward-compatible mode — no franchise bar.",
       backgrounds: ["dark"],
       render: () => <MerchHeroBannerDemo />,
     },
