@@ -49,7 +49,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 **All 9 store page types shipped + full working nav ✅.** Remaining:
 
-1. **Public `sitemap.xml` + `robots.txt`** — the deployed site serves neither (both 404); real store has a sitemap. Add `app/sitemap.ts` + `app/robots.ts` enumerating all routes (dynamic ones from @low/fixtures). 🔨 #665.
+1. ~~Public `sitemap.xml` + `robots.txt`~~ ✅ SHIPPED (#665, PR #666) — `app/sitemap.ts` (66 routes: 4 client + 9 static merch + 10 products + 5 collections + 13 info + 25 merch showcase, dynamic ones from @low/fixtures via new `MERCH_COLLECTION_HANDLES` export) + `app/robots.ts` (allow-all + sitemap ref). NOT live until deploy quota resets.
 2. **Ongoing 1:1 fidelity polish** — the fidelity-engine meta-loop (:53) pixel-diffs each store page vs the real site and files residual deltas.
 
 ---
