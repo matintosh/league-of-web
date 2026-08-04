@@ -32,7 +32,7 @@ the row. The build-loop (:11) then builds them. See `docs/loops/` for the loop b
 - **Nav typography FROZEN (anti-oscillation)** — real nav is UPPERCASE (confirmed real-header.png); shipped at 16/600/uppercase (#646). Two diff agents disagreed on size/weight (16/600 vs 14/700 — likely one mis-attributed the SIGN IN button). Frozen to prevent flip-flop; #659 (revert) rejected+closed. Re-open ONLY with a single authoritative getComputedStyle read of the exact real nav link element proving a reproducible delta. DO NOT re-file from a bulk homepage diff.
 
 ## COMPONENTS
-Browsable + individually inspectable at **/merch/showcase** (22 components, real merch tokens). Component-level
+Browsable + individually inspectable at **/merch/showcase** (28 components, real merch tokens). Component-level
 fidelity is validated through the PAGES that compose them; the ratchet may target a single component when a
 page diff isolates the gap to one component.
 
