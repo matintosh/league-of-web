@@ -480,14 +480,11 @@ function Portrait({ player, championFrameSrc, leaverIconSrc }: PortraitProps) {
         height={42}
         className="h-full w-full object-cover"
       />
-      {/* Gold portrait frame overlay */}
+      {/* Gold portrait frame overlay — atlas-crop: top frame only (63×126 two-frame atlas) */}
       {championFrameSrc ? (
-        <img
-          src={championFrameSrc}
-          alt=""
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 h-full w-full object-fill"
-        />
+        <span className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <img src={championFrameSrc} alt="" className="absolute top-0 left-0 h-[200%] w-full object-fill" />
+        </span>
       ) : (
         <span
           aria-hidden="true"
