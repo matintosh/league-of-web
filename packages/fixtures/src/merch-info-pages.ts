@@ -579,8 +579,6 @@ export const MERCH_INFO_PAGES: Record<string, MerchInfoPageContent> = {
         { id: "product-auth-code", label: "Authenticity Code", type: "text" },
       ],
       submitLabel: "LOOKUP",
-      illustrationSrc: "/merch/card-of-authenticity.svg",
-      illustrationAlt: "Riot Games Card of Authenticity sample",
     },
   },
 

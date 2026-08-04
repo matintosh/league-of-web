@@ -61,17 +61,17 @@ function CardOfAuthenticity({ uid }: { uid: string }) {
     >
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1a1a1a" />
-          <stop offset="100%" stopColor="#0a0a0a" />
+          <stop offset="0%" style={{ stopColor: "var(--color-merch-ink)" }} />
+          <stop offset="100%" style={{ stopColor: "var(--color-merch-ink-dark)" }} />
         </linearGradient>
         <clipPath id={clipId}>
           <rect width="280" height="175" rx="8" ry="8" />
         </clipPath>
         {/* Barcode pattern — groups of thin/wide vertical bars */}
         <pattern id={barcodeId} x="0" y="0" width="6" height="1" patternUnits="userSpaceOnUse">
-          <rect x="0" y="0" width="1" height="1" fill="#ffffff" />
-          <rect x="2" y="0" width="2" height="1" fill="#ffffff" />
-          <rect x="5" y="0" width="1" height="1" fill="#ffffff" />
+          <rect x="0" y="0" width="1" height="1" fill="var(--color-merch-on-dark)" />
+          <rect x="2" y="0" width="2" height="1" fill="var(--color-merch-on-dark)" />
+          <rect x="5" y="0" width="1" height="1" fill="var(--color-merch-on-dark)" />
         </pattern>
       </defs>
 
@@ -404,7 +404,7 @@ function LookupForm({ title, config, values, onFieldChange, uid }: LookupFormPro
                   fontFamily: "var(--font-merch)",
                   fontWeight: 400,
                   color: "var(--color-merch-ink)",
-                  backgroundColor: "var(--color-merch-bg)",
+                  backgroundColor: "var(--color-merch-input-bg)",
                   border: "1px solid var(--color-merch-input-border)",
                   borderRadius: 0,
                   outline: "none",
