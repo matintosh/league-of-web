@@ -27,11 +27,11 @@ const STATUS_LABEL: Record<StatusEmoji, string> = {
 const STATUS_STYLE: Record<StatusEmoji, React.CSSProperties> = {
   "✅": {
     backgroundColor: "var(--color-merch-badge-new)",
-    color: "#1a1a1a",
+    color: "var(--color-merch-ink)",
   },
   "🔨": {
-    backgroundColor: "#f0a500",
-    color: "#1a1a1a",
+    backgroundColor: "var(--color-merch-badge-progress)",
+    color: "var(--color-merch-ink)",
   },
   "⬜": {
     backgroundColor: "var(--color-merch-surface)",
@@ -57,15 +57,15 @@ const VERDICT_LABEL: Record<VerdictEmoji, string> = {
 const VERDICT_STYLE: Record<VerdictEmoji, React.CSSProperties> = {
   "✅": {
     backgroundColor: "var(--color-merch-badge-new)",
-    color: "#1a1a1a",
+    color: "var(--color-merch-ink)",
   },
   "⚠️": {
-    backgroundColor: "#f0a500",
-    color: "#1a1a1a",
+    backgroundColor: "var(--color-merch-badge-progress)",
+    color: "var(--color-merch-ink)",
   },
   "🔁": {
     backgroundColor: "var(--color-merch-badge-limited)",
-    color: "#1a1a1a",
+    color: "var(--color-merch-ink)",
   },
   "⬜": {
     backgroundColor: "var(--color-merch-surface)",

@@ -144,7 +144,10 @@ function extractVerdictEmoji(cell: string): VerdictEmoji {
 
 /** Strip markdown bold `**text**` → `text` and leading `**Heading**` from a cell. */
 function stripMarkdown(s: string): string {
-  return s.replace(/\*\*([^*]+)\*\*/g, "$1").trim();
+  return s
+    .replace(/\*\*([^*]+)\*\*/g, "$1") // bold
+    .replace(/`([^`]+)`/g, "$1") // inline code / backtick-fenced routes
+    .trim();
 }
 
 // ── Coverage doc parsing ─────────────────────────────────────────────────────
@@ -156,7 +159,7 @@ function parseCoverage(md: string) {
   const allLines = md.split("\n");
   const headlineLine = allLines.find((l) => /^\*\*Status:\*\*/.test(l.trim())) ?? null;
   const statusHeadline = headlineLine
-    ? headlineLine.replace(/^\*\*Status:\*\*\s*/, "").trim()
+    ? stripMarkdown(headlineLine.replace(/^\*\*Status:\*\*\s*/, ""))
     : null;
 
   // PAGES table — section "PAGES (the site map)"
@@ -198,10 +201,10 @@ function parseCoverage(md: string) {
     .slice(1) // skip header row
     .map((cells) => ({
       page: stripMarkdown(cells[0] ?? ""),
-      realUrl: cells[1] ?? "",
-      ourRoute: cells[2] ?? "",
+      realUrl: stripMarkdown(cells[1] ?? ""),
+      ourRoute: stripMarkdown(cells[2] ?? ""),
       status: extractStatusEmoji(cells[3] ?? ""),
-      composes: cells[4] ?? "",
+      composes: stripMarkdown(cells[4] ?? ""),
     }));
 
   // Nav-destination rows — same 5-col structure (last col is "Notes")
@@ -209,10 +212,10 @@ function parseCoverage(md: string) {
     .slice(1)
     .map((cells) => ({
       page: stripMarkdown(cells[0] ?? ""),
-      realUrl: cells[1] ?? "",
-      ourRoute: cells[2] ?? "",
+      realUrl: stripMarkdown(cells[1] ?? ""),
+      ourRoute: stripMarkdown(cells[2] ?? ""),
       status: extractStatusEmoji(cells[3] ?? ""),
-      composes: cells[4] ?? "",
+      composes: stripMarkdown(cells[4] ?? ""),
     }));
 
   // Supporting routes — 4 cols: Page | Our route | Status | Notes
@@ -220,9 +223,9 @@ function parseCoverage(md: string) {
     .slice(1)
     .map((cells) => ({
       page: stripMarkdown(cells[0] ?? ""),
-      ourRoute: cells[1] ?? "",
+      ourRoute: stripMarkdown(cells[1] ?? ""),
       status: extractStatusEmoji(cells[2] ?? ""),
-      notes: cells[3] ?? "",
+      notes: stripMarkdown(cells[3] ?? ""),
     }));
 
   return { statusHeadline, pages, navRoutes, supportingRoutes };
@@ -243,8 +246,8 @@ function parseFidelity(md: string) {
     .slice(1)
     .map((cells) => ({
       target: stripMarkdown(cells[0] ?? ""),
-      realUrl: cells[1] ?? "",
-      ourRoute: cells[2] ?? "",
+      realUrl: stripMarkdown(cells[1] ?? ""),
+      ourRoute: stripMarkdown(cells[2] ?? ""),
       verdict: extractVerdictEmoji(cells[3] ?? ""),
       lastDiff: cells[4] ?? "",
       residual: cells[5] ?? "",
