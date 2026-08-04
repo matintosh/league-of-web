@@ -126,6 +126,7 @@ import { merchShopCarouselShowcase } from "./merch/merch-shop-carousel.showcase"
 import { merchSignInPanelShowcase } from "./merch/merch-sign-in-panel.showcase";
 import { merchSizeGuideModalShowcase } from "./merch/merch-size-guide-modal.showcase";
 import { merchStoreShowcase } from "./merch/merch-store.showcase";
+import { merchSupportFormShowcase } from "./merch/merch-support-form.showcase";
 import { merchSupportHeroShowcase } from "./merch/merch-support-hero.showcase";
 import { merchSupportTabStripShowcase } from "./merch/merch-support-tab-strip.showcase";
 
@@ -245,7 +246,7 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
-  // merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchShopCarousel < MerchSignInPanel < MerchSizeGuideModal < MerchStore < MerchSupportHero < MerchSupportTabStrip
+  // merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchShopCarousel < MerchSignInPanel < MerchSizeGuideModal < MerchStore < MerchSupportForm < MerchSupportHero < MerchSupportTabStrip
   merchCartDrawerShowcase,
   merchCartPageShowcase,
   merchCategoryStripShowcase,
@@ -269,6 +270,7 @@ export const registry: ShowcaseEntry[] = [
   merchSignInPanelShowcase,
   merchSizeGuideModalShowcase,
   merchStoreShowcase,
+  merchSupportFormShowcase,
   merchSupportHeroShowcase,
   merchSupportTabStripShowcase,
 ];

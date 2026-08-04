@@ -1,0 +1,46 @@
+<svg viewBox="0 0 280 175" xmlns="http://www.w3.org/2000/svg" aria-label="Riot Games Card of Authenticity sample">
+  <defs>
+    <linearGradient id="card-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a1a"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </linearGradient>
+    <clipPath id="card-clip">
+      <rect width="280" height="175" rx="8" ry="8"/>
+    </clipPath>
+    <pattern id="barcode" x="0" y="0" width="6" height="1" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="1" height="1" fill="#ffffff"/>
+      <rect x="2" y="0" width="2" height="1" fill="#ffffff"/>
+      <rect x="5" y="0" width="1" height="1" fill="#ffffff"/>
+    </pattern>
+  </defs>
+
+  <!-- Card body -->
+  <rect width="280" height="175" rx="8" ry="8" fill="url(#card-bg)"/>
+
+  <!-- Red header band -->
+  <rect x="0" y="0" width="280" height="36" fill="#d13639" clip-path="url(#card-clip)"/>
+  <rect x="0" y="26" width="280" height="10" fill="#d13639"/>
+
+  <!-- Header text -->
+  <text x="140" y="22" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="11" letter-spacing="1.5" fill="#ffffff">CARD OF AUTHENTICITY</text>
+
+  <!-- Riot Games logo text -->
+  <text x="140" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="18" letter-spacing="2" fill="#ffffff">RIOT GAMES</text>
+
+  <!-- Divider -->
+  <line x1="24" y1="80" x2="256" y2="80" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1"/>
+
+  <!-- Serial label -->
+  <text x="24" y="100" font-family="system-ui, sans-serif" font-weight="400" font-size="9" letter-spacing="1" fill="#ffffff" fill-opacity="0.6">SERIAL NUMBER</text>
+
+  <!-- Serial number -->
+  <text x="24" y="116" font-family="monospace" font-weight="700" font-size="13" letter-spacing="2" fill="#ffffff">12345789</text>
+
+  <!-- Barcode -->
+  <rect x="24" y="130" width="160" height="28" fill="url(#barcode)"/>
+  <rect x="24" y="130" width="3" height="28" fill="#ffffff"/>
+  <rect x="181" y="130" width="3" height="28" fill="#ffffff"/>
+
+  <!-- Watermark -->
+  <text x="256" y="162" text-anchor="end" font-family="system-ui, sans-serif" font-weight="900" font-size="28" fill="#ffffff" fill-opacity="0.07" letter-spacing="3">RIOT</text>
+</svg>

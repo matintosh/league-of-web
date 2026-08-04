@@ -7,8 +7,8 @@
  */
 
 import { useRouter } from "next/navigation";
-import { MerchHeader, MerchSupportTabStrip } from "@low/ui";
-import type { MerchSupportTab } from "@low/fixtures";
+import { MerchHeader, MerchSupportTabStrip, MerchSupportForm } from "@low/ui";
+import type { MerchSupportTab, MerchSupportFormConfig } from "@low/fixtures";
 import { useMerchNav } from "@/lib/merch-nav";
 
 /** Renders MerchHeader with full nav routing for /merch/pages/[slug]. */
@@ -45,5 +45,26 @@ export function InfoPageTabStrip({ sections, activeSlug }: InfoPageTabStripProps
       activeSlug={activeSlug}
       onSelect={(slug) => router.push(`/merch/pages/${slug}`)}
     />
+  );
+}
+
+interface SupportFormClientProps {
+  title: string;
+  config: MerchSupportFormConfig;
+}
+
+/**
+ * Thin client wrapper around MerchSupportForm that provides the onSubmit
+ * callback. The server page passes title + config as serialisable props.
+ */
+export function SupportFormClient({ title, config }: SupportFormClientProps) {
+  /* In a real app this would send to an API. Here it's a no-op callback. */
+  function handleSubmit(values: Record<string, string>) {
+    /* Presentational — no fetch, no side effects. */
+    void values;
+  }
+
+  return (
+    <MerchSupportForm title={title} config={config} onSubmit={handleSubmit} />
   );
 }

@@ -243,7 +243,7 @@ export { YourShopIcon } from "./store/your-shop-icon";
 export type { YourShopIconProps, YourShopIconVideoSources } from "./store/your-shop-icon";
 export { YourShopScreen } from "./store/your-shop-screen";
 export type { YourShopScreenProps, YourShopCard } from "./store/your-shop-screen";
-// merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchShopCarousel < MerchSignInPanel < MerchStore
+// merch — alphabetical: MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchShopCarousel < MerchSignInPanel < MerchStore < MerchSupportForm < MerchSupportHero < MerchSupportTabStrip
 export { MerchCartDrawer } from "./merch/merch-cart-drawer";
 export type { MerchCartDrawerProps, MerchCartItem } from "./merch/merch-cart-drawer";
 export { MerchCartPage } from "./merch/merch-cart-page";
@@ -309,6 +309,8 @@ export { MerchSizeGuideModal } from "./merch/merch-size-guide-modal";
 export type { MerchSizeGuideModalProps, MerchSizeGuideRow } from "./merch/merch-size-guide-modal";
 export { MerchStore } from "./merch/merch-store";
 export type { MerchStoreProps, MerchNavLink } from "./merch/merch-store";
+export { MerchSupportForm } from "./merch/merch-support-form";
+export type { MerchSupportFormProps } from "./merch/merch-support-form";
 export { MerchSupportHero } from "./merch/merch-support-hero";
 export type { MerchSupportHeroProps } from "./merch/merch-support-hero";
 export { MerchSupportTabStrip } from "./merch/merch-support-tab-strip";
