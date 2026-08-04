@@ -55,7 +55,6 @@ export function LolWordmark({ className }: { className?: string }): JSX.Element 
 export function RiftboundLogo({ className }: { className?: string }): JSX.Element {
   return (
     <svg
-      id="riftbound-logo"
       xmlns="http://www.w3.org/2000/svg"
       version="1.1"
       viewBox="0 0 300 110.35"
@@ -76,7 +75,6 @@ export function LolEsportsLogo({ className }: { className?: string }): JSX.Eleme
   return (
     <svg
       version="1.1"
-      id="lol-esports-logo"
       xmlns="http://www.w3.org/2000/svg"
       x="0px"
       y="0px"
@@ -143,7 +141,6 @@ export function VctLogo({ className }: { className?: string }): JSX.Element {
   return (
     <svg
       version="1.1"
-      id="vct-logo"
       xmlns="http://www.w3.org/2000/svg"
       x="0px"
       y="0px"
@@ -154,7 +151,7 @@ export function VctLogo({ className }: { className?: string }): JSX.Element {
       role="presentation"
       className={className}
     >
-      <g id="Layer_1-2">
+      <g>
         <path d="m161.64,152.64c.97,1.22,2.45,1.93,4.01,1.93h57.75c1.01,0,1.56-1.16.94-1.95L102.6.45c-.71-.89-2.13-.39-2.13.75v73.18c0,1.16.4,2.29,1.13,3.21l60.05,75.06Z" />
         <path d="m207.48,102.3h57.75c1.56,0,3.04-.71,4.01-1.93l18.24-22.8c.73-.91,1.13-2.04,1.13-3.21V1.2c0-1.13-1.43-1.63-2.14-.75l-79.92,99.9c-.63.79-.07,1.95.94,1.95" />
         <path d="m130.65,230.07v-39.3c0-1.16-.39-2.29-1.12-3.2L62.96,104.23c-.97-1.22-2.45-1.93-4.01-1.93H1.2c-1.01,0-1.57,1.16-.94,1.95l83.34,104.17c.92,1.16.92,2.8,0,3.96L.27,316.56c-.63.79-.07,1.95.94,1.95h57.75c1.56,0,3.04-.71,4.01-1.93l66.57-83.31c.73-.91,1.12-2.04,1.12-3.2" />
@@ -215,6 +212,7 @@ export function ArcaneLogo({ className }: { className?: string }): JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 71 23"
       width="71"
       height="23"
       fill="currentColor"
