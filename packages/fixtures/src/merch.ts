@@ -151,3 +151,17 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
     franchiseLabel: "League of Legends",
   },
 ];
+
+/**
+ * URL handles for the /merch/collection/[handle] browse route.
+ * These match the switch cases in `apps/web/src/app/merch/collection/[handle]/page.tsx`.
+ * Exported so `sitemap.ts` can enumerate collection routes from fixtures rather than
+ * duplicating the handle list in app code.
+ */
+export const MERCH_COLLECTION_HANDLES: string[] = [
+  "apparel",
+  "collectibles",
+  "riftbound",
+  "league-of-legends",
+  "sale",
+];
