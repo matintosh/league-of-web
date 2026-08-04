@@ -5,7 +5,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 **Legend:** ✅ page live · 🔨 in progress (open issue) · ⬜ page missing · ⛔ out of scope (real commerce/auth backend)
 
-**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **25 components** shipped · mobile pixel-perfect ✅ (#618-#623) · **desktop 1:1 fidelity pass ✅ COMPLETE** — PDP typography+proportions #627/#628 (PR #630) + listing 2-col flush redesign #629 (PR #631: real cards w/ franchise overlay + multi-badge + REFINE across all 4 pages, homepage corrected 4-col→2-col, MerchProduct badge→+badges[]+franchiseLabel). Cart = DRY. Every page measured/verified at BOTH 1280 + 390. **Real imagery ✅ SHIPPED** (#632) — uses the actual merch.riotgames.com Sanity-CDN hero banners + 8 real products (hotlink via Next remotePatterns + `merchAssetUrl` helper); champion-splash art gone from /merch. **Independent `/merch/showcase` ✅ SHIPPED** (#633) — under the /merch layout, all 22 merch components render with real merch tokens + Inter (fixed the tokenless-render bug); branded "Merch Design System" page, linked from landing hub. **Hero fixed ✅** — scrim removed (#634) + reselected to VIVID real full-art banners (#635). **Full working nav ✅ SHIPPED** (#636) — Categories/Featured dropdown menus + `/merch/sale` + mobile menu + onCategoryClick wired on EVERY page (was only Shop-All, only on 3 pages). **Collections index restructured ✅** (#637/#638, PR #639) — stacked shop-carousel strips (MerchCollectionList) matching the real /collection/, not a tile grid. **Site map now COMPREHENSIVE** — every `page.tsx` route is listed (store pages + nav-destination routes + supporting routes like /merch/showcase + the [handle] redirect).
+**Status:** last updated 2026-08-03 · **9 / 9 page types live 🎉** · **26 components** shipped · mobile pixel-perfect ✅ (#618-#623) · **desktop 1:1 fidelity pass ✅ COMPLETE** — PDP typography+proportions #627/#628 (PR #630) + listing 2-col flush redesign #629 (PR #631: real cards w/ franchise overlay + multi-badge + REFINE across all 4 pages, homepage corrected 4-col→2-col, MerchProduct badge→+badges[]+franchiseLabel). Cart = DRY. Every page measured/verified at BOTH 1280 + 390. **Real imagery ✅ SHIPPED** (#632) — uses the actual merch.riotgames.com Sanity-CDN hero banners + 8 real products (hotlink via Next remotePatterns + `merchAssetUrl` helper); champion-splash art gone from /merch. **Independent `/merch/showcase` ✅ SHIPPED** (#633) — under the /merch layout, all 22 merch components render with real merch tokens + Inter (fixed the tokenless-render bug); branded "Merch Design System" page, linked from landing hub. **Hero fixed ✅** — scrim removed (#634) + reselected to VIVID real full-art banners (#635). **Full working nav ✅ SHIPPED** (#636) — Categories/Featured dropdown menus + `/merch/sale` + mobile menu + onCategoryClick wired on EVERY page (was only Shop-All, only on 3 pages). **Collections index restructured ✅** (#637/#638, PR #639) — stacked shop-carousel strips (MerchCollectionList) matching the real /collection/, not a tile grid. **Site map now COMPREHENSIVE** — every `page.tsx` route is listed (store pages + nav-destination routes + supporting routes like /merch/showcase + the [handle] redirect). **Build-status page ✅** (#663) — public `/merch/status` renders the site map + fidelity scorecard parsed from these docs. **Homepage hero/strip unified ✅** (#664) — the franchise strip is now the hero carousel's slide-control bar (real logo SVGs extracted via Playwright, clip-path square-left first tile, 40px content gutters); MerchCategoryStrip kept but no longer rendered on the homepage. **NOTE:** #663 + #664 merged but NOT yet deployed — Vercel 100/day deploy quota exhausted; batch-deploy when it resets (~24h).
 
 > The real store prefixes with `/` (e.g. `/product/<handle>`); our clone nests everything under
 > `/merch`. This map tracks PAGES (routes) first; the component table at the bottom tracks the parts
@@ -17,7 +17,7 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 | Page | Real URL | Our route | Status | Composes |
 |---|---|---|---|---|
-| **Homepage** | `/` | `/merch` | ✅ | Header · HeroBanner · ProductGrid · Footer |
+| **Homepage** | `/` | `/merch` | ✅ | Header · HeroBanner (franchise strip folded IN as slide-control bar w/ real logo SVGs — #664) · ProductGrid · GiftCardBand · Footer |
 | **Product detail (PDP)** | `/product/<handle>` | `/merch/product/[handle]` | ✅ (canonical; `/merch/[handle]` → 308 redirect) | Gallery · PurchasePanel · (related, accordions ⬜) |
 | **Shop All** | `/shop-all/` | `/merch/shop-all` | ✅ | CollectionHero · FilterSortBar · ProductGrid |
 | **Collections index** | `/collection/` | `/merch/collection` | ✅ | "All Collections" heading · MerchCollectionList (stacked shop-carousel strips) |
@@ -39,8 +39,9 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | Page | Our route | Status | Notes |
 |---|---|---|---|
 | **PDP legacy redirect** | `/merch/[handle]` | ✅ | 308 → `/merch/product/[handle]` (kept so old links resolve) |
-| **Component showcase** | `/merch/showcase` | ✅ | independent merch design-system browser (25 components, real tokens) |
+| **Component showcase** | `/merch/showcase` | ✅ | independent merch design-system browser (26 components, real tokens) |
 | **Showcase detail** | `/merch/showcase/[slug]` | ✅ | per-component variants |
+| **Build-status page** | `/merch/status` | ✅ | public site-map + fidelity dashboard, parsed from docs (#663). NOT live until deploy quota resets |
 
 > Every `page.tsx` under `apps/web/src/app/merch/` is represented in one of the three tables above. Store-page fidelity is tracked in `docs/merch-fidelity.md`.
 
@@ -72,7 +73,8 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 | Category tile grid (`CategoryTileGrid` + `CategoryTile`) | ✅ | (category pages) |
 | `MerchCollectionList` (stacked collection strips: banner · rotated name tab · card row) | ✅ | Collections index |
 | `MerchShopCarousel` (franchise product carousel) | ✅ | PDP |
-| `MerchSearchBar` · `MerchSignInPanel` · `MerchGiftCardBand` · `MerchCategoryStrip` | ✅ | Search · Account · Homepage |
+| `MerchSearchBar` · `MerchSignInPanel` · `MerchGiftCardBand` · `MerchCategoryStrip` (standalone; superseded on homepage by hero control bar) | ✅ | Search · Account · Homepage |
+| `franchiseLogos` (8 real franchise wordmark SVGs, extracted via Playwright) + `MerchHeroBanner` franchise slide-control bar | ✅ | Homepage hero (#664) |
 | Full working nav (dropdowns · mobile menu · `merch-nav.ts` helper) | ✅ | header (all pages) |
 | `MerchFilterSortBar` (filter chips + sort dropdown) | ✅ | Collection, Shop All |
 | `MerchShopCarousel` (franchise product carousel) | ✅ | PDP |
