@@ -14,9 +14,9 @@
  * @low/ui), showcase server-safe (no 'use client'), SVG/gradient ids from useId.
  *
  * Measured from merch.riotgames.com (~1280px desktop):
- *   - Hero: 1280×535px (y=130 below ~130px header)
- *   - Control bar: 64px tall, sitting INSIDE the hero at its bottom edge,
- *     ~40px above the hero's bottom. Gutter from viewport edges: ~40px.
+ *   - Hero: 1280×535px desktop (aspect-[64/27]), 390×544px mobile (aspect-[195/272])
+ *   - Control bar: 64px tall, sitting INSIDE the hero with bottom-edge 40px
+ *     above the hero's bottom. Gutter: 40px desktop, 24px mobile.
  *   - Source images: 1280×535 px → aspect-ratio ~64/27 (≈2.37)
  *   - Background: full-bleed object-fit cover, no letter-box, no side padding
  *   - Text overlay: optional — art-forward slides carry branding in the image
@@ -254,7 +254,7 @@ export function MerchHeroBanner({
   return (
     <section
       aria-label={ariaLabel}
-      className="relative w-full overflow-hidden aspect-[3/4] md:aspect-[64/27]"
+      className="relative w-full overflow-hidden aspect-[195/272] md:aspect-[64/27]"
       style={{ fontFamily: "var(--font-merch)" }}
     >
       {/* Background image — always full-bleed, no gutter */}
@@ -344,7 +344,7 @@ export function MerchHeroBanner({
         <div
           aria-label="Shop by franchise"
           role="navigation"
-          className="absolute bottom-0 left-0 right-0 overflow-x-auto"
+          className="absolute bottom-10 left-0 right-0 overflow-x-auto"
           style={{
             height: 64,
             /* Dark bg fills any gap behind tiles */
@@ -354,10 +354,9 @@ export function MerchHeroBanner({
             msOverflowStyle: "none",
           }}
         >
-          {/* Tile row — left-inset 40px, tiles overlap via negative margin */}
+          {/* Tile row — left-inset 24px mobile / 40px desktop, tiles overlap via negative margin */}
           <div
-            className="flex h-full items-stretch"
-            style={{ paddingLeft: 40, paddingRight: 0 }}
+            className="flex h-full items-stretch pl-6 md:pl-10"
           >
             {franchises!.map((franchise, idx) => {
               const isFirst = idx === 0;
