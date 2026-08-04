@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMerchNav } from "@/lib/merch-nav";
 import {
+  MerchBreadcrumbBar,
   MerchHeader,
   MerchFooter,
   MerchProductGallery,
@@ -85,48 +86,15 @@ export function ProductPageClient({
         {/*
          * Breadcrumb bar — FULL WIDTH, above the 2-col gallery/panel row.
          * Real site: ~1280×60 bar at y≈130, spanning the page container.
-         * White bg, 14px muted text, ~60px line-height to match real.
+         * 16px ink text, 40px padding, 60px desktop / 40px mobile height.
          */}
         {breadcrumb && breadcrumb.length > 0 && (
-          <div
-            style={{
-              width: "100%",
-              backgroundColor: "var(--color-merch-bg)",
-              borderBottom: "1px solid var(--color-merch-border)",
-            }}
-          >
-            <nav
-              aria-label="Breadcrumb"
-              style={{
-                maxWidth: "80rem",
-                margin: "0 auto",
-                padding: "0 1.5rem",
-                height: 60,
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <ol
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "4px",
-                  listStyle: "none",
-                  padding: 0,
-                  margin: 0,
-                  fontSize: 14,
-                  color: "var(--color-merch-muted)",
-                }}
-              >
-                {breadcrumb.map((seg, idx) => (
-                  <li key={idx} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    {idx > 0 && <span aria-hidden="true">›</span>}
-                    <span>{seg}</span>
-                  </li>
-                ))}
-              </ol>
-            </nav>
-          </div>
+          <MerchBreadcrumbBar
+            crumbs={breadcrumb.map((seg, idx) => ({
+              label: seg,
+              onClick: idx === 0 ? () => router.push("/merch") : undefined,
+            }))}
+          />
         )}
 
         {/* 2-col gallery + purchase panel */}
