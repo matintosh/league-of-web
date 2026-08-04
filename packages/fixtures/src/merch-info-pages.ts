@@ -17,11 +17,45 @@ export interface MerchInfoBlock {
   content: string | string[];
 }
 
+// ---------------------------------------------------------------------------
+// Support form types (MerchSupportForm)
+// ---------------------------------------------------------------------------
+
+export type MerchSupportFormFieldType = "text" | "email";
+
+export interface MerchSupportFormField {
+  /** Input id and name attribute. */
+  id: string;
+  /** Label text above the input. */
+  label: string;
+  type: MerchSupportFormFieldType;
+}
+
+export interface MerchSupportFormConfig {
+  /**
+   * Form layout variant.
+   * "row" = fields side-by-side (flex row) — order-status & gift-card-balance.
+   * "lookup" = field+button in a 2-col grid with an illustration — verify-your-product.
+   */
+  variant: "row" | "lookup";
+  fields: MerchSupportFormField[];
+  /** Button label text (displayed uppercase). */
+  submitLabel: string;
+  /** Optional static illustration src for the lookup variant's left column. */
+  illustrationSrc?: string;
+  illustrationAlt?: string;
+}
+
 export interface MerchInfoPageContent {
   /** Section h2 title rendered in the content area, e.g. "Frequently Asked Questions". */
   title: string;
-  /** Ordered list of content blocks rendered top-to-bottom. */
+  /** Ordered list of content blocks rendered top-to-bottom. Omit when formConfig is present. */
   blocks: MerchInfoBlock[];
+  /**
+   * When set, the page route renders MerchSupportForm instead of MerchInfoPage prose.
+   * Only the 3 form slugs (order-status, gift-card-balance, verify-your-product) set this.
+   */
+  formConfig?: MerchSupportFormConfig;
 }
 
 /**
@@ -538,91 +572,40 @@ export const MERCH_INFO_PAGES: Record<string, MerchInfoPageContent> = {
 
   "verify-your-product": {
     title: "Verify Your Product",
-    blocks: [
-      { type: "heading2", content: "Product Authenticity" },
-      {
-        type: "paragraph",
-        content:
-          "Every collectible sold through the official Riot Games Merch Store includes an authenticity mechanism — either a holographic seal, a unique serial number, or a certificate of authenticity included in the packaging.",
-      },
-      { type: "heading2", content: "How to Verify" },
-      {
-        type: "ol",
-        content: [
-          "Locate the serial number printed on the certificate of authenticity or on the holographic seal of your item.",
-          "Visit the Product Validation tool at merch.riotgames.com/verify.",
-          "Enter the serial number and submit.",
-          "The tool will confirm authenticity and display the original purchase details.",
-        ],
-      },
-      { type: "heading2", content: "Suspected Counterfeits" },
-      {
-        type: "paragraph",
-        content:
-          "If your verification fails or you suspect you have received a counterfeit product, please contact our support team immediately with your order number and photos of the item and its packaging.",
-      },
-    ],
+    blocks: [],
+    formConfig: {
+      variant: "lookup",
+      fields: [
+        { id: "product-auth-code", label: "Authenticity Code", type: "text" },
+      ],
+      submitLabel: "LOOKUP",
+    },
   },
 
   "gift-card-balance": {
     title: "Gift Card Balance",
-    blocks: [
-      { type: "heading2", content: "Checking Your Balance" },
-      {
-        type: "paragraph",
-        content:
-          "To check the remaining balance on a Riot Games Merch Store gift card, enter the card number and PIN in the fields below. Gift card balances are stored in USD and can be applied at checkout.",
-      },
-      { type: "heading2", content: "Redeeming a Gift Card" },
-      {
-        type: "ol",
-        content: [
-          "Add items to your cart and proceed to checkout.",
-          "On the payment screen, select \"Gift Card\" as your payment method.",
-          "Enter your gift card number and PIN.",
-          "The balance will be applied automatically. If the order total exceeds the card balance, you may pay the remainder with another method.",
-        ],
-      },
-      { type: "heading2", content: "Gift Card Terms" },
-      {
-        type: "ul",
-        content: [
-          "Gift cards do not expire.",
-          "They cannot be exchanged for cash.",
-          "Lost or stolen cards cannot be replaced.",
-          "Treat gift cards like cash — keep the PIN secure.",
-        ],
-      },
-    ],
+    blocks: [],
+    formConfig: {
+      variant: "row",
+      fields: [
+        { id: "gcp_last", label: "Last 4 Characters", type: "text" },
+        { id: "gcp_email", label: "Email Address", type: "email" },
+      ],
+      submitLabel: "Check Balance",
+    },
   },
 
   "order-status": {
     title: "Order Status / Code Lookup",
-    blocks: [
-      { type: "heading2", content: "Tracking Your Order" },
-      {
-        type: "paragraph",
-        content:
-          "Once your order has shipped, you will receive a tracking number by email. Use that number to check the real-time status of your delivery on our Order Status page or directly on the carrier's website.",
-      },
-      { type: "heading2", content: "Digital Code Lookup" },
-      {
-        type: "paragraph",
-        content:
-          "If you purchased a product that includes a digital code (e.g., in-game skin, RP card), you can retrieve your code at any time by visiting the Order Status page and selecting your order.",
-      },
-      { type: "heading2", content: "My Order Is Delayed" },
-      {
-        type: "paragraph",
-        content:
-          "During peak periods (major game launches, holidays) and due to external carrier disruptions, delivery may take longer than estimated. Please check your tracking number before contacting support.",
-      },
-      { type: "heading3", content: "Contact Support" },
-      {
-        type: "paragraph",
-        content:
-          "If your tracking shows no movement for more than 10 business days or your code has not arrived within 24 hours of purchase, please contact our support team with your order number.",
-      },
-    ],
+    blocks: [],
+    formConfig: {
+      variant: "row",
+      fields: [
+        { id: "order-number", label: "Order Number", type: "text" },
+        { id: "billing-last-name", label: "Billing Last Name", type: "text" },
+        { id: "order-email", label: "Email Address", type: "email" },
+      ],
+      submitLabel: "Find My Order",
+    },
   },
 };

@@ -1,14 +1,19 @@
 import { notFound } from "next/navigation";
 import { MERCH_INFO_PAGES, MERCH_SUPPORT_TABS } from "@low/fixtures";
-import { MerchInfoPage, MerchFooter, MerchSupportHero } from "@low/ui";
+import { MerchInfoPage, MerchFooter, MerchSupportHero, MerchSupportForm } from "@low/ui";
 import { championSplashUrl } from "@low/fixtures";
-import { InfoPageHeader, InfoPageTabStrip } from "./info-page-client";
+import { InfoPageHeader, InfoPageTabStrip, SupportFormClient } from "./info-page-client";
 
 /**
  * /merch/pages/[slug] — support info-page template route.
  *
  * Renders: MerchHeader → MerchSupportHero → MerchSupportTabStrip (active=slug)
- *          → MerchInfoPage (section title + prose) → MerchFooter.
+ *          → MerchSupportForm (3 form slugs) OR MerchInfoPage (prose slugs)
+ *          → MerchFooter.
+ *
+ * Form slugs (formConfig present): order-status, gift-card-balance, verify-your-product.
+ * Prose slugs (no formConfig): all others — faqs, shipping, returns, etc.
+ *
  * Content is driven by MERCH_INFO_PAGES fixture map keyed by slug.
  * Unknown slugs → notFound() (404).
  * generateStaticParams pre-renders all known slugs at build time.
@@ -61,8 +66,12 @@ export default async function MerchInfoPageRoute({ params }: Props) {
       {/* Section-tab pill strip — active pill = current slug */}
       <InfoPageTabStrip sections={MERCH_SUPPORT_TABS} activeSlug={slug} />
 
-      {/* Section title (h2) + prose content */}
-      <MerchInfoPage title={content.title} blocks={content.blocks} />
+      {/* Form slugs → MerchSupportForm; prose slugs → MerchInfoPage */}
+      {content.formConfig ? (
+        <SupportFormClient title={content.title} config={content.formConfig} />
+      ) : (
+        <MerchInfoPage title={content.title} blocks={content.blocks} />
+      )}
 
       <MerchFooter />
     </div>

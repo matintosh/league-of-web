@@ -115,6 +115,12 @@
   /* Full-viewport backdrop for modal dialogs (size guide, etc.) */
   --color-merch-overlay: rgba(0, 0, 0, 0.45);
 
+  /* ── Form / input tokens (support-page forms — MerchSupportForm) ────── */
+  /* Measured from merch.riotgames.com support forms (order-lookup, gift-card-balance, product-validation) */
+  --color-merch-input-bg:       #f7f7f7; /* filled input background (text fields without border)        */
+  --color-merch-input-border:   #d0d0d0; /* 1px solid border on email / authenticity-code inputs        */
+  --color-merch-input-disabled: #d1d1d1; /* disabled submit button fill                                 */
+
   /* ── Shadows ─────────────────────────────────────────────────────────── */
   /* Raw rgba allowed here (tokens file); raw rgba NOT allowed in components */
   --shadow-merch-modal: 0 8px 32px rgba(0, 0, 0, 0.18); /* centered dialog elevation */
