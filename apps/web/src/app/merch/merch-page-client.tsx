@@ -4,6 +4,17 @@
  * MerchPageClient — client shell for the /merch homepage.
  * Extracted so the server page.tsx can delegate all callback-bearing props here.
  * Receives pre-built product cards and hero slides as children/props.
+ *
+ * Hero + franchise strip are now UNIFIED: the franchise control bar lives
+ * INSIDE MerchHeroBanner (as its control-bar footer), matching the real site.
+ * The standalone <MerchCategoryStrip> is no longer rendered on this page.
+ *
+ * Slide mapping decision:
+ *   - We have 2 real hero images (slide-classic → LoL, slide-vendetta → Riftbound).
+ *   - The first two franchise tiles (LoL, Riftbound) are wired to those slides
+ *     via slideId. The remaining 6 tiles have no dedicated slide — clicking them
+ *     calls onSelectFranchise → router.push('/merch/collection/<slug>'), matching
+ *     real behavior where extra tiles route to their collection page.
  */
 
 import { useState } from "react";
@@ -14,10 +25,19 @@ import {
   MerchGiftCardBand,
   MerchHeroBanner,
   MerchProductGrid,
-  MerchCategoryStrip,
   MerchCartDrawer,
 } from "@low/ui";
-import type { MerchContactFormValues, MerchGiftCard, MerchFranchiseChip } from "@low/ui";
+import type { MerchContactFormValues, MerchGiftCard, MerchHeroFranchise } from "@low/ui";
+import {
+  LolWordmark,
+  RiftboundLogo,
+  LolEsportsLogo,
+  TftLogo,
+  VctLogo,
+  ValorantLogo,
+  TwoXkoLogo,
+  ArcaneLogo,
+} from "@low/ui";
 import { championSplashUrl, MERCH_PRODUCTS, merchAssetUrl } from "@low/fixtures";
 import type { MerchCartItem } from "@low/fixtures";
 import type { MerchHeroSlide } from "@low/ui";
@@ -72,14 +92,77 @@ const GIFT_CARDS: [MerchGiftCard, MerchGiftCard] = [
   },
 ];
 
-const FRANCHISE_CATEGORIES: MerchFranchiseChip[] = [
-  { slug: "league-of-legends", label: "League of Legends", colorVar: "--color-merch-cat-lol", textColorVar: "--color-merch-on-dark" },
-  { slug: "riftbound", label: "Riftbound", colorVar: "--color-merch-cat-riftbound", textColorVar: "--color-merch-on-dark", subLabel: "League of Legends" },
-  { slug: "lol-esports", label: "LoL Esports", colorVar: "--color-merch-cat-esports", textColorVar: "--color-merch-ink" },
-  { slug: "tft", label: "Teamfight Tactics", colorVar: "--color-merch-cat-tft", textColorVar: "--color-merch-on-dark" },
-  { slug: "vct", label: "VCT", colorVar: "--color-merch-cat-vct", textColorVar: "--color-merch-on-dark" },
-  { slug: "valorant", label: "Valorant", colorVar: "--color-merch-cat-valorant", textColorVar: "--color-merch-on-dark" },
-  { slug: "2xko", label: "2XKO", colorVar: "--color-merch-cat-2xko", textColorVar: "--color-merch-ink" },
+/**
+ * Franchise tiles — 8 real brands from the live site.
+ * Background colors sampled from merch.riotgames.com via Playwright at 1280px.
+ * slideId wires LoL→slide-classic and Riftbound→slide-vendetta.
+ * All other tiles have no slideId and route to /merch/collection/<slug>.
+ */
+const FRANCHISE_TILES: MerchHeroFranchise[] = [
+  {
+    slug: "league-of-legends",
+    label: "League of Legends",
+    logo: <LolWordmark />,
+    colorVar: "--color-merch-cat-lol",
+    textColorVar: "--color-merch-on-dark",
+    slideId: "slide-classic",
+  },
+  {
+    slug: "riftbound",
+    label: "Riftbound",
+    logo: <RiftboundLogo />,
+    colorVar: "--color-merch-cat-riftbound",
+    textColorVar: "--color-merch-on-dark",
+    slideId: "slide-vendetta",
+  },
+  {
+    slug: "lol-esports",
+    label: "LoL Esports",
+    logo: <LolEsportsLogo />,
+    colorVar: "--color-merch-cat-esports",
+    textColorVar: "--color-merch-ink",
+    // No slideId — routes to /merch/collection/lol-esports
+  },
+  {
+    slug: "tft",
+    label: "Teamfight Tactics",
+    logo: <TftLogo />,
+    colorVar: "--color-merch-cat-tft",
+    textColorVar: "--color-merch-on-dark",
+    // No slideId — routes to /merch/collection/tft
+  },
+  {
+    slug: "vct",
+    label: "VCT",
+    logo: <VctLogo />,
+    colorVar: "--color-merch-cat-vct",
+    textColorVar: "--color-merch-on-dark",
+    // No slideId — routes to /merch/collection/vct
+  },
+  {
+    slug: "valorant",
+    label: "VALORANT",
+    logo: <ValorantLogo />,
+    colorVar: "--color-merch-cat-valorant",
+    textColorVar: "--color-merch-on-dark",
+    // No slideId — routes to /merch/collection/valorant
+  },
+  {
+    slug: "2xko",
+    label: "2XKO",
+    logo: <TwoXkoLogo />,
+    colorVar: "--color-merch-cat-2xko",
+    textColorVar: "--color-merch-ink",
+    // No slideId — routes to /merch/collection/2xko
+  },
+  {
+    slug: "arcane",
+    label: "Arcane",
+    logo: <ArcaneLogo />,
+    colorVar: "--color-merch-cat-arcane",
+    textColorVar: "--color-merch-ink",
+    // No slideId — routes to /merch/collection/arcane
+  },
 ];
 
 const ANNOUNCEMENT =
@@ -119,12 +202,13 @@ export function MerchPageClient() {
 
       {/* Main content */}
       <main className="flex-1">
-        {/* Hero banner */}
-        <MerchHeroBanner slides={HERO_SLIDES} autoPlayMs={5000} />
-
-        {/* Franchise category chip strip */}
-        <MerchCategoryStrip
-          categories={FRANCHISE_CATEGORIES}
+        {/* Hero banner — franchise control bar is NOW INSIDE the hero (1:1 real site).
+            The standalone MerchCategoryStrip is no longer rendered on this page.
+            Tiles with slideId switch the hero slide; others route to their collection. */}
+        <MerchHeroBanner
+          slides={HERO_SLIDES}
+          autoPlayMs={5000}
+          franchises={FRANCHISE_TILES}
           onSelectFranchise={(slug) => router.push(`/merch/collection/${slug}`)}
         />
 

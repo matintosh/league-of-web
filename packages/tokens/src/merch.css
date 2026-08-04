@@ -82,15 +82,27 @@
   --color-merch-announcement-pill-border: #eb0029; /* rgb(235,0,41) sampled from real */
 
   /* ── Franchise category chip colors ────────────────────────────────── */
-  /* Brand palette for the homepage category chip strip (MerchCategoryStrip).
-     Sampled from merch.riotgames.com/en-us/ at 1280px. Hex only here. */
-  --color-merch-cat-lol:      #4a6b8a; /* League of Legends — steel blue, white text  */
-  --color-merch-cat-riftbound:#e8791f; /* Riftbound — orange, white text              */
-  --color-merch-cat-esports:  #67d3e0; /* LoL Esports — cyan, dark text               */
-  --color-merch-cat-tft:      #9a8fd6; /* Teamfight Tactics — lavender, white text    */
-  --color-merch-cat-vct:      #4a4a4a; /* VCT — dark grey, white text                 */
-  --color-merch-cat-valorant: #f28ea0; /* VALORANT — pink/salmon, white text          */
-  --color-merch-cat-2xko:     #c6e04a; /* 2XKO — lime green, dark text                */
+  /* Brand palette for the homepage category chip strip (MerchCategoryStrip)
+     and the MerchHeroBanner franchise control bar.
+     Sampled from merch.riotgames.com/en-us/ at 1280px via Playwright. */
+  --color-merch-cat-lol:      #05567c; /* League of Legends — deep teal-blue, white   */
+  --color-merch-cat-riftbound:#ef7d00; /* Riftbound — orange, white text              */
+  --color-merch-cat-esports:  #10e3f7; /* LoL Esports — bright cyan, dark text        */
+  --color-merch-cat-tft:      #6a55c4; /* Teamfight Tactics — purple, white text      */
+  --color-merch-cat-vct:      #161616; /* VCT — near-black, white text                */
+  --color-merch-cat-valorant: #ff4654; /* VALORANT — red-coral, white text            */
+  --color-merch-cat-2xko:     #cdf564; /* 2XKO — lime green, dark text                */
+  --color-merch-cat-arcane:   #f2eade; /* Arcane — cream/parchment, dark text         */
+
+  /* ── Hero franchise control bar ─────────────────────────────────────── */
+  /* Measured from merch.riotgames.com: strip at bottom of hero, 64px tall,
+     tiles 170×64, 40px gutter from each edge, 20px clip-path angle offset. */
+  --color-merch-hero-control-bar: #000000; /* strip container bg behind tiles        */
+  /* Active tile indicator — bottom border underline on active tile */
+  --color-merch-hero-tile-active-border: #ffffff; /* white underline on active tile  */
+  /* Progress indicator bar that runs across top of active tile */
+  --color-merch-hero-progress-bar: rgba(255, 255, 255, 0.85); /* progress bar fill   */
+  --color-merch-hero-progress-bg:  rgba(255, 255, 255, 0.25); /* progress bar track  */
 
   /* ── Card overlays (2-col listing card design) ─────────────────────── */
   /* Franchise label text overlay (top-left of card image) */
