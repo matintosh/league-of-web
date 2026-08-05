@@ -319,7 +319,6 @@ export function LauncherClient() {
       windowBar={
         <LauncherWindowBar
           onMinimize={() => console.log("[launcher] minimize")}
-          onMaximize={() => console.log("[launcher] maximize")}
           onClose={() => console.log("[launcher] close")}
         />
       }
@@ -340,7 +339,7 @@ export function LauncherClient() {
           onSearchChange={setSearchQuery}
           onToggleGroup={handleToggleGroup}
           onFriendClick={(s) => console.log("[launcher] friend click:", s.gameName)}
-          onHeaderAction={(a) => console.log("[launcher] header action:", a)}
+          onCollapse={() => console.log("[launcher] social panel collapse")}
         />
       }
     >

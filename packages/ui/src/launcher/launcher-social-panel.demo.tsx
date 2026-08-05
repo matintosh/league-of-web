@@ -84,10 +84,6 @@ export function LauncherSocialPanelDemo() {
     setLastAction(`Clicked: ${summoner.gameName}`);
   }
 
-  function handleHeaderAction(action: string) {
-    setLastAction(`Header action: ${action}`);
-  }
-
   return (
     <div className="flex flex-col gap-2">
       <LauncherSocialPanel
@@ -99,7 +95,7 @@ export function LauncherSocialPanelDemo() {
         onSearchChange={setSearchQuery}
         onToggleGroup={handleToggleGroup}
         onFriendClick={handleFriendClick}
-        onHeaderAction={handleHeaderAction}
+        onCollapse={() => setLastAction("Collapsed panel")}
       />
       {lastAction != null && (
         <p
