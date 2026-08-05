@@ -32,12 +32,12 @@ const BADGE_CONFIG: Record<BadgeVariant, BadgeConfig> = {
   installed: {
     label: "Installed",
     bg: "var(--color-launcher-badge-installed)",
-    color: "#ffffff",
+    color: "var(--color-launcher-ink)",
   },
   update: {
     label: "Update",
     bg: "var(--color-launcher-badge-update)",
-    color: "#1a1200",
+    color: "var(--color-launcher-chip-game-updates-ink)",
   },
   play: {
     label: "Play",
@@ -223,9 +223,10 @@ export function GameTile({
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              color: "#ffffff",
+              color: "var(--color-launcher-ink)",
               pointerEvents: "none",
-              filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.7))",
+              filter:
+                "drop-shadow(0 1px 3px color-mix(in srgb, var(--color-launcher-bg) 70%, transparent))",
             }}
           >
             {logoNode}
