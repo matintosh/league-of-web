@@ -205,9 +205,9 @@
 
   /* Content area */
   --color-launcher-content-bg:          #11131a; /* center content area dark base */
-  /* Light content surface — Riot Home + Games main area (issue #719) */
-  --color-launcher-home-content-bg:     #f0f0f2; /* near-white, matches image-5/image-7 ref */
-  --color-launcher-home-content-ink:    #1a1a1c; /* dark heading/body text on the light surface */
+  /* Dark content surface — Riot Home + Games main area (image-5/image-7 refs are DARK) */
+  --color-launcher-home-content-bg:     #0f0f10; /* near-black, sampled ~rgb(14,13,11) from image-5/image-7 */
+  --color-launcher-home-content-ink:    #f0efec; /* near-white heading/body text, sampled rgb(223,222,220) */
 
   /* Dividers / borders */
   --color-launcher-border:       #2a2c35; /* subtle 1px panel borders */
@@ -473,9 +473,9 @@
     --color-launcher-panel-bg:     #1a1c22;
     --color-launcher-panel-header: #1e2028;
     --color-launcher-content-bg:          #11131a;
-    /* Light content surface — Riot Home + Games main area (issue #719) */
-    --color-launcher-home-content-bg:     #f0f0f2;
-    --color-launcher-home-content-ink:    #1a1a1c;
+    /* Dark content surface — Riot Home + Games main area (image-5/image-7 refs are DARK) */
+    --color-launcher-home-content-bg:     #0f0f10;
+    --color-launcher-home-content-ink:    #f0efec;
     --color-launcher-border:       #2a2c35;
     --color-launcher-divider:      #22242c;
     --color-launcher-text-primary: #e8e6e1;
