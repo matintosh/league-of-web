@@ -79,8 +79,8 @@ export const launcherSocialPanelShowcase: ShowcaseEntry = {
   slug: "launcher-social-panel",
   name: "LauncherSocialPanel",
   area: "launcher",
-  referenceImage: "launcher-overview.png",
-  referenceNote: "Real League launcher — friends panel visible on the right column (account header, search, friend list)",
+  referenceImage: "launcher-social-panel-crop.png",
+  referenceNote: "Real launcher — right social/friends panel (cropped from Overview): account header, search field, friend list grouped by game with presence rings",
   description:
     "Launcher right-column friends panel: account header with presence avatar + icon buttons, search field, collapsible game group with Online/Offline sub-sections, and friend rows with presence rings. Uses --color-launcher-* dark tokens. Distinct from the Hextech chrome SocialPanel.",
   variants: [

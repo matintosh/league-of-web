@@ -10,6 +10,8 @@ export const launcherFeaturedCardShowcase: ShowcaseEntry = {
   slug: "launcher-featured-card",
   name: "LauncherFeaturedCard",
   area: "launcher",
+  referenceImage: "launcher-featured-card-crop.png",
+  referenceNote: "Real launcher — bottom-left featured content overlay (cropped from Overview): category label, title, description body, frosted-glass CTA button",
   description:
     "Bottom-left overlay card for the Overview hero. Category label (muted) → title (white, display font) → description (muted, line-clamped) → frosted-glass CTA button. Sits on the hero scrim — showcase renders with dark bg to match. Issue #684.",
   variants: [

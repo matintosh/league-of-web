@@ -10,8 +10,8 @@ export const launcherWindowBarShowcase: ShowcaseEntry = {
   slug: "launcher-window-bar",
   name: "LauncherWindowBar",
   area: "launcher",
-  referenceImage: "launcher-overview.png",
-  referenceNote: "Real League launcher — 28px window chrome bar at top edge (minimize, maximize, close controls)",
+  referenceImage: "launcher-window-bar-crop.png",
+  referenceNote: "Real launcher — top window chrome bar (cropped from Overview): 28px dark strip with minimize / close controls on the right edge",
   description:
     "28px window chrome bar for the launcher top. Right-aligned controls: minimize (—), maximize/restore (▢/⧉), close (✕). Hover: minimize/maximize → launcher-border bg; close → launcher-close-hover red bg + white icon. Props: leftContent?, onMinimize, onMaximize, onClose, maximized.",
   variants: [
