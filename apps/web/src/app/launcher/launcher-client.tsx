@@ -10,7 +10,8 @@
  *   - children: LauncherTabBar (4 tabs) + LauncherPlayButton + active tab content
  *
  * Tab state (activeTab) defaults to "overview". Overview tab renders the full
- * LauncherOverviewPage composition; other tabs render a minimal placeholder.
+ * LauncherOverviewPage composition; Esports tab renders LauncherEsportsPage;
+ * other tabs render a minimal placeholder.
  *
  * All callbacks are console stubs — this is presentational.
  *
@@ -28,6 +29,7 @@ import {
   LauncherPlayButton,
   LauncherSocialPanel,
   LauncherOverviewPage,
+  LauncherEsportsPage,
   LauncherPatchNotesPage,
 } from "@low/ui";
 import type { LauncherRailItem, LauncherTab, LauncherGameMode, LauncherFriendGroup } from "@low/ui";
@@ -380,7 +382,7 @@ export function LauncherClient() {
         ) : activeTab === "patch-notes" ? (
           <LauncherPatchNotesPage />
         ) : activeTab === "esports" ? (
-          <ComingSoonTab label="Esports" />
+          <LauncherEsportsPage />
         ) : (
           <ComingSoonTab label="Merch" />
         )}

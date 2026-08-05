@@ -262,6 +262,7 @@
   --color-launcher-esports-heading:      #ffffff;
   --color-launcher-esports-card-bg:      #161616;
   --color-launcher-esports-card-border:  #2a2a2a;
+  --color-launcher-esports-card-hover:   #111111; /* subtle hover highlight */
 
   /* Launcher font stack */
   --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -498,6 +499,7 @@
     --color-launcher-esports-heading:      #ffffff;
     --color-launcher-esports-card-bg:      #161616;
     --color-launcher-esports-card-border:  #2a2a2a;
+    --color-launcher-esports-card-hover:   #111111; /* subtle hover highlight */
 
     /* Launcher font stack */
     --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
