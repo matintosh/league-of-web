@@ -107,7 +107,9 @@ import { storeItemTileShowcase } from "./store/store-item-tile.showcase";
 import { storeSubNavBarShowcase } from "./store/store-sub-nav-bar.showcase";
 import { yourShopIconShowcase } from "./store/your-shop-icon.showcase";
 import { yourShopScreenShowcase } from "./store/your-shop-screen.showcase";
+import { launcherPlayButtonShowcase } from "./launcher/launcher-play-button.showcase";
 import { launcherShellShowcase } from "./launcher/launcher-shell.showcase";
+import { launcherSocialPanelShowcase } from "./launcher/launcher-social-panel.showcase";
 import { merchBreadcrumbBarShowcase } from "./merch/merch-breadcrumb-bar.showcase";
 import { merchCartDrawerShowcase } from "./merch/merch-cart-drawer.showcase";
 import { merchCartPageShowcase } from "./merch/merch-cart-page.showcase";
@@ -256,8 +258,10 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
-  // launcher — alphabetical: LauncherShell
+  // launcher — alphabetical: LauncherPlayButton < LauncherShell < LauncherSocialPanel
+  launcherPlayButtonShowcase,
   launcherShellShowcase,
+  launcherSocialPanelShowcase,
   // merch — alphabetical: MerchBreadcrumbBar < MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchShopCarousel < MerchSignInPanel < MerchSizeGuideModal < MerchStore < MerchSupportForm < MerchSupportHero < MerchSupportTabStrip
   merchBreadcrumbBarShowcase,
   merchCartDrawerShowcase,
