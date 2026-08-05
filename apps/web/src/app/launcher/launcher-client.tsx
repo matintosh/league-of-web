@@ -32,6 +32,8 @@ import {
   LauncherEsportsPage,
   LauncherMerchPage,
   LauncherPatchNotesPage,
+  GameLolLogo,
+  GameTftLogo,
 } from "@low/ui";
 import type { LauncherRailItem, LauncherTab, LauncherGameMode, LauncherFriendGroup } from "@low/ui";
 import { profileIconUrl, championSquareUrl } from "@low/fixtures";
@@ -50,46 +52,20 @@ const VIEWER: Summoner = {
   availability: "online",
 };
 
-/** LoL logo SVG inline — 36×36 placeholder matching the real launcher favicon style. */
+/**
+ * LoL rail icon — compact crest + wordmark from the launcher game-logos set.
+ * Replaces the circular text placeholder. size=28 fits the 56px rail icon slot.
+ */
 function LolIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" fill="none">
-      <circle cx="16" cy="16" r="15" fill="var(--color-launcher-rail-bg)" stroke="var(--color-gold-3)" strokeWidth="1.5" />
-      <text
-        x="16"
-        y="21"
-        textAnchor="middle"
-        fill="var(--color-gold-3)"
-        fontSize="13"
-        fontWeight="700"
-        fontFamily="var(--font-display)"
-        letterSpacing="0.02em"
-      >
-        LoL
-      </text>
-    </svg>
-  );
+  return <GameLolLogo size={28} />;
 }
 
-/** TFT icon SVG inline. */
+/**
+ * TFT rail icon — "TFT" acronym + subtitle from the launcher game-logos set.
+ * Replaces the circular text placeholder.
+ */
 function TftIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" fill="none">
-      <circle cx="16" cy="16" r="15" fill="var(--color-launcher-rail-bg)" stroke="var(--color-launcher-text-dim)" strokeWidth="1" />
-      <text
-        x="16"
-        y="21"
-        textAnchor="middle"
-        fill="var(--color-launcher-text-dim)"
-        fontSize="11"
-        fontWeight="700"
-        fontFamily="var(--font-display)"
-        letterSpacing="0.01em"
-      >
-        TFT
-      </text>
-    </svg>
-  );
+  return <GameTftLogo size={28} />;
 }
 
 /** Home icon SVG. */

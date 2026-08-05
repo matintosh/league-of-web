@@ -15,9 +15,17 @@
  */
 
 import { useId } from "react";
+import type { ReactNode } from "react";
 import type { FeaturedPromoData } from "@low/fixtures";
 
 export interface FeaturedGamePromoHeroProps extends FeaturedPromoData {
+  /**
+   * Optional ReactNode logo — rendered in place of the `gameLogo` img when
+   * provided. Allows passing an inline SVG component (e.g. LolClassicLogo)
+   * instead of a data-URI string. `gameLogo` is still accepted for backward
+   * compatibility when `logoNode` is omitted.
+   */
+  logoNode?: ReactNode;
   /** Optional click handler for the CTA button. */
   onCta?: () => void;
   className?: string;
@@ -37,6 +45,7 @@ function safeCssId(id: string) {
 export function FeaturedGamePromoHero({
   gameKey,
   gameLogo,
+  logoNode,
   tagline,
   description,
   ctaLabel,
@@ -115,20 +124,37 @@ export function FeaturedGamePromoHero({
             maxWidth: "50%",
           }}
         >
-          {/* Game logo */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={gameLogo}
-            alt={gameKey}
-            style={{
-              height: 120,
-              width: "auto",
-              objectFit: "contain",
-              objectPosition: "left center",
-              marginBottom: 16,
-              flexShrink: 0,
-            }}
-          />
+          {/* Game logo — inline SVG component when logoNode is provided,
+              img element otherwise (backward-compat with data-URI gameLogo). */}
+          {logoNode != null ? (
+            <div
+              aria-label={gameKey}
+              style={{
+                height: 120,
+                width: "auto",
+                display: "flex",
+                alignItems: "flex-end",
+                marginBottom: 16,
+                flexShrink: 0,
+              }}
+            >
+              {logoNode}
+            </div>
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={gameLogo}
+              alt={gameKey}
+              style={{
+                height: 120,
+                width: "auto",
+                objectFit: "contain",
+                objectPosition: "left center",
+                marginBottom: 16,
+                flexShrink: 0,
+              }}
+            />
+          )}
 
           {/* Tagline */}
           <h2

@@ -17,7 +17,10 @@ import { LauncherPatchHeroBanner } from "./launcher-patch-hero-banner";
 // Fixture data — Patch 26.15, matching lol-launcher-ref/image-2.png
 // ---------------------------------------------------------------------------
 
-const PATCH_SPLASH_URL = championSplashUrl("Nocturne", 0);
+// Jinx skin 0: electric blue/pink, high-contrast — replaces the dim Nocturne
+// splash for a vivid, energetic patch notes hero that reads well with the
+// bottom-up scrim and white text block.
+const PATCH_SPLASH_URL = championSplashUrl("Jinx", 0);
 
 /**
  * Patch Notes tab content — full-bleed hero with Patch 26.15 data.

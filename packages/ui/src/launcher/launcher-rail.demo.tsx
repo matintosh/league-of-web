@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { LauncherRail } from "./launcher-rail";
+import { LolLogo } from "./game-logos/lol-logo";
+import { TftLogo } from "./game-logos/tft-logo";
+import { ValorantLogo } from "./game-logos/valorant-logo";
 
 /** Settings gear icon */
 function GearIcon() {
@@ -24,33 +27,33 @@ function RiotFistIcon() {
   );
 }
 
-function GameIconPlaceholder({ letter, color }: { letter: string; color: string }) {
-  return (
-    <div
-      style={{
-        width: 36,
-        height: 36,
-        borderRadius: 6,
-        backgroundColor: color,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontFamily: "var(--font-display)",
-        fontSize: 14,
-        fontWeight: 700,
-        color: "var(--color-launcher-ink)",
-      }}
-    >
-      {letter}
-    </div>
-  );
-}
-
+/**
+ * Rail items using real compact game emblem SVGs (size=24 fits the 56px slot).
+ * Replaces the geometric letter placeholders with recognisable game logos.
+ */
 const ALL_ITEMS = [
   { id: "home", label: "Home", icon: <RiotFistIcon />, position: "top" as const },
-  { id: "lol", label: "League of Legends", icon: <GameIconPlaceholder letter="L" color="var(--color-gold-3)" />, position: "top" as const },
-  { id: "tft", label: "Teamfight Tactics", icon: <GameIconPlaceholder letter="T" color="var(--color-blue-2)" />, position: "top" as const },
-  { id: "valorant", label: "Valorant", icon: <GameIconPlaceholder letter="V" color="var(--color-riot-red)" />, position: "top" as const },
+  {
+    id: "lol",
+    label: "League of Legends",
+    // LolLogo: heraldic crest + wordmark lockup
+    icon: <LolLogo size={24} />,
+    position: "top" as const,
+  },
+  {
+    id: "tft",
+    label: "Teamfight Tactics",
+    // TftLogo: "TFT" acronym + subtitle
+    icon: <TftLogo size={24} />,
+    position: "top" as const,
+  },
+  {
+    id: "valorant",
+    label: "Valorant",
+    // ValorantLogo: V slash marks + bold wordmark
+    icon: <ValorantLogo size={24} />,
+    position: "top" as const,
+  },
   { id: "settings", label: "Settings", icon: <GearIcon />, position: "bottom" as const },
 ];
 

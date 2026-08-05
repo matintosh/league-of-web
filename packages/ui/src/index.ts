@@ -185,9 +185,21 @@ export { StatMedallion } from "./collection/stat-medallion";
 export type { StatMedallionProps, TierEntry } from "./collection/stat-medallion";
 export { StatsTab } from "./collection/stats-tab";
 export type { StatsTabProps, PlayStyleStat, SeasonStats } from "./collection/stats-tab";
-// launcher — alphabetical: FeaturedGamePromoHero < GameTile < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherRiotHomePage < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar < PatchNoteCard
+// launcher — alphabetical: FeaturedGamePromoHero < GameLolLogo < GameTftLogo < GameTile < GameTwoXkoLogo < GameValorantLogo < GameWildRiftLogo < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherRiotHomePage < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar < PatchNoteCard
 export { FeaturedGamePromoHero } from "./launcher/featured-game-promo-hero";
 export type { FeaturedGamePromoHeroProps } from "./launcher/featured-game-promo-hero";
+// Compact game emblem SVGs for the launcher rail + game tiles.
+// Prefixed "Game" to avoid collision with merch/franchise-logos wordmarks.
+export { LolLogo as GameLolLogo } from "./launcher/game-logos/lol-logo";
+export type { LolLogoProps as GameLolLogoProps } from "./launcher/game-logos/lol-logo";
+export { TftLogo as GameTftLogo } from "./launcher/game-logos/tft-logo";
+export type { TftLogoProps as GameTftLogoProps } from "./launcher/game-logos/tft-logo";
+export { TwoXkoLogo as GameTwoXkoLogo } from "./launcher/game-logos/two-xko-logo";
+export type { TwoXkoLogoProps as GameTwoXkoLogoProps } from "./launcher/game-logos/two-xko-logo";
+export { ValorantLogo as GameValorantLogo } from "./launcher/game-logos/valorant-logo";
+export type { ValorantLogoProps as GameValorantLogoProps } from "./launcher/game-logos/valorant-logo";
+export { WildRiftLogo as GameWildRiftLogo } from "./launcher/game-logos/wild-rift-logo";
+export type { WildRiftLogoProps as GameWildRiftLogoProps } from "./launcher/game-logos/wild-rift-logo";
 export { GameTile } from "./launcher/game-tile";
 export type { GameTileProps } from "./launcher/game-tile";
 export { LauncherContentCarousel } from "./launcher/launcher-content-carousel";
