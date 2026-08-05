@@ -31,7 +31,7 @@ export function LoginNoticeBanner({ text, role = "status" }: LoginNoticeBannerPr
         "px-3 py-1.5",
         "font-body text-xs text-gold-1",
       ].join(" ")}
-      style={{ background: "rgba(70,55,20,0.75)" }}
+      style={{ background: "var(--color-login-classic-notice-bg)" }}
     >
       {/* Warning triangle — simplified original glyph */}
       <svg

@@ -232,7 +232,7 @@ export default function LoginPage() {
                 <div
                   aria-hidden="true"
                   className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full"
-                  style={{ background: "rgba(10,8,4,0.72)" }}
+                  style={{ background: "var(--color-login-classic-chip-bg)" }}
                   title="Account"
                 >
                   {/* Silhouette avatar icon */}
@@ -249,7 +249,7 @@ export default function LoginPage() {
                 <div
                   aria-hidden="true"
                   className="absolute bottom-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full"
-                  style={{ background: "rgba(10,8,4,0.72)" }}
+                  style={{ background: "var(--color-login-classic-chip-bg)" }}
                   title="Video"
                 >
                   {/* Camera/video glyph */}
