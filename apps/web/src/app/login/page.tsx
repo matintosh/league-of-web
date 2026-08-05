@@ -47,7 +47,11 @@ import { LOGIN_WIDTH, LOGIN_HEIGHT } from "../../lib/login-window";
  */
 
 const SPLASH_CURRENT = "Syndra";
-const SPLASH_CLASSIC = "Zilean";
+// Classic: the real "League of Legends Classic" group promo (multi-champion clock
+// scene), the same art the launcher Home uses. Hotlinked via next/image
+// (wiki.leagueoflegends.com is in next.config remotePatterns).
+const SPLASH_CLASSIC_PROMO =
+  "https://wiki.leagueoflegends.com/en-us/images/League_Classic_Promo_01.jpg";
 
 /* Classic panel width — ~26% of LOGIN_WIDTH (1024px) matches the ref ratio. */
 const CLASSIC_PANEL_WIDTH = 266;
@@ -259,7 +263,7 @@ export default function LoginPage() {
                 </div>
 
                 <Image
-                  src={championSplashUrl(SPLASH_CLASSIC)}
+                  src={SPLASH_CLASSIC_PROMO}
                   alt=""
                   fill
                   priority
