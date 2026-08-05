@@ -61,48 +61,55 @@ export function LauncherEsportsNewsCard({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          display: "flex",
-          flexDirection: "column",
+          position: "relative",
           height: "100%",
-          backgroundColor: bgColor,
           borderRadius: 4,
           cursor: onClick ? "pointer" : "default",
-          transition: "background-color 150ms ease",
           overflow: "hidden",
+          backgroundColor: "var(--color-launcher-thumb-bg)",
         }}
       >
-        {/* Full-bleed image — top ~60% of card height */}
-        <div
+        {/* Full-bleed image fills entire card */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          id={imgId}
+          src={thumbnailUrl}
+          alt={title}
           style={{
-            flex: "0 0 60%",
-            overflow: "hidden",
-            backgroundColor: "var(--color-launcher-thumb-bg)",
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+            transition: "transform 200ms ease",
+            transform: hovered ? "scale(1.03)" : "scale(1)",
           }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            id={imgId}
-            src={thumbnailUrl}
-            alt={title}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-            }}
-          />
-        </div>
+        />
 
-        {/* Text block — bottom portion, padded */}
+        {/* Bottom gradient scrim — darkens bottom ~40% so title is readable */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(to top, var(--color-launcher-esports-scrim-bottom) 0%, transparent 55%)",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Title + description overlaid on scrim */}
         <div
           style={{
-            flex: 1,
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: "16px 16px",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "center",
-            gap: 8,
-            padding: "16px 16px",
-            minWidth: 0,
+            gap: 6,
           }}
         >
           <h3

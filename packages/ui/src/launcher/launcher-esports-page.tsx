@@ -84,17 +84,20 @@ export function LauncherEsportsPage() {
         Esports News
       </h2>
 
-      {/* Magazine grid — featured large card left + right column of smaller cards */}
+      {/* Magazine grid — featured large card left + right column of smaller cards.
+          Ref (÷1.2): featured left edge ~x123, width ~288; right column ~323.
+          ~0.9fr/1fr + paddingLeft on featured card for the ~45px inset. */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: "0.9fr 1fr",
           gap: 12,
           height: "calc(100% - 56px)",
           minHeight: 0,
         }}
       >
-        {/* Left: large portrait featured card */}
+        {/* Left: large portrait featured card — inset from the left to match ref */}
+        <div style={{ paddingLeft: 45, minWidth: 0, height: "100%" }}>
         <LauncherEsportsNewsCard
           key={FEATURED_ARTICLE.id}
           id={FEATURED_ARTICLE.id}
@@ -103,6 +106,7 @@ export function LauncherEsportsPage() {
           description={FEATURED_ARTICLE.description}
           size="lg"
         />
+        </div>
 
         {/* Right: column of smaller cards */}
         <div
