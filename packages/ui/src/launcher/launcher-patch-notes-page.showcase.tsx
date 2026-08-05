@@ -10,6 +10,8 @@ export const launcherPatchNotesPageShowcase: ShowcaseEntry = {
   slug: "launcher-patch-notes-page",
   name: "LauncherPatchNotesPage",
   area: "launcher",
+  referenceImage: "launcher-patch-notes.png",
+  referenceNote: "Real League launcher — Patch Notes tab (full-bleed hero with patch title + byline)",
   description:
     "Patch Notes tab content: full-bleed Nocturne splash hero with Patch 26.15 title, subtitle, gold chip, and byline. Composed from LauncherPatchHeroBanner. Issue #695.",
   variants: [
