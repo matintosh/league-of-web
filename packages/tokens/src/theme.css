@@ -258,6 +258,13 @@
   --color-launcher-chip-game-updates-bg:    #c89b3c;
   --color-launcher-chip-game-updates-ink:   #000000;
 
+  /* Riot Home — promo hero + patch note cards (issues #678, #680, #682) */
+  --color-launcher-surface:      #24262b; /* card / panel surface */
+  --color-launcher-surface-alt:  #2c2e33; /* hover / alternate surface */
+  --color-launcher-red:          #ff4655; /* VALORANT red — status / branded accents */
+  --color-launcher-badge-installed: #2ea44f; /* "Installed" green badge */
+  --color-launcher-badge-update:    #d4a72c; /* "Update" amber badge */
+
   /* Esports */
   --color-launcher-esports-heading:      #ffffff;
   --color-launcher-esports-card-bg:      #161616;
@@ -500,6 +507,13 @@
     --color-launcher-patch-bg:                #0d0d0d;
     --color-launcher-chip-game-updates-bg:    #c89b3c;
     --color-launcher-chip-game-updates-ink:   #000000;
+
+    /* Riot Home — promo hero + patch note cards (issues #678, #680, #682) */
+    --color-launcher-surface:      #24262b;
+    --color-launcher-surface-alt:  #2c2e33;
+    --color-launcher-red:          #ff4655;
+    --color-launcher-badge-installed: #2ea44f;
+    --color-launcher-badge-update:    #d4a72c;
 
     /* Esports */
     --color-launcher-esports-heading:      #ffffff;
