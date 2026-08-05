@@ -112,6 +112,35 @@ export const palette = {
   banRed3: "#8b1f1f",
   /** Ban phase press/active fill — BAN button active state darkened fill (#5c1414, issue #275) */
   banRedPress: "#5c1414",
+  // Launcher dark palette — sampled from lol-launcher-ref/image.png (issue #679)
+  /** Outermost shell / behind rail */
+  launcherBg: "#0e1015",
+  /** Left icon rail surface */
+  launcherRailBg: "#13151a",
+  /** Right social panel surface */
+  launcherPanelBg: "#1a1c22",
+  /** Panel account header row */
+  launcherPanelHeader: "#1e2028",
+  /** Center content area dark base */
+  launcherContentBg: "#11131a",
+  /** Subtle 1px panel borders */
+  launcherBorder: "#2a2c35",
+  /** Intra-panel section separators */
+  launcherDivider: "#22242c",
+  /** Main labels / name text */
+  launcherTextPrimary: "#e8e6e1",
+  /** Secondary / status text */
+  launcherTextMuted: "#7b7d8a",
+  /** Offline / disabled text */
+  launcherTextDim: "#4a4c58",
+  /** Tab active underline — same hex as gold-2 */
+  launcherTabActive: "#c8aa6e",
+  /** Icon rail active indicator — same hex as gold-3 */
+  launcherRailActive: "#c89b3c",
+  /** Search field background — matches shell bg */
+  launcherInputBg: "#0e1015",
+  /** Search field border — matches launcher-border */
+  launcherInputBorder: "#2a2c35",
 } as const;
 
 export type Palette = typeof palette;
