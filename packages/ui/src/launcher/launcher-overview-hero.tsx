@@ -18,6 +18,13 @@ export interface LauncherOverviewHeroProps {
   featuredCard?: ReactNode;
   /** Content anchored to the bottom (LauncherContentCarousel). */
   carousel?: ReactNode;
+  /**
+   * Optional play button overlaid in the lower-left zone, between the
+   * wordmark and the featured card. Matches the gold "▶ Play ▾" pill
+   * in lol-launcher-ref/image.png and image-1.png. Caller passes
+   * <LauncherPlayButton> (or any ReactNode). Presentational slot only.
+   */
+  playButton?: ReactNode;
 }
 
 /**
@@ -36,6 +43,7 @@ export function LauncherOverviewHero({
   splashUrl,
   featuredCard,
   carousel,
+  playButton,
 }: LauncherOverviewHeroProps) {
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
@@ -111,6 +119,10 @@ export function LauncherOverviewHero({
               </span>
             </div>
           </div>
+
+          {/* Play button slot — rendered between wordmark and featured card.
+              Matches the gold pill position in lol-launcher-ref/image.png. */}
+          {playButton}
 
           {/* Featured card slot — LauncherFeaturedCard renders here */}
           {featuredCard}

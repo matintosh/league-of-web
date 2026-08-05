@@ -13,12 +13,15 @@
  * in launcher-overview-page.demo.tsx.
  */
 
+import type { ReactNode } from "react";
 import { championSplashUrl } from "@low/fixtures";
 
 import { LauncherOverviewHero } from "./launcher-overview-hero";
 import { LauncherFeaturedCard } from "./launcher-featured-card";
 import { LauncherContentCarousel } from "./launcher-content-carousel";
 import type { LauncherContentItem } from "./launcher-content-carousel";
+import { LauncherPlayButton } from "./launcher-play-button";
+import type { LauncherGameMode } from "./launcher-play-button";
 
 // ---------------------------------------------------------------------------
 // Fixture data — all values hardcoded, types from @low/fixtures
@@ -26,6 +29,12 @@ import type { LauncherContentItem } from "./launcher-content-carousel";
 
 /** Hero splash — Warwick skin 1 for a vivid, dynamic composition. */
 const HERO_SPLASH_URL = championSplashUrl("Warwick", 1);
+
+/** Default game modes for the play button — LoL + PBE. */
+const DEFAULT_GAME_MODES: LauncherGameMode[] = [
+  { id: "lol", label: "League of Legends" },
+  { id: "lol-pbe", label: "League of Legends", isPbe: true },
+];
 
 /** Featured card content — League Classic Cinematic announcement. */
 const FEATURED_ITEM = {
@@ -76,6 +85,25 @@ export interface LauncherOverviewPageProps {
   onCarouselSelect?: (index: number) => void;
   /** Called when the featured card CTA is clicked. */
   onCta?: () => void;
+  /**
+   * Optional play button node to render in the hero's play-button slot.
+   * Defaults to a <LauncherPlayButton> with LoL + PBE game modes.
+   * Pass null to suppress the play button entirely. Controlled open/close
+   * state belongs in a demo client wrapper (see launcher-overview-page.demo.tsx).
+   */
+  playButton?: ReactNode;
+  /** Game modes for the default LauncherPlayButton. Ignored if playButton is supplied. */
+  gameModes?: LauncherGameMode[];
+  /** Whether the default play button dropdown is open. */
+  playButtonOpen?: boolean;
+  /** Currently selected game mode id for the default play button. */
+  selectedModeId?: string;
+  /** Called when the main Play segment is clicked. */
+  onPlay?: () => void;
+  /** Called to toggle the play button dropdown. */
+  onToggleDropdown?: () => void;
+  /** Called when a game mode is selected from the play button dropdown. */
+  onSelectMode?: (id: string) => void;
 }
 
 /**
@@ -88,10 +116,35 @@ export function LauncherOverviewPage({
   carouselActiveIndex = 0,
   onCarouselSelect,
   onCta,
+  playButton,
+  gameModes = DEFAULT_GAME_MODES,
+  playButtonOpen = false,
+  selectedModeId = "lol",
+  onPlay,
+  onToggleDropdown,
+  onSelectMode,
 }: LauncherOverviewPageProps) {
+  // Resolve the play button node:
+  //   - If `playButton` is explicitly provided (including null), use it.
+  //   - Otherwise, render the default LauncherPlayButton with LoL/PBE modes.
+  const resolvedPlayButton =
+    playButton !== undefined ? (
+      playButton
+    ) : (
+      <LauncherPlayButton
+        gameModes={gameModes}
+        selectedModeId={selectedModeId}
+        open={playButtonOpen}
+        onPlay={onPlay}
+        onToggleDropdown={onToggleDropdown}
+        onSelectMode={onSelectMode}
+      />
+    );
+
   return (
     <LauncherOverviewHero
       splashUrl={HERO_SPLASH_URL}
+      playButton={resolvedPlayButton}
       featuredCard={
         <LauncherFeaturedCard
           categoryLabel={FEATURED_ITEM.categoryLabel}
