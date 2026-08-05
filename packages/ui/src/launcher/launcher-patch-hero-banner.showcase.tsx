@@ -1,6 +1,6 @@
 /**
  * LauncherPatchHeroBanner showcase — server-safe (no 'use client').
- * Issue #688.
+ * Issue #745 (fixes #688).
  */
 
 import { championSplashUrl } from "@low/fixtures";
@@ -12,17 +12,17 @@ export const launcherPatchHeroBannerShowcase: ShowcaseEntry = {
   name: "LauncherPatchHeroBanner",
   area: "launcher",
   description:
-    "Full-bleed patch notes hero: champion splash + bottom scrim + centered text block (chip, title, subtitle, byline). Used in the Patch Notes tab. Issue #688.",
+    "Patch notes hero: bounded ~421px splash over solid launcher-bg band. Heading (~33px, 2-line wrap) + subtitle + thin divider + gold-category byline row. No chip. Issue #745.",
   variants: [
     {
       name: "Patch 26.15 — Nocturne splash (matches ref)",
       notes:
-        "Dark Nocturne splash; heavy bottom scrim makes the centered text block legible. Gold chip above title, byline below subtitle.",
+        "Splash bounded to 421px; text in solid black band below. Gold 'Game Updates' in byline with pipe separators. Heading wraps to 2 lines at 33px.",
       render: () => (
         <div
           style={{
             width: 1080,
-            height: 660,
+            height: 720,
             overflow: "hidden",
             backgroundColor: "var(--color-launcher-patch-bg)",
             position: "relative",
@@ -32,9 +32,9 @@ export const launcherPatchHeroBannerShowcase: ShowcaseEntry = {
             splashUrl={championSplashUrl("Nocturne", 0)}
             patchTitle="LEAGUE OF LEGENDS PATCH 26.15 NOTES"
             subtitle="We're kicking off Season 3...but of what year?!"
-            categoryChip="Game Updates"
-            authors="Riot Cashout, slernied, Riot Yisu"
-            date="7/18/2026"
+            category="Game Updates"
+            authors="Riot Cashmiir, sternest, Riot Yina"
+            date="7/28/2026"
           />
         </div>
       ),
@@ -42,12 +42,12 @@ export const launcherPatchHeroBannerShowcase: ShowcaseEntry = {
     {
       name: "No byline",
       notes:
-        "Authors and date omitted — byline line hidden, chip + title + subtitle still render correctly.",
+        "Authors, date, and category all omitted — byline row hidden. Heading + subtitle + divider still render.",
       render: () => (
         <div
           style={{
             width: 1080,
-            height: 660,
+            height: 720,
             overflow: "hidden",
             backgroundColor: "var(--color-launcher-patch-bg)",
             position: "relative",
@@ -64,12 +64,12 @@ export const launcherPatchHeroBannerShowcase: ShowcaseEntry = {
     {
       name: "Alternative splash — Thresh",
       notes:
-        "Swap to Thresh splash to verify object-cover + scrim work against different art compositions.",
+        "Swap to Thresh splash to verify bounded image + black text band work against different art.",
       render: () => (
         <div
           style={{
             width: 1080,
-            height: 660,
+            height: 720,
             overflow: "hidden",
             backgroundColor: "var(--color-launcher-patch-bg)",
             position: "relative",
@@ -79,9 +79,31 @@ export const launcherPatchHeroBannerShowcase: ShowcaseEntry = {
             splashUrl={championSplashUrl("Thresh", 0)}
             patchTitle="LEAGUE OF LEGENDS PATCH 26.14 NOTES"
             subtitle="The Chain Warden gets some love in this mid-season update."
-            categoryChip="Game Updates"
+            category="Game Updates"
             authors="Riot Cashout"
             date="7/3/2026"
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Category only (no authors / date)",
+      notes: "Only category in byline — no pipe separators rendered.",
+      render: () => (
+        <div
+          style={{
+            width: 1080,
+            height: 720,
+            overflow: "hidden",
+            backgroundColor: "var(--color-launcher-patch-bg)",
+            position: "relative",
+          }}
+        >
+          <LauncherPatchHeroBanner
+            splashUrl={championSplashUrl("Ahri", 0)}
+            patchTitle="LEAGUE OF LEGENDS PATCH 26.13 NOTES"
+            subtitle="Balance adjustments and a new batch of skins arrive."
+            category="Game Updates"
           />
         </div>
       ),
