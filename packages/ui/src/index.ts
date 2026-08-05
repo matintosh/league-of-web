@@ -185,13 +185,17 @@ export { StatMedallion } from "./collection/stat-medallion";
 export type { StatMedallionProps, TierEntry } from "./collection/stat-medallion";
 export { StatsTab } from "./collection/stats-tab";
 export type { StatsTabProps, PlayStyleStat, SeasonStats } from "./collection/stats-tab";
-// launcher — alphabetical: FeaturedGamePromoHero < GameLolLogo < GameTftLogo < GameTile < GameTwoXkoLogo < GameValorantLogo < GameWildRiftLogo < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherRiotHomePage < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar < PatchNoteCard
+// launcher — alphabetical: FeaturedGamePromoHero < GameLolLogo < GameRiotShieldLogo < GameRuneterraLogo < GameTftLogo < GameTile < GameTwoXkoLogo < GameValorantLogo < GameWildRiftLogo < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherRiotHomePage < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar < PatchNoteCard
 export { FeaturedGamePromoHero } from "./launcher/featured-game-promo-hero";
 export type { FeaturedGamePromoHeroProps } from "./launcher/featured-game-promo-hero";
 // Compact game emblem SVGs for the launcher rail + game tiles.
 // Prefixed "Game" to avoid collision with merch/franchise-logos wordmarks.
 export { LolLogo as GameLolLogo } from "./launcher/game-logos/lol-logo";
 export type { LolLogoProps as GameLolLogoProps } from "./launcher/game-logos/lol-logo";
+export { RiotShieldLogo as GameRiotShieldLogo } from "./launcher/game-logos/riot-shield-logo";
+export type { RiotShieldLogoProps as GameRiotShieldLogoProps } from "./launcher/game-logos/riot-shield-logo";
+export { RuneterraLogo as GameRuneterraLogo } from "./launcher/game-logos/runeterra-logo";
+export type { RuneterraLogoProps as GameRuneterraLogoProps } from "./launcher/game-logos/runeterra-logo";
 export { TftLogo as GameTftLogo } from "./launcher/game-logos/tft-logo";
 export type { TftLogoProps as GameTftLogoProps } from "./launcher/game-logos/tft-logo";
 export { TwoXkoLogo as GameTwoXkoLogo } from "./launcher/game-logos/two-xko-logo";
