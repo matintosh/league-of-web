@@ -26,4 +26,13 @@ export interface GameTileData {
   logoUrl?: string;
   /** Badge variant. */
   status: GameStatus;
+  /**
+   * CSS color value for the full-width "Installed" bar shown at the tile
+   * bottom in coverBadge layout. Should reference a launcher token via
+   * `var(--color-launcher-installed-bar-<game>)`. Falls back to the
+   * default badge-installed green when omitted.
+   *
+   * Example: `"var(--color-launcher-installed-bar-lol)"`
+   */
+  installedBarColor?: string;
 }

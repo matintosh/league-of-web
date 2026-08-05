@@ -81,14 +81,14 @@ export interface GameTileProps extends GameTileData {
   size?: "sm" | "lg" | "xl";
   /**
    * How the status indicator is rendered.
-   * - "coverBadge" (default) — pill at bottom-left of cover art over a gradient.
+   * - "coverBadge" (default) — full-width brand bar at tile bottom in All Games grid.
    *   Used for All Games tiles.
    * - "labelStatus" — colored text in the label row beside the game name.
    *   Used for My Games tiles.
    */
   statusLayout?: "coverBadge" | "labelStatus";
   /**
-   * Inline SVG logo node overlaid on the cover art (bottom-center).
+   * Inline SVG logo node overlaid on the cover art (vertically centered).
    * Takes precedence over `logoUrl` when both are set.
    * Use for the SVG game-logo components in `game-logos/`.
    */
@@ -152,6 +152,7 @@ export function GameTile({
   logoNode,
   iconNode,
   status,
+  installedBarColor,
   size = "lg",
   statusLayout = "coverBadge",
   onAction,
@@ -215,15 +216,13 @@ export function GameTile({
           }}
         />
 
-        {/* Game logo overlay — bottom-center of cover art */}
+        {/* Game logo overlay — vertically centered in cover art */}
         {logoNode && (
           <span
             aria-hidden="true"
             style={{
               position: "absolute",
-              bottom: 8,
-              left: 0,
-              right: 0,
+              inset: 0,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -237,53 +236,45 @@ export function GameTile({
           </span>
         )}
 
-        {/* coverBadge layout — Installed/Install pill at bottom-left over a gradient */}
+        {/* coverBadge layout — full-width brand bar at tile bottom (ref image-7.png) */}
         {statusLayout === "coverBadge" && status !== "play" && (
-          <>
-            {/* Bottom gradient scrim behind the badge */}
-            <div
-              aria-hidden="true"
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: 40,
-                background:
-                  "linear-gradient(to top, color-mix(in srgb, var(--color-launcher-bg) 75%, transparent), transparent)",
-                pointerEvents: "none",
-              }}
-            />
+          <div
+            aria-label={status}
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              bottom: 0,
+              /* ~25px tall per ref (no radius, no scrim, spans full width) */
+              height: 25,
+              backgroundColor:
+                status === "installed"
+                  ? installedBarColor ?? "var(--color-launcher-installed-bar-default)"
+                  : status === "update"
+                  ? "var(--color-launcher-badge-update)"
+                  : "var(--color-launcher-surface-alt)",
+              display: "flex",
+              alignItems: "center",
+              paddingLeft: 12,
+              pointerEvents: "none",
+            }}
+          >
             <span
-              aria-label={status}
               style={{
-                position: "absolute",
-                bottom: 8,
-                left: 8,
-                height: dims.badgeHeight,
-                padding: `0 ${Math.round(dims.badgeHeight * 0.5)}px`,
-                backgroundColor:
-                  status === "installed"
-                    ? "var(--color-launcher-badge-installed)"
-                    : status === "update"
-                    ? "var(--color-launcher-badge-update)"
-                    : "var(--color-launcher-surface-alt)",
+                fontSize: dims.badgeFontSize,
+                fontFamily: "var(--font-launcher)",
+                /* mixed-case, weight 600, no tracking — per ref */
+                fontWeight: 600,
+                letterSpacing: 0,
+                textTransform: "none",
+                whiteSpace: "nowrap",
                 color:
                   status === "installed"
-                    ? "var(--color-launcher-ink)"
+                    ? "var(--color-launcher-home-content-bg)"
                     : status === "update"
                     ? "var(--color-launcher-chip-game-updates-ink)"
                     : "var(--color-launcher-text-muted)",
-                borderRadius: 3,
-                fontSize: dims.badgeFontSize,
-                fontFamily: "var(--font-launcher)",
-                fontWeight: 700,
-                lineHeight: `${dims.badgeHeight}px`,
-                letterSpacing: "0.05em",
-                textTransform: "uppercase",
-                whiteSpace: "nowrap",
-                display: "inline-flex",
-                alignItems: "center",
+                lineHeight: 1,
               }}
             >
               {status === "installed"
@@ -294,7 +285,7 @@ export function GameTile({
                 ? "Install"
                 : "Coming Soon"}
             </span>
-          </>
+          </div>
         )}
       </div>
 

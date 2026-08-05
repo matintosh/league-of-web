@@ -300,6 +300,11 @@
   --color-launcher-surface-alt:          #2a2c35; /* muted badge fill (Install / Coming Soon) */
   --color-launcher-badge-installed:      #2ea44f; /* green Installed badge */
   --color-launcher-badge-update:         #d4a72c; /* amber Update badge */
+  /* Per-brand full-width Installed bar colors (issue #748, pixel-sampled from ref image-7.png ÷1.2) */
+  --color-launcher-installed-bar-2xko:     #a0be4e; /* 2XKO lime — ref rgb(160,190,78) */
+  --color-launcher-installed-bar-lol:      #cba046; /* LoL gold — ref rgb(203,160,70) */
+  --color-launcher-installed-bar-wildrift: #dcb774; /* Wild Rift amber — ref rgb(220,183,116) */
+  --color-launcher-installed-bar-default:  #2ea44f; /* fallback green for unknown games */
 
   /* Launcher font stack */
   --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -579,6 +584,11 @@
     --color-launcher-surface-alt:          #2a2c35;
     --color-launcher-badge-installed:      #2ea44f;
     --color-launcher-badge-update:         #d4a72c;
+    /* Per-brand full-width Installed bar colors (issue #748) */
+    --color-launcher-installed-bar-2xko:     #a0be4e;
+    --color-launcher-installed-bar-lol:      #cba046;
+    --color-launcher-installed-bar-wildrift: #dcb774;
+    --color-launcher-installed-bar-default:  #2ea44f;
 
     /* Launcher font stack */
     --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;

@@ -19,7 +19,6 @@ import {
   LauncherRail,
   LauncherWindowBar,
   LauncherRiotHomePage,
-  LolClassicLogo,
   GameLolLogo,
   GameValorantLogo,
   GameTftLogo,
@@ -27,6 +26,82 @@ import {
   GameWildRiftLogo,
   GameRiotShieldLogo,
 } from "@low/ui";
+
+// ---------------------------------------------------------------------------
+// LoL Classic landscape logo lockup — server-safe inline SVG.
+//
+// Replaces the LolClassicLogo portrait SVG (aspect ~1:1.55 → 120×186 which
+// clips in the hero overlay). Ref: "LEAGUE OF LEGENDS" stacked wordmark +
+// "CLASSIC" ribbon, landscape ≈210×100px (image-5.png ÷1.2 ref).
+//
+// Uses only currentColor so the parent text-gold-3 class controls the fill.
+// data-URI exception: no CSS tokens can be referenced inside SVG fills, but
+// this SVG uses only currentColor (inherited from the className on the wrapper).
+// ---------------------------------------------------------------------------
+function LolClassicHeroLogo() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 210 100"
+      width={210}
+      height={100}
+      role="img"
+      aria-label="League of Legends Classic"
+      style={{ color: "var(--color-launcher-wordmark)", display: "block" }}
+      fill="currentColor"
+    >
+      {/* Top line: "LEAGUE OF" */}
+      <text
+        x="105"
+        y="32"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="22"
+        fontWeight="700"
+        fontFamily="'Beaufort for LOL','Georgia',serif"
+        letterSpacing="4"
+        fill="currentColor"
+      >
+        LEAGUE OF
+      </text>
+
+      {/* Bottom line: "LEGENDS" — larger to match the stacked logo proportions */}
+      <text
+        x="105"
+        y="60"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="28"
+        fontWeight="700"
+        fontFamily="'Beaufort for LOL','Georgia',serif"
+        letterSpacing="4"
+        fill="currentColor"
+      >
+        LEGENDS
+      </text>
+
+      {/* Divider lines flanking "CLASSIC" ribbon */}
+      <line x1="10" y1="78" x2="68" y2="78" stroke="currentColor" strokeWidth="1" strokeOpacity="0.6" />
+      <line x1="142" y1="78" x2="200" y2="78" stroke="currentColor" strokeWidth="1" strokeOpacity="0.6" />
+
+      {/* "CLASSIC" ribbon label */}
+      <text
+        x="105"
+        y="78"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="11"
+        fontWeight="600"
+        fontFamily="'Beaufort for LOL','Georgia',serif"
+        letterSpacing="5"
+        fill="currentColor"
+        fillOpacity="0.85"
+      >
+        CLASSIC
+      </text>
+    </svg>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Classic promo splash — real League Classic group key art from the LoL wiki.
@@ -242,12 +317,10 @@ export default function LauncherHomePage() {
         <LauncherRiotHomePage
           featuredPromo={FEATURED_PROMO}
           featuredPromoLogoNode={
-            /* Real LolClassicLogo: real heraldic crest + wordmark paths (from
-               merch/franchise-logos) + CLASSIC ribbon. Matches the login logo. */
-            <LolClassicLogo
-              width={120}
-              className="text-gold-3"
-            />
+            /* Landscape lockup (~210×100px) — never wraps/clips in the hero
+               overlay column. Replaces the portrait LolClassicLogo (120×186)
+               which clipped the "CLASSIC" ribbon against the hero content. */
+            <LolClassicHeroLogo />
           }
           patchNotes={PATCH_NOTES}
           nav={
