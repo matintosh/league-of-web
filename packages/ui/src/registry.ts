@@ -107,6 +107,9 @@ import { storeItemTileShowcase } from "./store/store-item-tile.showcase";
 import { storeSubNavBarShowcase } from "./store/store-sub-nav-bar.showcase";
 import { yourShopIconShowcase } from "./store/your-shop-icon.showcase";
 import { yourShopScreenShowcase } from "./store/your-shop-screen.showcase";
+import { launcherContentCarouselShowcase } from "./launcher/launcher-content-carousel.showcase";
+import { launcherFeaturedCardShowcase } from "./launcher/launcher-featured-card.showcase";
+import { launcherOverviewHeroShowcase } from "./launcher/launcher-overview-hero.showcase";
 import { launcherPlayButtonShowcase } from "./launcher/launcher-play-button.showcase";
 import { launcherShellShowcase } from "./launcher/launcher-shell.showcase";
 import { launcherSocialPanelShowcase } from "./launcher/launcher-social-panel.showcase";
@@ -258,7 +261,10 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
-  // launcher — alphabetical: LauncherPlayButton < LauncherShell < LauncherSocialPanel
+  // launcher — alphabetical: LauncherContentCarousel < LauncherFeaturedCard < LauncherOverviewHero < LauncherPlayButton < LauncherShell < LauncherSocialPanel
+  launcherContentCarouselShowcase,
+  launcherFeaturedCardShowcase,
+  launcherOverviewHeroShowcase,
   launcherPlayButtonShowcase,
   launcherShellShowcase,
   launcherSocialPanelShowcase,

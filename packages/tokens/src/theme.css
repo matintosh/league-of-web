@@ -220,6 +220,47 @@
   /* Search field */
   --color-launcher-input-bg:     #0e1015; /* matches shell bg */
   --color-launcher-input-border: #2a2c35; /* launcher-border match */
+
+  /* Hero splash — scrim / overlays (issues #681, #684) */
+  --color-launcher-scrim-bottom: rgba(0,0,0,0.72); /* bottom-gradient on hero splash */
+  --color-launcher-scrim-card:   rgba(0,0,0,0.55); /* card text-area scrim */
+
+  /* Wordmark + text (issue #681) */
+  --color-launcher-wordmark:     #f0e6d2; /* LoL wordmark cream (= gold-1 tone) */
+  --color-launcher-ink:          #ffffff; /* primary text on dark */
+  --color-launcher-ink-muted:    #a0a0a0; /* secondary/muted text */
+  --color-launcher-ink-subtle:   #6b6b6b; /* captions / bylines */
+
+  /* Accent (issue #684) */
+  --color-launcher-accent:       #c89b3c; /* gold-3 equivalent — CTAs, chips, highlights */
+  --color-launcher-accent-hover: #deb53c; /* gold-coin equivalent — hover state */
+
+  /* Category chip (issue #684) */
+  --color-launcher-chip-bg:      rgba(255,255,255,0.12); /* frosted chip fill */
+  --color-launcher-chip-border:  rgba(255,255,255,0.20); /* chip border */
+
+  /* Watch Now button (issue #684) */
+  --color-launcher-cta-bg:       rgba(255,255,255,0.18);
+  --color-launcher-cta-border:   rgba(255,255,255,0.35);
+  --color-launcher-cta-hover-bg: rgba(255,255,255,0.28);
+
+  /* Thumbnail / carousel (issue #685) */
+  --color-launcher-thumb-bg:     #1a1a1a;
+  --color-launcher-thumb-border: #333333;
+  --color-launcher-thumb-active: #c89b3c; /* active/selected thumb border = gold-3 */
+
+  /* Patch notes / game updates chip */
+  --color-launcher-patch-bg:                #0d0d0d;
+  --color-launcher-chip-game-updates-bg:    #c89b3c;
+  --color-launcher-chip-game-updates-ink:   #000000;
+
+  /* Esports */
+  --color-launcher-esports-heading:      #ffffff;
+  --color-launcher-esports-card-bg:      #161616;
+  --color-launcher-esports-card-border:  #2a2a2a;
+
+  /* Launcher font stack */
+  --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
 /*
@@ -414,6 +455,47 @@
     --color-launcher-rail-active:  #c89b3c;
     --color-launcher-input-bg:     #0e1015;
     --color-launcher-input-border: #2a2c35;
+
+    /* Hero splash — scrim / overlays (issues #681, #684) */
+    --color-launcher-scrim-bottom: rgba(0,0,0,0.72);
+    --color-launcher-scrim-card:   rgba(0,0,0,0.55);
+
+    /* Wordmark + text (issue #681) */
+    --color-launcher-wordmark:     #f0e6d2;
+    --color-launcher-ink:          #ffffff;
+    --color-launcher-ink-muted:    #a0a0a0;
+    --color-launcher-ink-subtle:   #6b6b6b;
+
+    /* Accent (issue #684) */
+    --color-launcher-accent:       #c89b3c;
+    --color-launcher-accent-hover: #deb53c;
+
+    /* Category chip (issue #684) */
+    --color-launcher-chip-bg:      rgba(255,255,255,0.12);
+    --color-launcher-chip-border:  rgba(255,255,255,0.20);
+
+    /* Watch Now button (issue #684) */
+    --color-launcher-cta-bg:       rgba(255,255,255,0.18);
+    --color-launcher-cta-border:   rgba(255,255,255,0.35);
+    --color-launcher-cta-hover-bg: rgba(255,255,255,0.28);
+
+    /* Thumbnail / carousel (issue #685) */
+    --color-launcher-thumb-bg:     #1a1a1a;
+    --color-launcher-thumb-border: #333333;
+    --color-launcher-thumb-active: #c89b3c;
+
+    /* Patch notes / game updates chip */
+    --color-launcher-patch-bg:                #0d0d0d;
+    --color-launcher-chip-game-updates-bg:    #c89b3c;
+    --color-launcher-chip-game-updates-ink:   #000000;
+
+    /* Esports */
+    --color-launcher-esports-heading:      #ffffff;
+    --color-launcher-esports-card-bg:      #161616;
+    --color-launcher-esports-card-border:  #2a2a2a;
+
+    /* Launcher font stack */
+    --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 
     /* Motion — Hextech preset timings + easings (issue #299). Duplicated here
        (not colors, but same three-way sync discipline) so the custom properties
