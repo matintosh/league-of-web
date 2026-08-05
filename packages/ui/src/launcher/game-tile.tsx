@@ -3,13 +3,21 @@
 /**
  * GameTile — cover-art game library tile for the Riot launcher Games page.
  *
- * Renders a full-art cover image with an optional game logo overlay, a status
- * badge (top-left of cover), and a game name label below. Two sizes: "lg"
- * (default, 160×200 px) and "sm" (100×126 px).
+ * Renders a landscape cover image with an optional game logo overlay, a label
+ * row (game icon + name) BELOW the art, and an optional status treatment:
+ *   - "coverBadge" layout (default for All Games): Installed pill sits
+ *     bottom-left over the art on top of a gradient footer.
+ *   - "labelStatus" layout (for My Games): colored status text + small round
+ *     download control sit inline in the label row beside the game name.
+ *
+ * Two size presets:
+ *   "lg"  — My Games row tile  (~243 × 190 px outer)
+ *   "xl"  — All Games grid tile (~333 × 240 px outer)
+ *   "sm"  — compact tile       (100 × 80 px cover + 26 px label)
  *
  * Props-in / callback-out. No data fetching. Server-safe in static usage; the
  * hover state requires client-side JS so this file is 'use client'.
- * Tokens-only — all colors via `--color-launcher-*`. Issue #689.
+ * Tokens-only — all colors via `--color-launcher-*`. Issue #689, #727.
  */
 
 import { useState } from "react";
@@ -17,62 +25,51 @@ import type { ReactNode } from "react";
 import type { GameTileData } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
-// Badge config — maps GameStatus → badge label + colors
-// ---------------------------------------------------------------------------
-
-type BadgeVariant = "installed" | "update" | "play" | "install" | "coming-soon";
-
-interface BadgeConfig {
-  label: string;
-  bg: string;
-  color: string;
-}
-
-const BADGE_CONFIG: Record<BadgeVariant, BadgeConfig> = {
-  installed: {
-    label: "Installed",
-    bg: "var(--color-launcher-badge-installed)",
-    color: "var(--color-launcher-ink)",
-  },
-  update: {
-    label: "Update",
-    bg: "var(--color-launcher-badge-update)",
-    color: "var(--color-launcher-chip-game-updates-ink)",
-  },
-  play: {
-    label: "Play",
-    bg: "transparent",
-    color: "var(--color-launcher-text-primary)",
-  },
-  install: {
-    label: "Install",
-    bg: "var(--color-launcher-surface-alt)",
-    color: "var(--color-launcher-text-muted)",
-  },
-  "coming-soon": {
-    label: "Coming Soon",
-    bg: "var(--color-launcher-surface-alt)",
-    color: "var(--color-launcher-text-dim)",
-  },
-};
-
-// ---------------------------------------------------------------------------
-// Size config
+// Size config — landscape covers (width > height)
 // ---------------------------------------------------------------------------
 
 interface SizeDims {
   width: number;
-  height: number;
-  /** Cover art height (remainder is the name label area). */
+  /** Outer card height = coverHeight + labelHeight */
   coverHeight: number;
+  labelHeight: number;
   fontSize: number;
+  iconSize: number;
   badgeHeight: number;
   badgeFontSize: number;
 }
 
-const SIZE_DIMS: Record<"sm" | "lg", SizeDims> = {
-  lg: { width: 160, height: 200, coverHeight: 168, fontSize: 11, badgeHeight: 18, badgeFontSize: 9 },
-  sm: { width: 100, height: 126, coverHeight: 104, fontSize: 9, badgeHeight: 14, badgeFontSize: 7.5 },
+const SIZE_DIMS: Record<"sm" | "lg" | "xl", SizeDims> = {
+  /** Compact row tile — used in My Games row */
+  lg: {
+    width: 243,
+    coverHeight: 162,
+    labelHeight: 36,
+    fontSize: 12,
+    iconSize: 18,
+    badgeHeight: 18,
+    badgeFontSize: 9,
+  },
+  /** All Games grid tile — larger 3-up presentation */
+  xl: {
+    width: 333,
+    coverHeight: 222,
+    labelHeight: 40,
+    fontSize: 13,
+    iconSize: 20,
+    badgeHeight: 20,
+    badgeFontSize: 9.5,
+  },
+  /** Compact thumbnail — legacy small preset */
+  sm: {
+    width: 100,
+    coverHeight: 67,
+    labelHeight: 26,
+    fontSize: 9,
+    iconSize: 12,
+    badgeHeight: 14,
+    badgeFontSize: 7.5,
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -81,12 +78,26 @@ const SIZE_DIMS: Record<"sm" | "lg", SizeDims> = {
 
 export interface GameTileProps extends GameTileData {
   /** Visual size preset. Default "lg". */
-  size?: "sm" | "lg";
+  size?: "sm" | "lg" | "xl";
   /**
-   * Inline SVG logo node. Takes precedence over `logoUrl` when both are set.
+   * How the status indicator is rendered.
+   * - "coverBadge" (default) — pill at bottom-left of cover art over a gradient.
+   *   Used for All Games tiles.
+   * - "labelStatus" — colored text in the label row beside the game name.
+   *   Used for My Games tiles.
+   */
+  statusLayout?: "coverBadge" | "labelStatus";
+  /**
+   * Inline SVG logo node overlaid on the cover art (bottom-center).
+   * Takes precedence over `logoUrl` when both are set.
    * Use for the SVG game-logo components in `game-logos/`.
    */
   logoNode?: ReactNode;
+  /**
+   * Small square icon node rendered beside the game name in the label row.
+   * Typically a 16–20 px game emblem SVG.
+   */
+  iconNode?: ReactNode;
   /** Called when the tile is clicked. `action` derives from `status`. */
   onAction?: (gameKey: string, action: "play" | "update" | "install") => void;
   className?: string;
@@ -104,15 +115,33 @@ function deriveAction(status: GameTileProps["status"]): "play" | "update" | "ins
 // ---------------------------------------------------------------------------
 
 /**
- * GameTile — full-art game library tile.
+ * GameTile — landscape game library tile with label below art.
  *
  * @example
+ * // All Games — large tile with bottom-left Installed badge
  * <GameTile
  *   gameKey="lol"
  *   gameName="League of Legends"
  *   coverUrl={championSplashUrl("Jinx", 0)}
- *   logoNode={<LolLogo size={64} />}
+ *   logoNode={<LolLogo size={80} />}
+ *   iconNode={<GameLolLogo size={20} variant="emblem" />}
  *   status="installed"
+ *   size="xl"
+ *   statusLayout="coverBadge"
+ *   onAction={(key, action) => console.log(key, action)}
+ * />
+ *
+ * @example
+ * // My Games — row tile with Update text in label
+ * <GameTile
+ *   gameKey="2xko"
+ *   gameName="2XKO"
+ *   coverUrl={championSplashUrl("Ekko", 0)}
+ *   logoNode={<TwoXkoLogo size={56} />}
+ *   iconNode={<GameTwoXkoLogo size={18} variant="emblem" />}
+ *   status="update"
+ *   size="lg"
+ *   statusLayout="labelStatus"
  *   onAction={(key, action) => console.log(key, action)}
  * />
  */
@@ -121,22 +150,23 @@ export function GameTile({
   gameName,
   coverUrl,
   logoNode,
+  iconNode,
   status,
   size = "lg",
+  statusLayout = "coverBadge",
   onAction,
   className,
 }: GameTileProps) {
   const [hovered, setHovered] = useState(false);
 
   const dims = SIZE_DIMS[size];
-  // Badge rendered for all statuses except "play" (no badge, just implicit action)
-  const badge = status !== "play" ? BADGE_CONFIG[status] : null;
   const action = deriveAction(status);
+  const outerHeight = dims.coverHeight + dims.labelHeight;
 
   return (
     <button
       type="button"
-      aria-label={`${gameName} — ${badge?.label ?? "Play"}`}
+      aria-label={`${gameName} — ${status}`}
       onClick={() => onAction?.(gameKey, action)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -144,7 +174,7 @@ export function GameTile({
         display: "inline-flex",
         flexDirection: "column",
         width: dims.width,
-        height: dims.height,
+        height: outerHeight,
         flexShrink: 0,
         backgroundColor: "var(--color-launcher-surface)",
         border: "1px solid var(--color-launcher-border)",
@@ -152,11 +182,11 @@ export function GameTile({
         overflow: "hidden",
         cursor: "pointer",
         padding: 0,
-        textAlign: "center",
+        textAlign: "left",
       }}
       className={className}
     >
-      {/* Cover image area */}
+      {/* Cover image area — landscape */}
       <div
         style={{
           position: "relative",
@@ -165,6 +195,7 @@ export function GameTile({
           overflow: "hidden",
           backgroundColor: "var(--color-launcher-surface)",
           borderRadius: "6px 6px 0 0",
+          flexShrink: 0,
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -184,34 +215,7 @@ export function GameTile({
           }}
         />
 
-        {/* Status badge — top-left, omitted for "play" status */}
-        {badge && status !== "play" && (
-          <span
-            aria-label={badge.label}
-            style={{
-              position: "absolute",
-              top: 6,
-              left: 6,
-              height: dims.badgeHeight,
-              padding: `0 ${Math.round(dims.badgeHeight * 0.4)}px`,
-              backgroundColor: badge.bg,
-              color: badge.color,
-              borderRadius: 3,
-              fontSize: dims.badgeFontSize,
-              fontFamily: "var(--font-launcher)",
-              fontWeight: 700,
-              lineHeight: `${dims.badgeHeight}px`,
-              letterSpacing: "0.03em",
-              whiteSpace: "nowrap",
-              display: "inline-flex",
-              alignItems: "center",
-            }}
-          >
-            {badge.label}
-          </span>
-        )}
-
-        {/* Game logo overlay — bottom-center of cover */}
+        {/* Game logo overlay — bottom-center of cover art */}
         {logoNode && (
           <span
             aria-hidden="true"
@@ -232,36 +236,151 @@ export function GameTile({
             {logoNode}
           </span>
         )}
+
+        {/* coverBadge layout — Installed/Install pill at bottom-left over a gradient */}
+        {statusLayout === "coverBadge" && status !== "play" && (
+          <>
+            {/* Bottom gradient scrim behind the badge */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: 40,
+                background:
+                  "linear-gradient(to top, color-mix(in srgb, var(--color-launcher-bg) 75%, transparent), transparent)",
+                pointerEvents: "none",
+              }}
+            />
+            <span
+              aria-label={status}
+              style={{
+                position: "absolute",
+                bottom: 8,
+                left: 8,
+                height: dims.badgeHeight,
+                padding: `0 ${Math.round(dims.badgeHeight * 0.5)}px`,
+                backgroundColor:
+                  status === "installed"
+                    ? "var(--color-launcher-badge-installed)"
+                    : status === "update"
+                    ? "var(--color-launcher-badge-update)"
+                    : "var(--color-launcher-surface-alt)",
+                color:
+                  status === "installed"
+                    ? "var(--color-launcher-ink)"
+                    : status === "update"
+                    ? "var(--color-launcher-chip-game-updates-ink)"
+                    : "var(--color-launcher-text-muted)",
+                borderRadius: 3,
+                fontSize: dims.badgeFontSize,
+                fontFamily: "var(--font-launcher)",
+                fontWeight: 700,
+                lineHeight: `${dims.badgeHeight}px`,
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+                whiteSpace: "nowrap",
+                display: "inline-flex",
+                alignItems: "center",
+              }}
+            >
+              {status === "installed"
+                ? "Installed"
+                : status === "update"
+                ? "Update"
+                : status === "install"
+                ? "Install"
+                : "Coming Soon"}
+            </span>
+          </>
+        )}
       </div>
 
-      {/* Game name label */}
+      {/* Label row — below the art, on the tile's surface bg */}
       <div
         style={{
-          flex: 1,
+          height: dims.labelHeight,
+          flexShrink: 0,
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          padding: `0 4px 6px`,
+          gap: 6,
+          padding: `0 8px`,
           backgroundColor: "var(--color-launcher-surface)",
         }}
       >
+        {/* Small game icon */}
+        {iconNode && (
+          <span
+            aria-hidden="true"
+            style={{
+              flexShrink: 0,
+              width: dims.iconSize,
+              height: dims.iconSize,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--color-launcher-text-primary)",
+            }}
+          >
+            {iconNode}
+          </span>
+        )}
+
+        {/* Game name */}
         <span
           style={{
+            flex: 1,
+            minWidth: 0,
             fontSize: dims.fontSize,
             fontFamily: "var(--font-launcher)",
             fontWeight: 600,
             color: "var(--color-launcher-text-primary)",
             lineHeight: 1.3,
             overflow: "hidden",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
             textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
             letterSpacing: "0.02em",
           }}
         >
           {gameName}
         </span>
+
+        {/* labelStatus layout — Update/Install colored text in label row (My Games) */}
+        {statusLayout === "labelStatus" && status === "update" && (
+          <span
+            aria-label="Update available"
+            style={{
+              flexShrink: 0,
+              fontSize: dims.fontSize - 1,
+              fontFamily: "var(--font-launcher)",
+              fontWeight: 700,
+              /* lime Update text — matches ref rgb(195,233,96) via launcher token */
+              color: "var(--color-launcher-badge-installed)",
+              letterSpacing: "0.02em",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Update
+          </span>
+        )}
+        {statusLayout === "labelStatus" && (status === "install" || status === "coming-soon") && (
+          <span
+            aria-label={status === "coming-soon" ? "Coming Soon" : "Install"}
+            style={{
+              flexShrink: 0,
+              fontSize: dims.fontSize - 1,
+              fontFamily: "var(--font-launcher)",
+              fontWeight: 600,
+              color: "var(--color-launcher-text-muted)",
+              letterSpacing: "0.02em",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {status === "coming-soon" ? "Coming Soon" : "Install"}
+          </span>
+        )}
       </div>
     </button>
   );
