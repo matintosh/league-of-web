@@ -281,6 +281,13 @@
      surface/surface-alt/badge-* already declared by the Games tokens below — reuse those. */
   --color-launcher-red:          #ff4655; /* VALORANT red — status / branded accents */
   --color-launcher-social-active: rgb(213, 50, 53); /* social panel active-tab red underline + badge */
+  /* Social panel tab pill (issue #746): inset segmented pill container + active highlight */
+  --color-launcher-tab-pill-bg:     #2a2a2a; /* lighter inset bg for the 3-tab pill housing */
+  --color-launcher-tab-pill-active: #3a3a3a; /* darker rounded active-tab highlight behind icon */
+  /* Social panel status text — neutral gray (≈rgb(173,173,173)) for all availability states */
+  --color-launcher-status-text:     #adadad;
+  /* Away avatar ring — solid gold border encircling the avatar when availability=away */
+  --color-launcher-ring-away:       #c89b3c; /* same as launcher-accent / gold-3 */
 
   /* Esports */
   --color-launcher-esports-heading:      #ffffff;
@@ -556,6 +563,10 @@
        surface/surface-alt/badge-* already declared by the Games tokens below — reuse those. */
     --color-launcher-red:          #ff4655;
     --color-launcher-social-active: rgb(213, 50, 53);
+    --color-launcher-tab-pill-bg:     #2a2a2a;
+    --color-launcher-tab-pill-active: #3a3a3a;
+    --color-launcher-status-text:     #adadad;
+    --color-launcher-ring-away:       #c89b3c;
 
     /* Esports */
     --color-launcher-esports-heading:      #ffffff;

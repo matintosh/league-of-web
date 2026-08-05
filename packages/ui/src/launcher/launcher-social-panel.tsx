@@ -5,11 +5,14 @@
  *
  * Floating inset rounded card (~252px wide) matching the lol-launcher-ref right
  * column. Sections:
- *   - Account header: borderless avatar + collapse arrow (no separate icon buttons)
- *   - 3-tab segmented strip: Friends / Chat / Add-Friend with red active underline + badge
+ *   - Account header: borderless avatar + collapse arrow (→| icon, "arrow into bar")
+ *   - 3-tab segmented pill: Friends / Chat / Add-Friend inside an inset rounded
+ *     pill housing; active tab has a darker rounded highlight + red underline;
+ *     add-friend tab shows a red badge count.
  *   - Search field: full-width input with search icon
- *   - Friend groups: collapsible header (mixed-case + gold coin glyph + inline count)
- *     with Online / Offline sub-sections and presence DOTS (not avatar rings)
+ *   - Friend groups: collapsible header (mixed-case + League "L" glyph + inline count)
+ *     with Online / Offline sub-sections. Away friends have a gold avatar ring;
+ *     all status lines are neutral-gray with a leading client glyph.
  *
  * Launcher-specific dark palette (--color-launcher-*). Distinct from the
  * Hextech chrome SocialPanel in src/chrome/social-panel.tsx.
@@ -83,15 +86,6 @@ const dotColor: Record<Availability, string> = {
   offline: "var(--color-launcher-text-dim)",
 };
 
-/** Status text color per availability. */
-const statusColor: Record<Availability, string> = {
-  online: "var(--color-status-online)",
-  "in-game": "var(--color-blue-2)",
-  "in-queue": "var(--color-blue-2)",
-  away: "var(--color-gold-3)",
-  offline: "var(--color-launcher-text-dim)",
-};
-
 /** Status label when no explicit statusText is provided. */
 const defaultStatusLabel: Record<Availability, string> = {
   online: "Online",
@@ -106,9 +100,9 @@ const defaultStatusLabel: Record<Availability, string> = {
 // ---------------------------------------------------------------------------
 
 /**
- * Circular borderless avatar with a small bottom-right presence DOT.
- * The dot (6px) is positioned absolutely over the avatar's bottom-right corner.
- * No ring border — matches the ref (borderless avatars, dot only).
+ * Circular avatar with a small bottom-right presence DOT, and — when
+ * availability === "away" — a solid gold ring (box-shadow) encircling
+ * the avatar, matching the ref image.
  */
 function PresenceAvatar({
   src,
@@ -123,6 +117,8 @@ function PresenceAvatar({
   availability: Availability;
   dim?: boolean;
 }) {
+  const isAway = availability === "away";
+
   return (
     <div
       className="relative shrink-0"
@@ -139,7 +135,16 @@ function PresenceAvatar({
         ]
           .filter(Boolean)
           .join(" ")}
-        style={{ width: size, height: size }}
+        style={{
+          width: size,
+          height: size,
+          /* Away ring: solid gold 2px border via box-shadow so it sits outside
+             the image without affecting layout. Dot is still visible on top. */
+          boxShadow: isAway
+            ? `0 0 0 2px var(--color-launcher-ring-away)`
+            : undefined,
+          borderRadius: "50%",
+        }}
       />
       {/* Presence dot — bottom-right corner */}
       <span
@@ -159,13 +164,43 @@ function PresenceAvatar({
   );
 }
 
+/**
+ * Small monitor/game-client glyph (inline SVG, ~10px) that precedes the
+ * status line in every friend row, matching the ref.
+ * id is passed in from the parent's useId to satisfy SVG uniqueness rules.
+ */
+function ClientGlyph({ clipId }: { clipId: string }) {
+  return (
+    <svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="currentColor"
+      aria-hidden="true"
+      style={{ flexShrink: 0 }}
+    >
+      <clipPath id={clipId}>
+        <rect width="10" height="10" />
+      </clipPath>
+      {/* Monitor screen outline */}
+      <rect x="0.5" y="0.5" width="9" height="7" rx="1" fill="none" stroke="currentColor" strokeWidth="1" />
+      {/* Stand stem */}
+      <rect x="4" y="7.5" width="2" height="1.5" />
+      {/* Stand base */}
+      <rect x="2.5" y="8.75" width="5" height="0.75" rx="0.375" />
+    </svg>
+  );
+}
+
 /** Single friend row inside a group section. */
 function FriendRow({
   entry,
   onFriendClick,
+  clipId,
 }: {
   entry: LauncherFriendEntry;
   onFriendClick?: (summoner: Summoner) => void;
+  clipId: string;
 }) {
   const { summoner, availability, statusText, profileIconSrc } = entry;
   const { gameName } = summoner;
@@ -192,11 +227,13 @@ function FriendRow({
         >
           {gameName}
         </p>
+        {/* Status line: neutral gray + leading client glyph for all states */}
         <p
-          className="truncate font-body text-[11px] leading-tight"
-          style={{ color: statusColor[availability] }}
+          className="flex min-w-0 items-center gap-[3px] truncate font-body text-[11px] leading-tight"
+          style={{ color: "var(--color-launcher-status-text)" }}
         >
-          {displayStatus}
+          <ClientGlyph clipId={clipId} />
+          <span className="truncate">{displayStatus}</span>
         </p>
       </div>
     </div>
@@ -265,11 +302,23 @@ function SearchIcon() {
   );
 }
 
-/** Collapse arrow — single chevron pointing left; used in the panel header top-right. */
+/**
+ * Collapse arrow — "→|" style: right-pointing arrow into a vertical bar.
+ * Matches the ref "collapse to side" glyph.
+ */
 function CollapseArrowIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      {/* Arrow shaft + head pointing right */}
+      <path
+        d="M2 7h8M7 4l3 3-3 3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Vertical bar on the right */}
+      <line x1="12" y1="3" x2="12" y2="11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -293,12 +342,18 @@ function GroupCollapseArrow({ collapsed }: { collapsed: boolean }) {
   );
 }
 
-/** Small gold coin / game glyph for the group header leading icon. */
-function CoinGlyph() {
+/**
+ * League of Legends "L" logo mark for the group header leading glyph.
+ * Simplified stylized "L" shape in gold, matching the ref group header.
+ */
+function LeagueLogoMark() {
   return (
     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-      <circle cx="6" cy="6" r="5" stroke="var(--color-launcher-accent)" strokeWidth="1.25" />
-      <circle cx="6" cy="6" r="2.5" fill="var(--color-launcher-accent)" />
+      {/* Outer shield/hexagon silhouette simplified as an "L" letterform */}
+      <path
+        d="M2 2 L2 10 L9 10 L9 8.5 L3.5 8.5 L3.5 2 Z"
+        fill="var(--color-launcher-accent)"
+      />
     </svg>
   );
 }
@@ -367,7 +422,7 @@ export function LauncherSocialPanel({
       className="flex h-full flex-col overflow-hidden"
       style={{ backgroundColor: "var(--color-launcher-panel-bg)" }}
     >
-      {/* Account header — borderless avatar + name + single collapse arrow */}
+      {/* Account header — borderless avatar + name + collapse arrow (→|) */}
       <div
         className="flex shrink-0 items-center gap-2 px-3 py-[10px]"
         style={{
@@ -376,7 +431,7 @@ export function LauncherSocialPanel({
           minHeight: 52,
         }}
       >
-        {/* Viewer avatar with presence dot (borderless) */}
+        {/* Viewer avatar with presence dot */}
         <PresenceAvatar
           src={viewerIconSrc}
           alt={viewer.gameName}
@@ -400,7 +455,7 @@ export function LauncherSocialPanel({
           </p>
         </div>
 
-        {/* Single collapse arrow — replaces the 3 inline icon buttons */}
+        {/* Collapse arrow (→|) */}
         <button
           type="button"
           aria-label="Collapse social panel"
@@ -420,79 +475,90 @@ export function LauncherSocialPanel({
         </button>
       </div>
 
-      {/* Segmented 3-tab strip: Friends / Chat / Add-Friend */}
+      {/* Segmented 3-tab pill: Friends / Chat / Add-Friend
+          Inset rounded pill container (tab-pill-bg); active tab gets a darker
+          rounded pill highlight behind its icon + the red underline. */}
       <div
-        className="flex shrink-0 items-stretch"
+        className="shrink-0 px-2 py-2"
         style={{ borderBottom: "1px solid var(--color-launcher-border)" }}
-        role="tablist"
-        aria-label="Social panel tabs"
       >
-        {(
-          [
-            { id: "friends" as SocialPanelTab, label: "Friends", icon: <FriendsTabIcon />, badge: 0 },
-            { id: "chat" as SocialPanelTab, label: "Chat", icon: <ChatTabIcon />, badge: 0 },
-            { id: "add" as SocialPanelTab, label: "Add Friend", icon: <AddFriendTabIcon />, badge: addFriendBadge },
-          ] satisfies { id: SocialPanelTab; label: string; icon: ReactNode; badge: number }[]
-        ).map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              id={`${uid}-tab-${tab.id}`}
-              role="tab"
-              aria-selected={isActive}
-              aria-controls={`${uid}-tabpanel`}
-              type="button"
-              onClick={() => onTabChange?.(tab.id)}
-              className="relative flex flex-1 flex-col items-center justify-center gap-0.5 py-2 transition-colors duration-100"
-              style={{
-                color: isActive
-                  ? "var(--color-launcher-text-primary)"
-                  : "var(--color-launcher-text-dim)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-              }}
-              title={tab.label}
-            >
-              {/* Icon with optional badge dot */}
-              <span className="relative">
-                {tab.icon}
-                {tab.badge != null && tab.badge > 0 && (
-                  <span
-                    className="absolute -right-1.5 -top-1.5 flex items-center justify-center rounded-full font-body text-[9px] font-bold"
-                    style={{
-                      minWidth: 14,
-                      height: 14,
-                      padding: "0 3px",
-                      backgroundColor: "var(--color-launcher-social-active)",
-                      color: "var(--color-launcher-ink)",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {tab.badge}
-                  </span>
-                )}
-              </span>
+        <div
+          className="flex items-stretch rounded-[6px] p-[3px]"
+          style={{ backgroundColor: "var(--color-launcher-tab-pill-bg)" }}
+          role="tablist"
+          aria-label="Social panel tabs"
+        >
+          {(
+            [
+              { id: "friends" as SocialPanelTab, label: "Friends", icon: <FriendsTabIcon />, badge: 0 },
+              { id: "chat" as SocialPanelTab, label: "Chat", icon: <ChatTabIcon />, badge: 0 },
+              { id: "add" as SocialPanelTab, label: "Add Friend", icon: <AddFriendTabIcon />, badge: addFriendBadge },
+            ] satisfies { id: SocialPanelTab; label: string; icon: ReactNode; badge: number }[]
+          ).map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                id={`${uid}-tab-${tab.id}`}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`${uid}-tabpanel`}
+                type="button"
+                onClick={() => onTabChange?.(tab.id)}
+                className="relative flex flex-1 flex-col items-center justify-center gap-0.5 py-[5px] transition-colors duration-100"
+                style={{
+                  color: isActive
+                    ? "var(--color-launcher-text-primary)"
+                    : "var(--color-launcher-text-dim)",
+                  /* Active: darker rounded pill highlight */
+                  backgroundColor: isActive
+                    ? "var(--color-launcher-tab-pill-active)"
+                    : "transparent",
+                  borderRadius: 4,
+                  border: "none",
+                  cursor: "pointer",
+                }}
+                title={tab.label}
+              >
+                {/* Icon with optional red badge */}
+                <span className="relative">
+                  {tab.icon}
+                  {tab.badge != null && tab.badge > 0 && (
+                    <span
+                      className="absolute -right-1.5 -top-1.5 flex items-center justify-center rounded-full font-body text-[9px] font-bold"
+                      style={{
+                        minWidth: 14,
+                        height: 14,
+                        padding: "0 3px",
+                        backgroundColor: "var(--color-launcher-social-active)",
+                        color: "var(--color-launcher-ink)",
+                        lineHeight: 1,
+                      }}
+                    >
+                      {tab.badge}
+                    </span>
+                  )}
+                </span>
 
-              {/* Active underline */}
-              {isActive && (
-                <span
-                  aria-hidden="true"
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: "20%",
-                    right: "20%",
-                    height: 2,
-                    backgroundColor: "var(--color-launcher-social-active)",
-                    borderRadius: "2px 2px 0 0",
-                  }}
-                />
-              )}
-            </button>
-          );
-        })}
+                {/* Active red underline — sits at the bottom of the tab button */}
+                {isActive && (
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: "20%",
+                      right: "20%",
+                      height: 2,
+                      backgroundColor: "var(--color-launcher-social-active)",
+                      borderRadius: "2px 2px 0 0",
+                    }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Tab content panel — only friends list has content; chat/add are stubs */}
@@ -544,7 +610,7 @@ export function LauncherSocialPanel({
 
                 return (
                   <div key={group.name}>
-                    {/* Group header — mixed-case, leading coin glyph, inline count */}
+                    {/* Group header — mixed-case, leading League "L" glyph, inline count */}
                     <button
                       type="button"
                       className="flex w-full items-center gap-1.5 px-2 py-1.5 text-left transition-colors duration-100"
@@ -561,8 +627,8 @@ export function LauncherSocialPanel({
                       <span style={{ color: "var(--color-launcher-text-dim)" }}>
                         <GroupCollapseArrow collapsed={isCollapsed} />
                       </span>
-                      {/* Leading gold game/coin glyph */}
-                      <CoinGlyph />
+                      {/* Leading gold League "L" logo mark */}
+                      <LeagueLogoMark />
                       <span
                         className="flex-1 truncate font-body text-[12px] font-bold"
                         style={{ color: "var(--color-launcher-text-muted)" }}
@@ -589,6 +655,7 @@ export function LauncherSocialPanel({
                                 key={entry.summoner.gameName}
                                 entry={entry}
                                 onFriendClick={onFriendClick}
+                                clipId={`${uid}-clip-${entry.summoner.gameName}`}
                               />
                             ))}
                           </>
@@ -615,6 +682,7 @@ export function LauncherSocialPanel({
                                 key={entry.summoner.gameName}
                                 entry={entry}
                                 onFriendClick={onFriendClick}
+                                clipId={`${uid}-clip-${entry.summoner.gameName}`}
                               />
                             ))}
                           </>
