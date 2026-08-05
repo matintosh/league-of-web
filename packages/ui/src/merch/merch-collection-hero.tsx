@@ -16,9 +16,9 @@
  * Measured from merch.riotgames.com collection & category pages (~1280px desktop):
  *   - Banner: min-height ~160–200px, vertically centered content
  *   - Background (no image): --color-merch-ink (dark) / --color-merch-surface (light)
- *   - Background scrim (image): linear-gradient top→bottom rgba(0,0,0,0.5→0.35)
+ *   - Background scrim (image): linear-gradient top→bottom var(--color-merch-hero-scrim-top) → var(--color-merch-hero-scrim-bottom)
  *   - Breadcrumb: 12px, uppercase, letter-spacing 0.05em, "/" separator
- *   - Breadcrumb links (dark bg): rgba(255,255,255,0.55) → white on hover
+ *   - Breadcrumb links (dark bg): var(--color-merch-breadcrumb-on-dark) → white on hover
  *   - Breadcrumb links (light bg): --color-merch-muted → --color-merch-body on hover
  *   - Breadcrumb current crumb: font-weight 600, on-dark / ink
  *   - Heading: text-4xl (36px), font-weight 800, uppercase, letter-spacing 0.04em
@@ -119,7 +119,7 @@ export function MerchCollectionHero({
             aria-hidden
             style={{
               background:
-                "linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.35) 100%)",
+                "linear-gradient(to bottom, var(--color-merch-hero-scrim-top) 0%, var(--color-merch-hero-scrim-bottom) 100%)",
             }}
           />
         </>
@@ -174,7 +174,7 @@ export function MerchCollectionHero({
                         style={
                           isDark
                             ? {
-                                color: "rgba(255,255,255,0.55)",
+                                color: "var(--color-merch-breadcrumb-on-dark)",
                               }
                             : {
                                 color: "var(--color-merch-muted)",
@@ -189,7 +189,7 @@ export function MerchCollectionHero({
                         onMouseLeave={(e) => {
                           (e.currentTarget as HTMLAnchorElement).style.color =
                             isDark
-                              ? "rgba(255,255,255,0.55)"
+                              ? "var(--color-merch-breadcrumb-on-dark)"
                               : "var(--color-merch-muted)";
                         }}
                       >
@@ -229,7 +229,7 @@ export function MerchCollectionHero({
             className="mt-2 max-w-lg text-sm"
             style={{
               color: isDark
-                ? "rgba(255,255,255,0.75)"
+                ? "var(--color-merch-body-on-dark)"
                 : "var(--color-merch-body)",
             }}
           >

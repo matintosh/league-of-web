@@ -64,6 +64,10 @@
   --color-merch-overlay-soft: rgba(0, 0, 0, 0.28); /* nav arrow button bg overlay        */
   --color-merch-scrim-strong: rgba(0, 0, 0, 0.45); /* banner scrim left stop (logo reads) */
   --color-merch-scrim-soft:   rgba(0, 0, 0, 0.15); /* banner scrim mid stop (fade)        */
+  --color-merch-hero-scrim-top:    rgba(0, 0, 0, 0.5);  /* collection-hero image scrim top stop    */
+  --color-merch-hero-scrim-bottom: rgba(0, 0, 0, 0.35); /* collection-hero image scrim bottom stop */
+  --color-merch-breadcrumb-on-dark: rgba(255, 255, 255, 0.55); /* breadcrumb link on dark hero     */
+  --color-merch-body-on-dark:       rgba(255, 255, 255, 0.75); /* body/description text on dark hero */
   --color-merch-dropdown-hover-bg: rgba(255, 255, 255, 0.05); /* nav dropdown item hover tint */
   /* ── Carousel dot nav ───────────────────────────────────────────────── */
   --color-merch-dot-inactive:       rgba(255, 255, 255, 0.35); /* inactive slide dot        */
