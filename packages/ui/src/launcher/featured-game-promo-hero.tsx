@@ -99,7 +99,7 @@ export function FeaturedGamePromoHero({
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(to right, rgba(26,27,30,0.92) 0%, rgba(26,27,30,0.80) 40%, rgba(26,27,30,0.30) 65%, rgba(26,27,30,0) 100%)",
+              "linear-gradient(to right, color-mix(in srgb, var(--color-launcher-scrim-side) 92%, transparent) 0%, color-mix(in srgb, var(--color-launcher-scrim-side) 80%, transparent) 40%, color-mix(in srgb, var(--color-launcher-scrim-side) 30%, transparent) 65%, transparent 100%)",
           }}
         />
 
