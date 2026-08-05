@@ -28,6 +28,7 @@ import {
   LauncherPlayButton,
   LauncherSocialPanel,
   LauncherOverviewPage,
+  LauncherPatchNotesPage,
 } from "@low/ui";
 import type { LauncherRailItem, LauncherTab, LauncherGameMode, LauncherFriendGroup } from "@low/ui";
 import { profileIconUrl, championSquareUrl } from "@low/fixtures";
@@ -377,7 +378,7 @@ export function LauncherClient() {
             onCta={() => console.log("[launcher] featured card CTA")}
           />
         ) : activeTab === "patch-notes" ? (
-          <ComingSoonTab label="Patch Notes" />
+          <LauncherPatchNotesPage />
         ) : activeTab === "esports" ? (
           <ComingSoonTab label="Esports" />
         ) : (
