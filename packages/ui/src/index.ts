@@ -185,7 +185,7 @@ export { StatMedallion } from "./collection/stat-medallion";
 export type { StatMedallionProps, TierEntry } from "./collection/stat-medallion";
 export { StatsTab } from "./collection/stats-tab";
 export type { StatsTabProps, PlayStyleStat, SeasonStats } from "./collection/stats-tab";
-// login — alphabetical: CircleSubmitButton < LoginAuthTabs < LoginCheckbox < LoginLegalFooter < LoginNoticeBanner < LoginTextInput < SocialLoginButtons
+// login — alphabetical: CircleSubmitButton < LoginAuthTabs < LoginCheckbox < LoginLegalFooter < LoginNoticeBanner < LoginTextInput < LolClassicLogo < SocialLoginButtons
 export { CircleSubmitButton } from "./login/circle-submit-button";
 export type { CircleSubmitButtonProps } from "./login/circle-submit-button";
 export { LoginAuthTabs } from "./login/login-auth-tabs";
@@ -198,6 +198,8 @@ export { LoginNoticeBanner } from "./login/login-notice-banner";
 export type { LoginNoticeBannerProps } from "./login/login-notice-banner";
 export { LoginTextInput } from "./login/login-text-input";
 export type { LoginTextInputProps } from "./login/login-text-input";
+export { LolClassicLogo } from "./login/lol-classic-logo";
+export type { LolClassicLogoProps } from "./login/lol-classic-logo";
 export { SocialLoginButtons } from "./login/social-login-buttons";
 export type { SocialLoginButtonsProps, Provider } from "./login/social-login-buttons";
 // lobby

@@ -11,6 +11,7 @@ import {
   LoginAuthTabs,
   LoginNoticeBanner,
   LoginLegalFooter,
+  LolClassicLogo,
   WindowFrame,
   type LoginAuthTab,
 } from "@low/ui";
@@ -31,29 +32,25 @@ import { LOGIN_WIDTH, LOGIN_HEIGHT } from "../../lib/login-window";
  *   checkbox, submit button, footer links.
  * - Right: full-bleed champion splash via next/image fill.
  *
- * theme "current" (default): white Riot-red login — must remain UNCHANGED.
- * theme "classic": gold/cream LoL Classic variant. Achieved by wrapping
- *   content in <div class="login-classic"> which remaps --color-login-*
- *   tokens via CSS scope (no per-component variant props). issue #676.
+ * theme "current" (default): white Riot-red login — UNCHANGED.
+ * theme "classic": gold/cream LoL Classic variant (issue #676). Achieved by
+ *   wrapping content in <div class="login-classic"> which remaps --color-login-*
+ *   tokens via CSS scope. Classic has a narrower 266px panel (~26% of 1024),
+ *   a top→mid→bottom gold gradient background, the real LoL Classic logo,
+ *   real social brand marks, tighter tabs/inputs, partial notice banner,
+ *   avatar + video chips, and no window title text.
  *
- * Classic champion splash: Zilean — clock motif matches the ref's clock-themed splash.
- *
- * Note: "LEAGUE OF WEB" / "LEAGUE OF WEB CLASSIC" wordmarks stand in for the
- * trademarked Riot Games / LoL Classic logos. Plain text marks in brand colors.
- *
- * Footer links use <a href="#" aria-disabled="true"> dead links styled with
- * CSS text-transform: uppercase. The natural-case JSX lets screen readers
- * speak them naturally while CSS provides the uppercase visual treatment.
- *
- * This route does NOT gate the client — portfolio visitors land on / directly.
- * Discovery path: Settings → Developer → "Sign out" link navigates here.
- * Submit navigates to /client (no real auth).
+ * fix(login): classic fidelity pass — issue #676 delta fixes.
+ * CLASSIC-ONLY — the current (white) login is byte-identical to origin/main.
  *
  * Splash champion: Syndra (current) / Zilean (classic — clock motif).
  */
 
 const SPLASH_CURRENT = "Syndra";
 const SPLASH_CLASSIC = "Zilean";
+
+/* Classic panel width — ~26% of LOGIN_WIDTH (1024px) matches the ref ratio. */
+const CLASSIC_PANEL_WIDTH = 266;
 
 type Theme = "current" | "classic";
 
@@ -114,8 +111,9 @@ export default function LoginPage() {
 
       {/* Bounded login window — fixed size, centered on the dark backdrop. */}
       <div className="shrink-0" style={{ width: LOGIN_WIDTH, height: LOGIN_HEIGHT }}>
+        {/* Fix #10: classic has no title text — ref title bar is bare; current keeps its title */}
         <WindowFrame
-          title={isClassic ? "League of Web — Classic" : "League of Web"}
+          title={isClassic ? undefined : "League of Web"}
           onHelp={() => console.log("help")}
           onMinimize={() => console.log("minimize")}
           onClose={() => console.log("close")}
@@ -123,34 +121,37 @@ export default function LoginPage() {
           {isClassic ? (
             /* ============================================================ */
             /* CLASSIC THEME — .login-classic scope remaps all login tokens */
+            /* Fix: 266px panel (≈26%), gold gradient, real logos, tighter  */
             /* ============================================================ */
             <div className="login-classic flex h-full w-full overflow-hidden">
               {/* -------------------------------------------------------- */}
-              {/* LEFT PANEL — classic gold/cream form                     */}
+              {/* LEFT PANEL — classic gold/cream form, narrower + gradient  */}
               {/* -------------------------------------------------------- */}
               <div
-                className="relative z-10 flex shrink-0 flex-col bg-login-bg"
-                style={{ width: 400 }}
+                className="relative z-10 flex shrink-0 flex-col"
+                style={{
+                  width: CLASSIC_PANEL_WIDTH,
+                  /* Fix #4: gold vertical gradient (pixel-sampled from ref 25.png) */
+                  background:
+                    "linear-gradient(to bottom, var(--color-login-classic-panel-from) 0%, var(--color-login-classic-panel-mid) 50%, var(--color-login-classic-panel-to) 100%)",
+                }}
               >
-                {/* Classic logo wordmark — "LEAGUE OF WEB CLASSIC" stand-in */}
-                <div className="px-8 pt-8 pb-3">
-                  <div className="flex flex-col">
-                    <span className="font-display text-[10px] uppercase tracking-[0.3em] text-login-placeholder">
-                      League of Web
-                    </span>
-                    <span className="font-display text-lg font-bold uppercase tracking-widest text-login-accent leading-tight">
-                      Classic
-                    </span>
-                  </div>
+                {/* Fix #1: REAL LoL Classic logo — crest + wordmark + CLASSIC ribbon */}
+                <div className="px-5 pt-3 pb-1">
+                  <LolClassicLogo
+                    className="text-login-classic-ink"
+                    width={80}
+                  />
                 </div>
 
-                {/* Auth tabs */}
+                {/* Fix #5: Auth tabs — tightened via .login-classic [role=tablist] button CSS */}
                 <LoginAuthTabs active={authTab} onSelect={setAuthTab} />
 
                 {/* Form body */}
-                <div className="flex flex-1 flex-col justify-center px-8 pb-4 pt-4">
+                <div className="flex flex-1 flex-col justify-center px-5 pb-2 pt-2">
                   <form onSubmit={handleSubmit} noValidate>
-                    <div className="flex flex-col gap-3">
+                    {/* Fix #6: input height compressed via .login-classic input CSS scope */}
+                    <div className="flex flex-col gap-1.5">
                       <LoginTextInput
                         value={username}
                         onChange={setUsername}
@@ -163,7 +164,7 @@ export default function LoginPage() {
                         type="password"
                       />
 
-                      {/* Social sign-in buttons — 5 providers for classic */}
+                      {/* Fix #2: REAL social brand marks — 5 providers for classic */}
                       <div className="mt-1">
                         <SocialLoginButtons
                           providers={[...CLASSIC_PROVIDERS]}
@@ -171,7 +172,7 @@ export default function LoginPage() {
                         />
                       </div>
 
-                      {/* Keep me signed in + submit row */}
+                      {/* Fix #7: checkbox — verified custom box renders (~16px) */}
                       <div className="flex items-center justify-between">
                         <LoginCheckbox
                           checked={keepSignedIn}
@@ -187,12 +188,12 @@ export default function LoginPage() {
                   </form>
 
                   {/* Footer links */}
-                  <div className="mt-4 flex gap-4">
+                  <div className="mt-3 flex gap-3">
                     <a
                       href="#"
                       aria-disabled="true"
                       onClick={(e) => e.preventDefault()}
-                      className="footer-link font-body text-xs font-bold tracking-wide text-login-placeholder"
+                      className="footer-link font-body text-[10px] font-bold tracking-wide text-login-placeholder"
                       style={{ textTransform: "uppercase" }}
                     >
                       Can't sign in?
@@ -201,7 +202,7 @@ export default function LoginPage() {
                       href="#"
                       aria-disabled="true"
                       onClick={(e) => e.preventDefault()}
-                      className="footer-link font-body text-xs font-bold tracking-wide text-login-placeholder"
+                      className="footer-link font-body text-[10px] font-bold tracking-wide text-login-placeholder"
                       style={{ textTransform: "uppercase" }}
                     >
                       Create account
@@ -209,17 +210,52 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {/* Legal footer — version + hCaptcha */}
-                <LoginLegalFooter />
+                {/* Fix #10: version string updated to v135.0.7 */}
+                <LoginLegalFooter version="v135.0.7" />
               </div>
 
               {/* -------------------------------------------------------- */}
               {/* RIGHT — classic clock-themed champion splash (Zilean)    */}
               {/* -------------------------------------------------------- */}
               <div className="relative flex-1">
-                {/* Notice banner pinned at top of splash */}
-                <div className="absolute inset-x-0 top-0 z-10">
+                {/* Fix #8: Notice banner — partial-width, left-aligned strip
+                    (was absolute inset-x-0; now left-0 w-fit) */}
+                <div className="absolute left-0 top-0 z-10">
                   <LoginNoticeBanner text="Split End Transfers Disabled" />
+                </div>
+
+                {/* Fix #9: Account avatar chip — top-right of splash */}
+                <div
+                  aria-hidden="true"
+                  className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full"
+                  style={{ background: "rgba(10,8,4,0.72)" }}
+                  title="Account"
+                >
+                  {/* Silhouette avatar icon */}
+                  <svg
+                    viewBox="0 0 20 20"
+                    className="h-4 w-4 fill-gold-3"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                  </svg>
+                </div>
+
+                {/* Fix #9: Video/feedback button — bottom-right of splash */}
+                <div
+                  aria-hidden="true"
+                  className="absolute bottom-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full"
+                  style={{ background: "rgba(10,8,4,0.72)" }}
+                  title="Video"
+                >
+                  {/* Camera/video glyph */}
+                  <svg
+                    viewBox="0 0 20 20"
+                    className="h-4 w-4 fill-gold-3"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M2 6a2 2 0 00-2 2v4a2 2 0 002 2h9a2 2 0 002-2V8a2 2 0 00-2-2H2zm13 1l4-2v8l-4-2V7z" />
+                  </svg>
                 </div>
 
                 <Image
@@ -228,13 +264,13 @@ export default function LoginPage() {
                   fill
                   priority
                   className="object-cover object-center"
-                  sizes="624px"
+                  sizes="758px"
                 />
               </div>
             </div>
           ) : (
             /* ============================================================ */
-            /* CURRENT THEME — original layout, UNCHANGED                  */
+            /* CURRENT THEME — original layout, UNCHANGED from origin/main  */
             /* ============================================================ */
             <div className="flex h-full w-full overflow-hidden bg-login-bg">
               {/* -------------------------------------------------------- */}

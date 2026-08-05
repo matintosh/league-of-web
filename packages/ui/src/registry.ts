@@ -96,6 +96,7 @@ import { loginCheckboxShowcase } from "./login/login-checkbox.showcase";
 import { loginLegalFooterShowcase } from "./login/login-legal-footer.showcase";
 import { loginNoticeBannerShowcase } from "./login/login-notice-banner.showcase";
 import { loginTextInputShowcase } from "./login/login-text-input.showcase";
+import { lolClassicLogoShowcase } from "./login/lol-classic-logo.showcase";
 import { socialLoginButtonsShowcase } from "./login/social-login-buttons.showcase";
 import { featuredTabShowcase } from "./store/featured-tab.showcase";
 import { heroCarouselShowcase } from "./store/hero-carousel.showcase";
@@ -207,13 +208,14 @@ export const registry: ShowcaseEntry[] = [
   updatesFlyoutShowcase,
   welcomeToSeasonModalShowcase,
   windowFrameShowcase,
-  // login — alphabetical: CircleSubmitButton < LoginAuthTabs < LoginCheckbox < LoginLegalFooter < LoginNoticeBanner < LoginTextInput < SocialLoginButtons
+  // login — alphabetical: CircleSubmitButton < LoginAuthTabs < LoginCheckbox < LoginLegalFooter < LoginNoticeBanner < LoginTextInput < LolClassicLogo < SocialLoginButtons
   circleSubmitButtonShowcase,
   loginAuthTabsShowcase,
   loginCheckboxShowcase,
   loginLegalFooterShowcase,
   loginNoticeBannerShowcase,
   loginTextInputShowcase,
+  lolClassicLogoShowcase,
   socialLoginButtonsShowcase,
   // collection — alphabetical: ChallengesScreen < ChampionCard < ChampionDetail < EmoteTile < EmoteWheel < HonorCheckpointOverlay < MasteryCelebrationOverlay < ProfileRankedScreen < RankPromotionOverlay < RunesScreen < SkinCard < SkinPreview < SpellsTab < StatMedallion < StatsTab
   challengesScreenShowcase,

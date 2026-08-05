@@ -140,10 +140,18 @@
   --color-login-classic-surface: #e8d9a8;
   --color-login-classic-ink: #463714;
   --color-login-classic-placeholder: #785a28;
-  --color-login-classic-panel-from: #2a1f0e;
-  --color-login-classic-panel-to: #1a1208;
+  /* Panel gradient: top #dccd9b → mid #efe8c1 → bottom #e3d090 (pixel-sampled from ref 25.png) */
+  --color-login-classic-panel-from: #dccd9b;
+  --color-login-classic-panel-mid: #efe8c1;
+  --color-login-classic-panel-to: #e3d090;
+  /* Active tab bg — ref sampled #d4bf7d */
+  --color-login-classic-tab-active: #d4bf7d;
+  /* Input bg — ref sampled #efe4b8 */
+  --color-login-classic-input-bg: #efe4b8;
   --color-brand-xbox: #107c10;
   --color-brand-playstation: #003791;
+  /* Google brand — white bg for the multicolor G button */
+  --color-brand-google: #ffffff;
 
   /* Arcade event — deep purple-navy bg stops for the Arcade 2019 tab gradient (issue #187) */
   --color-arcade-bg-dark: #0d0520;
@@ -192,11 +200,42 @@
 @layer base {
   .login-classic {
     --color-login-bg: #f4e6c3;
-    --color-login-surface: #e8d9a8;
+    --color-login-surface: var(--color-login-classic-input-bg);
     --color-login-ink: #463714;
     --color-login-placeholder: #785a28;
     --color-login-accent: var(--color-gold-3);
     --color-login-black: #1a1208;
+  }
+
+  /*
+   * Fix #5: Tighten LoginAuthTabs height in classic scope.
+   * Ref tab height ≈ 20px vs our 42px. Reduce vertical padding on the
+   * tab buttons. Scoped to .login-classic so current login is unchanged.
+   */
+  .login-classic [role="tablist"] button {
+    padding-top: 0.25rem;   /* py-1 */
+    padding-bottom: 0.25rem;
+  }
+
+  /*
+   * Fix #5: Active tab bg in classic — ref sampled #d4bf7d.
+   * The active tab uses bg-login-surface which is now remapped to input-bg
+   * (#efe4b8); override active state specifically to the darker tab-active token.
+   */
+  .login-classic [role="tablist"] button[aria-selected="true"] {
+    background-color: var(--color-login-classic-tab-active);
+  }
+
+  /*
+   * Fix #6: Compact input height in classic scope.
+   * LoginTextInput h-12 (48px) → h-8 (32px). Scoped to .login-classic.
+   */
+  .login-classic input[type="text"],
+  .login-classic input[type="password"],
+  .login-classic input[type="email"] {
+    height: 2rem;   /* 32px */
+    padding-top: 0.75rem;
+    padding-bottom: 0.125rem;
   }
 }
 
@@ -305,10 +344,18 @@
     --color-login-classic-surface: #e8d9a8;
     --color-login-classic-ink: #463714;
     --color-login-classic-placeholder: #785a28;
-    --color-login-classic-panel-from: #2a1f0e;
-    --color-login-classic-panel-to: #1a1208;
+    /* Panel gradient: top #dccd9b → mid #efe8c1 → bottom #e3d090 (pixel-sampled from ref 25.png) */
+    --color-login-classic-panel-from: #dccd9b;
+    --color-login-classic-panel-mid: #efe8c1;
+    --color-login-classic-panel-to: #e3d090;
+    /* Active tab bg — ref sampled #d4bf7d */
+    --color-login-classic-tab-active: #d4bf7d;
+    /* Input bg — ref sampled #efe4b8 */
+    --color-login-classic-input-bg: #efe4b8;
     --color-brand-xbox: #107c10;
     --color-brand-playstation: #003791;
+    /* Google brand — white bg for the multicolor G button */
+    --color-brand-google: #ffffff;
 
     /* Arcade event — deep purple-navy bg stops for the Arcade 2019 tab gradient (issue #187) */
     --color-arcade-bg-dark: #0d0520;
