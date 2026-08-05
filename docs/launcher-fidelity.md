@@ -31,12 +31,15 @@ This scorecard is the worklist for the **launcher-fidelity** meta-loop: each idl
 
 ## STRUCTURAL GAPS (ranked by impact)
 
-1. **No routed LoL launcher surface** — The Overview/Patch Notes/Esports/Merch tabs have no assembled route under `/launcher`. Every LoL launcher screen exists only as a showcase snippet. The shell is never assembled into a live page for the LoL game context. This is why the launcher "reads as not 1:1" — the actual user-facing route `/launcher` redirects and there is no `/launcher/lol` (or equivalent) assembled page with the full shell (rail + tab bar + social panel + content).
-2. **Riot Home / Games content area should be LIGHT not dark** — `image-5.png` (Home) and `image-7.png` (Games) both show a clearly light-coloured content area (#f0f0f2 or similar near-white), not the dark launcher bg. Our Home and Games pages use `--color-launcher-content-bg` (#11131a) for the main content area, producing a fully-dark experience that is visually inverted vs the reference.
-3. **Play button absent from LoL Overview hero** — `image.png` and `image-1.png` both show the gold "▶ Play" split button overlaid in the lower-left of the hero (below the LoL wordmark, above/beside the featured card). `LauncherPlayButton` exists as a component but is never composed into `LauncherOverviewHero` or `LauncherOverviewPage`. The play button is arguably the most iconic element of the LoL launcher UI and its absence is immediately obvious.
+1. ~~**No routed LoL launcher surface**~~ ✅ SHIPPED (#718, PR #724): `/launcher/lol` assembles the full 3-col shell (window bar + LoL-active rail + 4-tab content Overview/Patch Notes/Esports/Merch + social panel) with client-side tab switching; `/launcher` now 307→`/launcher/lol`; rail nav reaches home/games.
+2. ~~**Riot Home / Games content area should be LIGHT not dark**~~ ✅ SHIPPED (#719, PR #723): added `--color-launcher-home-content-bg #f0f0f2` + `--color-launcher-home-content-ink #1a1a1c`; RiotHome + Games content area now light with dark headings, rail/window-bar stay dark.
+3. ~~**Play button absent from LoL Overview hero**~~ ✅ SHIPPED (#720, PR #724): `playButton?: ReactNode` slot on `LauncherOverviewHero`, populated in `LauncherOverviewPage` with `<LauncherPlayButton>` (LoL + PBE modes), overlaid lower-left per image.png.
+
+**Next targets (mapped, not yet filed) — the :24 loop will diff these now the shell is routed:** rail icon legibility + count ⚠️; window-bar left slot on home/games ⚠️; overview wordmark = image asset vs CSS text (low); tab-bar/play-button horizontal-band integration ⚠️.
 
 ---
 
 ## ROTATION LOG (append one line per loop tick)
 
 - 2026-08-05 — scorecard seeded from holistic visual audit (7 ref images × all components + 2 live routes). 3 top-priority structural issues filed (#TBD). All rows ⚠️ or ⬜ — no ✅ yet. Next up: ⬜ assembled LoL shell route (highest impact).
+- 2026-08-05 — SHIPPED the 3 seeded structural gaps: #718 (routed `/launcher/lol` shell, PR #724) + #720 (overview play button, PR #724) + #719 (light Home/Games content, PR #723). All merged + deployed, launcher routes 200. The biggest "not 1:1" cause (unrouted LoL surface) is resolved — `/launcher` now shows the assembled overview. Next: the :24 launcher-fidelity loop diffs per-surface (rail icons, window-bar left slot, wordmark, tab-bar/play integration) once idle.
