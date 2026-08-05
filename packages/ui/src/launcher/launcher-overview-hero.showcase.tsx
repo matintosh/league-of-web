@@ -23,6 +23,8 @@ export const launcherOverviewHeroShowcase: ShowcaseEntry = {
   slug: "launcher-overview-hero",
   name: "LauncherOverviewHero",
   area: "launcher",
+  referenceImage: "launcher-overview-hero-crop.png",
+  referenceNote: "Real launcher — hero splash area (cropped from Overview): tab bar + full-bleed champion splash + LEAGUE OF LEGENDS wordmark + Play button + featured card",
   description:
     "Full-bleed champion splash background for the Overview tab. Renders splash image as object-cover, \"LEAGUE OF LEGENDS\" 2-row wordmark bottom-left, bottom scrim, and render slots for playButton + featuredCard + carousel. Issues #681, #720.",
   variants: [
