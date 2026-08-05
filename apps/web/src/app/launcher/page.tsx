@@ -1,16 +1,17 @@
 /**
- * /launcher page — delegates to LauncherClient (client component).
+ * /launcher — redirects to the LoL launcher overview screen.
  *
- * Server component: supplies no props. LauncherClient owns all state and
- * assembles the full launcher shell (window bar, rail, tab bar, play button,
- * overview hero, social panel). Layout passthrough — the layout.tsx shell
- * wrapper is bypassed in favour of the full self-contained client assembly.
+ * The LoL Overview is the primary launcher surface (5 of 7 reference images).
+ * Previously this delegated to LauncherClient (a standalone assembly). It now
+ * redirects to /launcher/lol which is the routed, rail-wired LoL shell.
  *
- * Closes #694.
+ * /launcher/home and /launcher/games remain reachable via the rail nav.
+ *
+ * Closes #718.
  */
 
-import { LauncherClient } from "./launcher-client";
+import { redirect } from "next/navigation";
 
 export default function LauncherPage() {
-  return <LauncherClient />;
+  redirect("/launcher/lol");
 }

@@ -7,6 +7,7 @@ import { championSplashUrl } from "@low/fixtures";
 import type { ShowcaseEntry } from "../showcase";
 import { LauncherOverviewHero } from "./launcher-overview-hero";
 import { LauncherFeaturedCard } from "./launcher-featured-card";
+import { LauncherPlayButton } from "./launcher-play-button";
 import { LauncherContentCarousel } from "./launcher-content-carousel";
 import type { LauncherContentItem } from "./launcher-content-carousel";
 
@@ -23,7 +24,7 @@ export const launcherOverviewHeroShowcase: ShowcaseEntry = {
   name: "LauncherOverviewHero",
   area: "launcher",
   description:
-    "Full-bleed champion splash background for the Overview tab. Renders splash image as object-cover, \"LEAGUE OF LEGENDS\" 2-row wordmark bottom-left, bottom scrim, and render slots for featuredCard + carousel. Issue #681.",
+    "Full-bleed champion splash background for the Overview tab. Renders splash image as object-cover, \"LEAGUE OF LEGENDS\" 2-row wordmark bottom-left, bottom scrim, and render slots for playButton + featuredCard + carousel. Issues #681, #720.",
   variants: [
     {
       name: "Hero — splash + wordmark only",
@@ -36,13 +37,23 @@ export const launcherOverviewHeroShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "Hero — with featured card + carousel",
+      name: "Hero — with play button + featured card + carousel",
       notes:
-        "Fully composed: featuredCard slotted bottom-left above wordmark, carousel strip at bottom. Mirrors the launcher ref layout.",
+        "Fully composed: playButton slotted between wordmark and featuredCard (matching image.png), carousel strip at bottom. Mirrors the launcher ref layout.",
       render: () => (
         <div style={{ height: 520, position: "relative" }}>
           <LauncherOverviewHero
             splashUrl={championSplashUrl("Warwick", 0)}
+            playButton={
+              <LauncherPlayButton
+                gameModes={[
+                  { id: "lol", label: "League of Legends" },
+                  { id: "lol-pbe", label: "League of Legends", isPbe: true },
+                ]}
+                selectedModeId="lol"
+                open={false}
+              />
+            }
             featuredCard={
               <LauncherFeaturedCard
                 categoryLabel="League Classic Cinematic"
