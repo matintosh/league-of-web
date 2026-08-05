@@ -18,6 +18,8 @@ import {
   LauncherWindowBar,
   LauncherRail,
   LauncherGamesPage,
+  GameLolLogo,
+  GameTftLogo,
 } from "@low/ui";
 import type { LauncherRailItem } from "@low/ui";
 import { championSplashUrl } from "@low/fixtures";
@@ -46,64 +48,11 @@ function GamesGridIcon() {
   );
 }
 
-function LolIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" fill="none">
-      <circle
-        cx="16"
-        cy="16"
-        r="15"
-        fill="var(--color-launcher-rail-bg)"
-        stroke="var(--color-gold-3)"
-        strokeWidth="1.5"
-      />
-      <text
-        x="16"
-        y="21"
-        textAnchor="middle"
-        fill="var(--color-gold-3)"
-        fontSize="13"
-        fontWeight="700"
-        fontFamily="var(--font-display)"
-        letterSpacing="0.02em"
-      >
-        LoL
-      </text>
-    </svg>
-  );
-}
-
-function TftIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" fill="none">
-      <circle
-        cx="16"
-        cy="16"
-        r="15"
-        fill="var(--color-launcher-rail-bg)"
-        stroke="var(--color-launcher-text-dim)"
-        strokeWidth="1"
-      />
-      <text
-        x="16"
-        y="21"
-        textAnchor="middle"
-        fill="var(--color-launcher-text-dim)"
-        fontSize="11"
-        fontWeight="700"
-        fontFamily="var(--font-display)"
-        letterSpacing="0.01em"
-      >
-        TFT
-      </text>
-    </svg>
-  );
-}
-
 const RAIL_ITEMS: LauncherRailItem[] = [
   { id: "home", label: "Home", icon: <HomeIcon />, position: "top" },
-  { id: "lol", label: "League of Legends", icon: <LolIcon />, position: "top" },
-  { id: "tft", label: "Teamfight Tactics", icon: <TftIcon />, position: "top" },
+  // Real compact game emblem SVGs — replaces circle+text placeholders
+  { id: "lol", label: "League of Legends", icon: <GameLolLogo size={28} />, position: "top" },
+  { id: "tft", label: "Teamfight Tactics", icon: <GameTftLogo size={28} />, position: "top" },
   { id: "games", label: "All Games", icon: <GamesGridIcon />, position: "top" },
 ];
 

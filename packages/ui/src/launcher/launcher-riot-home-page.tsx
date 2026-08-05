@@ -24,6 +24,12 @@ import { PatchNoteCard } from "./patch-note-card";
 export interface LauncherRiotHomePageProps {
   /** Featured promo data rendered by <FeaturedGamePromoHero>. */
   featuredPromo: FeaturedPromoData;
+  /**
+   * Optional ReactNode logo for the featured promo — passed as `logoNode` to
+   * FeaturedGamePromoHero, overriding the string `gameLogo`. Use this to supply
+   * an inline SVG component (e.g. LolClassicLogo) instead of a data-URI image.
+   */
+  featuredPromoLogoNode?: ReactNode;
   /** Called when the featured promo CTA is clicked. */
   onPromoCtaClick?: () => void;
   /** List of patch note cards rendered by <PatchNoteCard>. */
@@ -47,6 +53,7 @@ export interface LauncherRiotHomePageProps {
  */
 export function LauncherRiotHomePage({
   featuredPromo,
+  featuredPromoLogoNode,
   onPromoCtaClick,
   patchNotes,
   onPatchNoteClick,
@@ -108,6 +115,7 @@ export function LauncherRiotHomePage({
         {/* Featured promo hero */}
         <FeaturedGamePromoHero
           {...featuredPromo}
+          logoNode={featuredPromoLogoNode}
           onCta={onPromoCtaClick}
         />
 
