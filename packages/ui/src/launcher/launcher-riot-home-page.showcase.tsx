@@ -239,7 +239,8 @@ export const launcherRiotHomePageShowcase: ShowcaseEntry = {
       render: () => (
         <div
           style={{
-            width: 1280,
+            width: "100%",
+            maxWidth: 1280,
             height: 720,
             overflow: "hidden",
             backgroundColor: "var(--color-launcher-bg)",
