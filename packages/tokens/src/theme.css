@@ -148,6 +148,10 @@
   --color-login-classic-tab-active: #d4bf7d;
   /* Input bg — ref sampled #efe4b8 */
   --color-login-classic-input-bg: #efe4b8;
+  /* Classic notice banner — translucent dark gold-brown scrim (issue #716) */
+  --color-login-classic-notice-bg: rgba(70, 55, 20, 0.75);
+  /* Classic splash chip (avatar + video button) — semi-opaque near-black pill (issue #716) */
+  --color-login-classic-chip-bg: rgba(10, 8, 4, 0.72);
   --color-brand-xbox: #107c10;
   --color-brand-playstation: #003791;
   /* Google brand — white bg for the multicolor G button */
@@ -439,6 +443,10 @@
     --color-login-classic-tab-active: #d4bf7d;
     /* Input bg — ref sampled #efe4b8 */
     --color-login-classic-input-bg: #efe4b8;
+    /* Classic notice banner — translucent dark gold-brown scrim (issue #716) */
+    --color-login-classic-notice-bg: rgba(70, 55, 20, 0.75);
+    /* Classic splash chip (avatar + video button) — semi-opaque near-black pill (issue #716) */
+    --color-login-classic-chip-bg: rgba(10, 8, 4, 0.72);
     --color-brand-xbox: #107c10;
     --color-brand-playstation: #003791;
     /* Google brand — white bg for the multicolor G button */
