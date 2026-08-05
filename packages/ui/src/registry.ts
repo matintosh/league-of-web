@@ -107,11 +107,13 @@ import { storeItemTileShowcase } from "./store/store-item-tile.showcase";
 import { storeSubNavBarShowcase } from "./store/store-sub-nav-bar.showcase";
 import { yourShopIconShowcase } from "./store/your-shop-icon.showcase";
 import { yourShopScreenShowcase } from "./store/your-shop-screen.showcase";
+import { gameTileShowcase } from "./launcher/game-tile.showcase";
 import { launcherContentCarouselShowcase } from "./launcher/launcher-content-carousel.showcase";
 import { launcherEsportsNewsCardShowcase } from "./launcher/launcher-esports-news-card.showcase";
 import { launcherEsportsPageShowcase } from "./launcher/launcher-esports-page.showcase";
 import { launcherFeaturedCardShowcase } from "./launcher/launcher-featured-card.showcase";
 import { launcherFeaturedMerchBannerShowcase } from "./launcher/launcher-featured-merch-banner.showcase";
+import { launcherGamesPageShowcase } from "./launcher/launcher-games-page.showcase";
 import { launcherMerchPageShowcase } from "./launcher/launcher-merch-page.showcase";
 import { launcherOverviewHeroShowcase } from "./launcher/launcher-overview-hero.showcase";
 import { launcherOverviewPageShowcase } from "./launcher/launcher-overview-page.showcase";
@@ -271,12 +273,14 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
-  // launcher — alphabetical: LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
+  // launcher — alphabetical: GameTile < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
+  gameTileShowcase,
   launcherContentCarouselShowcase,
   launcherEsportsNewsCardShowcase,
   launcherEsportsPageShowcase,
   launcherFeaturedCardShowcase,
   launcherFeaturedMerchBannerShowcase,
+  launcherGamesPageShowcase,
   launcherMerchPageShowcase,
   launcherOverviewHeroShowcase,
   launcherOverviewPageShowcase,

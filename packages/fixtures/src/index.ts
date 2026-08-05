@@ -18,3 +18,4 @@ export * from "./challenges";
 export * from "./mythic-shop";
 export * from "./merch-info-pages";
 export * from "./merch";
+export * from "./games";
