@@ -58,7 +58,8 @@ function SectionHeading({ children }: { children: ReactNode }) {
         fontSize: 12,
         fontWeight: 500,
         fontFamily: "var(--font-launcher)",
-        color: "var(--color-launcher-text-muted)",
+        /* dark ink on light content surface (issue #719) */
+        color: "var(--color-launcher-home-content-ink)",
         letterSpacing: "0.02em",
       }}
     >
@@ -106,17 +107,18 @@ export function LauncherGamesPage({ myGames, allGames, onGameAction }: LauncherG
         padding: "24px 28px",
         gap: 0,
         boxSizing: "border-box",
-        backgroundColor: "var(--color-launcher-content-bg)",
+        /* light content surface per image-7.png ref (issue #719) */
+        backgroundColor: "var(--color-launcher-home-content-bg)",
       }}
     >
-      {/* Page heading */}
+      {/* Page heading — dark ink on light surface */}
       <h1
         style={{
           margin: "0 0 20px 0",
           fontSize: 22,
           fontWeight: 700,
           fontFamily: "var(--font-launcher)",
-          color: "var(--color-launcher-text-primary)",
+          color: "var(--color-launcher-home-content-ink)",
           letterSpacing: "0.02em",
         }}
       >
