@@ -120,7 +120,9 @@ export function FeaturedGamePromoHero({
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-end",
-            padding: "0 40px 40px 48px",
+            /* 91px left aligns hero copy with the "Home" title and "Latest Patch Notes" heading
+             at x≈147 in the full-bleed content area (rail 56px is outside this main column) */
+          padding: "0 40px 40px 91px",
             maxWidth: "55%",
           }}
         >

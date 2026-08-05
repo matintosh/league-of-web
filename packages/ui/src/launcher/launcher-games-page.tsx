@@ -74,13 +74,14 @@ function SectionHeading({ children }: { children: ReactNode }) {
     <h2
       style={{
         margin: 0,
-        fontSize: 14,
+        /* ~20px semibold per ref bbox h 19/15 (ref÷1.2) — sentence-case, no tracking */
+        fontSize: 20,
         fontWeight: 600,
         fontFamily: "var(--font-launcher)",
         /* white text on dark Games surface (image-7.png ref) */
         color: "var(--color-launcher-text-primary)",
-        letterSpacing: "0.04em",
-        textTransform: "uppercase",
+        letterSpacing: 0,
+        textTransform: "none",
       }}
     >
       {children}
@@ -131,11 +132,11 @@ export function LauncherGamesPage({ myGames, allGames, onGameAction }: LauncherG
         backgroundColor: "var(--color-launcher-home-content-bg)",
       }}
     >
-      {/* Page heading */}
+      {/* Page heading — ~28px per ref H1 bbox h (ref÷1.2) */}
       <h1
         style={{
-          margin: "0 0 22px 0",
-          fontSize: 22,
+          margin: "0 0 50px 0",
+          fontSize: 28,
           fontWeight: 700,
           fontFamily: "var(--font-launcher)",
           color: "var(--color-launcher-text-primary)",
@@ -145,8 +146,10 @@ export function LauncherGamesPage({ myGames, allGames, onGameAction }: LauncherG
         Games
       </h1>
 
-      {/* My Games section — horizontal scrolling row, landscape lg tiles */}
-      <section aria-label="My Games" style={{ marginBottom: 36 }}>
+      {/* My Games section — horizontal scrolling row, landscape lg tiles.
+          Inter-section gap: H1 bottom y50 → "My Games" heading y121 = 71px in our space.
+          margin-bottom ~64px so "All Games" heading lands ~y460 (ref-measured ÷1.2 ≈ 383px). */}
+      <section aria-label="My Games" style={{ marginBottom: 64 }}>
         <SectionHeading>My Games</SectionHeading>
         <div
           style={{

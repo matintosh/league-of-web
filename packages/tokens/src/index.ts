@@ -154,6 +154,14 @@ export const palette = {
   launcherSelectedMode: "#BC5556",
   /** LauncherPlayButton: flat near-black — dropdown panel bg (issue #741) */
   launcherDropdownBg: "#1F1F1F",
+  /** Game tile per-brand Installed bar — 2XKO lime (issue #748, ref rgb(160,190,78)) */
+  launcherInstalledBar2xko: "#a0be4e",
+  /** Game tile per-brand Installed bar — LoL gold (issue #748, ref rgb(203,160,70)) */
+  launcherInstalledBarLol: "#cba046",
+  /** Game tile per-brand Installed bar — Wild Rift amber (issue #748, ref rgb(220,183,116)) */
+  launcherInstalledBarWildrift: "#dcb774",
+  /** Game tile per-brand Installed bar — fallback green for unknown games (issue #748) */
+  launcherInstalledBarDefault: "#2ea44f",
 } as const;
 
 export type Palette = typeof palette;

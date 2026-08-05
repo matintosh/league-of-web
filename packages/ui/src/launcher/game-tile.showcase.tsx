@@ -79,7 +79,7 @@ export const gameTileShowcase: ShowcaseEntry = {
     {
       name: "xl + coverBadge — Installed (League of Legends)",
       notes:
-        'size="xl" statusLayout="coverBadge". All Games grid tile — Installed pill bottom-left over gradient on cover art.',
+        'size="xl" statusLayout="coverBadge". All Games grid tile — full-width LoL gold Installed bar at tile bottom (issue #748).',
       render: () => (
         <div style={DARK_BG}>
           <GameTileDemo
@@ -88,6 +88,7 @@ export const gameTileShowcase: ShowcaseEntry = {
             coverUrl={LOL_COVER}
             logoNode={<LolLogo size={92} />}
             status="installed"
+            installedBarColor="var(--color-launcher-installed-bar-lol)"
             size="xl"
             statusLayout="coverBadge"
           />

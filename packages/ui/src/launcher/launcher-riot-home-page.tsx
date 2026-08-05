@@ -97,8 +97,8 @@ export function LauncherRiotHomePage({
           gap: 0,
         }}
       >
-        {/* "Home" page heading — 26px top gutter, 48px left gutter per ref */}
-        <div style={{ padding: "26px 24px 16px 48px" }}>
+        {/* "Home" page heading — 26px top gutter, 91px left gutter per ref (x≈147 − 56px rail) */}
+        <div style={{ padding: "26px 24px 16px 91px" }}>
           <h1
             style={{
               fontFamily: "var(--font-display, var(--font-launcher))",
@@ -120,8 +120,8 @@ export function LauncherRiotHomePage({
           onCta={onPromoCtaClick}
         />
 
-        {/* Latest Patch Notes section — padded, heading ~20px per ref */}
-        <section aria-label="Latest Patch Notes" style={{ padding: "20px 24px 32px 48px" }}>
+        {/* Latest Patch Notes section — left gutter 91px to match Home title x≈147 */}
+        <section aria-label="Latest Patch Notes" style={{ padding: "20px 24px 32px 91px" }}>
           <h2
             style={{
               fontFamily: "var(--font-display, var(--font-launcher))",

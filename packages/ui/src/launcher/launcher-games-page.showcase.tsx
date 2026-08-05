@@ -50,18 +50,21 @@ const ALL_GAMES: GameTileData[] = [
     gameName: "2XKO",
     coverUrl: championSplashUrl("Ekko", 0),
     status: "installed",
+    installedBarColor: "var(--color-launcher-installed-bar-2xko)",
   },
   {
     gameKey: "lol",
     gameName: "League of Legends",
     coverUrl: championSplashUrl("Jinx", 0),
     status: "installed",
+    installedBarColor: "var(--color-launcher-installed-bar-lol)",
   },
   {
     gameKey: "wildrift",
     gameName: "League of Legends Wild Rift",
     coverUrl: championSplashUrl("Jinx", 2),
     status: "install",
+    installedBarColor: "var(--color-launcher-installed-bar-wildrift)",
   },
 ];
 
