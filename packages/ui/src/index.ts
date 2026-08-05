@@ -185,7 +185,9 @@ export { StatMedallion } from "./collection/stat-medallion";
 export type { StatMedallionProps, TierEntry } from "./collection/stat-medallion";
 export { StatsTab } from "./collection/stats-tab";
 export type { StatsTabProps, PlayStyleStat, SeasonStats } from "./collection/stats-tab";
-// launcher — alphabetical: LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
+// launcher — alphabetical: GameTile < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
+export { GameTile } from "./launcher/game-tile";
+export type { GameTileProps } from "./launcher/game-tile";
 export { LauncherContentCarousel } from "./launcher/launcher-content-carousel";
 export type { LauncherContentCarouselProps, LauncherContentItem } from "./launcher/launcher-content-carousel";
 export { LauncherEsportsNewsCard } from "./launcher/launcher-esports-news-card";
@@ -195,6 +197,8 @@ export { LauncherFeaturedCard } from "./launcher/launcher-featured-card";
 export type { LauncherFeaturedCardProps } from "./launcher/launcher-featured-card";
 export { LauncherFeaturedMerchBanner } from "./launcher/launcher-featured-merch-banner";
 export type { LauncherFeaturedMerchBannerProps } from "./launcher/launcher-featured-merch-banner";
+export { LauncherGamesPage } from "./launcher/launcher-games-page";
+export type { LauncherGamesPageProps } from "./launcher/launcher-games-page";
 export { LauncherMerchPage } from "./launcher/launcher-merch-page";
 export { LauncherOverviewHero } from "./launcher/launcher-overview-hero";
 export type { LauncherOverviewHeroProps } from "./launcher/launcher-overview-hero";

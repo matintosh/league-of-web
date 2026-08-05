@@ -264,6 +264,12 @@
   --color-launcher-esports-card-border:  #2a2a2a;
   --color-launcher-esports-card-hover:   #111111; /* subtle hover highlight */
 
+  /* Game tile (issue #689) */
+  --color-launcher-surface:              #1a1c22; /* game tile card background = panel-bg */
+  --color-launcher-surface-alt:          #2a2c35; /* muted badge fill (Install / Coming Soon) */
+  --color-launcher-badge-installed:      #2ea44f; /* green Installed badge */
+  --color-launcher-badge-update:         #d4a72c; /* amber Update badge */
+
   /* Launcher font stack */
   --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
@@ -500,6 +506,12 @@
     --color-launcher-esports-card-bg:      #161616;
     --color-launcher-esports-card-border:  #2a2a2a;
     --color-launcher-esports-card-hover:   #111111; /* subtle hover highlight */
+
+    /* Game tile (issue #689) */
+    --color-launcher-surface:              #1a1c22;
+    --color-launcher-surface-alt:          #2a2c35;
+    --color-launcher-badge-installed:      #2ea44f;
+    --color-launcher-badge-update:         #d4a72c;
 
     /* Launcher font stack */
     --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
