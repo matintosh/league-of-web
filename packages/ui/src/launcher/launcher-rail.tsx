@@ -6,9 +6,13 @@
  * Renders a stack of game/utility icon slots. "top" items stack from the top;
  * "bottom" items pin to the bottom via a flex spacer. Each slot is 64×56px.
  *
- * Active slot: full-width ornate parchment-gold banner tile — a warm gold
- * background with the icon scaled up and centred, matching the ref's ornate
- * banner treatment. Inactive hover: panel-bg tint, no accent bar.
+ * Active slot treatment (per ref, issue #744):
+ *   - LoL entry (id="lol"): ornate parchment-gold banner tile — warm gold bg, gold border
+ *     lines and left accent bar, icon in gold tint. This is the LoL BRAND tile, not a
+ *     generic active indicator.
+ *   - All other active items (home, games, etc.): neutral translucent dark rounded-square
+ *     (~rgb(58,58,62)) behind a white glyph — matches the ref's generic nav active state.
+ * Inactive hover: panel-bg tint, no accent bar.
  * Default: icon at 60% opacity, no background.
  *
  * Props are generic — the page supplies real game logo assets (URL strings or
@@ -143,6 +147,68 @@ function ActiveBannerSlot({
   );
 }
 
+/**
+ * NeutralActiveSlot — plain dark rounded-square active indicator for non-LoL nav items.
+ *
+ * Per ref (image-5/image-7): active Home, Games etc. = neutral translucent dark bg
+ * (~rgb(58,58,62)) with the white icon at full opacity. No gold decoration.
+ */
+function NeutralActiveSlot({
+  item,
+  onSelect,
+}: {
+  item: LauncherRailItem;
+  onSelect?: (id: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      title={item.label}
+      aria-label={item.label}
+      aria-current="page"
+      onClick={() => onSelect?.(item.id)}
+      style={{
+        width: "100%",
+        height: 56,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+        background: "var(--color-launcher-rail-active-neutral)",
+        border: "none",
+        padding: 0,
+        cursor: "pointer",
+      }}
+    >
+      <span
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 32,
+          height: 32,
+          color: "var(--color-launcher-ink)",
+          opacity: 1,
+          flexShrink: 0,
+        }}
+      >
+        {typeof item.icon === "string" ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.icon}
+            alt={item.label}
+            width={32}
+            height={32}
+            style={{ objectFit: "contain", width: 32, height: 32 }}
+          />
+        ) : (
+          item.icon
+        )}
+      </span>
+    </button>
+  );
+}
+
 /** Individual rail slot — renders a single icon with active/hover states. */
 function RailSlot({
   item,
@@ -154,7 +220,12 @@ function RailSlot({
   onSelect?: (id: string) => void;
 }) {
   if (isActive) {
-    return <ActiveBannerSlot item={item} onSelect={onSelect} />;
+    // LoL brand entry gets the ornate gold banner tile (matches ref's decorative LoL tile).
+    // All other active items get the neutral dark rounded-square (generic nav active state).
+    if (item.id === "lol") {
+      return <ActiveBannerSlot item={item} onSelect={onSelect} />;
+    }
+    return <NeutralActiveSlot item={item} onSelect={onSelect} />;
   }
 
   return (

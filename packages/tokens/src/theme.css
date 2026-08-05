@@ -195,16 +195,17 @@
   --motion-snap: 200ms cubic-bezier(0.5, 0, 0.2, 1.4); /* attention — sharp overshoot, ~200ms */
   --motion-crossfade: 250ms cubic-bezier(0.4, 0, 0.2, 1); /* video-state-machine crossfade, 200-300ms */
 
-  /* Launcher dark palette — sampled from lol-launcher-ref/image.png (issue #679) */
+  /* Launcher dark palette — sampled from lol-launcher-ref/image.png (issue #679, #744) */
 
-  /* Shell backgrounds */
-  --color-launcher-bg:           #0e1015; /* outermost shell / behind rail */
-  --color-launcher-rail-bg:      #13151a; /* left icon rail surface */
-  --color-launcher-panel-bg:     #1a1c22; /* right social panel surface */
-  --color-launcher-panel-header: #1e2028; /* panel account header row */
+  /* Shell backgrounds — de-blued toward ref neutral warm greys (issue #744):
+     ref rail ≈ rgb(38,36,33) #262421; ref outermost bg ≈ rgb(22,22,22) #161616. */
+  --color-launcher-bg:           #161616; /* outermost shell / behind rail — was #0e1015, de-blued */
+  --color-launcher-rail-bg:      #262421; /* left icon rail surface — was #13151a, de-blued to warm grey */
+  --color-launcher-panel-bg:     #1e1e1e; /* right social panel surface — was #1a1c22, de-blued */
+  --color-launcher-panel-header: #242424; /* panel account header row — was #1e2028, de-blued */
 
   /* Content area */
-  --color-launcher-content-bg:          #11131a; /* center content area dark base */
+  --color-launcher-content-bg:          #181818; /* center content area dark base — was #11131a, de-blued */
   /* Dark content surface — Riot Home + Games main area (image-5/image-7 refs are DARK) */
   --color-launcher-home-content-bg:     #0f0f10; /* near-black, sampled ~rgb(14,13,11) from image-5/image-7 */
   --color-launcher-home-content-ink:    #f0efec; /* near-white heading/body text, sampled rgb(223,222,220) */
@@ -222,7 +223,9 @@
   --color-launcher-tab-active:   #c8aa6e; /* same hex as gold-2 */
 
   /* Icon rail active indicator */
-  --color-launcher-rail-active:  #c89b3c; /* same hex as gold-3 */
+  --color-launcher-rail-active:         #c89b3c; /* gold ornate banner — LoL brand tile only */
+  /* Neutral dark active bg for non-LoL nav items (ref: ~rgb(58,58,62) #3a3a3e) */
+  --color-launcher-rail-active-neutral: #3a3a3e;
 
   /* Window close button hover — deep brick-red (distinct from --color-warning
      #ed2c49 bright crimson; sampled from Riot launcher close-btn hover). */
@@ -487,12 +490,12 @@
     --color-ban-red-3: #8b1f1f;
     --color-ban-red-press: #5c1414;
 
-    /* Launcher dark palette — sampled from lol-launcher-ref/image.png (issue #679) */
-    --color-launcher-bg:           #0e1015;
-    --color-launcher-rail-bg:      #13151a;
-    --color-launcher-panel-bg:     #1a1c22;
-    --color-launcher-panel-header: #1e2028;
-    --color-launcher-content-bg:          #11131a;
+    /* Launcher dark palette — sampled from lol-launcher-ref/image.png (issue #679, #744) */
+    --color-launcher-bg:           #161616; /* de-blued — was #0e1015 */
+    --color-launcher-rail-bg:      #262421; /* de-blued warm grey — was #13151a */
+    --color-launcher-panel-bg:     #1e1e1e; /* de-blued — was #1a1c22 */
+    --color-launcher-panel-header: #242424; /* de-blued — was #1e2028 */
+    --color-launcher-content-bg:          #181818; /* de-blued — was #11131a */
     /* Dark content surface — Riot Home + Games main area (image-5/image-7 refs are DARK) */
     --color-launcher-home-content-bg:     #0f0f10;
     --color-launcher-home-content-ink:    #f0efec;
@@ -502,7 +505,8 @@
     --color-launcher-text-muted:   #7b7d8a;
     --color-launcher-text-dim:     #4a4c58;
     --color-launcher-tab-active:   #c8aa6e;
-    --color-launcher-rail-active:  #c89b3c;
+    --color-launcher-rail-active:         #c89b3c; /* gold ornate banner — LoL brand tile only */
+    --color-launcher-rail-active-neutral: #3a3a3e; /* neutral dark active bg for non-LoL nav items */
     --color-launcher-close-hover:  #c0392b;
     --color-launcher-input-bg:     #0e1015;
     --color-launcher-input-border: #2a2c35;
