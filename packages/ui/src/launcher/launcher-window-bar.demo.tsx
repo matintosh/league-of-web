@@ -31,27 +31,12 @@ function RiotLogo() {
   );
 }
 
-/** Default windowed state — no leftContent. */
+/** Default — no leftContent. Transparent bg, minimize + close only. */
 export function WindowBarDefaultDemo() {
   return (
-    <div style={{ width: 600, backgroundColor: "var(--color-launcher-bg)" }}>
+    <div style={{ width: 600, backgroundColor: "var(--color-launcher-panel-bg)" }}>
       <LauncherWindowBar
         onMinimize={() => undefined}
-        onMaximize={() => undefined}
-        onClose={() => undefined}
-      />
-    </div>
-  );
-}
-
-/** Maximized state — restore icon shown. */
-export function WindowBarMaximizedDemo() {
-  return (
-    <div style={{ width: 600, backgroundColor: "var(--color-launcher-bg)" }}>
-      <LauncherWindowBar
-        maximized
-        onMinimize={() => undefined}
-        onMaximize={() => undefined}
         onClose={() => undefined}
       />
     </div>
@@ -61,26 +46,10 @@ export function WindowBarMaximizedDemo() {
 /** With leftContent slot — Riot logo + summoner name. */
 export function WindowBarWithLeftContentDemo() {
   return (
-    <div style={{ width: 600, backgroundColor: "var(--color-launcher-bg)" }}>
+    <div style={{ width: 600, backgroundColor: "var(--color-launcher-panel-bg)" }}>
       <LauncherWindowBar
         leftContent={<RiotLogo />}
         onMinimize={() => undefined}
-        onMaximize={() => undefined}
-        onClose={() => undefined}
-      />
-    </div>
-  );
-}
-
-/** With leftContent + maximized. */
-export function WindowBarLeftMaximizedDemo() {
-  return (
-    <div style={{ width: 600, backgroundColor: "var(--color-launcher-bg)" }}>
-      <LauncherWindowBar
-        leftContent={<RiotLogo />}
-        maximized
-        onMinimize={() => undefined}
-        onMaximize={() => undefined}
         onClose={() => undefined}
       />
     </div>

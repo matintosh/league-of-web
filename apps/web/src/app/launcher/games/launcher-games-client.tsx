@@ -151,8 +151,7 @@ const ALL_GAMES: GameTileData[] = [
  *
  * Uses a 2-column layout (rail + content) — no social panel per the ref
  * (image-7.png shows no right-hand friends panel on the Games surface).
- * The LauncherShell socialPanel slot receives an empty fragment to satisfy
- * the required prop while rendering nothing.
+ * socialPanel prop is omitted; the shell handles its absence gracefully.
  */
 export function LauncherGamesClient() {
   return (
@@ -160,7 +159,6 @@ export function LauncherGamesClient() {
       windowBar={
         <LauncherWindowBar
           onMinimize={() => console.log("[games] minimize")}
-          onMaximize={() => console.log("[games] maximize")}
           onClose={() => console.log("[games] close")}
         />
       }
@@ -169,18 +167,6 @@ export function LauncherGamesClient() {
           items={RAIL_ITEMS}
           activeId="games"
           onSelect={(id) => console.log("[games] rail select:", id)}
-        />
-      }
-      socialPanel={
-        /* No social/friends panel on the Games surface per image-7.png ref.
-           Rendering an empty transparent panel to satisfy the required slot. */
-        <div
-          aria-hidden="true"
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "var(--color-launcher-content-bg)",
-          }}
         />
       }
     >

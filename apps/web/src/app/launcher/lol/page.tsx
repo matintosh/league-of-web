@@ -302,7 +302,6 @@ export default function LauncherLolPage() {
       windowBar={
         <LauncherWindowBar
           onMinimize={() => console.log("[lol] minimize")}
-          onMaximize={() => console.log("[lol] maximize")}
           onClose={() => console.log("[lol] close")}
         />
       }
@@ -323,7 +322,7 @@ export default function LauncherLolPage() {
           onSearchChange={setSearchQuery}
           onToggleGroup={handleToggleGroup}
           onFriendClick={(s) => console.log("[lol] friend click:", s.gameName)}
-          onHeaderAction={(a) => console.log("[lol] header action:", a)}
+          onCollapse={() => console.log("[lol] social panel collapse")}
         />
       }
     >
