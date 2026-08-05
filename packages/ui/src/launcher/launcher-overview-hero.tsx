@@ -46,8 +46,10 @@ export function LauncherOverviewHero({
 }: LauncherOverviewHeroProps) {
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
-      {/* Hero body — splash + scrims + top-left overlay zone */}
-      <div className="relative min-h-0 flex-1">
+      {/* Hero body — splash + scrims + top-left overlay zone.
+          minHeight 652px keeps the carousel anchored to y≈652 at 1280×720 (ref band top).
+          The outer overflow-hidden clips the carousel at the 720px fold (~68px visible). */}
+      <div className="relative shrink-0" style={{ height: 652 }}>
         {/* Champion/promo splash — shifted right so the champion is not behind text */}
         <img
           src={splashUrl}

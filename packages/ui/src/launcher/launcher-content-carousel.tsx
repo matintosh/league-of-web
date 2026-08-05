@@ -3,16 +3,17 @@
 /**
  * LauncherContentCarousel — horizontal thumbnail strip at the bottom of the Overview tab.
  *
- * Renders 2–3 wide thumbnail cards (~300px) in a horizontal row. The band starts
- * near y≈652 (ref) and is intentionally ~68px visible before the 720px window edge
- * clips it — matching the ref image where cards are cut off at the bottom fold.
+ * Renders ~2 wide thumbnail cards (~460px) in a horizontal row. The band starts
+ * near y≈652 (ref) — only ~68px of the card tops are visible before the 720px
+ * window edge clips them, matching the ref image fold effect. The hero body is
+ * fixed at 652px so the carousel always starts at that y-position.
  *
  * Cards support optional badge ("DEV") and duration ("16:50") overlays to match the
  * mixed-media content visible in the ref. Active index is controlled externally;
  * stateful demo in launcher-content-carousel.demo.tsx. No fetch — thumbnailUrl is
  * supplied by the page.
  *
- * Token source: packages/tokens/src/theme.css — --color-launcher-* set (issues #679, #685, #732).
+ * Token source: packages/tokens/src/theme.css — --color-launcher-* set (issues #679, #685, #732, #743).
  */
 
 /** A single content item in the carousel thumbnail strip. */
@@ -46,13 +47,14 @@ export interface LauncherContentCarouselProps {
 /**
  * Bottom thumbnail strip for the launcher Overview tab.
  *
- * Layout (measured from lol-launcher-ref/image.png at ~1536px, ÷1.2):
- *   - Dark solid strip (--color-launcher-bg) with padding left ~120px (first card
- *     x≈121 aligned with the featured copy inset)
- *   - Horizontal row of wide cards (~300px); only 2–3 visible; overflow hidden (clipped)
- *   - Each card: ~300px wide; 16/9 image area + title row below
+ * Layout (measured from lol-launcher-ref/image.png at ~1536px, ÷1.2 → our 1280×720):
+ *   - Dark solid strip (--color-launcher-bg) with paddingLeft ~139px (first card
+ *     x≈139-145, aligned with the hero featured-copy left inset)
+ *   - Horizontal row of wide cards (~460px); only ~2 visible across the ~948px content width
+ *   - Each card: 460px wide; 16/9 image area + title row below
  *   - Active card: gold border (--color-launcher-thumb-active)
- *   - Badge overlay top-left; duration overlay bottom-right on the thumbnail image
+ *   - Badge overlay top-right (light/white pill); duration overlay bottom-right on the thumbnail
+ *   - Band starts at y≈652 (hero body is 652px fixed); fold clips the strip at y=720
  */
 export function LauncherContentCarousel({
   items,
@@ -65,7 +67,8 @@ export function LauncherContentCarousel({
         backgroundColor: "var(--color-launcher-bg)",
         paddingTop: 10,
         paddingBottom: 10,
-        paddingLeft: 120,
+        /* First card left edge x≈139 — aligned with the hero featured-copy inset (ref ÷1.2). */
+        paddingLeft: 139,
         paddingRight: 24,
         width: "100%",
       }}
@@ -107,7 +110,8 @@ function LauncherThumbCard({ item, isActive, onClick }: ThumbCardProps) {
       onClick={onClick}
       style={{
         flexShrink: 0,
-        width: 300,
+        /* ~460px wide — matches ref where ~2 cards are visible in the ~948px content width */
+        width: 460,
         background: "none",
         border: "none",
         padding: 0,
@@ -154,22 +158,23 @@ function LauncherThumbCard({ item, isActive, onClick }: ThumbCardProps) {
           }}
         />
 
-        {/* Badge overlay — top-left (e.g. "DEV") */}
+        {/* Badge overlay — top-right light/white rounded pill (e.g. "DEV").
+            Ref shows a light pill toward the card's RIGHT side, not the gold top-left. */}
         {item.badge && (
           <span
             style={{
               position: "absolute",
               top: 6,
-              left: 6,
-              backgroundColor: "var(--color-launcher-accent)",
+              right: 6,
+              backgroundColor: "color-mix(in srgb, var(--color-launcher-ink) 90%, transparent)",
               color: "var(--color-launcher-bg)",
               fontSize: 9,
               fontWeight: 700,
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              padding: "2px 5px",
-              borderRadius: 2,
-              lineHeight: 1,
+              padding: "2px 6px",
+              borderRadius: 10,
+              lineHeight: 1.2,
               fontFamily: "var(--font-launcher)",
             }}
           >
