@@ -1,12 +1,16 @@
 /**
- * LauncherPatchHeroBanner — full-bleed hero for the Patch Notes tab.
+ * LauncherPatchHeroBanner — patch notes hero for the Patch Notes tab.
  *
- * Fills the entire content area with a champion splash background, then
- * renders a centered text block in the lower portion: a gold "Game Updates"
- * chip, large patch title, subtitle, and byline.
+ * Layout (per lol-launcher-ref/image-2.png, issue #745):
+ *   - Champion splash bounded to ~421px (top ~58% of 720px container);
+ *     splash uses object-cover center-top within that fixed-height band.
+ *   - Below the splash: solid --color-launcher-bg band that holds all text.
+ *   - Text block: heading (~33px, 2-line wrap) → subtitle → thin divider rule
+ *     → bottom-anchored byline row [gold category] | [authors] | [date].
+ *   - NO category chip above the heading; "Game Updates" lives only in byline.
  *
  * Token source: packages/tokens/src/theme.css — --color-launcher-* set.
- * Issue #688.
+ * Issue #745 (fixes #688).
  */
 
 export interface LauncherPatchHeroBannerProps {
@@ -16,8 +20,11 @@ export interface LauncherPatchHeroBannerProps {
   patchTitle: string;
   /** E.g. "We're kicking off Season 3...but of what year?!" */
   subtitle: string;
-  /** Category chip label. Default "Game Updates". */
-  categoryChip?: string;
+  /**
+   * Category label in the byline row. Default "Game Updates".
+   * Rendered in gold; no chip/pill — plain text with pipe separators.
+   */
+  category?: string;
   /** Byline author string. E.g. "Riot Cashout, slernied, Riot Yisu" */
   authors?: string;
   /** ISO date or display string. E.g. "7/18/2026" */
@@ -25,86 +32,63 @@ export interface LauncherPatchHeroBannerProps {
 }
 
 /**
- * Full-bleed hero for the launcher Patch Notes tab.
+ * Patch notes hero for the launcher Patch Notes tab.
  *
- * Layout:
- *   - Champion splash fills the container edge-to-edge (object-cover, center top)
- *   - Heavy bottom-up gradient scrim ensures text block legibility
- *   - Text block (chip → title → subtitle → byline) centered horizontally ~60px from bottom
+ * Stacks vertically:
+ *   1. Splash band — fixed ~421px, splash fills it via object-cover center-top.
+ *   2. Text band  — flex column, solid launcher-bg, holds heading + subtitle +
+ *      divider + bottom-anchored byline row.
  *
- * Measured from lol-launcher-ref/image-2.png at ~1536px.
+ * Measured from lol-launcher-ref/image-2.png (1536px ref ÷ 1.2 = our space).
+ * Splash height 421px ≈ 58% of 720px container. Text band fills the remainder.
  */
 export function LauncherPatchHeroBanner({
   splashUrl,
   patchTitle,
   subtitle,
-  categoryChip = "Game Updates",
+  category = "Game Updates",
   authors,
   date,
 }: LauncherPatchHeroBannerProps) {
-  const byline =
-    authors && date
-      ? `${authors} • ${date}`
-      : authors ?? date ?? null;
+  /** Build the byline segments; only include non-empty parts. */
+  const bylineSegments: Array<{ gold?: boolean; text: string }> = [];
+  if (category) bylineSegments.push({ gold: true, text: category });
+  if (authors) bylineSegments.push({ text: authors });
+  if (date) bylineSegments.push({ text: date });
 
   return (
-    <div className="relative h-full w-full overflow-hidden">
-      {/* Champion splash — fills container edge-to-edge */}
-      <img
-        src={splashUrl}
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover"
-        style={{ objectPosition: "center top" }}
-      />
+    <div
+      className="flex h-full w-full flex-col overflow-hidden"
+      style={{ backgroundColor: "var(--color-launcher-bg)" }}
+    >
+      {/* ── Splash band — bounded to ~421px ── */}
+      <div className="relative w-full shrink-0" style={{ height: 421 }}>
+        <img
+          src={splashUrl}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: "center top" }}
+        />
+      </div>
 
-      {/* Bottom-up scrim — heavy at bottom, fades out at 70% */}
+      {/* ── Text band — solid launcher-bg, fills remainder ── */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0"
-        style={{
-          height: "70%",
-          background:
-            "linear-gradient(to top, color-mix(in srgb, var(--color-launcher-bg) 85%, transparent) 0%, color-mix(in srgb, var(--color-launcher-bg) 40%, transparent) 45%, transparent 70%)",
-        }}
-      />
-
-      {/* Text block — centered horizontally, ~60px from bottom */}
-      <div
-        className="absolute left-1/2 flex flex-col items-center text-center"
-        style={{
-          bottom: 60,
-          transform: "translateX(-50%)",
-          width: 600,
-        }}
+        className="relative flex min-h-0 flex-1 flex-col items-center px-8 pt-8"
+        style={{ backgroundColor: "var(--color-launcher-bg)" }}
       >
-        {/* Gold "Game Updates" category chip */}
-        <span
-          style={{
-            display: "inline-block",
-            backgroundColor: "var(--color-launcher-chip-game-updates-bg)",
-            color: "var(--color-launcher-chip-game-updates-ink)",
-            fontSize: 10,
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: "0.12em",
-            padding: "3px 10px",
-            borderRadius: 2,
-            marginBottom: 12,
-          }}
-        >
-          {categoryChip}
-        </span>
-
-        {/* Patch title — Beaufort display font, all-caps, white */}
+        {/* Patch title — Beaufort display font, all-caps, white, ~33px, 2-line wrap */}
         <h2
+          className="text-center"
           style={{
             color: "var(--color-launcher-ink)",
             fontFamily: "var(--font-display)",
-            fontSize: 28,
+            fontSize: 33,
             fontWeight: 800,
             textTransform: "uppercase",
-            lineHeight: 1.1,
-            marginBottom: 10,
+            lineHeight: 1.15,
+            marginBottom: 14,
+            maxWidth: 460,
           }}
         >
           {patchTitle}
@@ -112,28 +96,64 @@ export function LauncherPatchHeroBanner({
 
         {/* Subtitle — muted secondary text */}
         <p
+          className="text-center"
           style={{
             color: "var(--color-launcher-ink-muted)",
             fontSize: 14,
             fontWeight: 400,
             lineHeight: 1.4,
-            marginBottom: 10,
+            marginBottom: 14,
+            maxWidth: 460,
           }}
         >
           {subtitle}
         </p>
 
-        {/* Byline — author(s) + date in subtle caption style */}
-        {byline && (
-          <p
+        {/* Divider rule — 1px, launcher border token, spans content width */}
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 460,
+            height: 1,
+            backgroundColor: "var(--color-launcher-border)",
+            marginBottom: 12,
+          }}
+        />
+
+        {/* Byline row — [gold category] | [authors] | [date] with pipe separators */}
+        {bylineSegments.length > 0 && (
+          <div
+            className="flex items-center gap-0"
             style={{
-              color: "var(--color-launcher-ink-subtle)",
               fontSize: 11,
               fontWeight: 400,
+              lineHeight: 1,
             }}
           >
-            {byline}
-          </p>
+            {bylineSegments.map((seg, i) => (
+              <span key={i} className="flex items-center">
+                {i > 0 && (
+                  <span
+                    style={{
+                      color: "var(--color-launcher-ink-subtle)",
+                      padding: "0 8px",
+                    }}
+                  >
+                    |
+                  </span>
+                )}
+                <span
+                  style={{
+                    color: seg.gold
+                      ? "var(--color-launcher-accent)"
+                      : "var(--color-launcher-ink-subtle)",
+                  }}
+                >
+                  {seg.text}
+                </span>
+              </span>
+            ))}
+          </div>
         )}
       </div>
     </div>

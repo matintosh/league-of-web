@@ -34,9 +34,9 @@ export function LauncherPatchNotesPage() {
       splashUrl={PATCH_SPLASH_URL}
       patchTitle="LEAGUE OF LEGENDS PATCH 26.15 NOTES"
       subtitle="We're kicking off Season 3...but of what year?!"
-      categoryChip="Game Updates"
-      authors="Riot Cashout, slernied, Riot Yisu"
-      date="7/18/2026"
+      category="Game Updates"
+      authors="Riot Cashmiir, sternest, Riot Yina"
+      date="7/28/2026"
     />
   );
 }
