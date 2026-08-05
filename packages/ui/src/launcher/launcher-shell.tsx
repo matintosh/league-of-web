@@ -17,7 +17,7 @@
 import type { ReactNode } from "react";
 
 export interface LauncherShellProps {
-  /** Rendered into the left icon rail column (56px fixed). */
+  /** Rendered into the left icon rail column (64px fixed). */
   rail: ReactNode;
   /** Rendered into the center content column (flex-1). Includes tab bar + routed content. */
   children: ReactNode;
@@ -31,7 +31,7 @@ export interface LauncherShellProps {
  * 3-column launcher shell with an optional window top bar.
  *
  * Column proportions measured from lol-launcher-ref/image.png at ~1536px ref width:
- *   left rail   56px  (shrink-0)
+ *   left rail   64px  (shrink-0)
  *   center      flex  (flex-1, min-w-0)
  *   right panel 280px (shrink-0)
  *
@@ -58,9 +58,9 @@ export function LauncherShell({ rail, children, socialPanel, windowBar }: Launch
 
       {/* 3-column body */}
       <div className="flex min-h-0 flex-1">
-        {/* Left icon rail — 56px fixed */}
+        {/* Left icon rail — 64px fixed */}
         <aside
-          className="w-[56px] shrink-0 overflow-hidden"
+          className="w-[64px] shrink-0 overflow-hidden"
           style={{ backgroundColor: "var(--color-launcher-rail-bg)" }}
         >
           {rail}

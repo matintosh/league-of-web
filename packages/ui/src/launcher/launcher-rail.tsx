@@ -1,13 +1,14 @@
 "use client";
 
 /**
- * LauncherRail — 56px-wide vertical icon rail for the /launcher section.
+ * LauncherRail — 64px-wide vertical icon rail for the /launcher section.
  *
  * Renders a stack of game/utility icon slots. "top" items stack from the top;
- * "bottom" items pin to the bottom via a flex spacer. Each slot is 56×56px.
+ * "bottom" items pin to the bottom via a flex spacer. Each slot is 64×56px.
  *
- * Active slot: 3px left-edge accent bar (`--color-launcher-rail-active` gold-3)
- * + subtle panel-bg tint. Hover: panel-bg tint, no accent bar.
+ * Active slot: full-width ornate parchment-gold banner tile — a warm gold
+ * background with the icon scaled up and centred, matching the ref's ornate
+ * banner treatment. Inactive hover: panel-bg tint, no accent bar.
  * Default: icon at 60% opacity, no background.
  *
  * Props are generic — the page supplies real game logo assets (URL strings or
@@ -37,59 +38,83 @@ export interface LauncherRailProps {
   onSelect?: (id: string) => void;
 }
 
-/** Individual rail slot — renders a single icon with active/hover states. */
-function RailSlot({
+/**
+ * ActiveBannerSlot — ornate gold banner tile for the active game slot.
+ *
+ * Full-width parchment-gold tile with the icon scaled to 36×36 and centred.
+ * Matches the ref's "ornate banner" treatment: warm amber/gold bg, subtle
+ * top and bottom border lines.
+ */
+function ActiveBannerSlot({
   item,
-  isActive,
   onSelect,
-  accentBarId,
 }: {
   item: LauncherRailItem;
-  isActive: boolean;
   onSelect?: (id: string) => void;
-  accentBarId: string;
 }) {
   return (
     <button
       type="button"
       title={item.label}
       aria-label={item.label}
-      aria-current={isActive ? "page" : undefined}
+      aria-current="page"
       onClick={() => onSelect?.(item.id)}
       style={{
         position: "relative",
-        width: 56,
-        height: 56,
+        width: "100%",
+        height: 64,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         flexShrink: 0,
-        background: isActive ? "var(--color-launcher-panel-bg)" : "transparent",
+        /* Ornate gold/parchment banner background — gold-3 with warm tint */
+        background: "var(--color-launcher-active-banner-bg, color-mix(in srgb, var(--color-launcher-rail-active) 30%, #2a1f0a 70%))",
         border: "none",
         padding: 0,
         cursor: "pointer",
-        // CSS custom property trick: override on :hover via className below
       }}
-      className="launcher-rail-slot group"
+      className="launcher-rail-active-banner"
     >
-      {/* 3px left-edge active accent bar */}
-      {isActive && (
-        <span
-          id={accentBarId}
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            width: 3,
-            height: "100%",
-            backgroundColor: "var(--color-launcher-rail-active)",
-            borderRadius: "0 2px 2px 0",
-          }}
-        />
-      )}
+      {/* Top gold border line */}
+      <span
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 1,
+          backgroundColor: "var(--color-launcher-rail-active)",
+          opacity: 0.9,
+        }}
+      />
+      {/* Bottom gold border line */}
+      <span
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 1,
+          backgroundColor: "var(--color-launcher-rail-active)",
+          opacity: 0.6,
+        }}
+      />
+      {/* Left gold accent bar */}
+      <span
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: 3,
+          height: "100%",
+          backgroundColor: "var(--color-launcher-rail-active)",
+        }}
+      />
 
-      {/* Icon wrapper */}
+      {/* Icon wrapper — full opacity, gold tint */}
       <span
         style={{
           display: "flex",
@@ -97,13 +122,9 @@ function RailSlot({
           justifyContent: "center",
           width: 36,
           height: 36,
-          opacity: isActive ? 1 : 0.6,
-          transition: "opacity 150ms ease",
-          borderRadius: 6,
-          overflow: "hidden",
+          color: "var(--color-launcher-rail-active)",
           flexShrink: 0,
         }}
-        className="launcher-rail-icon"
       >
         {typeof item.icon === "string" ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -122,14 +143,83 @@ function RailSlot({
   );
 }
 
+/** Individual rail slot — renders a single icon with active/hover states. */
+function RailSlot({
+  item,
+  isActive,
+  onSelect,
+}: {
+  item: LauncherRailItem;
+  isActive: boolean;
+  onSelect?: (id: string) => void;
+}) {
+  if (isActive) {
+    return <ActiveBannerSlot item={item} onSelect={onSelect} />;
+  }
+
+  return (
+    <button
+      type="button"
+      title={item.label}
+      aria-label={item.label}
+      onClick={() => onSelect?.(item.id)}
+      style={{
+        position: "relative",
+        width: "100%",
+        height: 56,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+        background: "transparent",
+        border: "none",
+        padding: 0,
+        cursor: "pointer",
+      }}
+      className="launcher-rail-slot group"
+    >
+      {/* Icon wrapper */}
+      <span
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 32,
+          height: 32,
+          opacity: 0.6,
+          transition: "opacity 150ms ease",
+          flexShrink: 0,
+        }}
+        className="launcher-rail-icon"
+      >
+        {typeof item.icon === "string" ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.icon}
+            alt={item.label}
+            width={32}
+            height={32}
+            style={{ objectFit: "contain", width: 32, height: 32 }}
+          />
+        ) : (
+          item.icon
+        )}
+      </span>
+    </button>
+  );
+}
+
 /**
- * LauncherRail — full-height 56px icon strip.
+ * LauncherRail — full-height 64px icon strip.
  *
+ * Active slot: ornate parchment-gold banner tile (full width, 64px tall).
+ * Inactive slots: 56×56px with icon at 60% opacity.
  * Hover opacity is handled by a scoped `<style>` block — established pattern
  * in this codebase for CSS-variable-based hover states (see merch-header.tsx).
  */
 export function LauncherRail({ items, activeId, onSelect }: LauncherRailProps) {
   const uid = useId();
+  void uid; // uid available for future ARIA use
 
   const topItems = items.filter((i) => (i.position ?? "top") === "top");
   const bottomItems = items.filter((i) => i.position === "bottom");
@@ -157,7 +247,7 @@ export function LauncherRail({ items, activeId, onSelect }: LauncherRailProps) {
         style={{
           display: "flex",
           flexDirection: "column",
-          width: 56,
+          width: "100%",
           height: "100%",
           backgroundColor: "var(--color-launcher-rail-bg)",
         }}
@@ -170,7 +260,6 @@ export function LauncherRail({ items, activeId, onSelect }: LauncherRailProps) {
               item={item}
               isActive={item.id === activeId}
               onSelect={onSelect}
-              accentBarId={`${uid}-accent-${item.id}`}
             />
           ))}
         </div>
@@ -186,7 +275,6 @@ export function LauncherRail({ items, activeId, onSelect }: LauncherRailProps) {
               item={item}
               isActive={item.id === activeId}
               onSelect={onSelect}
-              accentBarId={`${uid}-accent-${item.id}`}
             />
           ))}
         </div>

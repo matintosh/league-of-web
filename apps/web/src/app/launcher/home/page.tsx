@@ -23,6 +23,9 @@ import {
   GameLolLogo,
   GameValorantLogo,
   GameTftLogo,
+  GameTwoXkoLogo,
+  GameWildRiftLogo,
+  GameRiotShieldLogo,
 } from "@low/ui";
 
 // ---------------------------------------------------------------------------
@@ -139,7 +142,22 @@ const PATCH_NOTES: PatchNoteData[] = [
 // Home uses a house icon; LoL/VALORANT/TFT use their real compact emblems.
 // ---------------------------------------------------------------------------
 
+/**
+ * Full Riot roster — 9 items matching the ref (image.png left rail).
+ * Top: Riot fist, Home (active), All-games grid, LoL, Valorant, Wild Rift, 2XKO, TFT.
+ * Bottom pinned: Riot R shield.
+ */
 const RAIL_ITEMS = [
+  {
+    id: "riot",
+    label: "Riot Games",
+    position: "top" as const,
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M7 4h10v2H7V4zm-1 3h12v1.5l1 2v4.5H5v-4.5l1-2V7zm2 6.5h8V11H8v2.5zm-2 2h12v1H6v-1zm1 2h10v1H7v-1z" />
+      </svg>
+    ),
+  },
   {
     id: "home",
     label: "Home",
@@ -152,25 +170,53 @@ const RAIL_ITEMS = [
     ),
   },
   {
+    id: "games",
+    label: "All Games",
+    position: "top" as const,
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="currentColor">
+        <rect x="2" y="2" width="7" height="7" rx="1" />
+        <rect x="11" y="2" width="7" height="7" rx="1" />
+        <rect x="2" y="11" width="7" height="7" rx="1" />
+        <rect x="11" y="11" width="7" height="7" rx="1" />
+      </svg>
+    ),
+  },
+  {
     id: "lol",
     label: "League of Legends",
     position: "top" as const,
-    // LolLogo: crossed-swords crest + wordmark lockup at 28px for the 56px rail
-    icon: <GameLolLogo size={28} />,
+    icon: <GameLolLogo size={28} variant="emblem" />,
   },
   {
     id: "valorant",
     label: "VALORANT",
     position: "top" as const,
-    // GameValorantLogo: V accent marks + bold wordmark
-    icon: <GameValorantLogo size={28} />,
+    icon: <GameValorantLogo size={28} variant="emblem" />,
+  },
+  {
+    id: "wildrift",
+    label: "Wild Rift",
+    position: "top" as const,
+    icon: <GameWildRiftLogo size={28} variant="emblem" />,
+  },
+  {
+    id: "2xko",
+    label: "2XKO",
+    position: "top" as const,
+    icon: <GameTwoXkoLogo size={28} variant="emblem" />,
   },
   {
     id: "tft",
     label: "Teamfight Tactics",
     position: "top" as const,
-    // GameTftLogo: "TFT" acronym + subtitle
-    icon: <GameTftLogo size={28} />,
+    icon: <GameTftLogo size={28} variant="emblem" />,
+  },
+  {
+    id: "riot-shield",
+    label: "Riot",
+    position: "bottom" as const,
+    icon: <GameRiotShieldLogo size={28} />,
   },
 ];
 
