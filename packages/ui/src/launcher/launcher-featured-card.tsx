@@ -1,19 +1,20 @@
 /**
  * LauncherFeaturedCard — bottom-left overlay card for the Overview hero splash.
  *
- * In the ref: category label "League Classic Cinematic", title "Welcome Back, Summoners",
- * body description, and a "Watch Now" CTA button. Rendered as a child slot of
- * LauncherOverviewHero — the hero scrim provides the dark canvas.
+ * In the ref: a single merged heading "League Classic Cinematic - Welcome Back,
+ * Summoners" (no separate eyebrow label), body description, and an opaque dark-grey
+ * "Watch Now" CTA button. Rendered as a child slot of LauncherOverviewHero — the
+ * hero's left vignette scrim provides the dark canvas.
  *
- * Token source: packages/tokens/src/theme.css — --color-launcher-* set (issues #679, #681, #684).
+ * Token source: packages/tokens/src/theme.css — --color-launcher-* set (issues #679, #681, #684, #732).
  */
 
 "use client";
 
 export interface LauncherFeaturedCardProps {
-  /** Small category label above the title. E.g. "League Classic Cinematic". */
+  /** Category label merged into the heading, e.g. "League Classic Cinematic". */
   categoryLabel: string;
-  /** Main heading. E.g. "Welcome Back, Summoners". */
+  /** Main heading tail, e.g. "Welcome Back, Summoners". */
   title: string;
   /** Body description, 1–3 sentences. */
   description: string;
@@ -26,12 +27,12 @@ export interface LauncherFeaturedCardProps {
 /**
  * Cinematic/news overlay card for the launcher Overview hero.
  *
- * Layout (measured from lol-launcher-ref/image.png at ~1536px):
- *   - max-width ≈ 420px; height auto; transparent bg (hero scrim provides dark canvas)
- *   - Category label (muted, 11px/600, uppercase, tracking-wide)
- *   - Title (white, 22px/700, display font, max 2 lines)
+ * Layout (measured from lol-launcher-ref/image.png at ~1536px, ÷1.2):
+ *   - max-width ≈ 360px; height auto; transparent bg (hero scrim provides dark canvas)
+ *   - Single merged heading (white, ~19–20px/700): "{categoryLabel} - {title}", wraps 2 lines
+ *   - No separate eyebrow — the ref shows one combined heading line group
  *   - Description (muted, 13px/400, line-clamped to 3)
- *   - "Watch Now" frosted-glass CTA button (32px, fit-content, hover state)
+ *   - "Watch Now" opaque dark-grey CTA (~129×39px, --color-launcher-cta-opaque-bg)
  */
 export function LauncherFeaturedCard({
   categoryLabel,
@@ -41,35 +42,20 @@ export function LauncherFeaturedCard({
   onCta,
 }: LauncherFeaturedCardProps) {
   return (
-    <div style={{ maxWidth: 420 }}>
-      {/* Category label */}
-      <p
-        style={{
-          color: "var(--color-launcher-ink-muted)",
-          fontSize: 11,
-          fontWeight: 600,
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-          marginBottom: 6,
-          margin: "0 0 6px",
-        }}
-      >
-        {categoryLabel}
-      </p>
-
-      {/* Title */}
+    <div style={{ maxWidth: 360 }}>
+      {/* Merged single heading — ref shows no eyebrow; category + title joined by " - " */}
       <h2
         style={{
           color: "var(--color-launcher-ink)",
-          fontFamily: "var(--font-display)",
-          fontSize: 22,
+          fontFamily: "var(--font-launcher)",
+          fontSize: 19,
           fontWeight: 700,
-          lineHeight: 1.2,
+          lineHeight: 1.25,
           marginBottom: 8,
           margin: "0 0 8px",
         }}
       >
-        {title}
+        {categoryLabel} - {title}
       </h2>
 
       {/* Description */}
@@ -90,18 +76,18 @@ export function LauncherFeaturedCard({
         {description}
       </p>
 
-      {/* "Watch Now" CTA button */}
+      {/* CTA button — opaque dark-grey fill (~129×39px per ref measurement) */}
       <button
         type="button"
         onClick={onCta}
         style={{
           display: "inline-flex",
           alignItems: "center",
-          height: 32,
-          padding: "0 16px",
+          height: 39,
+          padding: "0 24px",
           borderRadius: 2,
-          border: "1px solid var(--color-launcher-cta-border)",
-          background: "var(--color-launcher-cta-bg)",
+          border: "none",
+          background: "var(--color-launcher-cta-opaque-bg)",
           color: "var(--color-launcher-ink)",
           fontSize: 12,
           fontWeight: 600,
@@ -109,14 +95,16 @@ export function LauncherFeaturedCard({
           textTransform: "uppercase",
           cursor: "pointer",
           transition: "background 150ms ease",
+          minWidth: 129,
+          justifyContent: "center",
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLButtonElement).style.background =
-            "var(--color-launcher-cta-hover-bg)";
+            "var(--color-launcher-cta-opaque-hover)";
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLButtonElement).style.background =
-            "var(--color-launcher-cta-bg)";
+            "var(--color-launcher-cta-opaque-bg)";
         }}
       >
         {ctaLabel}

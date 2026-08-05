@@ -3,7 +3,7 @@
  *
  * Composes LauncherOverviewHero + LauncherFeaturedCard + LauncherContentCarousel
  * into the full Overview tab layout. Fixture data is hardcoded here (types from
- * @low/fixtures, values supplied inline), matching the issue #694 spec and
+ * @low/fixtures, values supplied inline), matching the issue #694/#732 spec and
  * lol-launcher-ref screenshots.
  *
  * This component is NOT a page route — it is the content rendered when the
@@ -36,7 +36,8 @@ const DEFAULT_GAME_MODES: LauncherGameMode[] = [
   { id: "lol-pbe", label: "League of Legends", isPbe: true },
 ];
 
-/** Featured card content — League Classic Cinematic announcement. */
+/** Featured card content — League Classic Cinematic announcement.
+ *  Ref: single merged heading, no eyebrow. categoryLabel + title joined by " - ". */
 const FEATURED_ITEM = {
   categoryLabel: "League Classic Cinematic",
   title: "Welcome Back, Summoners",
@@ -45,17 +46,23 @@ const FEATURED_ITEM = {
   ctaLabel: "Watch Now",
 } as const;
 
-/** Carousel items — 5 champion splash thumbnails with titles. */
+/**
+ * Carousel items — wide mixed-media cards (~300px) matching the ref.
+ * First card has a "DEV" badge (art card); second has a "16:50" duration overlay
+ * (video card); remaining items are standard thumbnails.
+ */
 const CAROUSEL_ITEMS: LauncherContentItem[] = [
   {
     id: "carousel-lissandra",
     thumbnailUrl: championSplashUrl("Lissandra", 0),
     title: "Lissandra — New Lore Spotlight",
+    badge: "DEV",
   },
   {
     id: "carousel-jinx",
     thumbnailUrl: championSplashUrl("Jinx", 0),
-    title: "Jinx — Arcane Celebration",
+    title: "League Classic Cinematic - Welcome Back, Summoners",
+    duration: "16:50",
   },
   {
     id: "carousel-ahri",

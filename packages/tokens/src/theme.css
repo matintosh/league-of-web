@@ -251,10 +251,18 @@
   --color-launcher-chip-bg:      rgba(255,255,255,0.12); /* frosted chip fill */
   --color-launcher-chip-border:  rgba(255,255,255,0.20); /* chip border */
 
-  /* Watch Now button (issue #684) */
-  --color-launcher-cta-bg:       rgba(255,255,255,0.18);
-  --color-launcher-cta-border:   rgba(255,255,255,0.35);
-  --color-launcher-cta-hover-bg: rgba(255,255,255,0.28);
+  /* Watch Now / CTA button (issue #684, #732) */
+  --color-launcher-cta-bg:           rgba(255,255,255,0.18);
+  --color-launcher-cta-border:       rgba(255,255,255,0.35);
+  --color-launcher-cta-hover-bg:     rgba(255,255,255,0.28);
+  /* Opaque dark-grey CTA fill (issue #732) — ref image samples rgb(48,49,51);
+     replaces frosted glass so the button is legible over the splash art. */
+  --color-launcher-cta-opaque-bg:    #303133;
+  --color-launcher-cta-opaque-hover: #3e4042;
+  /* Semi-opaque dark pill overlay — carousel badge/duration labels (issue #732) */
+  --color-launcher-badge-overlay:    rgba(0,0,0,0.72);
+  /* Drop-shadow tint for the gold wordmark lockup (issue #732) */
+  --color-launcher-wordmark-shadow:  rgba(0,0,0,0.7);
 
   /* Thumbnail / carousel (issue #685) */
   --color-launcher-thumb-bg:     #1a1a1a;
@@ -506,10 +514,17 @@
     --color-launcher-chip-bg:      rgba(255,255,255,0.12);
     --color-launcher-chip-border:  rgba(255,255,255,0.20);
 
-    /* Watch Now button (issue #684) */
-    --color-launcher-cta-bg:       rgba(255,255,255,0.18);
-    --color-launcher-cta-border:   rgba(255,255,255,0.35);
-    --color-launcher-cta-hover-bg: rgba(255,255,255,0.28);
+    /* Watch Now / CTA button (issue #684, #732) */
+    --color-launcher-cta-bg:           rgba(255,255,255,0.18);
+    --color-launcher-cta-border:       rgba(255,255,255,0.35);
+    --color-launcher-cta-hover-bg:     rgba(255,255,255,0.28);
+    /* Opaque dark-grey CTA fill (issue #732) — ref image samples rgb(48,49,51) */
+    --color-launcher-cta-opaque-bg:    #303133;
+    --color-launcher-cta-opaque-hover: #3e4042;
+    /* Semi-opaque dark pill overlay — carousel badge/duration labels (issue #732) */
+    --color-launcher-badge-overlay:    rgba(0,0,0,0.72);
+    /* Drop-shadow tint for the gold wordmark lockup (issue #732) */
+    --color-launcher-wordmark-shadow:  rgba(0,0,0,0.7);
 
     /* Thumbnail / carousel (issue #685) */
     --color-launcher-thumb-bg:     #1a1a1a;
