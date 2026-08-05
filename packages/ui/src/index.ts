@@ -185,7 +185,9 @@ export { StatMedallion } from "./collection/stat-medallion";
 export type { StatMedallionProps, TierEntry } from "./collection/stat-medallion";
 export { StatsTab } from "./collection/stats-tab";
 export type { StatsTabProps, PlayStyleStat, SeasonStats } from "./collection/stats-tab";
-// launcher — alphabetical: GameTile < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
+// launcher — alphabetical: FeaturedGamePromoHero < GameTile < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherRiotHomePage < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar < PatchNoteCard
+export { FeaturedGamePromoHero } from "./launcher/featured-game-promo-hero";
+export type { FeaturedGamePromoHeroProps } from "./launcher/featured-game-promo-hero";
 export { GameTile } from "./launcher/game-tile";
 export type { GameTileProps } from "./launcher/game-tile";
 export { LauncherContentCarousel } from "./launcher/launcher-content-carousel";
@@ -211,6 +213,8 @@ export { LauncherPlayButton } from "./launcher/launcher-play-button";
 export type { LauncherPlayButtonProps, LauncherGameMode } from "./launcher/launcher-play-button";
 export { LauncherRail } from "./launcher/launcher-rail";
 export type { LauncherRailProps, LauncherRailItem } from "./launcher/launcher-rail";
+export { LauncherRiotHomePage } from "./launcher/launcher-riot-home-page";
+export type { LauncherRiotHomePageProps } from "./launcher/launcher-riot-home-page";
 export { LauncherShell } from "./launcher/launcher-shell";
 export type { LauncherShellProps } from "./launcher/launcher-shell";
 export { LauncherSocialPanel } from "./launcher/launcher-social-panel";
@@ -223,6 +227,8 @@ export { LauncherTabBar } from "./launcher/launcher-tab-bar";
 export type { LauncherTabBarProps, LauncherTab } from "./launcher/launcher-tab-bar";
 export { LauncherWindowBar } from "./launcher/launcher-window-bar";
 export type { LauncherWindowBarProps } from "./launcher/launcher-window-bar";
+export { PatchNoteCard } from "./launcher/patch-note-card";
+export type { PatchNoteCardProps } from "./launcher/patch-note-card";
 // login — alphabetical: CircleSubmitButton < LoginAuthTabs < LoginCheckbox < LoginLegalFooter < LoginNoticeBanner < LoginTextInput < LolClassicLogo < SocialLoginButtons
 export { CircleSubmitButton } from "./login/circle-submit-button";
 export type { CircleSubmitButtonProps } from "./login/circle-submit-button";

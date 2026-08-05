@@ -258,6 +258,10 @@
   --color-launcher-chip-game-updates-bg:    #c89b3c;
   --color-launcher-chip-game-updates-ink:   #000000;
 
+  /* Riot Home — promo hero + patch note cards (issues #678, #680, #682).
+     surface/surface-alt/badge-* already declared by the Games tokens below — reuse those. */
+  --color-launcher-red:          #ff4655; /* VALORANT red — status / branded accents */
+
   /* Esports */
   --color-launcher-esports-heading:      #ffffff;
   --color-launcher-esports-card-bg:      #161616;
@@ -500,6 +504,10 @@
     --color-launcher-patch-bg:                #0d0d0d;
     --color-launcher-chip-game-updates-bg:    #c89b3c;
     --color-launcher-chip-game-updates-ink:   #000000;
+
+    /* Riot Home — promo hero + patch note cards (issues #678, #680, #682).
+       surface/surface-alt/badge-* already declared by the Games tokens below — reuse those. */
+    --color-launcher-red:          #ff4655;
 
     /* Esports */
     --color-launcher-esports-heading:      #ffffff;

@@ -107,6 +107,7 @@ import { storeItemTileShowcase } from "./store/store-item-tile.showcase";
 import { storeSubNavBarShowcase } from "./store/store-sub-nav-bar.showcase";
 import { yourShopIconShowcase } from "./store/your-shop-icon.showcase";
 import { yourShopScreenShowcase } from "./store/your-shop-screen.showcase";
+import { featuredGamePromoHeroShowcase } from "./launcher/featured-game-promo-hero.showcase";
 import { gameTileShowcase } from "./launcher/game-tile.showcase";
 import { launcherContentCarouselShowcase } from "./launcher/launcher-content-carousel.showcase";
 import { launcherEsportsNewsCardShowcase } from "./launcher/launcher-esports-news-card.showcase";
@@ -117,6 +118,8 @@ import { launcherGamesPageShowcase } from "./launcher/launcher-games-page.showca
 import { launcherMerchPageShowcase } from "./launcher/launcher-merch-page.showcase";
 import { launcherOverviewHeroShowcase } from "./launcher/launcher-overview-hero.showcase";
 import { launcherOverviewPageShowcase } from "./launcher/launcher-overview-page.showcase";
+import { launcherRiotHomePageShowcase } from "./launcher/launcher-riot-home-page.showcase";
+import { patchNoteCardShowcase } from "./launcher/patch-note-card.showcase";
 import { launcherPatchHeroBannerShowcase } from "./launcher/launcher-patch-hero-banner.showcase";
 import { launcherPatchNotesPageShowcase } from "./launcher/launcher-patch-notes-page.showcase";
 import { launcherPlayButtonShowcase } from "./launcher/launcher-play-button.showcase";
@@ -273,7 +276,8 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
-  // launcher — alphabetical: GameTile < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
+  // launcher — alphabetical: FeaturedGamePromoHero < GameTile < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherRiotHomePage < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar < PatchNoteCard
+  featuredGamePromoHeroShowcase,
   gameTileShowcase,
   launcherContentCarouselShowcase,
   launcherEsportsNewsCardShowcase,
@@ -288,10 +292,12 @@ export const registry: ShowcaseEntry[] = [
   launcherPatchNotesPageShowcase,
   launcherPlayButtonShowcase,
   launcherRailShowcase,
+  launcherRiotHomePageShowcase,
   launcherShellShowcase,
   launcherSocialPanelShowcase,
   launcherTabBarShowcase,
   launcherWindowBarShowcase,
+  patchNoteCardShowcase,
   // merch — alphabetical: MerchBreadcrumbBar < MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchShopCarousel < MerchSignInPanel < MerchSizeGuideModal < MerchStore < MerchSupportForm < MerchSupportHero < MerchSupportTabStrip
   merchBreadcrumbBarShowcase,
   merchCartDrawerShowcase,
