@@ -185,15 +185,21 @@ export { StatMedallion } from "./collection/stat-medallion";
 export type { StatMedallionProps, TierEntry } from "./collection/stat-medallion";
 export { StatsTab } from "./collection/stats-tab";
 export type { StatsTabProps, PlayStyleStat, SeasonStats } from "./collection/stats-tab";
-// login
+// login — alphabetical: CircleSubmitButton < LoginAuthTabs < LoginCheckbox < LoginLegalFooter < LoginNoticeBanner < LoginTextInput < SocialLoginButtons
 export { CircleSubmitButton } from "./login/circle-submit-button";
 export type { CircleSubmitButtonProps } from "./login/circle-submit-button";
+export { LoginAuthTabs } from "./login/login-auth-tabs";
+export type { LoginAuthTabsProps, LoginAuthTab } from "./login/login-auth-tabs";
 export { LoginCheckbox } from "./login/login-checkbox";
 export type { LoginCheckboxProps } from "./login/login-checkbox";
+export { LoginLegalFooter } from "./login/login-legal-footer";
+export type { LoginLegalFooterProps } from "./login/login-legal-footer";
+export { LoginNoticeBanner } from "./login/login-notice-banner";
+export type { LoginNoticeBannerProps } from "./login/login-notice-banner";
 export { LoginTextInput } from "./login/login-text-input";
 export type { LoginTextInputProps } from "./login/login-text-input";
 export { SocialLoginButtons } from "./login/social-login-buttons";
-export type { SocialLoginButtonsProps } from "./login/social-login-buttons";
+export type { SocialLoginButtonsProps, Provider } from "./login/social-login-buttons";
 // lobby
 export { GameModeCard } from "./lobby/game-mode-card";
 export type { GameModeCardProps } from "./lobby/game-mode-card";

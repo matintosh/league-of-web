@@ -67,7 +67,7 @@ export function LoginTextInput({
           "h-12 rounded-none border-b-2 border-b-transparent",
           "font-body text-sm text-login-ink",
           "outline-none",
-          "focus:border-b-riot-red",
+          "focus:border-b-login-accent",
           "transition-colors duration-150",
           disabled ? "cursor-not-allowed" : "cursor-text",
         ].join(" ")}

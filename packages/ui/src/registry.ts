@@ -91,7 +91,10 @@ import { rolePickerPopoverShowcase } from "./lobby/role-picker-popover.showcase"
 import { roleSelectorShowcase } from "./lobby/role-selector.showcase";
 import { roleSlotRowShowcase } from "./lobby/role-slot-row.showcase";
 import { circleSubmitButtonShowcase } from "./login/circle-submit-button.showcase";
+import { loginAuthTabsShowcase } from "./login/login-auth-tabs.showcase";
 import { loginCheckboxShowcase } from "./login/login-checkbox.showcase";
+import { loginLegalFooterShowcase } from "./login/login-legal-footer.showcase";
+import { loginNoticeBannerShowcase } from "./login/login-notice-banner.showcase";
 import { loginTextInputShowcase } from "./login/login-text-input.showcase";
 import { socialLoginButtonsShowcase } from "./login/social-login-buttons.showcase";
 import { featuredTabShowcase } from "./store/featured-tab.showcase";
@@ -204,9 +207,12 @@ export const registry: ShowcaseEntry[] = [
   updatesFlyoutShowcase,
   welcomeToSeasonModalShowcase,
   windowFrameShowcase,
-  // login
+  // login — alphabetical: CircleSubmitButton < LoginAuthTabs < LoginCheckbox < LoginLegalFooter < LoginNoticeBanner < LoginTextInput < SocialLoginButtons
   circleSubmitButtonShowcase,
+  loginAuthTabsShowcase,
   loginCheckboxShowcase,
+  loginLegalFooterShowcase,
+  loginNoticeBannerShowcase,
   loginTextInputShowcase,
   socialLoginButtonsShowcase,
   // collection — alphabetical: ChallengesScreen < ChampionCard < ChampionDetail < EmoteTile < EmoteWheel < HonorCheckpointOverlay < MasteryCelebrationOverlay < ProfileRankedScreen < RankPromotionOverlay < RunesScreen < SkinCard < SkinPreview < SpellsTab < StatMedallion < StatsTab
