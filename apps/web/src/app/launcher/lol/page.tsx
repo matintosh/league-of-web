@@ -113,10 +113,10 @@ const RAIL_ROUTES: Record<string, string> = {
   games: "/launcher/games",
 };
 
-/** Tab bar definitions — Overview is default. */
+/** Tab bar definitions — Overview is default. Patch Notes has a badge dot. */
 const TABS: LauncherTab[] = [
   { id: "overview", label: "Overview" },
-  { id: "patch-notes", label: "Patch Notes" },
+  { id: "patch-notes", label: "Patch Notes", showBadge: true },
   { id: "esports", label: "Esports" },
   { id: "merch", label: "Merch" },
 ];
@@ -327,14 +327,7 @@ export default function LauncherLolPage() {
         />
       }
     >
-      {/* Tab bar — 40px strip at the top of the center content column */}
-      <LauncherTabBar
-        tabs={TABS}
-        activeId={activeTab}
-        onTabChange={handleTabChange}
-      />
-
-      {/* Center content area — flex-1, fills remaining height below the tab bar */}
+      {/* Center content area — relative container so the floating tab pill can overlay the hero */}
       <div className="relative min-h-0 flex-1 overflow-hidden">
         {activeTab === "overview" ? (
           <LauncherOverviewPage
@@ -355,6 +348,26 @@ export default function LauncherLolPage() {
         ) : activeTab === "merch" ? (
           <LauncherMerchPage />
         ) : null}
+
+        {/* Tab bar — floating translucent pill overlaid on the hero, right-of-center per ref */}
+        <div
+          style={{
+            position: "absolute",
+            top: 14,
+            left: "50%",
+            transform: "translateX(0%)",
+            zIndex: 10,
+            pointerEvents: "none",
+          }}
+        >
+          <div style={{ pointerEvents: "auto" }}>
+            <LauncherTabBar
+              tabs={TABS}
+              activeId={activeTab}
+              onTabChange={handleTabChange}
+            />
+          </div>
+        </div>
       </div>
     </LauncherShell>
   );

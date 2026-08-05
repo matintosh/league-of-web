@@ -5,53 +5,72 @@ import { LauncherTabBar } from "./launcher-tab-bar";
 
 const DEFAULT_TABS = [
   { id: "overview", label: "Overview" },
-  { id: "patch-notes", label: "Patch Notes" },
+  { id: "patch-notes", label: "Patch Notes", showBadge: true },
   { id: "esports", label: "Esports" },
   { id: "merch", label: "Merch" },
 ];
 
+/** Wrapper that mimics the dark hero surface the pill floats over. */
+function PillWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        width: 600,
+        height: 80,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "var(--color-launcher-content-bg)",
+        borderRadius: 8,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 /** Overview active — static display. */
 export function TabBarOverviewDemo() {
   return (
-    <div style={{ width: 600, backgroundColor: "var(--color-launcher-content-bg)" }}>
+    <PillWrapper>
       <LauncherTabBar tabs={DEFAULT_TABS} activeId="overview" onTabChange={() => undefined} />
-    </div>
+    </PillWrapper>
   );
 }
 
 /** Patch Notes active — static display. */
 export function TabBarPatchNotesDemo() {
   return (
-    <div style={{ width: 600, backgroundColor: "var(--color-launcher-content-bg)" }}>
+    <PillWrapper>
       <LauncherTabBar tabs={DEFAULT_TABS} activeId="patch-notes" onTabChange={() => undefined} />
-    </div>
+    </PillWrapper>
   );
 }
 
 /** Esports active — static display. */
 export function TabBarEsportsDemo() {
   return (
-    <div style={{ width: 600, backgroundColor: "var(--color-launcher-content-bg)" }}>
+    <PillWrapper>
       <LauncherTabBar tabs={DEFAULT_TABS} activeId="esports" onTabChange={() => undefined} />
-    </div>
+    </PillWrapper>
   );
 }
 
 /** Merch active — static display. */
 export function TabBarMerchDemo() {
   return (
-    <div style={{ width: 600, backgroundColor: "var(--color-launcher-content-bg)" }}>
+    <PillWrapper>
       <LauncherTabBar tabs={DEFAULT_TABS} activeId="merch" onTabChange={() => undefined} />
-    </div>
+    </PillWrapper>
   );
 }
 
 /** No active tab. */
 export function TabBarNoActiveDemo() {
   return (
-    <div style={{ width: 600, backgroundColor: "var(--color-launcher-content-bg)" }}>
+    <PillWrapper>
       <LauncherTabBar tabs={DEFAULT_TABS} onTabChange={() => undefined} />
-    </div>
+    </PillWrapper>
   );
 }
 
@@ -60,12 +79,12 @@ export function LauncherTabBarInteractiveDemo() {
   const [activeId, setActiveId] = useState("overview");
 
   return (
-    <div style={{ width: 600, backgroundColor: "var(--color-launcher-content-bg)" }}>
+    <PillWrapper>
       <LauncherTabBar
         tabs={DEFAULT_TABS}
         activeId={activeId}
         onTabChange={setActiveId}
       />
-    </div>
+    </PillWrapper>
   );
 }
