@@ -19,6 +19,14 @@ const HUB_CARDS: LandingHubCard[] = [
     badge: "Hextech design system",
   },
   {
+    id: "launcher",
+    label: "Launcher",
+    description:
+      "The Riot/League game launcher — the screen after login, before the client opens. LoL launcher (Overview · Patch Notes · Esports · Merch) plus the Riot multi-game Home and Games library.",
+    href: "/launcher",
+    badge: "Launcher design system",
+  },
+  {
     id: "merch",
     label: "Merch",
     description:
@@ -43,7 +51,7 @@ export default function Home() {
   return (
     <LandingHub
       title="League of Web"
-      subtitle="A portfolio project: a 1:1 web recreation of the LoL client, a Riot merch store scaffold, and a component showcase."
+      subtitle="A portfolio project: a 1:1 web recreation of the LoL client, the game launcher, a Riot merch store scaffold, and a component showcase."
       cards={HUB_CARDS}
       utilityLink={{ label: "Component Showcase →", href: "/showcase" }}
     />
