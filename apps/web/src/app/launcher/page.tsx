@@ -1,32 +1,16 @@
 /**
- * /launcher page — placeholder until /launcher/overview is built.
+ * /launcher page — delegates to LauncherClient (client component).
  *
- * Renders a minimal "coming soon" content area inside the launcher shell
- * (supplied by layout.tsx). When the overview tab is implemented this page
- * can be replaced with: `redirect("/launcher/overview")`.
+ * Server component: supplies no props. LauncherClient owns all state and
+ * assembles the full launcher shell (window bar, rail, tab bar, play button,
+ * overview hero, social panel). Layout passthrough — the layout.tsx shell
+ * wrapper is bypassed in favour of the full self-contained client assembly.
+ *
+ * Closes #694.
  */
 
+import { LauncherClient } from "./launcher-client";
+
 export default function LauncherPage() {
-  return (
-    <div
-      className="flex h-full w-full flex-col items-center justify-center gap-3"
-      style={{ color: "var(--color-launcher-text-muted)" }}
-    >
-      <p
-        className="text-xs uppercase tracking-[0.3em]"
-        style={{ color: "var(--color-launcher-tab-active)" }}
-      >
-        Coming soon
-      </p>
-      <h2
-        className="text-2xl font-bold uppercase tracking-widest"
-        style={{ color: "var(--color-launcher-text-primary)", fontFamily: "var(--font-display)" }}
-      >
-        Launcher
-      </h2>
-      <p className="text-sm" style={{ color: "var(--color-launcher-text-muted)" }}>
-        Launcher tabs are being built. Check back soon.
-      </p>
-    </div>
-  );
+  return <LauncherClient />;
 }

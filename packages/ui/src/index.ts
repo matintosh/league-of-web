@@ -185,13 +185,15 @@ export { StatMedallion } from "./collection/stat-medallion";
 export type { StatMedallionProps, TierEntry } from "./collection/stat-medallion";
 export { StatsTab } from "./collection/stats-tab";
 export type { StatsTabProps, PlayStyleStat, SeasonStats } from "./collection/stats-tab";
-// launcher — alphabetical: LauncherContentCarousel < LauncherFeaturedCard < LauncherOverviewHero < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
+// launcher — alphabetical: LauncherContentCarousel < LauncherFeaturedCard < LauncherOverviewHero < LauncherOverviewPage < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
 export { LauncherContentCarousel } from "./launcher/launcher-content-carousel";
 export type { LauncherContentCarouselProps, LauncherContentItem } from "./launcher/launcher-content-carousel";
 export { LauncherFeaturedCard } from "./launcher/launcher-featured-card";
 export type { LauncherFeaturedCardProps } from "./launcher/launcher-featured-card";
 export { LauncherOverviewHero } from "./launcher/launcher-overview-hero";
 export type { LauncherOverviewHeroProps } from "./launcher/launcher-overview-hero";
+export { LauncherOverviewPage } from "./launcher/launcher-overview-page";
+export type { LauncherOverviewPageProps } from "./launcher/launcher-overview-page";
 export { LauncherPlayButton } from "./launcher/launcher-play-button";
 export type { LauncherPlayButtonProps, LauncherGameMode } from "./launcher/launcher-play-button";
 export { LauncherRail } from "./launcher/launcher-rail";

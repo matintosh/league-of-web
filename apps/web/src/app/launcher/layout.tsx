@@ -1,29 +1,13 @@
 /**
- * /launcher layout — composes LauncherShell with empty slot placeholders so the
- * dark launcher palette is applied to every route under /launcher/. Individual
- * rail, social-panel, and window-bar components (built in subsequent issues) will
- * replace the placeholder divs once available.
+ * /launcher layout — passthrough wrapper.
  *
- * The --color-launcher-* tokens live in the main theme.css (not a separate file
- * like /merch uses for merch.css) because the launcher is an in-client section
- * that shares the Hextech token namespace. No separate CSS import is needed here.
+ * The full LauncherShell (with rail, social panel, window bar) is assembled by
+ * LauncherClient in page.tsx, not the layout. This passthrough exists so Next.js
+ * still has a layout file for the /launcher segment. The dark --color-launcher-*
+ * tokens are available globally via packages/tokens/src/theme.css (already
+ * imported in the root layout via globals.css) — no additional CSS import needed.
  */
 
-import { LauncherShell } from "@low/ui";
-
 export default function LauncherLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <LauncherShell
-      rail={
-        /* Rail placeholder — replaced by LauncherIconRail in a follow-up issue */
-        <div className="h-full w-full" style={{ backgroundColor: "var(--color-launcher-rail-bg)" }} />
-      }
-      socialPanel={
-        /* Social panel placeholder — replaced by LauncherSocialPanel in a follow-up issue */
-        <div className="h-full w-full" style={{ backgroundColor: "var(--color-launcher-panel-bg)" }} />
-      }
-    >
-      {children}
-    </LauncherShell>
-  );
+  return <>{children}</>;
 }
