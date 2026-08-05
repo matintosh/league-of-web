@@ -11,6 +11,8 @@ export const launcherMerchPageShowcase: ShowcaseEntry = {
   slug: "launcher-merch-page",
   name: "LauncherMerchPage",
   area: "launcher",
+  referenceImage: "launcher-merch.png",
+  referenceNote: "Real League launcher — Merch tab (featured banner + 4-product card row)",
   description:
     "Full Merch tab content for the launcher: 'Merch' heading + LauncherFeaturedMerchBanner (yearbook tee) + 4-card MerchProductCard row. Dark launcher palette; white product cards match image-4.png ref. Issue #698.",
   variants: [

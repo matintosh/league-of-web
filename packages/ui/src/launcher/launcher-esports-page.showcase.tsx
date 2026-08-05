@@ -16,6 +16,8 @@ export const launcherEsportsPageShowcase: ShowcaseEntry = {
   slug: "launcher-esports-page",
   name: "LauncherEsportsPage",
   area: "launcher",
+  referenceImage: "launcher-esports.png",
+  referenceNote: "Real League launcher — Esports tab (Esports News magazine grid with featured + compact cards)",
   description:
     "Esports tab content: 'Esports News' heading + magazine grid — 1 large featured portrait card left, right column of 3 smaller cards. Issue #697.",
   variants: [

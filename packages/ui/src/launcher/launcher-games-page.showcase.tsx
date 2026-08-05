@@ -69,6 +69,8 @@ export const launcherGamesPageShowcase: ShowcaseEntry = {
   slug: "launcher-games-page",
   name: "LauncherGamesPage",
   area: "launcher",
+  referenceImage: "launcher-games.png",
+  referenceNote: "Real Riot launcher — Games tab (My Games row + All Games grid with install/update badges)",
   description:
     "Games tab content: 'Games' heading + 'My Games' row (4 tiles with update/installed badges) + 'All Games' grid (3 tiles). Issue #686.",
   variants: [

@@ -13,6 +13,8 @@ export const launcherOverviewPageShowcase: ShowcaseEntry = {
   slug: "launcher-overview-page",
   name: "LauncherOverviewPage",
   area: "launcher",
+  referenceImage: "launcher-overview.png",
+  referenceNote: "Real League launcher — Overview tab (hero splash + featured card + carousel)",
   description:
     "Overview tab content: hero splash (Warwick) + Featured Card (League Classic Cinematic) + Content Carousel (5 champion thumbnails). Composed from LauncherOverviewHero + LauncherFeaturedCard + LauncherContentCarousel. Issue #694.",
   variants: [

@@ -12,6 +12,8 @@ export const launcherTabBarShowcase: ShowcaseEntry = {
   slug: "launcher-tab-bar",
   name: "LauncherTabBar",
   area: "launcher",
+  referenceImage: "launcher-overview.png",
+  referenceNote: "Real League launcher — tab bar visible at top of center column (Overview / Patch Notes / Esports / Merch)",
   description:
     "Horizontal tab bar for the launcher center column (~40px tall). Tabs: Overview / Patch Notes / Esports / Merch. Active tab: 2px gold underline (--color-launcher-tab-active) + bright text (--color-launcher-text-primary). Hover: bright text, no underline. Default: muted text. Props: tabs[], activeId, onTabChange.",
   variants: [

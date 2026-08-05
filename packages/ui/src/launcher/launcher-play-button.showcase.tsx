@@ -27,6 +27,8 @@ export const launcherPlayButtonShowcase: ShowcaseEntry = {
   slug: "launcher-play-button",
   name: "LauncherPlayButton",
   area: "launcher",
+  referenceImage: "launcher-overview.png",
+  referenceNote: "Real League launcher — gold pill Play button visible bottom-left of the center content area",
   description:
     "Launcher-specific gold pill split button — main 'Play' action on the left, caret on the right opens an upward game-mode dropdown. Uses --color-launcher-* tokens for the dark dropdown and gold tokens for the pill. Distinct from the in-client PlayButton in src/chrome/.",
   variants: [

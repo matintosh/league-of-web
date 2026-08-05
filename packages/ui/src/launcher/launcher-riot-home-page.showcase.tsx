@@ -229,6 +229,8 @@ export const launcherRiotHomePageShowcase: ShowcaseEntry = {
   slug: "launcher-riot-home-page",
   name: "LauncherRiotHomePage",
   area: "launcher",
+  referenceImage: "launcher-home.png",
+  referenceNote: "Real Riot launcher — Home tab (multi-game hub with LoL Classic promo + patch note row)",
   description:
     "Riot multi-game launcher Home page: left rail + 'Home' heading + FeaturedGamePromoHero (LoL Classic) + 'Latest Patch Notes' horizontal card row. Route: /launcher/home. Issue #678.",
   variants: [

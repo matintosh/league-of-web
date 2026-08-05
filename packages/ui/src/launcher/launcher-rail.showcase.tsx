@@ -10,6 +10,8 @@ export const launcherRailShowcase: ShowcaseEntry = {
   slug: "launcher-rail",
   name: "LauncherRail",
   area: "launcher",
+  referenceImage: "launcher-overview.png",
+  referenceNote: "Real League launcher — 56px icon rail visible on left edge (game icons top, utility icons bottom)",
   description:
     "56px-wide vertical icon rail for the launcher. Game icons top-stacked; utility icons bottom-pinned. Active slot: 3px gold left-edge accent (--color-launcher-rail-active) + panel-bg tint. Hover: panel-bg tint, full opacity. Default: 60% opacity. Props: items[], activeId, onSelect.",
   variants: [
