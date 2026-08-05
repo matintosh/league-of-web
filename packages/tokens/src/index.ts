@@ -144,6 +144,16 @@ export const palette = {
   launcherInputBg: "#0e1015",
   /** Search field border — matches launcher-border */
   launcherInputBorder: "#2a2c35",
+  /** LauncherPlayButton: light warm gold — Play pill top stop (issue #741) */
+  launcherPlayPillFrom: "#D3AB5D",
+  /** LauncherPlayButton: light warm gold — Play pill bottom stop (issue #741) */
+  launcherPlayPillTo: "#DBB672",
+  /** LauncherPlayButton: dark muted olive-gold — detached caret pill fill (issue #741) */
+  launcherCaretPill: "#44391C",
+  /** LauncherPlayButton: red — selected game mode row text in dropdown (issue #741) */
+  launcherSelectedMode: "#BC5556",
+  /** LauncherPlayButton: flat near-black — dropdown panel bg (issue #741) */
+  launcherDropdownBg: "#1F1F1F",
 } as const;
 
 export type Palette = typeof palette;

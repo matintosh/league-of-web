@@ -293,6 +293,17 @@
 
   /* Launcher font stack */
   --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  /* LauncherPlayButton — two-pill gold CTA (issue #741, pixel-sampled from lol-launcher-ref/image.png).
+     play-pill-*: light warm gold fill for the main "Play" pill (~rgb(211,171,93)→rgb(219,182,114)).
+     caret-pill:  dark muted olive-gold fill for the detached caret pill (~rgb(68,57,28)).
+     selected-mode: red text for the selected row in the right-opening dropdown (~rgb(188,85,86)).
+     dropdown-bg: flat near-black panel (~rgb(31,31,31)) — slightly lighter than launcher-bg. */
+  --color-launcher-play-pill-from:  #D3AB5D; /* light warm gold — Play pill top stop */
+  --color-launcher-play-pill-to:    #DBB672; /* light warm gold — Play pill bottom stop (slightly lighter) */
+  --color-launcher-caret-pill:      #44391C; /* dark muted olive-gold — caret pill fill */
+  --color-launcher-selected-mode:   #BC5556; /* red — selected game mode row text */
+  --color-launcher-dropdown-bg:     #1F1F1F; /* flat near-black — dropdown panel bg */
 }
 
 /*
@@ -556,6 +567,13 @@
 
     /* Launcher font stack */
     --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+
+    /* LauncherPlayButton — two-pill gold CTA (issue #741) */
+    --color-launcher-play-pill-from:  #D3AB5D;
+    --color-launcher-play-pill-to:    #DBB672;
+    --color-launcher-caret-pill:      #44391C;
+    --color-launcher-selected-mode:   #BC5556;
+    --color-launcher-dropdown-bg:     #1F1F1F;
 
     /* Motion — Hextech preset timings + easings (issue #299). Duplicated here
        (not colors, but same three-way sync discipline) so the custom properties

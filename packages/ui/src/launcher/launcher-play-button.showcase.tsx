@@ -30,12 +30,12 @@ export const launcherPlayButtonShowcase: ShowcaseEntry = {
   referenceImage: "launcher-play-button-crop.png",
   referenceNote: "Real launcher — gold Play pill + dropdown caret (cropped from Overview): split button in lower-left of the hero area",
   description:
-    "Launcher-specific gold pill split button — main 'Play' action on the left, caret on the right opens an upward game-mode dropdown. Uses --color-launcher-* tokens for the dark dropdown and gold tokens for the pill. Distinct from the in-client PlayButton in src/chrome/.",
+    "Launcher-specific two-pill button — a light gold 'Play' pill and a detached dark olive-gold caret pill (~6px gap). Caret opens a RIGHT-opening dropdown listing game modes. Selected row: red text, no bg fill. PBE: plain appended muted text. Uses --color-launcher-play-pill-*, --color-launcher-caret-pill, --color-launcher-selected-mode tokens. Distinct from the in-client PlayButton in src/chrome/.",
   variants: [
     {
       name: "Closed state",
       notes:
-        "Default state: dropdown closed. Gold gradient pill with ▶ Play + ▾ caret segment. 'League of Legends' is the selected mode.",
+        "Default state: dropdown closed. Two detached pills: light warm-gold Play pill (h-52px) + dark olive-gold caret pill (~6px gap). Mixed-case 'Play' in sans font, black label.",
       render: () => (
         <div
           className="flex items-end justify-start p-8"
@@ -52,11 +52,11 @@ export const launcherPlayButtonShowcase: ShowcaseEntry = {
     {
       name: "Dropdown open — League of Legends selected",
       notes:
-        "open=true: dark dropdown panel opens upward, lists 2 modes. 'League of Legends' selected (checkmark + divider bg).",
+        "open=true: flat near-black dropdown panel opens to the RIGHT of the caret pill, top-aligned. 'League of Legends' selected — red text, no bg fill, no checkmark.",
       render: () => (
         <div
-          className="flex items-end justify-start p-8"
-          style={{ backgroundColor: "var(--color-launcher-content-bg)", minHeight: 180 }}
+          className="flex items-start justify-start p-8"
+          style={{ backgroundColor: "var(--color-launcher-content-bg)", minHeight: 120, minWidth: 480 }}
         >
           <LauncherPlayButton
             gameModes={DEMO_MODES}
@@ -68,11 +68,11 @@ export const launcherPlayButtonShowcase: ShowcaseEntry = {
     },
     {
       name: "Dropdown open — PBE selected",
-      notes: "PBE mode selected: gold checkmark on the PBE row; PBE badge renders in gold.",
+      notes: "PBE mode selected: red text on the PBE row. 'PBE' appended as plain muted text (no badge pill), whole row muted gray when not selected.",
       render: () => (
         <div
-          className="flex items-end justify-start p-8"
-          style={{ backgroundColor: "var(--color-launcher-content-bg)", minHeight: 180 }}
+          className="flex items-start justify-start p-8"
+          style={{ backgroundColor: "var(--color-launcher-content-bg)", minHeight: 120, minWidth: 480 }}
         >
           <LauncherPlayButton
             gameModes={DEMO_MODES}
