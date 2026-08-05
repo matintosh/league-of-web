@@ -18,9 +18,11 @@ const AREA_META: Record<Area, { label: string; description: string }> = {
     { label: "Lobby", description: "Game mode cards, player cards, role selectors, queue status, match-found modal." },
   merch:
     { label: "Merch", description: "Riot merch store shell and components — modern e-commerce design using --color-merch-* tokens." },
+  launcher:
+    { label: "Launcher", description: "Riot/League launcher shell and components — dark near-black palette using --color-launcher-* tokens." },
 };
 
-const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store", "lobby", "merch"];
+const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store", "lobby", "merch", "launcher"];
 
 // Stats derived from the registry at build time
 const componentCount = registry.length;

@@ -190,6 +190,36 @@
   --motion-soft: 450ms cubic-bezier(0.22, 1, 0.36, 1); /* settle — ease-out, ~400-500ms */
   --motion-snap: 200ms cubic-bezier(0.5, 0, 0.2, 1.4); /* attention — sharp overshoot, ~200ms */
   --motion-crossfade: 250ms cubic-bezier(0.4, 0, 0.2, 1); /* video-state-machine crossfade, 200-300ms */
+
+  /* Launcher dark palette — sampled from lol-launcher-ref/image.png (issue #679) */
+
+  /* Shell backgrounds */
+  --color-launcher-bg:           #0e1015; /* outermost shell / behind rail */
+  --color-launcher-rail-bg:      #13151a; /* left icon rail surface */
+  --color-launcher-panel-bg:     #1a1c22; /* right social panel surface */
+  --color-launcher-panel-header: #1e2028; /* panel account header row */
+
+  /* Content area */
+  --color-launcher-content-bg:   #11131a; /* center content area dark base */
+
+  /* Dividers / borders */
+  --color-launcher-border:       #2a2c35; /* subtle 1px panel borders */
+  --color-launcher-divider:      #22242c; /* intra-panel section separators */
+
+  /* Text tiers */
+  --color-launcher-text-primary: #e8e6e1; /* main labels / name text */
+  --color-launcher-text-muted:   #7b7d8a; /* secondary / status text */
+  --color-launcher-text-dim:     #4a4c58; /* offline / disabled */
+
+  /* Tab active underline — gold match */
+  --color-launcher-tab-active:   #c8aa6e; /* same hex as gold-2 */
+
+  /* Icon rail active indicator */
+  --color-launcher-rail-active:  #c89b3c; /* same hex as gold-3 */
+
+  /* Search field */
+  --color-launcher-input-bg:     #0e1015; /* matches shell bg */
+  --color-launcher-input-border: #2a2c35; /* launcher-border match */
 }
 
 /*
@@ -368,6 +398,22 @@
     --color-ban-red-2: #c13333;
     --color-ban-red-3: #8b1f1f;
     --color-ban-red-press: #5c1414;
+
+    /* Launcher dark palette — sampled from lol-launcher-ref/image.png (issue #679) */
+    --color-launcher-bg:           #0e1015;
+    --color-launcher-rail-bg:      #13151a;
+    --color-launcher-panel-bg:     #1a1c22;
+    --color-launcher-panel-header: #1e2028;
+    --color-launcher-content-bg:   #11131a;
+    --color-launcher-border:       #2a2c35;
+    --color-launcher-divider:      #22242c;
+    --color-launcher-text-primary: #e8e6e1;
+    --color-launcher-text-muted:   #7b7d8a;
+    --color-launcher-text-dim:     #4a4c58;
+    --color-launcher-tab-active:   #c8aa6e;
+    --color-launcher-rail-active:  #c89b3c;
+    --color-launcher-input-bg:     #0e1015;
+    --color-launcher-input-border: #2a2c35;
 
     /* Motion — Hextech preset timings + easings (issue #299). Duplicated here
        (not colors, but same three-way sync discipline) so the custom properties

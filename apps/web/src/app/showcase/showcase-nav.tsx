@@ -39,9 +39,10 @@ const AREA_LABELS: Record<Area, string> = {
   store: "Store",
   lobby: "Lobby",
   merch: "Merch",
+  launcher: "Launcher",
 };
 
-const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store", "lobby", "merch"];
+const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store", "lobby", "merch", "launcher"];
 
 const AREAS = AREA_ORDER.filter((a) => registry.some((e) => e.area === a));
 
