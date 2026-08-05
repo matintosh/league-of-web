@@ -35,13 +35,15 @@ export interface LauncherShellProps {
  *   center      flex  (flex-1, min-w-0)
  *   right panel 280px (shrink-0)
  *
- * The entire shell fills the viewport height (h-screen) and clips overflow so
- * inner columns can scroll independently without the shell itself scrolling.
+ * The shell fills its parent (h-full) and clips overflow so inner columns can
+ * scroll independently without the shell itself scrolling. The /launcher layout
+ * gives it a fixed 1280×720 bounded frame (like the client); the showcase wraps
+ * it in a sized preview box.
  */
 export function LauncherShell({ rail, children, socialPanel, windowBar }: LauncherShellProps) {
   return (
     <div
-      className="flex h-screen w-full flex-col overflow-hidden"
+      className="flex h-full w-full flex-col overflow-hidden"
       style={{ backgroundColor: "var(--color-launcher-bg)" }}
     >
       {/* Window bar — omitted if not provided */}

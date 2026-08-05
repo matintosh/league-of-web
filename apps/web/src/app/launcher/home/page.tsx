@@ -174,7 +174,7 @@ export default function LauncherHomePage() {
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+        height: "100%",
         width: "100%",
         backgroundColor: "var(--color-launcher-bg)",
         overflow: "hidden",

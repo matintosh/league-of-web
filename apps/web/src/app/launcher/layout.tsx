@@ -1,13 +1,25 @@
-/**
- * /launcher layout — passthrough wrapper.
- *
- * The full LauncherShell (with rail, social panel, window bar) is assembled by
- * LauncherClient in page.tsx, not the layout. This passthrough exists so Next.js
- * still has a layout file for the /launcher segment. The dark --color-launcher-*
- * tokens are available globally via packages/tokens/src/theme.css (already
- * imported in the root layout via globals.css) — no additional CSS import needed.
- */
+import { LAUNCHER_WIDTH, LAUNCHER_HEIGHT } from "@/lib/launcher-window";
 
+/**
+ * /launcher layout — bounds the launcher to a fixed 1280×720 window centered on
+ * a dark backdrop, matching the /client convention (a desktop app window, not
+ * edge-to-edge browser content). LauncherShell fills this box via h-full.
+ *
+ * The dark --color-launcher-* tokens are available globally via
+ * packages/tokens/src/theme.css (imported in the root layout via globals.css).
+ */
 export default function LauncherLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <div
+      className="relative flex h-screen w-screen items-center justify-center overflow-hidden"
+      style={{ backgroundColor: "var(--color-launcher-bg)" }}
+    >
+      <div
+        className="shrink-0 overflow-hidden"
+        style={{ width: LAUNCHER_WIDTH, height: LAUNCHER_HEIGHT }}
+      >
+        {children}
+      </div>
+    </div>
+  );
 }
