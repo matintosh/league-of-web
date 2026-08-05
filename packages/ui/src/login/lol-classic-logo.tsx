@@ -1,0 +1,162 @@
+import { useId } from "react";
+
+/**
+ * LolClassicLogo — the League of Legends Classic emblem.
+ *
+ * Recreates the real LoL Classic logo: a heraldic crest shield, the
+ * "LEAGUE OF LEGENDS" wordmark stacked below it, and a "CLASSIC" ribbon
+ * banner across the base. All paths use currentColor so the parent can
+ * control the fill via Tailwind text-* or inline color.
+ *
+ * Brand-asset SVG exception: paths are simplified original artwork
+ * representing the real LoL identity; no Riot proprietary SVG files are
+ * reproduced verbatim.
+ *
+ * Server-safe — no 'use client'. useId() for gradient ids.
+ *
+ * issue #676
+ */
+export interface LolClassicLogoProps {
+  /** Optional additional Tailwind/CSS classes (e.g. "text-login-ink"). */
+  className?: string;
+  /**
+   * Width of the rendered SVG in pixels.
+   * Height is computed automatically (aspect ≈ 1:1.55).
+   * Defaults to 96.
+   */
+  width?: number;
+}
+
+export function LolClassicLogo({ className = "", width = 96 }: LolClassicLogoProps) {
+  const uid = useId();
+  const gradId = `lol-crest-grad-${uid}`;
+  const height = Math.round(width * 1.55);
+
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 96 149"
+      width={width}
+      height={height}
+      role="img"
+      aria-label="League of Legends Classic"
+      className={className}
+      fill="currentColor"
+    >
+      <defs>
+        {/*
+         * Subtle inner gradient: slightly lighter at top-center so the crest
+         * reads as a metal plaque — stays within currentColor hue family.
+         * Components consuming this SVG set color via parent text-* class.
+         */}
+        <radialGradient id={gradId} cx="50%" cy="30%" r="65%" fx="50%" fy="20%">
+          <stop offset="0%" stopColor="currentColor" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="currentColor" stopOpacity="1" />
+        </radialGradient>
+      </defs>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* CREST SHIELD — classic heraldic cartouche shape                     */}
+      {/* ------------------------------------------------------------------ */}
+      <path
+        fill={`url(#${gradId})`}
+        d="
+          M48 2
+          L6 14
+          L6 54
+          C6 80 24 100 48 110
+          C72 100 90 80 90 54
+          L90 14
+          Z
+        "
+      />
+      {/* Shield inner frame — two concentric insets */}
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeOpacity="0.35"
+        d="
+          M48 7
+          L11 18
+          L11 54
+          C11 77 27 95 48 104
+          C69 95 85 77 85 54
+          L85 18
+          Z
+        "
+      />
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeOpacity="0.2"
+        d="
+          M48 12
+          L16 22
+          L16 54
+          C16 74 30 90 48 98
+          C66 90 80 74 80 54
+          L80 22
+          Z
+        "
+      />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* CROSSED SWORDS inside the crest — simplified heraldic mark          */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Left sword blade (top-right to bottom-left) */}
+      <line x1="34" y1="26" x2="62" y2="78" stroke="currentColor" strokeOpacity="0.3" strokeWidth="3.5" strokeLinecap="round" />
+      {/* Right sword blade (top-left to bottom-right) */}
+      <line x1="62" y1="26" x2="34" y2="78" stroke="currentColor" strokeOpacity="0.3" strokeWidth="3.5" strokeLinecap="round" />
+      {/* Left hilt guard */}
+      <line x1="28" y1="33" x2="43" y2="33" stroke="currentColor" strokeOpacity="0.3" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Right hilt guard */}
+      <line x1="53" y1="33" x2="68" y2="33" stroke="currentColor" strokeOpacity="0.3" strokeWidth="2.5" strokeLinecap="round" />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* "LEAGUE OF LEGENDS" WORDMARK — paths ported from LolWordmark SVG    */}
+      {/* (packages/ui/src/merch/franchise-logos.tsx) scaled to fit ~80px wide*/}
+      {/* Original viewBox 0 0 75 29 → scale ×1.067 to fit 80px; ty +115      */}
+      {/* ------------------------------------------------------------------ */}
+      <g transform="translate(8, 114) scale(1.067)">
+        <path d="M52.698 15.646v13.121h-2.826l-6.106-8.526v8.526h-2.708V16.873l-.618-1.227h3.5l6.05 8.644v-8.643h2.708Z" />
+        <path d="M24.56 28.995a6.625 6.625 0 0 0 2.582-.484 6.183 6.183 0 0 0 2.048-1.358 6.291 6.291 0 0 0 1.352-2.05c.236-.576.39-1.182.455-1.8.05-.61.057-1.222.024-1.833h-6.435l-1.145 2.371h4.591a3.118 3.118 0 0 1-1.201 1.828c-.624.463-1.37.693-2.24.689a3.738 3.738 0 0 1-1.563-.335 4.035 4.035 0 0 1-2.103-2.217 4.407 4.407 0 0 1 .015-3.236c.198-.49.488-.935.855-1.314.36-.37.789-.667 1.262-.872a3.778 3.778 0 0 1 1.557-.31c.704-.01 1.397.169 2.01.517a3.435 3.435 0 0 1 1.354 1.465l2.54-1.222a5.865 5.865 0 0 0-2.346-2.498c-1.03-.604-2.206-.91-3.526-.916a6.799 6.799 0 0 0-4.827 1.966 7.028 7.028 0 0 0-1.473 2.153 6.502 6.502 0 0 0-.552 2.635 6.597 6.597 0 0 0 .515 2.639 6.96 6.96 0 0 0 1.434 2.167 6.737 6.737 0 0 0 4.815 2.017l.001-.002Z" />
+        <path d="M3.447 15.646H0l.65 1.358v10.41L0 28.77h7.91l.718-2.567H3.447V15.646Z" />
+        <path d="M9.58 28.77h7.71v-2.567h-4.903v-2.878h3.791l.686-2.468h-4.477v-2.654h4.902v-2.556H9.58V28.77Z" />
+        <path d="M32.004 28.77h7.71v-2.567H34.81v-2.878h3.792l.686-2.468H34.81v-2.654h4.903v-2.556h-7.71V28.77Z" />
+        <path d="M36.937 13.577a6.614 6.614 0 0 0 2.583-.483 6.168 6.168 0 0 0 2.047-1.358 6.273 6.273 0 0 0 1.353-2.05c.236-.575.39-1.181.454-1.8.05-.61.058-1.221.024-1.832h-6.435l-1.144 2.37h4.591a3.12 3.12 0 0 1-1.201 1.827c-.623.465-1.37.695-2.24.69a3.778 3.778 0 0 1-1.564-.335 4.046 4.046 0 0 1-2.103-2.218 4.41 4.41 0 0 1 .016-3.235c.198-.49.488-.935.854-1.314.36-.37.789-.667 1.262-.873a3.82 3.82 0 0 1 1.558-.31c.704-.01 1.397.17 2.01.517a3.433 3.433 0 0 1 1.352 1.466l2.541-1.221a5.866 5.866 0 0 0-2.345-2.5C39.515.313 38.34.008 37.024 0a6.647 6.647 0 0 0-2.649.518 6.774 6.774 0 0 0-2.178 1.449 7.002 7.002 0 0 0-1.473 2.152 6.479 6.479 0 0 0-.554 2.634 6.596 6.596 0 0 0 .516 2.639 6.99 6.99 0 0 0 1.433 2.173 6.731 6.731 0 0 0 4.816 2.016l.002-.004Z" />
+        <path d="M3.447.229H0l.65 1.357v10.411L0 13.352h7.91l.718-2.568H3.447V.23Z" />
+        <path d="M9.58 13.352h7.71v-2.567h-4.903V7.906h3.791l.686-2.467h-4.477V2.785h4.902V.229H9.58v13.123Z" />
+        <path d="M56.088 13.352h7.71v-2.567h-4.904V7.906h3.792l.685-2.467h-4.477V2.785h4.903V.229h-7.71v13.123Z" />
+        <path d="M25.935.229h-3.988l.843 1.676-4.604 11.448h2.868l.983-2.56h5.186l1 2.56h2.923L25.936.229ZM22.99 8.284l1.684-4.413 1.618 4.41-3.302.003Z" />
+      </g>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* "CLASSIC" RIBBON BANNER — a flat scroll pinned below the wordmark   */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Ribbon body */}
+      <rect x="6" y="143" width="84" height="4" rx="0" fillOpacity="0.15" />
+      {/* Left tail */}
+      <polygon points="6,143 6,147 1,145" fillOpacity="0.15" />
+      {/* Right tail */}
+      <polygon points="90,143 90,147 95,145" fillOpacity="0.15" />
+      {/* "CLASSIC" text centered on ribbon */}
+      <text
+        x="48"
+        y="147.5"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="5"
+        fontWeight="700"
+        letterSpacing="1.5"
+        fontFamily="'Beaufort for LOL', 'Georgia', serif"
+        fill="currentColor"
+        fillOpacity="0.85"
+        style={{ textTransform: "uppercase" }}
+      >
+        CLASSIC
+      </text>
+    </svg>
+  );
+}
