@@ -48,9 +48,9 @@ function GameIconPlaceholder({ letter, color }: { letter: string; color: string 
 
 const ALL_ITEMS = [
   { id: "home", label: "Home", icon: <RiotFistIcon />, position: "top" as const },
-  { id: "lol", label: "League of Legends", icon: <GameIconPlaceholder letter="L" color="#c89b3c" />, position: "top" as const },
-  { id: "tft", label: "Teamfight Tactics", icon: <GameIconPlaceholder letter="T" color="#0397ab" />, position: "top" as const },
-  { id: "valorant", label: "Valorant", icon: <GameIconPlaceholder letter="V" color="#eb022b" />, position: "top" as const },
+  { id: "lol", label: "League of Legends", icon: <GameIconPlaceholder letter="L" color="var(--color-gold-3)" />, position: "top" as const },
+  { id: "tft", label: "Teamfight Tactics", icon: <GameIconPlaceholder letter="T" color="var(--color-blue-2)" />, position: "top" as const },
+  { id: "valorant", label: "Valorant", icon: <GameIconPlaceholder letter="V" color="var(--color-riot-red)" />, position: "top" as const },
   { id: "settings", label: "Settings", icon: <GearIcon />, position: "bottom" as const },
 ];
 

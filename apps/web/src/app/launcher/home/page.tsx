@@ -20,7 +20,11 @@ import { LauncherWindowBar } from "@low/ui";
 import { LauncherRiotHomePage } from "@low/ui";
 
 // ---------------------------------------------------------------------------
-// Inline SVG game logos
+// Game logos — recreated as data-URI SVGs (embedded-image assets, used as <img src>).
+// Colors are baked into the encoded SVG because a data URI cannot reference CSS
+// custom properties; the hexes intentionally mirror the design tokens
+// (#c89b3c = --color-gold-3, #f0e6d2 = --color-gold-1, #0a0a0a ≈ --color-launcher-bg).
+// Same brand-asset latitude as the recreated merch/login logos.
 // ---------------------------------------------------------------------------
 
 const LOL_CLASSIC_LOGO = `data:image/svg+xml,${encodeURIComponent(`
