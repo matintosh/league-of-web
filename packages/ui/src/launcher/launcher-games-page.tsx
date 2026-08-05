@@ -3,16 +3,17 @@
  *
  * Renders:
  *   1. "Games" page heading
- *   2. "My Games" section — horizontal scrolling row of GameTile (size="lg") with
- *      status badges (update / installed / play)
- *   3. "All Games" section — CSS grid of GameTile (size="lg") with Installed badges
+ *   2. "My Games" section — horizontal scrolling row of landscape GameTile (size="lg")
+ *      with statusLayout="labelStatus" (Update/Install text in the label row)
+ *   3. "All Games" section — 3-column CSS grid of larger GameTile (size="xl")
+ *      with statusLayout="coverBadge" (Installed pill at bottom-left of art)
  *
- * Fixture data is supplied by the caller (page). This component is NOT a full
- * page shell — it renders only the content area; the caller wraps it in
- * LauncherShell (or the /launcher/games route wraps in the launcher layout).
+ * Full-width content: no right social panel on the Games surface (per image-7.png).
+ * The caller's LauncherShell omits the socialPanel slot; this component fills
+ * the available center column.
  *
  * Props-in / callback-out. Server-safe: no 'use client'. No data fetching.
- * Tokens-only — all colors via `--color-launcher-*`. Issue #686.
+ * Tokens-only — all colors via `--color-launcher-*`. Issues #686, #727.
  */
 
 import type { ReactNode } from "react";
@@ -25,10 +26,10 @@ import { TwoXkoLogo } from "./game-logos/two-xko-logo";
 import { WildRiftLogo } from "./game-logos/wild-rift-logo";
 
 // ---------------------------------------------------------------------------
-// Logo node map — maps gameKey → inline SVG logo ReactNode
+// Logo + icon node maps — maps gameKey → overlay art + label icon
 // ---------------------------------------------------------------------------
 
-/** Inline SVG logo for a given gameKey. Returns null if no logo defined. */
+/** Inline SVG wordmark/logo for the cover art overlay. */
 function logoForGame(gameKey: string): ReactNode {
   switch (gameKey) {
     case "lol":
@@ -46,6 +47,24 @@ function logoForGame(gameKey: string): ReactNode {
   }
 }
 
+/** Larger logo for xl-size All Games tiles. */
+function logoForGameXl(gameKey: string): ReactNode {
+  switch (gameKey) {
+    case "lol":
+      return <LolLogo size={92} />;
+    case "valorant":
+      return <ValorantLogo size={96} />;
+    case "tft":
+      return <TftLogo size={80} />;
+    case "2xko":
+      return <TwoXkoLogo size={76} />;
+    case "wildrift":
+      return <WildRiftLogo size={96} />;
+    default:
+      return null;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Section heading
 // ---------------------------------------------------------------------------
@@ -55,12 +74,13 @@ function SectionHeading({ children }: { children: ReactNode }) {
     <h2
       style={{
         margin: 0,
-        fontSize: 12,
-        fontWeight: 500,
+        fontSize: 14,
+        fontWeight: 600,
         fontFamily: "var(--font-launcher)",
-        /* dark ink on light content surface (issue #719) */
-        color: "var(--color-launcher-home-content-ink)",
-        letterSpacing: "0.02em",
+        /* white text on dark Games surface (image-7.png ref) */
+        color: "var(--color-launcher-text-primary)",
+        letterSpacing: "0.04em",
+        textTransform: "uppercase",
       }}
     >
       {children}
@@ -104,36 +124,37 @@ export function LauncherGamesPage({ myGames, allGames, onGameAction }: LauncherG
         width: "100%",
         height: "100%",
         overflowY: "auto",
-        padding: "24px 28px",
+        /* left padding ~82px effective to align with ref x=147 (64px rail already accounted) */
+        padding: "28px 36px 28px 82px",
         gap: 0,
         boxSizing: "border-box",
-        /* light content surface per image-7.png ref (issue #719) */
         backgroundColor: "var(--color-launcher-home-content-bg)",
       }}
     >
-      {/* Page heading — dark ink on light surface */}
+      {/* Page heading */}
       <h1
         style={{
-          margin: "0 0 20px 0",
+          margin: "0 0 22px 0",
           fontSize: 22,
           fontWeight: 700,
           fontFamily: "var(--font-launcher)",
-          color: "var(--color-launcher-home-content-ink)",
+          color: "var(--color-launcher-text-primary)",
           letterSpacing: "0.02em",
         }}
       >
         Games
       </h1>
 
-      {/* My Games section */}
-      <section aria-label="My Games" style={{ marginBottom: 32 }}>
+      {/* My Games section — horizontal scrolling row, landscape lg tiles */}
+      <section aria-label="My Games" style={{ marginBottom: 36 }}>
         <SectionHeading>My Games</SectionHeading>
         <div
           style={{
             display: "flex",
             flexDirection: "row",
-            gap: 12,
-            marginTop: 12,
+            /* ~27px inter-tile gap per measured delta */
+            gap: 27,
+            marginTop: 14,
             overflowX: "auto",
             paddingBottom: 4,
           }}
@@ -143,6 +164,7 @@ export function LauncherGamesPage({ myGames, allGames, onGameAction }: LauncherG
               key={game.gameKey}
               {...game}
               size="lg"
+              statusLayout="labelStatus"
               logoNode={logoForGame(game.gameKey)}
               onAction={onGameAction}
             />
@@ -150,23 +172,25 @@ export function LauncherGamesPage({ myGames, allGames, onGameAction }: LauncherG
         </div>
       </section>
 
-      {/* All Games section */}
+      {/* All Games section — 3-column grid, landscape xl tiles */}
       <section aria-label="All Games">
         <SectionHeading>All Games</SectionHeading>
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(160px, 160px))",
-            gap: 12,
-            marginTop: 12,
+            /* 3-up grid: xl tiles are 333px; gap ~27px */
+            gridTemplateColumns: "repeat(3, 333px)",
+            gap: 27,
+            marginTop: 14,
           }}
         >
           {allGames.map((game) => (
             <GameTile
               key={game.gameKey}
               {...game}
-              size="lg"
-              logoNode={logoForGame(game.gameKey)}
+              size="xl"
+              statusLayout="coverBadge"
+              logoNode={logoForGameXl(game.gameKey)}
               onAction={onGameAction}
             />
           ))}
