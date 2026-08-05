@@ -1,17 +1,19 @@
 "use client";
 
 /**
- * LauncherTabBar — horizontal tab bar for the /launcher section.
+ * LauncherTabBar — floating translucent pill tab bar for the /launcher section.
  *
- * Renders Overview / Patch Notes / Esports / Merch tabs (or any tabs[] prop).
- * Active tab: text brightens to `--color-launcher-text-primary`; a 2px gold
- * underline (`--color-launcher-tab-active`) spans the label width.
- * Hover: text brightens, no underline.
- * Default: muted text (`--color-launcher-text-muted`), no decoration.
+ * Renders Overview / Patch Notes / Esports / Merch tabs (or any tabs[] prop)
+ * as a self-sized rounded pill overlaid on the hero (positioned by the parent).
  *
- * Typography: uppercase, font-display ~13px, medium weight.
- * Layout: ~40px tall, full center-column width. First tab padded 16px from left,
- * 24px gap between tabs.
+ * Active tab:   lighter grey rounded chip behind the label + 2px gold underline
+ *               sized to the label/chip width.
+ * Hover:        text brightens to `--color-launcher-text-primary`; no underline.
+ * Default:      muted text (`--color-launcher-text-muted`); no decoration.
+ * Badge:        optional red notification dot (`showBadge: true` on a tab def).
+ *
+ * Typography: Title Case (labels rendered as-is), font-display ~13px, medium weight.
+ * Layout:    self-sized (not full-width); ~40px tall; rounded pill; translucent bg.
  *
  * No data fetching. No hardcoded hex. Server-safe.
  */
@@ -19,8 +21,10 @@
 export interface LauncherTab {
   /** Route-unique identifier, e.g. "overview" | "patch-notes" | "esports" | "merch". */
   id: string;
-  /** Display label. Rendered uppercase via CSS. */
+  /** Display label — rendered as-is (Title Case). */
   label: string;
+  /** When true, a small red notification dot is shown in the top-right of the label. */
+  showBadge?: boolean;
 }
 
 export interface LauncherTabBarProps {
@@ -36,7 +40,7 @@ export function LauncherTabBar({ tabs, activeId, onTabChange }: LauncherTabBarPr
   return (
     <>
       <style>{`
-        .launcher-tab-btn:hover {
+        .launcher-tab-btn:hover .launcher-tab-label {
           color: var(--color-launcher-text-primary) !important;
         }
       `}</style>
@@ -45,13 +49,16 @@ export function LauncherTabBar({ tabs, activeId, onTabChange }: LauncherTabBarPr
         role="tablist"
         aria-label="Launcher sections"
         style={{
-          display: "flex",
-          alignItems: "stretch",
+          display: "inline-flex",
+          alignItems: "center",
           height: 40,
-          width: "100%",
-          backgroundColor: "var(--color-launcher-content-bg)",
-          paddingLeft: 16,
-          gap: 24,
+          padding: "0 4px",
+          gap: 2,
+          borderRadius: 20,
+          /* Translucent dark pill — color-mix over the surface token */
+          backgroundColor: "color-mix(in srgb, var(--color-launcher-surface) 70%, transparent)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
           flexShrink: 0,
         }}
       >
@@ -69,34 +76,63 @@ export function LauncherTabBar({ tabs, activeId, onTabChange }: LauncherTabBarPr
                 position: "relative",
                 display: "flex",
                 alignItems: "center",
-                height: "100%",
-                padding: "0 2px",
-                background: "none",
+                justifyContent: "center",
+                height: 32,
+                padding: "0 12px",
+                background: isActive
+                  ? "color-mix(in srgb, var(--color-launcher-surface) 90%, var(--color-launcher-text-primary) 10%)"
+                  : "none",
                 border: "none",
+                borderRadius: 16,
                 cursor: "pointer",
-                fontFamily: "var(--font-display)",
-                fontSize: 13,
-                fontWeight: 500,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                color: isActive
-                  ? "var(--color-launcher-text-primary)"
-                  : "var(--color-launcher-text-muted)",
                 whiteSpace: "nowrap",
-                transition: "color 150ms ease",
               }}
             >
-              {tab.label}
+              {/* Label text */}
+              <span
+                className="launcher-tab-label"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  letterSpacing: "0.02em",
+                  color: isActive
+                    ? "var(--color-launcher-text-primary)"
+                    : "var(--color-launcher-text-muted)",
+                  transition: "color 150ms ease",
+                  position: "relative",
+                }}
+              >
+                {tab.label}
 
-              {/* Active underline — 2px, spans label width, sits at the bottom edge */}
+                {/* Notification dot — top-right of the label text */}
+                {tab.showBadge && (
+                  <span
+                    aria-label="New"
+                    style={{
+                      position: "absolute",
+                      top: -3,
+                      right: -6,
+                      width: 5,
+                      height: 5,
+                      borderRadius: "50%",
+                      backgroundColor: "var(--color-launcher-red)",
+                      display: "block",
+                    }}
+                  />
+                )}
+              </span>
+
+              {/* Active gold underline — sits at the bottom of the chip, sized to label width */}
               {isActive && (
                 <span
                   aria-hidden="true"
                   style={{
                     position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
+                    bottom: 4,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: "calc(100% - 24px)",
                     height: 2,
                     backgroundColor: "var(--color-launcher-tab-active)",
                     borderRadius: "1px 1px 0 0",
