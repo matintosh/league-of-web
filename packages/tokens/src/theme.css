@@ -228,6 +228,7 @@
   /* Hero splash — scrim / overlays (issues #681, #684) */
   --color-launcher-scrim-bottom: rgba(0,0,0,0.72); /* bottom-gradient on hero splash */
   --color-launcher-scrim-card:   rgba(0,0,0,0.55); /* card text-area scrim */
+  --color-launcher-scrim-side:   #1a1b1e;          /* left-side gradient base for FeaturedGamePromoHero (#1a1b1e ≈ panel-bg) */
 
   /* Wordmark + text (issue #681) */
   --color-launcher-wordmark:     #f0e6d2; /* LoL wordmark cream (= gold-1 tone) */
@@ -475,6 +476,7 @@
     /* Hero splash — scrim / overlays (issues #681, #684) */
     --color-launcher-scrim-bottom: rgba(0,0,0,0.72);
     --color-launcher-scrim-card:   rgba(0,0,0,0.55);
+    --color-launcher-scrim-side:   #1a1b1e;
 
     /* Wordmark + text (issue #681) */
     --color-launcher-wordmark:     #f0e6d2;

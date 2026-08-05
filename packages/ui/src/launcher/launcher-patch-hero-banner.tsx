@@ -64,7 +64,7 @@ export function LauncherPatchHeroBanner({
         style={{
           height: "70%",
           background:
-            "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.40) 45%, transparent 70%)",
+            "linear-gradient(to top, color-mix(in srgb, var(--color-launcher-bg) 85%, transparent) 0%, color-mix(in srgb, var(--color-launcher-bg) 40%, transparent) 45%, transparent 70%)",
         }}
       />
 

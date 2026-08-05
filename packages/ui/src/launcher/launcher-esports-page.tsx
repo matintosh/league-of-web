@@ -1,10 +1,9 @@
 /**
  * LauncherEsportsPage — Esports tab content for the /launcher section.
  *
- * Renders an "Esports News" heading followed by a vertical list of
- * LauncherEsportsNewsCard items. Fixture data is hardcoded here
- * (types from @low/fixtures, real champion splash thumbnails via
- * championSplashUrl).
+ * Renders an "Esports News" heading followed by a MAGAZINE CARD GRID matching
+ * lol-launcher-ref/image-3.png: one large portrait featured card on the left
+ * and a right column with 2 (or more) smaller stacked cards.
  *
  * This component is NOT a page route — it is the content rendered when the
  * "esports" tab is active inside the launcher client shell.
@@ -21,14 +20,17 @@ import { LauncherEsportsNewsCard } from "./launcher-esports-news-card";
 // Fixture data — values hardcoded, types from @low/fixtures
 // ---------------------------------------------------------------------------
 
-const ESPORTS_ARTICLES = [
-  {
-    id: "msi-2026-moments",
-    thumbnailUrl: championSplashUrl("Jinx", 0),
-    title: "MSI 2026: Moments and Memories",
-    description:
-      "Relive the electrifying plays, crazy drafts, and iconic moments that led to HLE's victory at MSI 2026.",
-  },
+/** Featured article — rendered as the large portrait card on the left. */
+const FEATURED_ARTICLE = {
+  id: "msi-2026-moments",
+  thumbnailUrl: championSplashUrl("Jinx", 0),
+  title: "MSI 2026: Moments and Memories",
+  description:
+    "Relive the electrifying plays, crazy drafts, and iconic moments that led to HLE's victory at MSI 2026.",
+} as const;
+
+/** Secondary articles — rendered as smaller cards in the right column. */
+const SECONDARY_ARTICLES = [
   {
     id: "go4lol-league-classic",
     thumbnailUrl: championSplashUrl("Lux", 0),
@@ -65,6 +67,7 @@ export function LauncherEsportsPage() {
         backgroundColor: "var(--color-launcher-bg)",
         padding: "24px 28px",
         overflowY: "auto",
+        boxSizing: "border-box",
       }}
     >
       {/* "Esports News" heading */}
@@ -81,17 +84,46 @@ export function LauncherEsportsPage() {
         Esports News
       </h2>
 
-      {/* News card list — vertical, hairline-separated via card bottom borders */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-        {ESPORTS_ARTICLES.map((article) => (
-          <LauncherEsportsNewsCard
-            key={article.id}
-            id={article.id}
-            thumbnailUrl={article.thumbnailUrl}
-            title={article.title}
-            description={article.description}
-          />
-        ))}
+      {/* Magazine grid — featured large card left + right column of smaller cards */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 12,
+          height: "calc(100% - 56px)",
+          minHeight: 0,
+        }}
+      >
+        {/* Left: large portrait featured card */}
+        <LauncherEsportsNewsCard
+          key={FEATURED_ARTICLE.id}
+          id={FEATURED_ARTICLE.id}
+          thumbnailUrl={FEATURED_ARTICLE.thumbnailUrl}
+          title={FEATURED_ARTICLE.title}
+          description={FEATURED_ARTICLE.description}
+          size="lg"
+        />
+
+        {/* Right: column of smaller cards */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+            overflow: "hidden",
+          }}
+        >
+          {SECONDARY_ARTICLES.map((article) => (
+            <LauncherEsportsNewsCard
+              key={article.id}
+              id={article.id}
+              thumbnailUrl={article.thumbnailUrl}
+              title={article.title}
+              description={article.description}
+              size="sm"
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

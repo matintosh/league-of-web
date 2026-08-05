@@ -55,12 +55,11 @@ function SectionHeading({ children }: { children: ReactNode }) {
     <h2
       style={{
         margin: 0,
-        fontSize: 14,
-        fontWeight: 700,
+        fontSize: 12,
+        fontWeight: 500,
         fontFamily: "var(--font-launcher)",
-        color: "var(--color-launcher-text-primary)",
-        letterSpacing: "0.04em",
-        textTransform: "uppercase",
+        color: "var(--color-launcher-text-muted)",
+        letterSpacing: "0.02em",
       }}
     >
       {children}
