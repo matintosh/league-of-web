@@ -137,6 +137,9 @@ export const palette = {
   launcherTabActive: "#c8aa6e",
   /** Icon rail active indicator — same hex as gold-3 */
   launcherRailActive: "#c89b3c",
+  /** Window close button hover — deep brick-red (distinct from warning #ed2c49;
+   *  sampled from Riot launcher close-btn hover, issue #696). */
+  launcherCloseHover: "#c0392b",
   /** Search field background — matches shell bg */
   launcherInputBg: "#0e1015",
   /** Search field border — matches launcher-border */

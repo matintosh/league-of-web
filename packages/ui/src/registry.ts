@@ -111,8 +111,11 @@ import { launcherContentCarouselShowcase } from "./launcher/launcher-content-car
 import { launcherFeaturedCardShowcase } from "./launcher/launcher-featured-card.showcase";
 import { launcherOverviewHeroShowcase } from "./launcher/launcher-overview-hero.showcase";
 import { launcherPlayButtonShowcase } from "./launcher/launcher-play-button.showcase";
+import { launcherRailShowcase } from "./launcher/launcher-rail.showcase";
 import { launcherShellShowcase } from "./launcher/launcher-shell.showcase";
 import { launcherSocialPanelShowcase } from "./launcher/launcher-social-panel.showcase";
+import { launcherTabBarShowcase } from "./launcher/launcher-tab-bar.showcase";
+import { launcherWindowBarShowcase } from "./launcher/launcher-window-bar.showcase";
 import { merchBreadcrumbBarShowcase } from "./merch/merch-breadcrumb-bar.showcase";
 import { merchCartDrawerShowcase } from "./merch/merch-cart-drawer.showcase";
 import { merchCartPageShowcase } from "./merch/merch-cart-page.showcase";
@@ -261,13 +264,16 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
-  // launcher — alphabetical: LauncherContentCarousel < LauncherFeaturedCard < LauncherOverviewHero < LauncherPlayButton < LauncherShell < LauncherSocialPanel
+  // launcher — alphabetical: LauncherContentCarousel < LauncherFeaturedCard < LauncherOverviewHero < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
   launcherContentCarouselShowcase,
   launcherFeaturedCardShowcase,
   launcherOverviewHeroShowcase,
   launcherPlayButtonShowcase,
+  launcherRailShowcase,
   launcherShellShowcase,
   launcherSocialPanelShowcase,
+  launcherTabBarShowcase,
+  launcherWindowBarShowcase,
   // merch — alphabetical: MerchBreadcrumbBar < MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchShopCarousel < MerchSignInPanel < MerchSizeGuideModal < MerchStore < MerchSupportForm < MerchSupportHero < MerchSupportTabStrip
   merchBreadcrumbBarShowcase,
   merchCartDrawerShowcase,

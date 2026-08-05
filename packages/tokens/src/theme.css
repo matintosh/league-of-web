@@ -217,6 +217,10 @@
   /* Icon rail active indicator */
   --color-launcher-rail-active:  #c89b3c; /* same hex as gold-3 */
 
+  /* Window close button hover — deep brick-red (distinct from --color-warning
+     #ed2c49 bright crimson; sampled from Riot launcher close-btn hover). */
+  --color-launcher-close-hover:  #c0392b;
+
   /* Search field */
   --color-launcher-input-bg:     #0e1015; /* matches shell bg */
   --color-launcher-input-border: #2a2c35; /* launcher-border match */
@@ -453,6 +457,7 @@
     --color-launcher-text-dim:     #4a4c58;
     --color-launcher-tab-active:   #c8aa6e;
     --color-launcher-rail-active:  #c89b3c;
+    --color-launcher-close-hover:  #c0392b;
     --color-launcher-input-bg:     #0e1015;
     --color-launcher-input-border: #2a2c35;
 
