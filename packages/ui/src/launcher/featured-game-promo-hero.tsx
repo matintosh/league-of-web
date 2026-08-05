@@ -35,7 +35,8 @@ export interface FeaturedGamePromoHeroProps extends FeaturedPromoData {
  * Full-bleed hero banner: splash art background, left-half dark gradient
  * overlay, game logo + tagline + description + CTA button in overlay column.
  *
- * ~380 px tall, 100% wide, border-radius 8 px per spec.
+ * ~510 px tall, 100% wide, full-bleed (no border-radius, no side gutters)
+ * per image-5.png ref. Classic logo rendered unclipped at auto height.
  */
 /** Strip non-alphanumeric characters so useId values are valid CSS class suffixes. */
 function safeCssId(id: string) {
@@ -78,8 +79,7 @@ export function FeaturedGamePromoHero({
         style={{
           position: "relative",
           width: "100%",
-          height: 380,
-          borderRadius: 8,
+          height: 510,
           overflow: "hidden",
           flexShrink: 0,
         }}
@@ -120,18 +120,18 @@ export function FeaturedGamePromoHero({
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-end",
-            padding: "0 40px 36px 40px",
-            maxWidth: "50%",
+            padding: "0 40px 40px 48px",
+            maxWidth: "55%",
           }}
         >
           {/* Game logo — inline SVG component when logoNode is provided,
               img element otherwise (backward-compat with data-URI gameLogo). */}
           {logoNode != null ? (
+            /* Logo wrapper — no fixed height; SVG controls its own size via
+               width/height props. flexShrink:0 prevents squeeze from siblings. */
             <div
               aria-label={gameKey}
               style={{
-                height: 120,
-                width: "auto",
                 display: "flex",
                 alignItems: "flex-end",
                 marginBottom: 16,

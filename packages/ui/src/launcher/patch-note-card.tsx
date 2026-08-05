@@ -34,10 +34,10 @@ function formatDate(iso: string): string {
 }
 
 /**
- * PatchNoteCard — 220 × 140 px card.
+ * PatchNoteCard — horizontal ~367 × 100 px card per image-5.png ref.
  *
- * Top ~100 px: thumbnail with game logo overlaid bottom-left.
- * Bottom ~40 px: title (max 2 lines, ellipsis) + meta line.
+ * Left body (~57%): game logo small top-left, title (max 2 lines), meta below.
+ * Right key-art (~43%): thumbnail image fills height.
  *
  * Hover surface brightens to --color-launcher-surface-alt.
  */
@@ -77,25 +77,86 @@ export function PatchNoteCard({
           }
         }}
         style={{
-          width: 220,
-          height: 140,
+          width: 367,
+          height: 100,
           flexShrink: 0,
           backgroundColor: "var(--color-launcher-surface)",
           border: "1px solid var(--color-launcher-border)",
           borderRadius: 6,
           overflow: "hidden",
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           transition: "background-color 150ms ease",
           userSelect: "none",
         }}
       >
-        {/* Thumbnail area — top ~100 px */}
+        {/* Left body — game logo + title + meta */}
         <div
           style={{
-            position: "relative",
-            width: "100%",
-            height: 100,
+            flex: 1,
+            minWidth: 0,
+            padding: "10px 12px 10px 12px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          {/* Game logo — small wordmark top of body */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={gameLogo}
+            alt={gameName}
+            style={{
+              height: 16,
+              width: "auto",
+              objectFit: "contain",
+              objectPosition: "left center",
+              filter: "brightness(0) invert(1)",
+              marginBottom: 6,
+              flexShrink: 0,
+            }}
+          />
+
+          {/* Title */}
+          <p
+            style={{
+              fontFamily: "var(--font-launcher)",
+              fontSize: 12,
+              fontWeight: 600,
+              lineHeight: 1.35,
+              color: "var(--color-launcher-text-primary)",
+              margin: 0,
+              overflow: "hidden",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              flex: 1,
+            }}
+          >
+            {title}
+          </p>
+
+          {/* Meta: date */}
+          <p
+            style={{
+              fontFamily: "var(--font-launcher)",
+              fontSize: 10,
+              color: "var(--color-launcher-text-muted)",
+              margin: "6px 0 0 0",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              flexShrink: 0,
+            }}
+          >
+            {formatDate(publishedAt)}
+          </p>
+        </div>
+
+        {/* Right key-art thumbnail — fills card height */}
+        <div
+          style={{
+            width: 140,
             flexShrink: 0,
             overflow: "hidden",
             backgroundColor: "var(--color-launcher-thumb-bg)",
@@ -114,68 +175,6 @@ export function PatchNoteCard({
               display: "block",
             }}
           />
-
-          {/* Game logo overlaid bottom-left of thumbnail */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={gameLogo}
-            alt={gameName}
-            style={{
-              position: "absolute",
-              bottom: 6,
-              left: 8,
-              height: 20,
-              width: "auto",
-              objectFit: "contain",
-              objectPosition: "left center",
-              filter: "brightness(0) invert(1)",
-            }}
-          />
-        </div>
-
-        {/* Card body — bottom ~40 px */}
-        <div
-          style={{
-            flex: 1,
-            padding: "6px 10px 8px 10px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            minHeight: 0,
-          }}
-        >
-          {/* Title */}
-          <p
-            style={{
-              fontFamily: "var(--font-launcher)",
-              fontSize: 12,
-              fontWeight: 500,
-              lineHeight: 1.4,
-              color: "var(--color-launcher-text-primary)",
-              margin: 0,
-              overflow: "hidden",
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-            }}
-          >
-            {title}
-          </p>
-
-          {/* Meta: game name · date */}
-          <p
-            style={{
-              fontFamily: "var(--font-launcher)",
-              fontSize: 10,
-              color: "var(--color-launcher-text-muted)",
-              margin: "4px 0 0 0",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {gameName} · {formatDate(publishedAt)}
-          </p>
         </div>
       </article>
     </>

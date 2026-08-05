@@ -83,7 +83,7 @@ export function LauncherRiotHomePage({
         {nav}
       </aside>
 
-      {/* Main content area — flex-1, scrollable — light surface per image-5.png ref (issue #719) */}
+      {/* Main content area — flex-1, scrollable — dark surface per image-5.png ref */}
       <main
         style={{
           flex: 1,
@@ -92,56 +92,57 @@ export function LauncherRiotHomePage({
           overflowY: "auto",
           overflowX: "hidden",
           backgroundColor: "var(--color-launcher-home-content-bg)",
-          padding: "24px 24px 32px 24px",
           display: "flex",
           flexDirection: "column",
-          gap: 20,
+          gap: 0,
         }}
       >
-        {/* "Home" page heading — dark ink on light surface */}
-        <h1
-          style={{
-            fontFamily: "var(--font-display, var(--font-launcher))",
-            fontSize: 22,
-            fontWeight: 700,
-            lineHeight: 1,
-            color: "var(--color-launcher-home-content-ink)",
-            margin: 0,
-          }}
-        >
-          Home
-        </h1>
+        {/* "Home" page heading — 26px top gutter, 48px left gutter per ref */}
+        <div style={{ padding: "26px 24px 16px 48px" }}>
+          <h1
+            style={{
+              fontFamily: "var(--font-display, var(--font-launcher))",
+              fontSize: 22,
+              fontWeight: 700,
+              lineHeight: 1,
+              color: "var(--color-launcher-home-content-ink)",
+              margin: 0,
+            }}
+          >
+            Home
+          </h1>
+        </div>
 
-        {/* Featured promo hero */}
+        {/* Featured promo hero — full-bleed: no horizontal padding */}
         <FeaturedGamePromoHero
           {...featuredPromo}
           logoNode={featuredPromoLogoNode}
           onCta={onPromoCtaClick}
         />
 
-        {/* Latest Patch Notes section */}
-        <section aria-label="Latest Patch Notes">
+        {/* Latest Patch Notes section — padded, heading ~20px per ref */}
+        <section aria-label="Latest Patch Notes" style={{ padding: "20px 24px 32px 48px" }}>
           <h2
             style={{
               fontFamily: "var(--font-display, var(--font-launcher))",
-              fontSize: 14,
-              fontWeight: 600,
+              fontSize: 20,
+              fontWeight: 700,
               color: "var(--color-launcher-home-content-ink)",
-              margin: "0 0 12px 0",
-              letterSpacing: "0.02em",
+              margin: "0 0 14px 0",
+              letterSpacing: "0.01em",
             }}
           >
             Latest Patch Notes
           </h2>
 
-          {/* Horizontal scrollable card row */}
+          {/* Horizontal scrollable card row — clips at viewport bottom as in ref */}
           <div
             style={{
               display: "flex",
               flexDirection: "row",
-              gap: 16,
+              gap: 14,
               overflowX: "auto",
-              overflowY: "hidden",
+              overflowY: "visible",
               paddingBottom: 8,
               /* custom scrollbar thinning */
               scrollbarWidth: "thin",
