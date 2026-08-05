@@ -111,6 +111,8 @@ import { launcherContentCarouselShowcase } from "./launcher/launcher-content-car
 import { launcherEsportsNewsCardShowcase } from "./launcher/launcher-esports-news-card.showcase";
 import { launcherEsportsPageShowcase } from "./launcher/launcher-esports-page.showcase";
 import { launcherFeaturedCardShowcase } from "./launcher/launcher-featured-card.showcase";
+import { launcherFeaturedMerchBannerShowcase } from "./launcher/launcher-featured-merch-banner.showcase";
+import { launcherMerchPageShowcase } from "./launcher/launcher-merch-page.showcase";
 import { launcherOverviewHeroShowcase } from "./launcher/launcher-overview-hero.showcase";
 import { launcherOverviewPageShowcase } from "./launcher/launcher-overview-page.showcase";
 import { launcherPatchHeroBannerShowcase } from "./launcher/launcher-patch-hero-banner.showcase";
@@ -269,11 +271,13 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
-  // launcher — alphabetical: LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
+  // launcher — alphabetical: LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
   launcherContentCarouselShowcase,
   launcherEsportsNewsCardShowcase,
   launcherEsportsPageShowcase,
   launcherFeaturedCardShowcase,
+  launcherFeaturedMerchBannerShowcase,
+  launcherMerchPageShowcase,
   launcherOverviewHeroShowcase,
   launcherOverviewPageShowcase,
   launcherPatchHeroBannerShowcase,
