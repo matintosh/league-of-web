@@ -43,14 +43,15 @@ export function LauncherFeaturedCard({
 }: LauncherFeaturedCardProps) {
   return (
     <div style={{ maxWidth: 360 }}>
-      {/* Merged single heading — ref shows no eyebrow; category + title joined by " - " */}
+      {/* Merged single heading — ref shows no eyebrow; category + title joined by " - ".
+          Ref measured ~22px / line-height ~1.2 (cap-height ≈15.8px, line tops y490→y521 ref ÷1.2). */}
       <h2
         style={{
           color: "var(--color-launcher-ink)",
           fontFamily: "var(--font-launcher)",
-          fontSize: 19,
+          fontSize: 22,
           fontWeight: 700,
-          lineHeight: 1.25,
+          lineHeight: 1.2,
           marginBottom: 8,
           margin: "0 0 8px",
         }}

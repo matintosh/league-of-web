@@ -29,6 +29,10 @@ import {
   LauncherPatchNotesPage,
   GameLolLogo,
   GameTftLogo,
+  GameValorantLogo,
+  GameTwoXkoLogo,
+  GameWildRiftLogo,
+  GameRiotShieldLogo,
 } from "@low/ui";
 import type { LauncherRailItem, LauncherTab, LauncherGameMode, LauncherFriendGroup } from "@low/ui";
 import { profileIconUrl } from "@low/fixtures";
@@ -47,17 +51,27 @@ const VIEWER: Summoner = {
   availability: "online",
 };
 
-/** Home icon SVG for the rail. */
-function HomeIcon() {
+/** Riot fist / brand icon */
+function RiotFistIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="currentColor">
-      <path d="M10 2L2 9h2v9h5v-5h2v5h5V9h2L10 2z" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M7 4h10v2H7V4zm-1 3h12v1.5l1 2v4.5H5v-4.5l1-2V7zm2 6.5h8V11H8v2.5zm-2 2h12v1H6v-1zm1 2h10v1H7v-1z" />
     </svg>
   );
 }
 
-/** Games grid icon for the rail. */
-function GamesIcon() {
+/** Home house icon */
+function HomeIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M3 12L12 3l9 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** All-games 2×2 grid icon */
+function GamesGridIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="currentColor">
       <rect x="2" y="2" width="7" height="7" rx="1" />
@@ -68,42 +82,24 @@ function GamesIcon() {
   );
 }
 
-/** LoL rail icon — compact crest + wordmark from the launcher game-logos set. */
-function LolIcon() {
-  return <GameLolLogo size={28} />;
-}
-
-/** TFT rail icon — "TFT" acronym + subtitle from the launcher game-logos set. */
-function TftIcon() {
-  return <GameTftLogo size={28} />;
-}
-
-/** Rail items for the LoL launcher left column. */
+/**
+ * Full Riot roster — 9 items matching the ref (image.png left rail).
+ * Top: Riot fist, Home, All-games grid, LoL, Valorant, Wild Rift, 2XKO, TFT.
+ * Bottom pinned: Riot R shield.
+ *
+ * Matches the same RAIL_ITEMS shape as launcher-client.tsx (shipped in #736 for
+ * /launcher/home + /launcher/games — wired here on the assembled /launcher/lol route).
+ */
 const RAIL_ITEMS: LauncherRailItem[] = [
-  {
-    id: "home",
-    label: "Home",
-    icon: <HomeIcon />,
-    position: "top",
-  },
-  {
-    id: "lol",
-    label: "League of Legends",
-    icon: <LolIcon />,
-    position: "top",
-  },
-  {
-    id: "tft",
-    label: "Teamfight Tactics",
-    icon: <TftIcon />,
-    position: "top",
-  },
-  {
-    id: "games",
-    label: "All Games",
-    icon: <GamesIcon />,
-    position: "bottom",
-  },
+  { id: "riot",        label: "Riot Games",         icon: <RiotFistIcon />,                           position: "top"    },
+  { id: "home",        label: "Home",               icon: <HomeIcon />,                               position: "top"    },
+  { id: "games",       label: "All Games",          icon: <GamesGridIcon />,                          position: "top"    },
+  { id: "lol",         label: "League of Legends",  icon: <GameLolLogo size={28} variant="emblem" />, position: "top"    },
+  { id: "valorant",    label: "VALORANT",           icon: <GameValorantLogo size={28} variant="emblem" />, position: "top" },
+  { id: "wildrift",    label: "Wild Rift",          icon: <GameWildRiftLogo size={28} variant="emblem" />, position: "top" },
+  { id: "2xko",        label: "2XKO",               icon: <GameTwoXkoLogo size={28} variant="emblem" />,  position: "top" },
+  { id: "tft",         label: "Teamfight Tactics",  icon: <GameTftLogo size={28} variant="emblem" />, position: "top"    },
+  { id: "riot-shield", label: "Riot",               icon: <GameRiotShieldLogo size={28} />,           position: "bottom" },
 ];
 
 /** Rail id → route path mapping for cross-surface navigation. */
@@ -348,13 +344,15 @@ export default function LauncherLolPage() {
           <LauncherMerchPage />
         ) : null}
 
-        {/* Tab bar — floating translucent pill overlaid on the hero, right-of-center per ref */}
+        {/* Tab bar — floating translucent pill centred on the content column.
+            translateX(-50%) corrects the left:"50%" anchor so the pill is truly centred
+            (ref: pill centre ≈540 x our space; top y≈28). */}
         <div
           style={{
             position: "absolute",
-            top: 14,
+            top: 28,
             left: "50%",
-            transform: "translateX(0%)",
+            transform: "translateX(-50%)",
             zIndex: 10,
             pointerEvents: "none",
           }}
