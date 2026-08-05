@@ -83,7 +83,7 @@ export function LauncherRiotHomePage({
         {nav}
       </aside>
 
-      {/* Main content area — flex-1, scrollable */}
+      {/* Main content area — flex-1, scrollable — light surface per image-5.png ref (issue #719) */}
       <main
         style={{
           flex: 1,
@@ -91,21 +91,21 @@ export function LauncherRiotHomePage({
           height: "100%",
           overflowY: "auto",
           overflowX: "hidden",
-          backgroundColor: "var(--color-launcher-content-bg)",
+          backgroundColor: "var(--color-launcher-home-content-bg)",
           padding: "24px 24px 32px 24px",
           display: "flex",
           flexDirection: "column",
           gap: 20,
         }}
       >
-        {/* "Home" page heading */}
+        {/* "Home" page heading — dark ink on light surface */}
         <h1
           style={{
             fontFamily: "var(--font-display, var(--font-launcher))",
             fontSize: 22,
             fontWeight: 700,
             lineHeight: 1,
-            color: "var(--color-launcher-text-primary)",
+            color: "var(--color-launcher-home-content-ink)",
             margin: 0,
           }}
         >
@@ -126,7 +126,7 @@ export function LauncherRiotHomePage({
               fontFamily: "var(--font-display, var(--font-launcher))",
               fontSize: 14,
               fontWeight: 600,
-              color: "var(--color-launcher-text-primary)",
+              color: "var(--color-launcher-home-content-ink)",
               margin: "0 0 12px 0",
               letterSpacing: "0.02em",
             }}

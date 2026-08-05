@@ -204,7 +204,10 @@
   --color-launcher-panel-header: #1e2028; /* panel account header row */
 
   /* Content area */
-  --color-launcher-content-bg:   #11131a; /* center content area dark base */
+  --color-launcher-content-bg:          #11131a; /* center content area dark base */
+  /* Light content surface — Riot Home + Games main area (issue #719) */
+  --color-launcher-home-content-bg:     #f0f0f2; /* near-white, matches image-5/image-7 ref */
+  --color-launcher-home-content-ink:    #1a1a1c; /* dark heading/body text on the light surface */
 
   /* Dividers / borders */
   --color-launcher-border:       #2a2c35; /* subtle 1px panel borders */
@@ -469,7 +472,10 @@
     --color-launcher-rail-bg:      #13151a;
     --color-launcher-panel-bg:     #1a1c22;
     --color-launcher-panel-header: #1e2028;
-    --color-launcher-content-bg:   #11131a;
+    --color-launcher-content-bg:          #11131a;
+    /* Light content surface — Riot Home + Games main area (issue #719) */
+    --color-launcher-home-content-bg:     #f0f0f2;
+    --color-launcher-home-content-ink:    #1a1a1c;
     --color-launcher-border:       #2a2c35;
     --color-launcher-divider:      #22242c;
     --color-launcher-text-primary: #e8e6e1;
