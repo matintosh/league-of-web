@@ -185,9 +185,12 @@ export { StatMedallion } from "./collection/stat-medallion";
 export type { StatMedallionProps, TierEntry } from "./collection/stat-medallion";
 export { StatsTab } from "./collection/stats-tab";
 export type { StatsTabProps, PlayStyleStat, SeasonStats } from "./collection/stats-tab";
-// launcher — alphabetical: LauncherContentCarousel < LauncherFeaturedCard < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
+// launcher — alphabetical: LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar
 export { LauncherContentCarousel } from "./launcher/launcher-content-carousel";
 export type { LauncherContentCarouselProps, LauncherContentItem } from "./launcher/launcher-content-carousel";
+export { LauncherEsportsNewsCard } from "./launcher/launcher-esports-news-card";
+export type { LauncherEsportsNewsCardProps } from "./launcher/launcher-esports-news-card";
+export { LauncherEsportsPage } from "./launcher/launcher-esports-page";
 export { LauncherFeaturedCard } from "./launcher/launcher-featured-card";
 export type { LauncherFeaturedCardProps } from "./launcher/launcher-featured-card";
 export { LauncherOverviewHero } from "./launcher/launcher-overview-hero";
