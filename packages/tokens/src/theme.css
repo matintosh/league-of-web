@@ -290,10 +290,11 @@
   --color-launcher-ring-away:       #c89b3c; /* same as launcher-accent / gold-3 */
 
   /* Esports */
-  --color-launcher-esports-heading:      #ffffff;
-  --color-launcher-esports-card-bg:      #161616;
-  --color-launcher-esports-card-border:  #2a2a2a;
-  --color-launcher-esports-card-hover:   #111111; /* subtle hover highlight */
+  --color-launcher-esports-heading:        #c8aa6e; /* gold-2 — Hextech gold, matches ref rgb(202,158,67) */
+  --color-launcher-esports-card-bg:        #161616;
+  --color-launcher-esports-card-border:    #2a2a2a;
+  --color-launcher-esports-card-hover:     #111111; /* subtle hover highlight */
+  --color-launcher-esports-scrim-bottom:   color-mix(in srgb, var(--color-launcher-bg) 90%, transparent); /* bottom gradient scrim for lg featured card */
 
   /* Game tile (issue #689) */
   --color-launcher-surface:              #1a1c22; /* game tile card background = panel-bg */
@@ -574,10 +575,11 @@
     --color-launcher-ring-away:       #c89b3c;
 
     /* Esports */
-    --color-launcher-esports-heading:      #ffffff;
-    --color-launcher-esports-card-bg:      #161616;
-    --color-launcher-esports-card-border:  #2a2a2a;
-    --color-launcher-esports-card-hover:   #111111; /* subtle hover highlight */
+    --color-launcher-esports-heading:        #c8aa6e; /* gold-2 — Hextech gold, matches ref rgb(202,158,67) */
+    --color-launcher-esports-card-bg:        #161616;
+    --color-launcher-esports-card-border:    #2a2a2a;
+    --color-launcher-esports-card-hover:     #111111; /* subtle hover highlight */
+    --color-launcher-esports-scrim-bottom:   color-mix(in srgb, var(--color-launcher-bg) 90%, transparent); /* bottom gradient scrim for lg featured card */
 
     /* Game tile (issue #689) */
     --color-launcher-surface:              #1a1c22;
