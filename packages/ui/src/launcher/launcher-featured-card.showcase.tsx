@@ -19,7 +19,7 @@ export const launcherFeaturedCardShowcase: ShowcaseEntry = {
       render: () => (
         <div
           style={{
-            backgroundColor: "#0a0a0a",
+            backgroundColor: "var(--color-launcher-bg)",
             padding: "32px 28px",
             maxWidth: 460,
           }}
@@ -39,7 +39,7 @@ export const launcherFeaturedCardShowcase: ShowcaseEntry = {
       render: () => (
         <div
           style={{
-            backgroundColor: "#0a0a0a",
+            backgroundColor: "var(--color-launcher-bg)",
             padding: "32px 28px",
             maxWidth: 460,
           }}
@@ -59,7 +59,7 @@ export const launcherFeaturedCardShowcase: ShowcaseEntry = {
       render: () => (
         <div
           style={{
-            backgroundColor: "#0a0a0a",
+            backgroundColor: "var(--color-launcher-bg)",
             padding: "32px 28px",
             maxWidth: 460,
           }}

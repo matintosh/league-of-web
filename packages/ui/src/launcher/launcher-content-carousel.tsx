@@ -116,7 +116,7 @@ function LauncherThumbCard({ item, isActive, onClick }: ThumbCardProps) {
         onMouseEnter={(e) => {
           if (!isActive) {
             (e.currentTarget as HTMLElement).style.borderColor =
-              "rgba(200,155,60,0.6)";
+              "color-mix(in srgb, var(--color-launcher-thumb-active) 60%, transparent)";
           }
         }}
         onMouseLeave={(e) => {
