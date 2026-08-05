@@ -30,6 +30,7 @@ import {
   LauncherSocialPanel,
   LauncherOverviewPage,
   LauncherEsportsPage,
+  LauncherMerchPage,
   LauncherPatchNotesPage,
 } from "@low/ui";
 import type { LauncherRailItem, LauncherTab, LauncherGameMode, LauncherFriendGroup } from "@low/ui";
@@ -383,8 +384,10 @@ export function LauncherClient() {
           <LauncherPatchNotesPage />
         ) : activeTab === "esports" ? (
           <LauncherEsportsPage />
+        ) : activeTab === "merch" ? (
+          <LauncherMerchPage />
         ) : (
-          <ComingSoonTab label="Merch" />
+          <ComingSoonTab label={activeTab} />
         )}
 
         {/* Play button — absolute overlay, bottom-left above the featured card,
