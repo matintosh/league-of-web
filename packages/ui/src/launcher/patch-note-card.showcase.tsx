@@ -38,7 +38,7 @@ export const patchNoteCardShowcase: ShowcaseEntry = {
   name: "PatchNoteCard",
   area: "launcher",
   description:
-    "Cross-game patch note card used in the 'Latest Patch Notes' horizontal row on the Riot launcher Home. 220×140 px, thumbnail + logo + title + meta. Issue #682.",
+    "Cross-game patch note card used in the 'Latest Patch Notes' horizontal row on the Riot launcher Home. Horizontal layout: 367×100 px, logo + title + meta LEFT, key-art RIGHT. Issue #682.",
   variants: [
     {
       name: "VALORANT Patch Notes 13.02 (ref match)",
