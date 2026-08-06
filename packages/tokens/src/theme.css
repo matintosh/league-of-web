@@ -157,8 +157,8 @@
   --color-login-classic-chip-bg: rgba(10, 8, 4, 0.72);
   --color-brand-xbox: #107c10;
   --color-brand-playstation: #003791;
-  /* Google brand — white bg for the multicolor G button */
-  --color-brand-google: #ffffff;
+  /* Google brand — same #ececec as login-surface (pixel-sampled from riot-login-page.png, issue #784) */
+  --color-brand-google: #ececec;
 
   /* Arcade event — deep purple-navy bg stops for the Arcade 2019 tab gradient (issue #187) */
   --color-arcade-bg-dark: #0d0520;
@@ -494,8 +494,8 @@
     --color-login-classic-chip-bg: rgba(10, 8, 4, 0.72);
     --color-brand-xbox: #107c10;
     --color-brand-playstation: #003791;
-    /* Google brand — white bg for the multicolor G button */
-    --color-brand-google: #ffffff;
+    /* Google brand — same #ececec as login-surface (pixel-sampled from riot-login-page.png, issue #784) */
+    --color-brand-google: #ececec;
 
     /* Arcade event — deep purple-navy bg stops for the Arcade 2019 tab gradient (issue #187) */
     --color-arcade-bg-dark: #0d0520;

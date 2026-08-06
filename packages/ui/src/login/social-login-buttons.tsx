@@ -19,10 +19,10 @@ export interface SocialLoginButtonsProps {
  * SocialLoginButtons renders the row of equal-width brand sign-in buttons
  * shown below the username/password form on Riot's login page.
  *
- * Visual spec (from docs/reference/riot-login-page.png + issue #101, #676):
- * - Three buttons side-by-side (default), each ~36px tall, square corners.
+ * Visual spec (from docs/reference/riot-login-page.png + issue #101, #676, #784):
+ * - Three buttons side-by-side (default), each ~28px tall, square corners.
  * - Facebook: bg-brand-facebook (#1877f2), real "f" glyph path.
- * - Google:   bg-brand-google (white), 1px login-surface border, real multicolor "G".
+ * - Google:   bg-brand-google (#ececec, same as login-surface), borderless, real multicolor "G".
  *   Brand-asset SVG exception: Google's 4-colour mark is embedded as-is,
  *   carrying official brand colors (#4285f4 / #34a853 / #fbbc05 / #ea4335).
  * - Apple:    bg-login-black (#000000), real apple silhouette in white.
@@ -69,7 +69,7 @@ const providerConfig: Record<Provider, ProviderConfig> = {
   },
   google: {
     label: "Continue with Google",
-    containerClass: "bg-brand-google border border-login-surface",
+    containerClass: "bg-brand-google",
     glyph: (
       <svg
         aria-hidden="true"
@@ -176,7 +176,7 @@ export function SocialLoginButtons({
             onClick={() => onProvider?.(key)}
             className={[
               "flex flex-1 items-center justify-center",
-              "h-9 rounded-none",
+              "h-7 rounded-none",
               "hover:brightness-95",
               "transition-[filter] duration-150",
               containerClass,
