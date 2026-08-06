@@ -30,8 +30,11 @@
 
 :root {
   /* ── Accent ─────────────────────────────────────────────────────────── */
-  --color-merch-red:     #d13639; /* primary accent — CTAs, wordmark, badges      */
-  --color-merch-red-dark: #a82b2e; /* hover / pressed state                       */
+  /* Primary CTA red — remeasured 2026-08-06 from live merch.riotgames.com:
+     rgb(235,0,41) on hero "Shop Now", gift "Buy It Now", PDP "LOGIN TO PURCHASE",
+     Load More, Refine. Previous value #d13639 was wrong (old sample). */
+  --color-merch-red:     #eb0029; /* primary accent — CTAs, wordmark, badges      */
+  --color-merch-red-dark: #c60023; /* hover / pressed state (matches announcement band) */
 
   /* ── Ink / text ─────────────────────────────────────────────────────── */
   --color-merch-ink:     #1a1a1a; /* heading-level text                            */
@@ -45,7 +48,10 @@
   --color-merch-border:      #e5e5e5; /* dividers, card outlines                       */
 
   /* ── Header / Footer (dark bar sampled from merch.riotgames.com) ──── */
-  --color-merch-ink-dark:       #000000; /* header/footer background — pure black       */
+  /* Header background — remeasured 2026-08-06: real site is rgb(17,17,17) #111111,
+     not pure black. Footer keeps ink-dark (#000000) — dedicated header token added. */
+  --color-merch-header-bg:      #111111; /* header bar background — #111111 measured live  */
+  --color-merch-ink-dark:       #000000; /* footer background — pure black (footer only)    */
   --color-merch-border-dark:    #2a2a2a; /* dark section border separator               */
   --color-merch-on-dark:        #ffffff; /* white text/icons on dark backgrounds        */
   --color-merch-muted-on-dark:  #a0a0a0; /* muted grey links/labels on black backgrounds */
@@ -76,8 +82,13 @@
   --color-merch-dot-inactive-hover: rgba(255, 255, 255, 0.65); /* hovered inactive dot      */
 
   /* ── Nav extras ─────────────────────────────────────────────────────── */
-  /* MY SHOP gold link color — sampled from merch.riotgames.com rgb(224,180,60) */
-  --color-merch-gold:      #e0b43c;
+  /* MY SHOP gold link color — remeasured 2026-08-06 from live site: real is bright
+     yellow-gold ~#F9C824 (rgb(249,200,36)). Previous #e0b43c was too muted/orange. */
+  --color-merch-gold:      #f9c824;
+  /* Purple CTA — search-hero CTA fill / empty-state accent. Measured from real site:
+     ~#5c16c5 blue-purple (rgb(92,22,197)). No merch purple existed before this token. */
+  --color-merch-purple:      #5c16c5;
+  --color-merch-purple-dark: #4a11a0; /* hover / pressed state for purple CTAs */
   /* SIGN IN button bg — translucent grey overlay on dark nav bar */
   --color-merch-signin-bg: rgba(128, 128, 128, 0.2);
   /* SIGN IN button border — translucent white hairline on dark nav bar */
@@ -144,4 +155,11 @@
      "Inter Fallback" chain for SSR and no-JS environments. */
   --font-merch: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Helvetica, Arial, sans-serif;
+  /* riotSans — the real merch store's display/heading/CTA font (weight 400 + 600).
+     Self-hosted woff2 files in apps/web/public/fonts/ (sourced from merch.riotgames.com
+     _next/static/media, same files the real store serves). Loaded via next/font/local
+     in layout.tsx and wired here as --font-merch-display. Applies to: card titles,
+     H1–H3 headings, all CTA buttons, footer links, REFINE, Load More, gift heading.
+     Inter stays for: body copy, prices, breadcrumb chrome (matches the real site). */
+  --font-merch-display: "riotSans", "Arial", sans-serif;
 }

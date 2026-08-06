@@ -159,7 +159,7 @@ function DropdownMenu({ items, onSelect, menuId }: DropdownMenuProps) {
         left: 0,
         zIndex: 200,
         minWidth: "180px",
-        backgroundColor: "var(--color-merch-ink-dark)",
+        backgroundColor: "var(--color-merch-header-bg)",
         border: "1px solid var(--color-merch-border-dark)",
         borderRadius: "4px",
         padding: "6px 0",
@@ -371,7 +371,7 @@ export function MerchHeader({
       <div
         ref={navRef}
         className="w-full overflow-x-clip"
-        style={{ backgroundColor: "var(--color-merch-ink-dark)" }}
+        style={{ backgroundColor: "var(--color-merch-header-bg)" }}
       >
         <div className="mx-auto flex h-20 max-w-screen-xl items-center gap-8 px-6">
 
@@ -679,7 +679,7 @@ export function MerchHeader({
             aria-label="Mobile store navigation"
             style={{
               borderTop: "1px solid var(--color-merch-border-dark)",
-              backgroundColor: "var(--color-merch-ink-dark)",
+              backgroundColor: "var(--color-merch-header-bg)",
               width: "100%",
               maxWidth: "100vw",
               overflow: "hidden",
