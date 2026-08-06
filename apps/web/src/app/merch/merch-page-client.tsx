@@ -398,7 +398,7 @@ function FranchiseFeatureCard({
 // ---------------------------------------------------------------------------
 
 const ANNOUNCEMENT =
-  "We're upgrading our warehouse! Orders placed between July 3–7 may be delayed. We apologize for the inconvenience.";
+  "We're upgrading our warehouse! Orders (Riftbound excluded) may experience shipping delays, but we expect to resume normal operations before…";
 
 // ---------------------------------------------------------------------------
 // Page component
