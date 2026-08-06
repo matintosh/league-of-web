@@ -11,10 +11,34 @@
 // ---------------------------------------------------------------------------
 
 export interface MerchInfoBlock {
-  /** Block type drives rendering: heading vs prose vs list. */
-  type: "paragraph" | "heading2" | "heading3" | "ul" | "ol";
+  /** Block type drives rendering: heading vs prose vs list vs accordion. */
+  type: "paragraph" | "heading2" | "heading3" | "ul" | "ol" | "faq-accordion";
   /** Raw text for headings/paragraphs; array of strings for ul/ol items. */
   content: string | string[];
+  /**
+   * FAQ accordion sections — only used when type === "faq-accordion".
+   * Each section has a category heading and an ordered list of Q&A pairs.
+   */
+  sections?: MerchFaqSection[];
+}
+
+/** A Q&A pair within an FAQ accordion section. */
+export interface MerchFaqItem {
+  /** The question text — rendered as the collapsible trigger (h3). */
+  question: string;
+  /** The answer text — rendered inside the collapsed panel. */
+  answer: string;
+}
+
+/** A category section within the FAQ accordion. */
+export interface MerchFaqSection {
+  /**
+   * Category heading — rendered as h2 (Inter 18px/600, no uppercase, black).
+   * Real labels: "GENERAL QUESTIONS", "BILLING AND ORDER QUESTIONS", "TECHNICAL QUESTIONS".
+   */
+  heading: string;
+  /** Ordered Q&A pairs within this category. */
+  items: MerchFaqItem[];
 }
 
 // ---------------------------------------------------------------------------
@@ -74,16 +98,21 @@ export interface MerchSupportTab {
  * merch.riotgames.com/en-us/faqs/ and sibling pages.
  * Fixture values only — supplied to components by the page route.
  */
+/**
+ * Ordered list of the 9 support section tabs matching the real tab strip on
+ * merch.riotgames.com/en-us/faqs/ — measured from live site, exact labels.
+ * Fixture values only — supplied to components by the page route.
+ */
 export const MERCH_SUPPORT_TABS: MerchSupportTab[] = [
-  { slug: "accessibility",       label: "Accessibility" },
-  { slug: "faqs",                label: "FAQs" },
-  { slug: "shipping",            label: "Shipping Methods" },
-  { slug: "returns",             label: "Return Policy" },
-  { slug: "riot-mart",           label: "Riot Mart" },
-  { slug: "verify-your-product", label: "Verify Your Product" },
-  { slug: "collectability-guide",label: "Collectability Guide" },
-  { slug: "gift-card-balance",   label: "Gift Card Balance" },
-  { slug: "order-status",        label: "Order Status" },
+  { slug: "accessibility",        label: "Accessibility" },
+  { slug: "collectability-guide", label: "Collectability Guide" },
+  { slug: "faqs",                 label: "FAQs" },
+  { slug: "gift-card-balance",    label: "Gift Card Balance" },
+  { slug: "order-status",         label: "Order Status / Code Lookup" },
+  { slug: "returns",              label: "Return Policy" },
+  { slug: "riot-mart",            label: "Riot Mart | My Shop" },
+  { slug: "shipping",             label: "Shipping Methods & Estimated Arrival Times" },
+  { slug: "verify-your-product",  label: "Verify Your Order" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -92,70 +121,106 @@ export const MERCH_SUPPORT_TABS: MerchSupportTab[] = [
 
 export const MERCH_INFO_PAGES: Record<string, MerchInfoPageContent> = {
   faqs: {
-    title: "Frequently Asked Questions",
+    /*
+     * Real page title: 'FAQs' (not 'Frequently Asked Questions') per issue #826.
+     * Real: h2 'FAQs' with 32px top+bottom padding on the content area.
+     */
+    title: "FAQs",
     blocks: [
-      { type: "heading2", content: "Orders" },
       {
-        type: "paragraph",
-        content:
-          "Once your order is placed you will receive a confirmation email. Orders are typically processed within 1–3 business days before shipping.",
-      },
-      { type: "heading3", content: "Can I change or cancel my order?" },
-      {
-        type: "paragraph",
-        content:
-          "Orders can be modified or cancelled within 1 hour of placement. Please contact our support team as quickly as possible for assistance.",
-      },
-      { type: "heading3", content: "What payment methods do you accept?" },
-      {
-        type: "ul",
-        content: [
-          "Credit and debit cards (Visa, Mastercard, American Express)",
-          "PayPal",
-          "Riot Games Gift Cards",
-          "Apple Pay and Google Pay (where available)",
+        type: "faq-accordion",
+        content: "",
+        sections: [
+          {
+            /*
+             * Real h2 category headings: Inter 18px/600, no uppercase, black.
+             * Labels: "GENERAL QUESTIONS", "BILLING AND ORDER QUESTIONS", "TECHNICAL QUESTIONS".
+             */
+            heading: "GENERAL QUESTIONS",
+            items: [
+              {
+                question: "What is the Riot Games Merch Store?",
+                answer:
+                  "The Riot Games Merch Store is the official online store for Riot Games merchandise, including apparel, collectibles, accessories, and more inspired by League of Legends, VALORANT, Teamfight Tactics, and other Riot titles.",
+              },
+              {
+                question: "How do I create an account?",
+                answer:
+                  "You can sign in using your existing Riot Games account. If you don't have one, visit account.riotgames.com to create one. Your Riot account gives you access to order history, wishlists, and personalised offers.",
+              },
+              {
+                question: "Are your products officially licensed?",
+                answer:
+                  "Yes. All products sold in the Riot Games Merch Store are officially licensed and produced to Riot's quality standards. Look for the Riot Games seal on all product pages.",
+              },
+              {
+                question: "How do I know if an item is authentic?",
+                answer:
+                  "Collectibles purchased through our official store include a certificate of authenticity or holographic seal where applicable. Use our Product Validation tool to verify your item's authenticity code.",
+              },
+              {
+                question: "Can I purchase gift cards?",
+                answer:
+                  "Yes, Riot Games Gift Cards are available in select denominations and can be redeemed on any eligible order at checkout. Check your gift card balance at any time on the Gift Card Balance page.",
+              },
+            ],
+          },
+          {
+            heading: "BILLING AND ORDER QUESTIONS",
+            items: [
+              {
+                question: "What payment methods do you accept?",
+                answer:
+                  "We accept credit and debit cards (Visa, Mastercard, American Express), PayPal, Riot Games Gift Cards, and Apple Pay or Google Pay where available.",
+              },
+              {
+                question: "Can I change or cancel my order?",
+                answer:
+                  "Orders can be modified or cancelled within 1 hour of placement. Please contact our support team as quickly as possible — once an order enters fulfilment it cannot be changed.",
+              },
+              {
+                question: "How do I track my order?",
+                answer:
+                  "Once your order ships you will receive a tracking number via email. You can also visit the Order Status page and enter your order number and billing last name to see real-time updates.",
+              },
+              {
+                question: "When will I be charged?",
+                answer:
+                  "Your payment method is charged at the time your order is placed. For pre-order items, you are charged immediately and your item ships when it becomes available.",
+              },
+              {
+                question: "I was charged but didn't receive a confirmation email. What should I do?",
+                answer:
+                  "Check your spam or junk folder first. If you still can't find it, log in to your Riot account and view your order history. If the charge appears without a matching order, contact our support team.",
+              },
+            ],
+          },
+          {
+            heading: "TECHNICAL QUESTIONS",
+            items: [
+              {
+                question: "Why can't I add items to my cart?",
+                answer:
+                  "Items that are sold out or no longer available cannot be added to your cart. If an available item won't add, try clearing your browser cache and cookies, or try a different browser. If the problem persists, contact support.",
+              },
+              {
+                question: "Why is a product showing as unavailable in my region?",
+                answer:
+                  "Some products have regional shipping restrictions due to licensing, customs regulations, or carrier limitations. Check the product page for regional availability details.",
+              },
+              {
+                question: "The website isn't loading correctly. What can I do?",
+                answer:
+                  "Try clearing your browser cache and cookies, disabling browser extensions, or switching to a different browser. If the issue persists, check our status page or contact our support team.",
+              },
+              {
+                question: "How do I redeem a promo code?",
+                answer:
+                  "Enter your promo code in the discount code field at checkout. Only one promo code can be applied per order. Codes cannot be combined with other offers unless otherwise stated.",
+              },
+            ],
+          },
         ],
-      },
-      { type: "heading2", content: "Shipping" },
-      {
-        type: "paragraph",
-        content:
-          "We ship to most countries worldwide. Shipping times and costs vary depending on your location and the shipping method selected at checkout.",
-      },
-      { type: "heading3", content: "How do I track my order?" },
-      {
-        type: "paragraph",
-        content:
-          "Once your order ships you will receive a tracking number via email. You can use this number on our Order Status page or directly on the carrier's website.",
-      },
-      { type: "heading2", content: "Returns & Exchanges" },
-      {
-        type: "paragraph",
-        content:
-          "We accept returns and exchanges within 30 days of delivery for most items. Please see our Returns page for full details.",
-      },
-      { type: "heading3", content: "What items are non-returnable?" },
-      {
-        type: "ul",
-        content: [
-          "Opened collectibles or limited-edition items",
-          "Digital content or codes",
-          "Customized or personalized products",
-          "Items marked as Final Sale",
-        ],
-      },
-      { type: "heading2", content: "Product Questions" },
-      { type: "heading3", content: "Are your products officially licensed?" },
-      {
-        type: "paragraph",
-        content:
-          "Yes. All products sold in the Riot Games Merch Store are officially licensed and produced to Riot's quality standards.",
-      },
-      { type: "heading3", content: "How do I know if an item is authentic?" },
-      {
-        type: "paragraph",
-        content:
-          "Collectibles purchased through our official store include a certificate of authenticity or holographic seal where applicable. Use our Product Validation tool to verify your item.",
       },
     ],
   },
