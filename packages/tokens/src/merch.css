@@ -84,6 +84,8 @@
   --color-merch-signin-border: rgba(255, 255, 255, 0.15);
   /* Fist emblem on the black header bar — near-black circle, measured from real */
   --color-merch-emblem-bg: #1a1a1a;
+  /* Announcement band background — deeper crimson matching merch.riotgames.com */
+  --color-merch-announcement-bg: #c60023; /* rgb(198,0,35) measured live 2026-08-06 */
   /* Announcement pill border — same red as the band; gives a subtle raised outline */
   --color-merch-announcement-pill-border: #eb0029; /* rgb(235,0,41) sampled from real */
   /* Support page tab-strip band background — rgb(235,0,41) measured from real .support-page-hero_hero-nav-container */
