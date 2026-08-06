@@ -25,6 +25,8 @@
  *   - Item count: 14px, font-weight 400, --color-merch-muted, inline ml-2
  *   - Description: mt-2, text-sm, max-w-lg
  *   - Container: max-w-7xl mx-auto px-6
+ *   - PDP collection band SHOP NOW: gold (#f9c824) button, uppercase 13px/700, px-6 py-2
+ *   - PDP collection band heading: decorative h2 (not h1 — PDP already has its own h1)
  */
 
 // ---------------------------------------------------------------------------
@@ -47,8 +49,21 @@ export interface MerchCollectionHeroProps {
    * @example [{label:"Home",href:"/"},{label:"Collections",href:"/collection"},{label:"League Classic"}]
    */
   breadcrumbs?: MerchBreadcrumb[];
-  /** Collection or category name — the main heading. */
+  /**
+   * Collection or category name — the main heading.
+   * Rendered as an `<h2>` (decorative) because the component is also used
+   * as a sub-band on the PDP page which already has its own `<h1>`.
+   * Override the heading level with `headingAs` when the component is the
+   * primary landmark on the page.
+   */
   heading: string;
+  /**
+   * Override the semantic heading element.
+   * Defaults to "h2". Pass "h1" only when this is the page's primary heading
+   * (i.e. on stand-alone category / collection pages that have no other h1).
+   * @default "h2"
+   */
+  headingAs?: "h1" | "h2";
   /** Optional product count shown inline after the heading, e.g. 7 → "(7)". */
   itemCount?: number;
   /** Optional short description below the heading. */
@@ -63,6 +78,19 @@ export interface MerchCollectionHeroProps {
    * "light" = dark text on light background.
    */
   theme?: "light" | "dark";
+  /**
+   * Label for the gold SHOP NOW CTA button.
+   * Pass a non-empty string to show the button; omit or pass undefined to hide it.
+   * Measured from the real PDP collection band: gold (#f9c824) fill, black text,
+   * uppercase 13px/700, px-6 py-2, no border-radius (square corners like real site).
+   * @default "SHOP NOW"
+   */
+  ctaLabel?: string;
+  /**
+   * Called when the gold CTA button is clicked.
+   * If undefined and ctaLabel is set, the button renders but does nothing.
+   */
+  onCtaClick?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -70,26 +98,41 @@ export interface MerchCollectionHeroProps {
 // ---------------------------------------------------------------------------
 
 /**
- * MerchCollectionHero — compact banner for collection/category pages.
- * Appears between the sticky MerchHeader and the MerchProductGrid.
+ * MerchCollectionHero — compact banner for collection/category pages and
+ * the PDP "SHOP NOW" franchise band.
  *
- * @example
+ * @example — category page (h1, no CTA)
  * <MerchCollectionHero
+ *   headingAs="h1"
  *   heading="League Classic"
  *   itemCount={7}
  *   breadcrumbs={[{label:"Home",href:"/"},{label:"Collections",href:"/collection"},{label:"League Classic"}]}
+ * />
+ *
+ * @example — PDP collection band (h2, gold SHOP NOW, franchise splash)
+ * <MerchCollectionHero
+ *   heading="League of Legends"
+ *   description="Explore the full collection."
+ *   backgroundImageUrl={franchiseSplashUrl}
+ *   ctaLabel="SHOP NOW"
+ *   onCtaClick={() => router.push("/merch/shop-all")}
+ *   theme="dark"
  * />
  */
 export function MerchCollectionHero({
   breadcrumbs,
   heading,
+  headingAs,
   itemCount,
   description,
   backgroundImageUrl,
   backgroundImageAlt,
   theme = "dark",
+  ctaLabel,
+  onCtaClick,
 }: MerchCollectionHeroProps) {
   const isDark = theme === "dark";
+  const HeadingTag = headingAs ?? "h2";
 
   return (
     <section
@@ -204,7 +247,7 @@ export function MerchCollectionHero({
         )}
 
         {/* Heading + item count */}
-        <h1
+        <HeadingTag
           className="text-4xl font-extrabold uppercase tracking-[0.04em] leading-tight"
           style={{
             color: isDark
@@ -221,7 +264,7 @@ export function MerchCollectionHero({
               ({itemCount})
             </span>
           )}
-        </h1>
+        </HeadingTag>
 
         {/* Optional description */}
         {description && (
@@ -235,6 +278,23 @@ export function MerchCollectionHero({
           >
             {description}
           </p>
+        )}
+
+        {/* Gold SHOP NOW CTA — PDP collection band only */}
+        {ctaLabel && (
+          <div className="mt-5">
+            <button
+              type="button"
+              onClick={onCtaClick}
+              className="inline-block cursor-pointer border-0 px-6 py-2 text-[13px] font-bold uppercase tracking-[0.08em] transition-opacity duration-150 hover:opacity-90"
+              style={{
+                backgroundColor: "var(--color-merch-gold)",
+                color: "var(--color-merch-ink)",
+              }}
+            >
+              {ctaLabel}
+            </button>
+          </div>
         )}
       </div>
     </section>
