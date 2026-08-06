@@ -21,11 +21,13 @@ export interface LoginTextInputProps {
 /**
  * LoginTextInput is the filled text field used on Riot's login page.
  *
- * Visual spec (extrapolated from Riot's live login behavior + reference screenshot):
- * - ~48px tall, square corners, login-surface (#ececec) background, no border at rest.
- * - The <label> is styled as an uppercase, xs, bold placeholder centred in the box when
- *   the field is empty and unfocused ("placeholder position"). It transitions to a tiny
- *   top-left label when the field is focused OR has a value ("float position").
+ * Visual spec (pixel-verified from docs/reference/riot-login-page.png, issue #785):
+ * - ~45px tall (h-11 = 44px ≈ within 1px of ref 45px), square corners,
+ *   login-surface (#ececec) background, no border at rest.
+ * - 17px left text indent (ref: text x73 - field x56 = 17px), matching label offset.
+ * - The <label> is styled as an uppercase, ~13px, bold placeholder centred in the box
+ *   when the field is empty and unfocused ("placeholder position"). It transitions to a
+ *   tiny top-left label when the field is focused OR has a value ("float position").
  *   This is achieved with the CSS peer pattern: the native <input> carries `peer`; the
  *   <label> reads `peer-focus:…` and `peer-[not(:placeholder-shown)]:…` to reposition.
  *   The placeholder-shown trick requires the <input> to have placeholder=" " (a single
@@ -63,8 +65,9 @@ export function LoginTextInput({
         disabled={disabled}
         placeholder=" "
         className={[
-          "peer w-full bg-login-surface px-3 pt-5 pb-2",
-          "h-12 rounded-none border-b-2 border-b-transparent",
+          /* fix(login): #785 — 45px height (h-11 = 44px ≈ ref 45px); 17px left indent (px-[17px]) */
+          "peer w-full bg-login-surface px-[17px] pt-5 pb-2",
+          "h-11 rounded-none border-b-2 border-b-transparent",
           "font-body text-sm text-login-ink",
           "outline-none",
           "focus:border-b-login-accent",
@@ -75,11 +78,12 @@ export function LoginTextInput({
       <label
         htmlFor={id}
         className={[
-          "pointer-events-none absolute left-3 select-none",
+          /* fix(login): #785 — left offset matches 17px indent */
+          "pointer-events-none absolute left-[17px] select-none",
           "font-body font-bold uppercase tracking-wide text-login-placeholder",
           "transition-all duration-150",
-          // Placeholder position: centred vertically (14px ≈ top-1/2 minus half line-height for xs text)
-          "top-1/2 -translate-y-1/2 text-xs",
+          // Placeholder position: centred vertically; text-[13px] ≈ 0.18 cap/field-height of 44px
+          "top-1/2 -translate-y-1/2 text-[13px]",
           // Float position: when focused OR value present (placeholder not shown)
           "peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[10px]",
           "peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-[10px]",
