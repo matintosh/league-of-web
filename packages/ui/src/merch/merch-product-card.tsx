@@ -12,25 +12,28 @@
  * (no 'use client'), SVG/gradient ids from useId.
  *
  * Real card anatomy (remeasured 2026-08-06 from merch.riotgames.com shop-all @1280px):
- *   - Card article: ~640px wide, background --color-merch-surface-alt (#f7f7f7)
+ *   - Card article: ~640px wide, background transparent (white page shows through)
  *   - Card border: 1px solid --color-merch-on-dark (#ffffff) — invisible white seams
  *   - Header row (~57px): franchise wordmark (top-left), badge chips + heart (top-right)
  *     ALL ABOVE the image — gap ~11px between wordmark bottom and image top
- *   - Image box: 638×255px, object-fit: contain, transparent bg (card grey shows through)
+ *   - Badge chips: horizontal ROW (flex-row gap-1) right of wordmark, wraps on overflow
+ *   - Image box: 638×225px, object-fit: contain, transparent bg (page white shows through)
  *   - Info strip: 16px top padding (pt-4); title riotSans 16px/700 black lh 18px;
  *     price 16px/400 lh 20px; 24-26px bottom padding below price
  *   - Badge chips: 14px mixed-case, black text; New=#8CD50B, Preorder=#666, Limited=#FFD700;
- *     border-radius 2px, padding 4px 8px, white-space: nowrap — stack (flex-col) at top-right
+ *     border-radius 2px, padding 4px 8px, white-space: nowrap — horizontal row at top-right
  *   - Discount %-badge: top-right header row (not over image), same green as New badge
  *   - Heart icon: 24×24; inline with badge cluster, ~21px from cell right edge
- *   - Whole card wrapped in <a> link — entire 638×403 cell is one link
+ *   - Whole card wrapped in <a> link — entire 638×375 cell is one link
  *   - In-card CTA: "Add to Cart" — HIDDEN at rest, revealed on card hover;
- *     50×50 cart-icon button right of title/price also fades in on hover
- *   - @390 (2-col → ~195px cards): badge cluster right-aligned before heart,
- *     wordmark clips/shrinks; NO horizontal overflow
+ *     50×50 cart-icon button right of title/price also fades in on hover (1280)
+ *   - @390 (2-col → ~195px cards): badge chips wrap to 2nd row before heart,
+ *     always-visible ~48×40 red cart button right of price; NO horizontal overflow
+ *   - Image carousel: prev/next 64×64 circular buttons revealed on card hover
+ *     to cycle through imageSrcs[]; hidden when only one image
  */
 
-import { useId } from "react";
+import { useCallback, useId, useState } from "react";
 import type { MerchProduct } from "@low/fixtures";
 import { FranchiseLogos } from "./franchise-logos";
 
@@ -45,19 +48,26 @@ export interface MerchProductCardProps {
   title: string;
   /** Primary image URL. */
   imageUrl: string;
+  /**
+   * Additional image URLs for the in-card carousel.
+   * When provided with more than one entry, the card shows prev/next
+   * arrow buttons on hover to cycle through images.
+   * The first entry should equal `imageUrl` for a consistent initial render.
+   */
+  imageSrcs?: string[];
   /** Display price string, e.g. "$19.99" or "$19.99 – $49.99". */
   price: string;
   /** Original (pre-sale) price string; shows struck-through if provided and differs from price. */
   originalPrice?: string;
   /**
    * Single badge label (back-compat). Superseded by `badges` when both present.
-   * @deprecated Prefer `badges` for the 2-col card design.
+   * @deprecated Prefer `badges` for the horizontal badge row design.
    */
   badge?: MerchProduct["badge"];
   /**
-   * Multi-badge array for the real 2-col card design (top-right in header row).
+   * Multi-badge array for the real horizontal badge row (top-right in header row).
    * When provided, supersedes `badge`. E.g. ["New", "Limited Edition"].
-   * Rendered as a stacked column (flex-col) so they don't wrap over the wordmark.
+   * Rendered as a horizontal row (flex-row) — wraps to a 2nd row on overflow.
    */
   badges?: string[];
   /**
@@ -80,9 +90,9 @@ export interface MerchProductCardProps {
   imageFit?: "cover" | "contain";
   /**
    * Override the image container height in px.
-   * Default is 255px (real shop-all card: image band 638×255 measured 2026-08-06).
+   * Default is 225px (real shop-all card: image band 638×225 measured 2026-08-06).
    * Collection-index portrait strips use 282px.
-   * @default 255
+   * @default 225
    */
   imageHeight?: number;
   /**
@@ -151,10 +161,12 @@ function badgeStyle(badge: BadgeLabel): React.CSSProperties {
     };
   }
   if (b === "out of stock") {
+    // Out-of-stock: same chip family as Preorder — solid #666666 bg, white text,
+    // radius 2, padding 4x8, h=26 via line-height/padding, no border.
+    // Real: Inter 14/400 sentence-case, white text on #666666, radius 2.
     return {
-      backgroundColor: "var(--color-merch-surface)",
-      color: "var(--color-merch-muted)",
-      border: "1px solid var(--color-merch-border)",
+      backgroundColor: "var(--color-merch-badge-preorder)",
+      color: "var(--color-merch-on-dark)",
       borderRadius: 2,
       whiteSpace: "nowrap",
       padding: "4px 8px",
@@ -200,7 +212,7 @@ function HeartIcon({ id }: { id: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// Cart icon (for the 50×50 hover-reveal icon button)
+// Cart icon (for the 50×50 hover-reveal icon button at 1280 and 48×40 mobile)
 // ---------------------------------------------------------------------------
 
 function CartIcon() {
@@ -224,6 +236,46 @@ function CartIcon() {
 }
 
 // ---------------------------------------------------------------------------
+// Carousel arrow icons (64×64 circles, prev/next)
+// ---------------------------------------------------------------------------
+
+function ChevronLeftIcon() {
+  return (
+    <svg
+      aria-hidden
+      focusable="false"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ width: 20, height: 20, display: "block" }}
+    >
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg
+      aria-hidden
+      focusable="false"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ width: 20, height: 20, display: "block" }}
+    >
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -231,16 +283,18 @@ function CartIcon() {
  * MerchProductCard — 2-col flush listing card matching merch.riotgames.com real anatomy.
  *
  * Real card anatomy at 1280px (remeasured 2026-08-06):
- * - Whole card is one <a> link (entire 638×403 cell)
- * - Header row (~57px): franchise wordmark SVG left (grey #666), badge chips stack + heart right
- *   Gap between wordmark bottom and image top: ~11px (header minHeight 57px + pb-3)
- * - Image box: 255px tall, object-contain, transparent bg (card grey shows through)
+ * - Whole card is one <a> link (entire 638×375 cell)
+ * - Card background: transparent (page white shows through for listing cards)
+ * - Header row (~57px): franchise wordmark SVG left (grey #666), badge chips ROW + heart right
+ *   Badge chips are a horizontal flex-row (gap-1), wrapping on overflow (e.g. at 390)
+ * - Image box: 225px tall, object-contain, transparent bg; prev/next arrows on hover
  * - Info strip: 16px top padding; title riotSans 16px/700/lh-18px; price 16px/400/lh-20px;
  *   24-26px bottom padding below price
  * - Price row: lh 20px, gap 4px between struck and current (real: gap-1 not gap-2)
- * - ATC strip: HIDDEN at rest; revealed on card hover (group-hover)
+ * - ATC strip: HIDDEN at rest; revealed on card hover (group-hover); suppressed at 390
+ * - Cart icon button: hover-reveal at 1280; always-visible red button at 390 (beside price)
  * - Card border: 1px solid --color-merch-on-dark (white) — cards read as seamless panels
- * - @390: badge stack right-aligned before heart; wordmark shrinks/clips; no overflow
+ * - @390: badge row wraps before heart; always-visible red 48×40 cart button; no overflow
  *
  * Grid usage: place inside `grid grid-cols-2 gap-0` with border dividers.
  */
@@ -248,6 +302,7 @@ export function MerchProductCard({
   slug,
   title,
   imageUrl,
+  imageSrcs,
   price,
   originalPrice,
   badge,
@@ -255,7 +310,7 @@ export function MerchProductCard({
   franchiseLabel,
   franchiseKey,
   imageFit = "contain",
-  imageHeight = 255,
+  imageHeight = 225,
   ctaLabel = "Add to Cart",
   hasAddToCart = true,
   onClick,
@@ -263,6 +318,30 @@ export function MerchProductCard({
   onAddToCart,
 }: MerchProductCardProps) {
   const heartTitleId = useId();
+
+  // Carousel state — index into imageSrcs (or falls back to imageUrl)
+  const allImages: string[] =
+    imageSrcs && imageSrcs.length > 1 ? imageSrcs : [imageUrl];
+  const [imgIndex, setImgIndex] = useState(0);
+  const hasMultipleImages = allImages.length > 1;
+
+  const goPrev = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setImgIndex((i) => (i - 1 + allImages.length) % allImages.length);
+    },
+    [allImages.length],
+  );
+
+  const goNext = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setImgIndex((i) => (i + 1) % allImages.length);
+    },
+    [allImages.length],
+  );
 
   // Resolve the badge list: `badges` takes precedence over `badge`
   const allBadges: string[] =
@@ -296,15 +375,17 @@ export function MerchProductCard({
   return (
     // Whole card is one link — entire cell is clickable per real site anatomy.
     // `group` enables Tailwind group-hover utilities for hover-reveal ATC strip.
+    // Background is transparent for listing cards — page white shows through.
     <a
       href={`/merch/product/${slug}`}
       role="article"
       className="group flex w-full cursor-pointer flex-col"
       style={{
         fontFamily: "var(--font-merch)",
-        // White seam borders — cards read as seamless #f7f7f7 panels
+        // White seam borders — cards read as seamless panels
         border: "1px solid var(--color-merch-on-dark)",
-        backgroundColor: "var(--color-merch-surface-alt)",
+        // Listing cards: transparent bg (page white shows through per real site)
+        backgroundColor: "transparent",
         textDecoration: "none",
         color: "inherit",
         // Contain badge chips + heart that could overflow the narrow grid cell
@@ -320,11 +401,12 @@ export function MerchProductCard({
       }}
     >
       {/* ------------------------------------------------------------------ */}
-      {/* Header row — franchise wordmark + badges stack + %-badge + heart    */}
+      {/* Header row — franchise wordmark + badge ROW + %-badge + heart       */}
       {/* Real: ~57px, padding 16px top / 20px sides; ~11px gap to image top  */}
+      {/* items-start: wordmark aligns to top of the badge row cluster        */}
       {/* ------------------------------------------------------------------ */}
       <div
-        className="flex items-center justify-between px-5 pt-4 pb-3"
+        className="flex items-start justify-between px-5 pt-4 pb-3"
         style={{ minHeight: 57 }}
       >
         {/* Franchise wordmark — SVG logo (grey fill via currentColor) or text fallback.
@@ -332,32 +414,32 @@ export function MerchProductCard({
             at 390px narrow cards (two-column grid → ~165px cell width). */}
         {FranchiseLogo ? (
           <span
-            className="flex min-w-0 shrink items-center"
+            className="flex min-w-0 shrink items-center pt-px"
             style={{ color: "var(--color-merch-franchise-label)" }}
           >
             <FranchiseLogo />
           </span>
         ) : (
           <span
-            className="min-w-0 shrink truncate text-[16px] font-normal leading-tight"
+            className="min-w-0 shrink truncate pt-px text-[16px] font-normal leading-tight"
             style={{ color: "var(--color-merch-franchise-label)" }}
           >
             {franchiseLabel ?? ""}
           </span>
         )}
 
-        {/* Right cluster: badge chips stack + discount %-badge + heart.
-            flex-row: badges column + heart are side-by-side (not stacked).
-            Badge chips themselves stack (flex-col) so multiple badges don't
-            overflow horizontally at 390px. pl-2 gives ~8px gap from wordmark
-            at 1280px (badge left inset x=541 measured; nudge per item 10). */}
+        {/* Right cluster: badge chips ROW + discount %-badge + heart.
+            Badges are horizontal (flex-row flex-wrap) so multiple badges
+            sit on the same baseline (real: shop-all @1280 badges y=211 all equal).
+            At 390px they wrap to a 2nd row before the heart — matches real wrap
+            behaviour (New x=169, LE x=223, heart x=345 at 390). */}
         <div
-          className="flex shrink-0 items-center gap-1 pl-2"
+          className="flex shrink-0 items-start gap-1 pl-2"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Badge chips column + %-discount badge — stacked vertically (flex-col) */}
+          {/* Badge chips ROW + %-discount badge — horizontal (flex-row flex-wrap) */}
           {(activeBadges.length > 0 || discountPct !== null) && (
-            <div className="flex flex-col items-end gap-1">
+            <div className="flex flex-row flex-wrap items-start justify-end gap-1">
               {/* Badge chips — 14px mixed-case, radius 2px, nowrap, 4px×8px padding */}
               {activeBadges.map((b) => (
                 <span
@@ -421,8 +503,9 @@ export function MerchProductCard({
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Image container — 255px tall, object-contain, transparent bg         */}
-      {/* Real measurement: image DIV y=247→502 @1280 shop-all = 255px         */}
+      {/* Image container — 225px tall, object-contain, transparent bg        */}
+      {/* Real measurement: image DIV 638×225 @1280 (remeasured 2026-08-06)   */}
+      {/* Carousel arrows (64×64 circles) revealed on card hover (group-hover) */}
       {/* ------------------------------------------------------------------ */}
       <div
         className="relative w-full overflow-hidden"
@@ -431,12 +514,55 @@ export function MerchProductCard({
         {/* Product image — scale on hover */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={imageUrl}
+          src={allImages[imgIndex]}
           alt={title}
           loading="lazy"
           className={`h-full w-full transition-transform duration-200 ease-out group-hover:scale-[1.04] ${imageFit === "cover" ? "object-cover" : "object-contain"}`}
           style={{ display: "block" }}
         />
+
+        {/* Carousel prev/next arrows — only when multiple images exist.
+            64×64 circular buttons (transparent bg, border-radius 100%) per real site.
+            Hidden at rest (opacity-0); revealed on card hover via group-hover. */}
+        {hasMultipleImages && (
+          <>
+            {/* Prev arrow */}
+            <button
+              type="button"
+              aria-label="Previous image"
+              className="absolute top-1/2 left-2 flex -translate-y-1/2 items-center justify-center rounded-full opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+              style={{
+                width: 64,
+                height: 64,
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                color: "var(--color-merch-ink)",
+              }}
+              onClick={goPrev}
+            >
+              <ChevronLeftIcon />
+            </button>
+
+            {/* Next arrow */}
+            <button
+              type="button"
+              aria-label="Next image"
+              className="absolute top-1/2 right-2 flex -translate-y-1/2 items-center justify-center rounded-full opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+              style={{
+                width: 64,
+                height: 64,
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                color: "var(--color-merch-ink)",
+              }}
+              onClick={goNext}
+            >
+              <ChevronRightIcon />
+            </button>
+          </>
+        )}
       </div>
 
       {/* ------------------------------------------------------------------ */}
@@ -447,9 +573,9 @@ export function MerchProductCard({
       <div className="flex items-start gap-0 px-5 pt-4 pb-6">
         {/* Title + price column */}
         <div className="flex min-w-0 flex-1 flex-col gap-2">
-          {/* Title — riotSans 16px/700, lh 18px, black, line-clamp 2 */}
+          {/* Title — riotSans 16px/700, lh 18px, black.
+              No line-clamp: real shows full 2-line titles, never ellipsized. */}
           <h2
-            className="line-clamp-2"
             style={{
               fontFamily: "var(--font-merch-display)",
               fontSize: 16,
@@ -498,14 +624,15 @@ export function MerchProductCard({
           </div>
         </div>
 
-        {/* Cart icon button — 50×50, white bg, 1px border at 1280.
+        {/* Cart icon button — desktop (1280): 50×50, white bg, 1px border.
             Hidden at rest (opacity-0); fades in on group-hover.
-            Suppressed entirely when hasAddToCart=false. */}
+            Only shown on md+ screens (hidden on mobile where the always-visible
+            red button renders instead). Suppressed entirely when hasAddToCart=false. */}
         {hasAddToCart && (
           <button
             type="button"
             aria-label={`Add ${title} to cart`}
-            className="ml-2 flex shrink-0 items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+            className="ml-2 hidden shrink-0 items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:flex"
             style={{
               width: 50,
               height: 50,
@@ -513,6 +640,33 @@ export function MerchProductCard({
               border: "1px solid var(--color-merch-input-border)",
               cursor: "pointer",
               color: "var(--color-merch-ink-dark)",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onAddToCart?.(slug);
+            }}
+          >
+            <CartIcon />
+          </button>
+        )}
+
+        {/* Mobile cart button — always-visible ~48×40 red square with white cart icon.
+            Shown only on small screens (sm: hidden). Per real @390: right-aligned
+            beside price; red #eb0029 bg, white icon. New aspect — NOT covered by
+            logged decision #629 (which is about grid columns, not this button). */}
+        {hasAddToCart && (
+          <button
+            type="button"
+            aria-label={`Add ${title} to cart`}
+            className="ml-2 flex shrink-0 items-center justify-center sm:hidden"
+            style={{
+              width: 48,
+              height: 40,
+              backgroundColor: "var(--color-merch-red)",
+              border: "none",
+              cursor: "pointer",
+              color: "var(--color-merch-on-dark)",
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -531,9 +685,11 @@ export function MerchProductCard({
       {/* Real: ls 0.02em, lh 18px, wrapper 24px above / 16px below button.  */}
       {/* max-height trick: 0 at rest, 90px on hover — overflow-hidden clips. */}
       {/* Suppressed entirely when hasAddToCart=false (related carousel).     */}
+      {/* Hidden on mobile (sm:block) — the always-visible red button handles */}
+      {/* the add-to-cart action at 390px.                                    */}
       {/* ------------------------------------------------------------------ */}
       {hasAddToCart && (
-        <div className="max-h-0 overflow-hidden transition-all duration-200 ease-out group-hover:max-h-[90px]">
+        <div className="hidden max-h-0 overflow-hidden transition-all duration-200 ease-out group-hover:max-h-[90px] sm:block">
           {/* Inner wrapper with the measured spacing: 24px above / 16px below */}
           <div className="px-5 pt-6 pb-4">
             <button

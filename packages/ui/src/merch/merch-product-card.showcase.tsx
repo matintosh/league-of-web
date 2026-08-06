@@ -12,11 +12,11 @@ export const merchProductCardShowcase: ShowcaseEntry = {
   name: "Merch Product Card",
   area: "merch",
   description:
-    "Real 640×375 listing card anatomy matching merch.riotgames.com shop-all (remeasured 2026-08-06). Header row (~57px) above the 225px contain image: franchise wordmark left (grey #666, 16px/400), badge chips + heart right. Badge chips: 14px mixed-case, black text; New=#8CD50B, Limited Edition=#FFD700, Preorder=#666666. Price: 16px/400 pure black. Sale: struck original grey + current dark ink + green -NN% bottom-left of image. In-card CTA button (onAddToCart). Card bg: --color-merch-surface-alt (#f7f7f7), 1px border frame (flush tessellation at 1280 and 390).",
+    "Real 640×375 listing card anatomy matching merch.riotgames.com shop-all (remeasured 2026-08-06). Header row (~57px) above the 225px contain image: franchise wordmark left (grey #666, 16px/400), badge chips in a HORIZONTAL ROW + heart right. Badge chips: 14px mixed-case, black text; New=#8CD50B, Limited Edition=#FFD700, Preorder=#666666, OOS=#666666 white-text. At 390px badges wrap to 2nd row; always-visible red cart button beside price. Image carousel: prev/next arrows revealed on hover. Price: 16px/400 pure black. Sale: struck original grey + current dark ink + green -NN% badge. Card bg: transparent (listing pages are white). 1px white border seam for flush tessellation.",
   variants: [
     {
       name: "Default — in-stock, franchise label, no badge",
-      notes: "Standard 2-col card with franchise label overlay but no badge.",
+      notes: "Standard 2-col card with franchise label overlay but no badge. Transparent bg.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
@@ -33,7 +33,7 @@ export const merchProductCardShowcase: ShowcaseEntry = {
     {
       name: "Sale — green %-badge + dark price + grey struck original",
       notes:
-        "Sale treatment per real /category/sales/: green -NN% badge top-left of image (below franchise label), current price in dark ink (not red), struck original in grey (#666) at 16px. The 'Sale' label is not rendered as a chip — the %-badge signals the discount.",
+        "Sale treatment per real /category/sales/: green -NN% badge top-right of header, current price in dark ink (not red), struck original in grey (#666) at 16px. The 'Sale' label is not rendered as a chip — the %-badge signals the discount.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
@@ -69,7 +69,7 @@ export const merchProductCardShowcase: ShowcaseEntry = {
     },
     {
       name: "New badge — green",
-      notes: "Badge 'New' in green (#7ac043) with white text, matching real store chip.",
+      notes: "Badge 'New' in green (#8CD50B) with black text, matching real store chip.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
@@ -86,7 +86,7 @@ export const merchProductCardShowcase: ShowcaseEntry = {
     },
     {
       name: "Limited Edition badge — yellow",
-      notes: "Badge 'Limited Edition' in yellow (#e8c33c) with ink text.",
+      notes: "Badge 'Limited Edition' in yellow (#FFD700) with ink text.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
@@ -102,14 +102,32 @@ export const merchProductCardShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "Multi-badge — Preorder + Limited Edition",
-      notes: "Two stacked badges top-right: Preorder (grey) + Limited Edition (yellow).",
+      name: "Multi-badge horizontal row — New + Limited Edition + Preorder",
+      notes:
+        "Three badges in ONE horizontal row (flex-row gap-1) matching real shop-all @1280 (badges y=211 all equal). At 390px they wrap to a second row — Preorder drops below New+LE.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
           <MerchProductCard
             slug="ahri-spirit-blossom-preorder"
             title="Ahri Spirit Blossom Statue — Limited Preorder"
+            imageUrl={PLACEHOLDER_IMG}
+            price="$89.99"
+            badges={["New", "Limited Edition", "Preorder"]}
+            franchiseLabel="League of Legends"
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Multi-badge — Preorder + Limited Edition (2 badges)",
+      notes: "Two badges in a horizontal row top-right: Preorder (grey/white) + Limited Edition (yellow).",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductCard
+            slug="ahri-spirit-blossom-limited"
+            title="Ahri Spirit Blossom Statue — Limited Edition"
             imageUrl={PLACEHOLDER_IMG}
             price="$89.99"
             badges={["Preorder", "Limited Edition"]}
@@ -136,8 +154,9 @@ export const merchProductCardShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "Out of Stock badge",
-      notes: "Muted border badge — card still renders, user can see product.",
+      name: "Out of Stock chip — grey solid, white text",
+      notes:
+        "OOS chip: same chip family as Preorder — solid #666666 bg, white text, radius 2, padding 4x8. Real: Inter 14/400 sentence-case, no border. Previous incorrect style had white bg + border + dark text.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
@@ -153,8 +172,27 @@ export const merchProductCardShowcase: ShowcaseEntry = {
       ),
     },
     {
+      name: "Image carousel — multiple imageSrcs",
+      notes:
+        "When imageSrcs has 2+ entries, prev/next circular arrow buttons appear on card hover. Clicking prev/next cycles through images without navigating.",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductCard
+            slug="poro-plush-carousel"
+            title="Poro Plush — Season 14 (3 images)"
+            imageUrl={PLACEHOLDER_IMG}
+            imageSrcs={[PLACEHOLDER_IMG, PLACEHOLDER_DARK, PLACEHOLDER_RED]}
+            price="$29.99"
+            badges={["New"]}
+            franchiseLabel="League of Legends"
+          />
+        </div>
+      ),
+    },
+    {
       name: "imageFit=contain — packshot on white",
-      notes: "object-contain on white bg for product photography; image is not cropped.",
+      notes: "object-contain on transparent bg for product photography; image is not cropped.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
@@ -170,8 +208,9 @@ export const merchProductCardShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "Long title — line-clamp 2",
-      notes: "Title exceeding two lines is clamped with ellipsis; price remains visible.",
+      name: "Long title — no clamp, wraps naturally",
+      notes:
+        "Title wraps naturally at 2-col width — no line-clamp. Real site shows full titles never ellipsized.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
@@ -222,9 +261,9 @@ export const merchProductCardShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "Real 2-col flush grid of 4 cards — mixed sale and non-sale",
+      name: "Real 2-col flush grid of 4 cards — mixed badges and sale",
       notes:
-        "2 columns, 0 gap, flush border — matches real shop-all layout at 1280px. Sale card (p2) shows green %-badge + dark price + grey struck; non-sale cards unchanged.",
+        "2 columns, 0 gap, flush border — matches real shop-all layout at 1280px. Badges are horizontal rows. Sale card (p2) shows green %-badge + dark price + grey struck. Card bg transparent (white page shows). Check column alignment: titles and prices should be at equal y per column.",
       backgrounds: ["light"],
       render: () => (
         <div
@@ -236,10 +275,30 @@ export const merchProductCardShowcase: ShowcaseEntry = {
             fontFamily: "system-ui, sans-serif",
           }}
         >
-          <MerchProductCard slug="p1" title="Riftbound Origins Deck" imageUrl={PLACEHOLDER_IMG} price="$24.99" badges={["New"]} franchiseLabel="Riftbound" />
-          <MerchProductCard slug="p2" title="Arcane Vi Hoodie" imageUrl={PLACEHOLDER_RED} price="$39.99" originalPrice="$59.99" badges={["Sale"]} franchiseLabel="Arcane" />
-          <MerchProductCard slug="p3" title="PROJECT: Lux Art Print" imageUrl={PLACEHOLDER_DARK} price="$34.99" badges={["Limited Edition"]} franchiseLabel="League of Legends" />
+          <MerchProductCard slug="p1" title="Riftbound Origins Champion Deck" imageUrl={PLACEHOLDER_IMG} price="$24.99" badges={["New"]} franchiseLabel="Riftbound" />
+          <MerchProductCard slug="p2" title="Arcane Vi Graphic Hoodie" imageUrl={PLACEHOLDER_RED} price="$39.99" originalPrice="$59.99" badges={["Sale"]} franchiseLabel="Arcane" />
+          <MerchProductCard slug="p3" title="PROJECT: Lux Collector's Art Print" imageUrl={PLACEHOLDER_DARK} price="$34.99" badges={["Limited Edition"]} franchiseLabel="League of Legends" />
           <MerchProductCard slug="p4" title="Poro Plush Season 14 Limited Edition Collector's Bundle" imageUrl={PLACEHOLDER_IMG} price="$29.99" badges={["Preorder", "Limited Edition"]} franchiseLabel="League of Legends" />
+        </div>
+      ),
+    },
+    {
+      name: "2-col grid @390 — badge wrap + mobile cart button",
+      notes:
+        "Simulate 390px viewport: 2-col grid, cards ~195px wide. Badges wrap to 2nd row. Always-visible red cart button (48×40) appears beside the price at mobile. No horizontal overflow.",
+      backgrounds: ["light"],
+      render: () => (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: 0,
+            maxWidth: 390,
+            fontFamily: "system-ui, sans-serif",
+          }}
+        >
+          <MerchProductCard slug="m1" title="Riftbound Origins Deck" imageUrl={PLACEHOLDER_IMG} price="$24.99" badges={["New", "Limited Edition"]} franchiseLabel="Riftbound" />
+          <MerchProductCard slug="m2" title="Arcane Vi Graphic Hoodie" imageUrl={PLACEHOLDER_RED} price="$39.99" originalPrice="$59.99" badges={["Sale"]} franchiseLabel="Arcane" />
         </div>
       ),
     },
