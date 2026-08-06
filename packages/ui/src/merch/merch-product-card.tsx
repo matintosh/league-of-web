@@ -85,6 +85,13 @@ export interface MerchProductCardProps {
    * @default "Add to Cart"
    */
   ctaLabel?: string;
+  /**
+   * When `false`, hides both the hover-reveal ATC overlay bar and the
+   * hover-reveal cart-icon button. Used for related-products carousels
+   * where the intent is navigation, not purchase.
+   * @default true
+   */
+  hasAddToCart?: boolean;
   /** Called when the card is clicked. */
   onClick?: (slug: string) => void;
   /** Called when the wishlist heart is clicked. Receives the slug. */
@@ -239,6 +246,7 @@ export function MerchProductCard({
   imageFit = "contain",
   imageHeight = 225,
   ctaLabel = "Add to Cart",
+  hasAddToCart = true,
   onClick,
   onWishlist,
   onAddToCart,
@@ -448,26 +456,29 @@ export function MerchProductCard({
         </div>
 
         {/* Cart icon button — 50×50, white bg, 1px border at 1280.
-            Hidden at rest (opacity-0); fades in on group-hover. */}
-        <button
-          type="button"
-          aria-label={`Add ${title} to cart`}
-          className="ml-2 flex shrink-0 items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-          style={{
-            width: 50,
-            height: 50,
-            backgroundColor: "var(--color-merch-on-dark)",
-            border: "1px solid var(--color-merch-input-border)",
-            cursor: "pointer",
-            color: "var(--color-merch-ink-dark)",
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onAddToCart?.(slug);
-          }}
-        >
-          <CartIcon />
-        </button>
+            Hidden at rest (opacity-0); fades in on group-hover.
+            Suppressed entirely when hasAddToCart=false. */}
+        {hasAddToCart && (
+          <button
+            type="button"
+            aria-label={`Add ${title} to cart`}
+            className="ml-2 flex shrink-0 items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+            style={{
+              width: 50,
+              height: 50,
+              backgroundColor: "var(--color-merch-on-dark)",
+              border: "1px solid var(--color-merch-input-border)",
+              cursor: "pointer",
+              color: "var(--color-merch-ink-dark)",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart?.(slug);
+            }}
+          >
+            <CartIcon />
+          </button>
+        )}
       </div>
 
       {/* ------------------------------------------------------------------ */}
@@ -475,35 +486,38 @@ export function MerchProductCard({
       {/* Revealed on card hover via group-hover Tailwind utility.            */}
       {/* Real: ls 0.02em, lh 18px, wrapper 24px above / 16px below button.  */}
       {/* max-height trick: 0 at rest, 90px on hover — overflow-hidden clips. */}
+      {/* Suppressed entirely when hasAddToCart=false (related carousel).     */}
       {/* ------------------------------------------------------------------ */}
-      <div className="max-h-0 overflow-hidden transition-all duration-200 ease-out group-hover:max-h-[90px]">
-        {/* Inner wrapper with the measured spacing: 24px above / 16px below */}
-        <div className="px-5 pt-6 pb-4">
-          <button
-            type="button"
-            className="w-full"
-            style={{
-              height: 50,
-              backgroundColor: "var(--color-merch-ink-dark)",
-              color: "var(--color-merch-on-dark)",
-              border: "none",
-              cursor: "pointer",
-              fontFamily: "var(--font-merch-display)",
-              fontSize: 16,
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.02em",
-              lineHeight: "18px",
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onAddToCart?.(slug);
-            }}
-          >
-            {ctaLabel}
-          </button>
+      {hasAddToCart && (
+        <div className="max-h-0 overflow-hidden transition-all duration-200 ease-out group-hover:max-h-[90px]">
+          {/* Inner wrapper with the measured spacing: 24px above / 16px below */}
+          <div className="px-5 pt-6 pb-4">
+            <button
+              type="button"
+              className="w-full"
+              style={{
+                height: 50,
+                backgroundColor: "var(--color-merch-ink-dark)",
+                color: "var(--color-merch-on-dark)",
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "var(--font-merch-display)",
+                fontSize: 16,
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.02em",
+                lineHeight: "18px",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddToCart?.(slug);
+              }}
+            >
+              {ctaLabel}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </article>
   );
 }
