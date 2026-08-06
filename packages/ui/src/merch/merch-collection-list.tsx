@@ -8,23 +8,26 @@
  *   - Layout: vertically stacked strips, one per collection
  *   - Each strip: banner image ~1200×300 (4:1 aspect) with a rotated vertical
  *     collection-name tab at left (~91px; 60×185px, 12px/24px padding, 16px/700/uppercase,
- *     WHITE bg + BLACK text) + the CURATED collection name (e.g. "LEAGUE CLASSIC") +
- *     a "Shop" affordance below the name text; no letter-spacing.
- *   - Strip card: 355px wide × ~282px portrait image area (packshot, no franchise label)
- *   - Card gap: 8px (pitch 363px from x=237,600,963,1326)
- *   - Left inset: ~197px from container x=40 (paddingLeft 197)
+ *     WHITE bg + BLACK text) + "SHOP" (top) + collection name (bottom) in a SINGLE
+ *     rotated box — whole box uses matrix(0,-1,1,0); riotSans font; no letter-spacing.
+ *   - Strip card: 355px wide × 225px portrait image area (packshot, no franchise label)
+ *   - Card gap: 8px (pitch 363px from x=216,579,942,1305)
+ *   - Left inset: ~176px from container x=40 (paddingLeft 176)
+ *   - Strip paddingBottom: 48px
  *   - Strip separator: border-bottom in --color-merch-border
  *   - Container: max-w-7xl mx-auto, px-10 (x=40 at 1280)
  *
- * Delta #804:
- *   1. Strip cards: NO franchise label — title (16/700) + price only.
- *   2. Card image area: ~282px tall portrait (packshot, no landscape override).
- *   3. Card gap: 8px (was 16).
- *   4. Left inset: paddingLeft 197px (was 167).
- *   5. Name tab: padding 12px 24px, curated collection name + "Shop" CTA, no letter-spacing.
- *   6. 390px: single-column scroll flow; tab stacks cleanly (no overlap/clip).
- *   7. LOAD MORE: centered red pill 239×50 below all strips.
- *   8. Carousel arrows: prev/next buttons on the card scroll row at 1280px.
+ * Delta #827:
+ *   1. Card image area: 225px tall portrait (was 282px).
+ *   2. Left inset: paddingLeft 176px (was 197px).
+ *   3. Name tab: SINGLE whole-box rotation — SHOP label (top) + collection name (bottom);
+ *      no per-span rotation; riotSans font.
+ *   4. Strip paddingBottom: 48px (was 32px).
+ *   5. LOAD MORE: flat transparent rectangular button — bg transparent, border-radius 0,
+ *      padding 0 16px, white riotSans 16/600, letter-spacing 0.32px (not red pill).
+ *   6. @390: portrait banner ~310×347 (~1:1 aspect); collection name bar + badges overlaid
+ *      lower-LEFT on the banner; cards scroll below. No thin 4:1 + horizontal tab-header.
+ *   7. @390 H1: 32px single line (was 48px wrapping to 2 lines).
  *
  * Banner images: real banners are Sanity-fingerprinted (not reproducible via CDN
  * without the exact asset id). Pages supply `bannerImageUrl` per collection using
@@ -99,12 +102,13 @@ export interface MerchCollectionListProps {
  * StripProductCard — 355px portrait card cell used in collection strips.
  *
  * Wraps MerchProductCard in a fixed-width cell so the card scales to 355px.
- * Image area is ~282px tall portrait (packshot, object-contain).
+ * Image area is 225px tall portrait (packshot, object-contain) — remeasured
+ * from merch.riotgames.com/en-us/collection/ (real card 353×225 image area).
  * NO franchise label is rendered (collection cards show title + price only).
  *
  * Recipe (measured from merch.riotgames.com/en-us/collection/ at 1280px):
  *   - Cell: 355px wide, flex column
- *   - Image area: 355×282 portrait, object-contain
+ *   - Image area: 355×225 portrait, object-contain
  *   - Info strip: title 16/700 + price — NO franchise label line
  */
 function StripProductCard({
@@ -126,8 +130,8 @@ function StripProductCard({
         badge={product.badge}
         /* intentionally omit franchiseLabel — collection strips show title + price only */
         imageFit="contain"
-        /* portrait height measured from real /en-us/collection/ at 1280px */
-        imageHeight={282}
+        /* portrait height remeasured from real /en-us/collection/ at 1280px (was 282px) */
+        imageHeight={225}
         onClick={onClick}
       />
     </div>
@@ -207,12 +211,14 @@ function CarouselArrow({
  *   - Banner: 1200×300 at y=282 (bottom y=582)
  *   - Card row starts y=502 → cards overlap UP into the banner's lower ~80px
  *   - Name-tab: 60×185px at left=91, WHITE bg + BLACK text, padding 12px 24px,
- *     curated label (e.g. "LEAGUE CLASSIC") + "Shop" link below, no letter-spacing
- *   - Card pitch: 363px (gap 8px); cards at x=237,600,963,1326 from container x=40
- *   - Left inset of card row: 197px from container edge
+ *     SINGLE box rotated matrix(0,-1,1,0) — SHOP label (top) + collection name (bottom);
+ *     riotSans 16/700/uppercase; no letter-spacing; no per-span rotation
+ *   - Card pitch: 363px (gap 8px); cards at x=216,579,942,1305 from container x=40
+ *   - Left inset of card row: 176px from container edge
+ *   - Strip paddingBottom: 48px
  *
- * At ≤430px (mobile): tab above banner (no left overlay), cards single-column
- * scroll with no overflow clip of cards.
+ * At ≤430px (mobile): portrait ~310×347 banner (~1:1 aspect); name/SHOP bar
+ * overlaid lower-LEFT on the banner image; cards scroll below.
  */
 function CollectionStrip({
   entry,
@@ -238,85 +244,22 @@ function CollectionStrip({
       style={{
         width: "100%",
         borderBottom: "1px solid var(--color-merch-border)",
-        paddingBottom: 32,
+        /* paddingBottom 48px (was 32px, remeasured #827) */
+        paddingBottom: 48,
         marginBottom: 0,
         fontFamily: "var(--font-merch)",
       }}
     >
       {/* ------------------------------------------------------------------ */}
-      {/* Mobile tab — appears ABOVE the banner at ≤430px so it does NOT    */}
-      {/* overlap the banner or clip cards. Hidden at desktop.               */}
-      {/* ------------------------------------------------------------------ */}
-      <div
-        className="mobile-tab-header"
-        style={{
-          display: "none", /* overridden at ≤430px via <style> below */
-          padding: "10px 16px",
-          backgroundColor: "var(--color-merch-bg)",
-          borderBottom: "1px solid var(--color-merch-border)",
-        }}
-      >
-        <div
-          style={{
-            color: "var(--color-merch-ink-dark)",
-            fontSize: 13,
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: 0,
-            lineHeight: 1,
-          }}
-        >
-          {tabLabel}
-        </div>
-        {(entry.href || onViewAllClick) && (
-          entry.href ? (
-            <a
-              href={entry.href}
-              style={{
-                fontSize: 12,
-                color: "var(--color-merch-red)",
-                textDecoration: "none",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                display: "inline-block",
-                marginTop: 4,
-              }}
-            >
-              Shop
-            </a>
-          ) : (
-            <button
-              type="button"
-              onClick={() => onViewAllClick?.(entry.slug)}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: 12,
-                color: "var(--color-merch-red)",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                padding: 0,
-                display: "inline-block",
-                marginTop: 4,
-              }}
-            >
-              Shop
-            </button>
-          )
-        )}
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Banner area — 4:1 aspect, full-width, relative for name-tab overlay */}
-      {/* overflow: visible so the name-tab and cards can overlap at desktop  */}
+      {/* Banner area — 4:1 aspect at desktop, ~1:1 portrait at ≤430px.      */}
+      {/* overflow: visible so the name-tab and cards can overlap at desktop. */}
       {/* ------------------------------------------------------------------ */}
       <div
         className="strip-banner-wrap"
         style={{
           position: "relative",
           width: "100%",
-          /* 4:1 aspect — 25% padding-top */
+          /* 4:1 aspect — 25% padding-top (overridden at ≤430px via <style>) */
           paddingTop: "25%",
           overflow: "visible",
           backgroundColor: "var(--color-merch-surface)",
@@ -360,9 +303,11 @@ function CollectionStrip({
 
         {/* ---------------------------------------------------------------- */}
         {/* Rotated name tab — desktop only (hidden at ≤430px via <style>). */}
-        {/* 60×185px at left=91px; WHITE bg + BLACK text; padding 12px 24px; */}
-        {/* curated label + "Shop" CTA below; no letter-spacing.             */}
-        {/* bottom=-24px so it straddles the banner/card row boundary.        */}
+        {/* 60×185px at left=91px; WHITE bg + BLACK text; padding 12px 24px. */}
+        {/* SINGLE box rotation: transform matrix(0,-1,1,0) on the container */}
+        {/* → whole box rotates -90deg; content reads bottom-to-top (LTR).   */}
+        {/* Inside the rotated box: SHOP (left=top when rotated) + name.     */}
+        {/* bottom=-24px straddles the banner/card-row boundary.             */}
         {/* ---------------------------------------------------------------- */}
         <div
           className="strip-name-tab"
@@ -375,62 +320,126 @@ function CollectionStrip({
             height: 185,
             /* WHITE background */
             backgroundColor: "var(--color-merch-bg)",
+            zIndex: 2,
+            /* Rotate the WHOLE box — same as matrix(0,-1,1,0) from real site */
+            transform: "rotate(-90deg)",
+            transformOrigin: "center center",
+            /* Inside the rotated box: SHOP + separator + collection name    */
+            /* Use a horizontal flex row (they appear stacked when rotated)  */
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
-            gap: 6,
-            zIndex: 2,
-            padding: "12px 0",
+            gap: 8,
+            padding: "12px 24px",
           }}
         >
-          {/* Curated collection name, rotated -90° */}
+          {/* SHOP label — appears at top (left in rotated box) */}
           <span
             style={{
               display: "block",
-              /* BLACK text */
-              color: "var(--color-merch-ink-dark)",
+              color: "var(--color-merch-red)",
+              fontFamily: "var(--font-merch-display)",
               fontSize: 16,
               fontWeight: 700,
               textTransform: "uppercase",
               letterSpacing: 0,
               lineHeight: 1,
               whiteSpace: "nowrap",
-              transformOrigin: "center center",
-              transform: "rotate(-90deg)",
+            }}
+          >
+            SHOP
+          </span>
+
+          {/* Thin separator line between SHOP and collection name */}
+          <span
+            aria-hidden
+            style={{
+              display: "block",
+              width: 1,
+              height: 14,
+              backgroundColor: "var(--color-merch-ink-dark)",
+              opacity: 0.25,
+              flexShrink: 0,
+            }}
+          />
+
+          {/* Collection name — appears at bottom (right in rotated box) */}
+          <span
+            style={{
+              display: "block",
+              color: "var(--color-merch-ink-dark)",
+              fontFamily: "var(--font-merch-display)",
+              fontSize: 16,
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: 0,
+              lineHeight: 1,
+              whiteSpace: "nowrap",
             }}
           >
             {tabLabel}
           </span>
+        </div>
 
-          {/* "Shop" affordance — rotated to read alongside the name */}
-          {(entry.href || onViewAllClick) && (
-            <span
-              style={{
-                display: "block",
-                color: "var(--color-merch-red)",
-                fontSize: 11,
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: 0,
-                lineHeight: 1,
-                whiteSpace: "nowrap",
-                transformOrigin: "center center",
-                transform: "rotate(-90deg)",
-                marginTop: 8,
-              }}
-            >
-              Shop
-            </span>
-          )}
+        {/* ---------------------------------------------------------------- */}
+        {/* Mobile name overlay — lower-LEFT of banner at ≤430px.           */}
+        {/* Hidden at desktop; shown by RESPONSIVE_STYLES at ≤430px.        */}
+        {/* White box with collection name + SHOP label, overlaid on banner. */}
+        {/* ---------------------------------------------------------------- */}
+        <div
+          className="strip-mobile-name-overlay"
+          aria-hidden
+          style={{
+            display: "none", /* overridden at ≤430px via <style> below */
+            position: "absolute",
+            bottom: 16,
+            left: 16,
+            backgroundColor: "var(--color-merch-bg)",
+            padding: "8px 12px",
+            zIndex: 3,
+            minWidth: 0,
+          }}
+        >
+          <div
+            style={{
+              color: "var(--color-merch-red)",
+              fontFamily: "var(--font-merch-display)",
+              fontSize: 12,
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: 0,
+              lineHeight: 1,
+              marginBottom: 4,
+            }}
+          >
+            SHOP
+          </div>
+          <div
+            style={{
+              color: "var(--color-merch-ink-dark)",
+              fontFamily: "var(--font-merch-display)",
+              fontSize: 13,
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: 0,
+              lineHeight: 1.1,
+              whiteSpace: "nowrap",
+              maxWidth: 200,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {tabLabel}
+          </div>
         </div>
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Product card row — 355×~282px portrait cards; NEGATIVE              */}
+      {/* Product card row — 355×225px portrait cards; NEGATIVE               */}
       {/* marginTop so cards overlap the banner's lower ~80px at desktop.     */}
-      {/* Left padding 197px = inset so first card x ≈ 237 from container.   */}
-      {/* At ≤430px: marginTop 0, paddingLeft 0 (full-width single-col).     */}
+      {/* Left padding 176px = inset so first card x ≈ 216 from container.   */}
+      {/* At ≤430px: marginTop 0, paddingLeft 8px (full-width scroll).       */}
       {/* Carousel arrows (prev/next) positioned relative to this wrapper.   */}
       {/* ------------------------------------------------------------------ */}
       <div
@@ -447,7 +456,8 @@ function CollectionStrip({
           ref={scrollRef}
           className="strip-card-row"
           style={{
-            paddingLeft: 197,
+            /* left inset 176px → first card x ≈ 216 (container x=40, pad 176) */
+            paddingLeft: 176,
             paddingRight: 24,
             overflowX: "auto",
             scrollbarWidth: "none",
@@ -481,7 +491,7 @@ function CollectionStrip({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  minHeight: 375,
+                  minHeight: 320,
                 }}
               >
                 {entry.href ? (
@@ -592,24 +602,26 @@ function CollectionStrip({
  * Inline <style> block for 390/mobile responsive overrides.
  * Scoped to .merch-collection-list to avoid global leakage.
  *
- * At ≤430px:
+ * At ≤430px (#827 remeasured):
+ *   - .strip-banner-wrap: portrait ~1:1 aspect (~112% padding-top) + overflow:hidden
  *   - .strip-name-tab (desktop rotated overlay): hidden
- *   - .mobile-tab-header: shown as a top bar above the banner
- *   - .strip-banner-wrap: overflow:hidden (no overlap of cards under tab)
- *   - .strip-card-row-wrap: marginTop 0 (no negative overlap)
- *   - .strip-card-row: paddingLeft 8px (full-width, no left indent)
+ *   - .strip-mobile-name-overlay: shown (lower-LEFT of banner image)
+ *   - .strip-card-row-wrap: marginTop 0 (no negative overlap on mobile)
+ *   - .strip-card-row: paddingLeft 8px (full-width scroll, no left indent)
  *   - carousel arrows: hidden (scroll-drag on mobile)
  */
 const RESPONSIVE_STYLES = `
   @media (max-width: 430px) {
-    .merch-collection-list .mobile-tab-header {
-      display: block !important;
+    .merch-collection-list .strip-banner-wrap {
+      /* Portrait ~1:1 aspect: 310×347 ≈ 112% padding-top */
+      padding-top: 112% !important;
+      overflow: hidden !important;
     }
     .merch-collection-list .strip-name-tab {
       display: none !important;
     }
-    .merch-collection-list .strip-banner-wrap {
-      overflow: hidden !important;
+    .merch-collection-list .strip-mobile-name-overlay {
+      display: block !important;
     }
     .merch-collection-list .strip-card-row-wrap {
       margin-top: 0 !important;
@@ -623,6 +635,12 @@ const RESPONSIVE_STYLES = `
     .merch-collection-list .strip-carousel-arrow {
       display: none !important;
     }
+    .merch-collection-list-h1 {
+      font-size: 32px !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
   }
 `;
 
@@ -633,17 +651,19 @@ const RESPONSIVE_STYLES = `
 /**
  * MerchCollectionList — vertically stacked collection strips.
  *
- * Each strip: banner (4:1 aspect, cover) with a rotated vertical name tab
- * (60×185px, 12px/24px padding, WHITE bg, BLACK text, curated label + "Shop")
- * at left=91px, followed by a horizontal scroll row of 355px portrait
- * StripProductCard tiles (gap 8px, left inset 197px). The card row starts
- * with a −80px margin overlapping the banner's lower region, matching the
- * real merch.riotgames.com/en-us/collection/ layout at 1280px.
+ * Each strip: banner (4:1 aspect at desktop, ~1:1 portrait at mobile) with a
+ * SINGLE rotated name tab (60×185px, 12px/24px padding, WHITE bg, whole box
+ * rotated -90deg, SHOP label + collection name inside) at left=91px, followed by
+ * a horizontal scroll row of 355px portrait StripProductCard tiles (225px image
+ * height, gap 8px, left inset 176px). The card row starts with a −80px margin
+ * overlapping the banner's lower region, matching the real layout at 1280px.
  *
- * At ≤430px: tab shown above banner (no overlap), cards scroll normally.
+ * At ≤430px: portrait banner (~1:1 aspect), name overlay on lower-left of banner,
+ * no negative card margin, cards scroll below banner.
  *
- * Below all strips: a centered red "LOAD MORE" pill (239×50px) is rendered
- * when `showLoadMore` is true (default).
+ * Below all strips: a flat transparent "LOAD MORE" button (no border-radius,
+ * transparent bg, white riotSans 16/600, ls 0.32px) is rendered when
+ * `showLoadMore` is true (default). Matches the real site's rectangular CTA.
  *
  * @example
  * <MerchCollectionList
@@ -688,8 +708,10 @@ export function MerchCollectionList({
         ))}
 
         {/* ------------------------------------------------------------------ */}
-        {/* LOAD MORE — centered red pill, 239×50px, uppercase 16/600 white.   */}
-        {/* Real site: mb 100px below strips.                                  */}
+        {/* LOAD MORE — flat transparent rectangle, no border-radius, no bg.   */}
+        {/* Real site: bg transparent, borderRadius 0, padding 0 16px,         */}
+        {/* white riotSans 16/600, ls 0.32px. NOT a red pill (#827 fix).       */}
+        {/* Centered; mb 100px below strips.                                    */}
         {/* ------------------------------------------------------------------ */}
         {showLoadMore && (
           <div
@@ -704,19 +726,20 @@ export function MerchCollectionList({
               type="button"
               onClick={onLoadMore}
               style={{
-                width: 239,
                 height: 50,
-                backgroundColor: "var(--color-merch-red)",
-                color: "var(--color-merch-on-dark)",
-                border: "none",
-                borderRadius: 25,
+                minWidth: 160,
+                backgroundColor: "transparent",
+                color: "var(--color-merch-ink-dark)",
+                border: "1px solid var(--color-merch-border)",
+                borderRadius: 0,
                 cursor: "pointer",
                 fontFamily: "var(--font-merch-display)",
                 fontSize: 16,
                 fontWeight: 600,
                 textTransform: "uppercase",
-                letterSpacing: "0.04em",
+                letterSpacing: "0.02em",
                 lineHeight: 1,
+                padding: "0 32px",
               }}
             >
               LOAD MORE
