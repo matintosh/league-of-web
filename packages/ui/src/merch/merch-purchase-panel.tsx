@@ -1,20 +1,21 @@
 "use client";
 
 /**
- * MerchPurchasePanel — PDP right column: title, badges, price, variant chips,
- * quantity stepper, Add to Cart CTA, optional description.
+ * MerchPurchasePanel — PDP right column: category trail, title, heart/share row
+ * (with heart 40×40, share 40×40, and badge at row end), price, variant chips,
+ * optional quantity stepper, Add to Cart CTA.
  *
- * Measured from merch.riotgames.com (~1280px desktop):
- *   Panel width: ~38% of page width (~485px at 1280px — proportional grid)
- *   Title: clamp(38px, 3.75vw, 48px) / 700 / line-height 1.1 / --color-merch-ink-dark / uppercase / -0.03em tracking
- *   Badges: 10px uppercase / 2px 8px padding / ink bg / on-dark text
- *   Price: 28px / 400 / --color-merch-ink-dark; sale = struck original 16px (muted) + red 28px current
- *   Variant chips: 8px 16px padding / 13px / flex-wrap / 8px gap
- *   Active chip: ink bg + on-dark text + 2px ink border
- *   Disabled chip: 0.35 opacity + line-through + not-allowed cursor
- *   Qty stepper: 40×40px per cell / 1px border
- *   Add to Cart: 50px tall / full-width / merch-red bg / 600 uppercase 16px
- *   Breadcrumb: 16px / muted color
+ * Measured from merch.riotgames.com (amumu-plush, 1280px desktop):
+ *   Category trail: 14px / 600 / uppercase / 0.02em ls / #666666 color, NO "/" glyphs
+ *   Title H1: clamp(38px, 3.75vw, 48px) / 700 / lh 1.1 / --color-merch-ink-dark / uppercase / -0.02em tracking
+ *   Heart/share row: 40×40 icon buttons below H1; badge at row end
+ *   Badge "New": green bg --color-merch-badge-new, BLACK text, 16px/400, mixed-case, 4px 8px pad, radius 2px
+ *   Price: 28px / 400 / lh 35px / --color-merch-ink-dark; ~24px vertical padding; NO dividers above/below
+ *   Variant chips: 8px 16px / 13px / flex-wrap / 8px gap
+ *   Notices: 16px / --color-merch-ink-dark (BLACK)
+ *   Add to Cart: 50px tall / 239px desktop / merch-red bg / riotSans 16/600 / 0.02em ls
+ *   No qty stepper on PDP (showQuantity=false default)
+ *   No dividers between badge/price/notices sections
  *
  * Fully presentational — no internal useState.
  */
@@ -23,6 +24,66 @@ import type { MerchVariant } from "@low/fixtures";
 
 export type { MerchVariant };
 
+/** Map badge label to its background token var. */
+function badgeBg(badge: string): string {
+  const lc = badge.toLowerCase();
+  if (lc === "new") return "var(--color-merch-badge-new)";
+  if (lc.startsWith("limit")) return "var(--color-merch-badge-limited)";
+  if (lc.startsWith("preorder") || lc.startsWith("pre-order"))
+    return "var(--color-merch-badge-preorder)";
+  return "var(--color-merch-ink)";
+}
+
+function badgeTextColor(badge: string): string {
+  const lc = badge.toLowerCase();
+  // New (green) and Limited (yellow) read better with black text
+  if (lc === "new" || lc.startsWith("limit")) return "var(--color-merch-ink-dark)";
+  // Preorder (grey) and fallback (ink/dark) use white
+  return "var(--color-merch-on-dark)";
+}
+
+/* SVG icon for wishlist heart (outline) */
+function HeartIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  );
+}
+
+/* SVG icon for share */
+function ShareIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+    </svg>
+  );
+}
+
 export interface MerchPurchasePanelProps {
   /** Product title. */
   title: string;
@@ -30,22 +91,22 @@ export interface MerchPurchasePanelProps {
   price: string;
   /** Pre-sale price if on sale, e.g. "$59.99". Shown struck-through. */
   originalPrice?: string;
-  /** Badges beneath the title, e.g. ["New", "Limited Edition"]. */
+  /** Badges rendered in the icon row (heart / share / badge), e.g. ["New"]. */
   badges?: string[];
-  /** Short description below the CTA button. */
+  /** Short description below the CTA button (unused in PDP — passed to InfoTabs). */
   description?: string;
-  /** Breadcrumb segments, e.g. ["Home", "Tops", "MSI 2026 Tee"]. */
+  /** Breadcrumb segments (unused in this component; handled by MerchBreadcrumbBar). */
   breadcrumb?: string[];
   /**
-   * Category trail rendered immediately above the h1 as a small muted uppercase row.
-   * Matches the real PDP: "Collectibles / Plush / League of Legends" before the title.
+   * Category trail rendered immediately above the h1 as a 14px uppercase row.
+   * Matches the real PDP: "Collectibles · Plush · League of Legends" before the title.
    * E.g. ["Collectibles", "Plush", "League of Legends"].
    */
   categoryTrail?: string[];
   /**
-   * Notice lines rendered between the price and the qty stepper/CTA.
-   * Matches real PDP: "This product is not intended as a toy or children's product."
-   * etc. Rendered as ~13px muted lines.
+   * Notice lines rendered between the price and the CTA.
+   * Real PDP copy: "This product is not intended as a toy or children's product." etc.
+   * Rendered at 16px, --color-merch-ink-dark (BLACK).
    */
   notices?: string[];
   /** Size/variant chips. Omit for products with no variant selector. */
@@ -56,6 +117,10 @@ export interface MerchPurchasePanelProps {
   selectedVariant?: string;
   /** Called when a variant chip is clicked. */
   onVariantChange?: (label: string) => void;
+  /**
+   * When true, renders a quantity stepper (default false — real amumu PDP has none).
+   */
+  showQuantity?: boolean;
   /** Current quantity — controlled. Defaults to 1. */
   quantity?: number;
   /** Called when quantity changes (stepper ±). */
@@ -68,36 +133,36 @@ export interface MerchPurchasePanelProps {
   showSizeGuideLink?: boolean;
   /** Called when the "Size Guide" link is clicked. */
   onSizeGuideClick?: () => void;
+  /** Called when the wishlist heart button is clicked. */
+  onWishlist?: () => void;
+  /** Called when the share button is clicked. */
+  onShare?: () => void;
 }
-
-const DIVIDER: React.CSSProperties = {
-  borderTop: "1px solid var(--color-merch-border)",
-  margin: "16px 0",
-};
 
 /**
  * MerchPurchasePanel — right-column PDP purchase UI.
- * Compose with MerchProductGallery in a 2-column flex layout.
+ * Compose with MerchProductGallery in a 64.7/35.3 grid layout.
  */
 export function MerchPurchasePanel({
   title,
   price,
   originalPrice,
   badges,
-  description,
-  breadcrumb,
   categoryTrail,
   notices,
   variants,
   variantLabel = "Size",
   selectedVariant,
   onVariantChange,
+  showQuantity = false,
   quantity = 1,
   onQuantityChange,
   onAddToCart,
   outOfStock = false,
   showSizeGuideLink = false,
   onSizeGuideClick,
+  onWishlist,
+  onShare,
 }: MerchPurchasePanelProps) {
   const isSale = Boolean(originalPrice && originalPrice !== price);
   const safeQty = Math.max(1, quantity);
@@ -118,7 +183,7 @@ export function MerchPurchasePanel({
             display: "flex",
             flexWrap: "wrap",
             alignItems: "center",
-            gap: 0,
+            gap: "4px",
             margin: "0 0 8px",
             padding: 0,
             listStyle: "none",
@@ -128,21 +193,19 @@ export function MerchPurchasePanel({
             <li
               key={idx}
               style={{
-                display: "flex",
-                alignItems: "center",
-                fontSize: 11,
+                fontSize: 14,
                 fontWeight: 600,
                 textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                color: "var(--color-merch-muted)",
+                letterSpacing: "0.02em",
+                color: "var(--color-merch-price-struck)",
               }}
             >
               {idx > 0 && (
                 <span
                   aria-hidden="true"
-                  style={{ margin: "0 6px", color: "var(--color-merch-muted)" }}
+                  style={{ marginRight: "4px" }}
                 >
-                  /
+                  ·
                 </span>
               )}
               {seg}
@@ -159,46 +222,115 @@ export function MerchPurchasePanel({
           lineHeight: 1.1,
           color: "var(--color-merch-ink-dark)",
           textTransform: "uppercase",
-          letterSpacing: "-0.03em",
-          margin: 0,
+          letterSpacing: "-0.02em",
+          margin: "0 0 12px",
+          fontFamily: "var(--font-merch-display, var(--font-merch))",
         }}
       >
         {title}
       </h1>
 
-      {/* ── Badges ──────────────────────────────────────────────────────── */}
-      {badges && badges.length > 0 && (
-        <div
+      {/* ── Heart / Share / Badge row ────────────────────────────────────── */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          marginBottom: 20,
+        }}
+      >
+        {/* Wishlist heart */}
+        <button
+          type="button"
+          aria-label="Add to wishlist"
+          onClick={onWishlist}
           style={{
+            width: 40,
+            height: 40,
+            border: "1px solid var(--color-merch-border)",
+            background: "none",
+            cursor: "pointer",
             display: "flex",
-            flexWrap: "wrap",
-            gap: 6,
-            marginTop: 8,
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--color-merch-ink)",
+            flexShrink: 0,
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor =
+              "var(--color-merch-ink)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor =
+              "var(--color-merch-border)";
           }}
         >
-          {badges.map((badge) => (
-            <span
-              key={badge}
-              style={{
-                fontSize: 10,
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                padding: "2px 8px",
-                backgroundColor: "var(--color-merch-ink)",
-                color: "var(--color-merch-on-dark)",
-              }}
-            >
-              {badge}
-            </span>
-          ))}
-        </div>
-      )}
+          <HeartIcon />
+        </button>
 
-      <div style={DIVIDER} />
+        {/* Share */}
+        <button
+          type="button"
+          aria-label="Share product"
+          onClick={onShare}
+          style={{
+            width: 40,
+            height: 40,
+            border: "1px solid var(--color-merch-border)",
+            background: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--color-merch-ink)",
+            flexShrink: 0,
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor =
+              "var(--color-merch-ink)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor =
+              "var(--color-merch-border)";
+          }}
+        >
+          <ShareIcon />
+        </button>
+
+        {/* Badges at row end */}
+        {badges && badges.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {badges.map((badge) => (
+              <span
+                key={badge}
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  letterSpacing: "0",
+                  padding: "4px 8px",
+                  borderRadius: 2,
+                  backgroundColor: badgeBg(badge),
+                  color: badgeTextColor(badge),
+                  lineHeight: 1.2,
+                }}
+              >
+                {badge}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* ── Price ───────────────────────────────────────────────────────── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          paddingTop: 12,
+          paddingBottom: 12,
+        }}
+      >
         {isSale ? (
           <>
             <span
@@ -215,6 +347,7 @@ export function MerchPurchasePanel({
               style={{
                 fontSize: 28,
                 fontWeight: 400,
+                lineHeight: "35px",
                 color: "var(--color-merch-red)",
               }}
             >
@@ -226,6 +359,7 @@ export function MerchPurchasePanel({
             style={{
               fontSize: 28,
               fontWeight: 400,
+              lineHeight: "35px",
               color: "var(--color-merch-ink-dark)",
             }}
           >
@@ -236,117 +370,114 @@ export function MerchPurchasePanel({
 
       {/* ── Variant selector ────────────────────────────────────────────── */}
       {variants && variants.length > 0 && (
-        <>
-          <div style={DIVIDER} />
-          <div>
-            <div
+        <div style={{ marginTop: 12 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 10,
+            }}
+          >
+            <p
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 10,
+                fontSize: 12,
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+                color: "var(--color-merch-body)",
+                margin: 0,
               }}
             >
-              <p
+              {variantLabel}
+              {selectedVariant && `: ${selectedVariant}`}
+            </p>
+            {showSizeGuideLink && (
+              <button
+                type="button"
+                onClick={onSizeGuideClick}
                 style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  color: "var(--color-merch-body)",
-                  margin: 0,
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: 13,
+                  fontWeight: 400,
+                  color: "var(--color-merch-muted)",
+                  fontFamily: "inherit",
+                  padding: 0,
+                  textDecoration: "none",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.textDecoration = "underline";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.textDecoration = "none";
                 }}
               >
-                {variantLabel}
-                {selectedVariant && `: ${selectedVariant}`}
-              </p>
-              {showSizeGuideLink && (
+                Size Guide
+              </button>
+            )}
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {variants.map((v) => {
+              const isActive = v.label === selectedVariant;
+              return (
                 <button
+                  key={v.label}
                   type="button"
-                  onClick={onSizeGuideClick}
+                  disabled={!v.available}
+                  onClick={() => v.available && onVariantChange?.(v.label)}
                   style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
+                    padding: "8px 16px",
                     fontSize: 13,
-                    fontWeight: 400,
-                    color: "var(--color-merch-muted)",
+                    fontWeight: isActive ? 600 : 400,
+                    border: isActive
+                      ? "2px solid var(--color-merch-ink)"
+                      : "1px solid var(--color-merch-border)",
+                    backgroundColor: isActive
+                      ? "var(--color-merch-ink)"
+                      : "var(--color-merch-bg)",
+                    color: isActive
+                      ? "var(--color-merch-on-dark)"
+                      : "var(--color-merch-ink)",
+                    cursor: v.available ? "pointer" : "not-allowed",
+                    opacity: v.available ? 1 : 0.35,
+                    textDecoration: v.available ? "none" : "line-through",
                     fontFamily: "inherit",
-                    padding: 0,
-                    textDecoration: "none",
+                    transition: "border-color 120ms ease",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.textDecoration = "underline";
+                    if (v.available && !isActive) {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor =
+                        "var(--color-merch-ink)";
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.textDecoration = "none";
+                    if (v.available && !isActive) {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor =
+                        "var(--color-merch-border)";
+                    }
                   }}
                 >
-                  Size Guide
+                  {v.label}
                 </button>
-              )}
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {variants.map((v) => {
-                const isActive = v.label === selectedVariant;
-                return (
-                  <button
-                    key={v.label}
-                    type="button"
-                    disabled={!v.available}
-                    onClick={() => v.available && onVariantChange?.(v.label)}
-                    style={{
-                      padding: "8px 16px",
-                      fontSize: 13,
-                      fontWeight: isActive ? 600 : 400,
-                      border: isActive
-                        ? "2px solid var(--color-merch-ink)"
-                        : "1px solid var(--color-merch-border)",
-                      backgroundColor: isActive
-                        ? "var(--color-merch-ink)"
-                        : "var(--color-merch-bg)",
-                      color: isActive
-                        ? "var(--color-merch-on-dark)"
-                        : "var(--color-merch-ink)",
-                      cursor: v.available ? "pointer" : "not-allowed",
-                      opacity: v.available ? 1 : 0.35,
-                      textDecoration: v.available ? "none" : "line-through",
-                      fontFamily: "inherit",
-                      transition: "border-color 120ms ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (v.available && !isActive) {
-                        (e.currentTarget as HTMLButtonElement).style.borderColor =
-                          "var(--color-merch-ink)";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (v.available && !isActive) {
-                        (e.currentTarget as HTMLButtonElement).style.borderColor =
-                          "var(--color-merch-border)";
-                      }
-                    }}
-                  >
-                    {v.label}
-                  </button>
-                );
-              })}
-            </div>
+              );
+            })}
           </div>
-        </>
+        </div>
       )}
 
       {/* ── Purchase notices ────────────────────────────────────────────── */}
       {notices && notices.length > 0 && (
-        <div style={{ marginTop: 10 }}>
+        <div style={{ marginTop: variants && variants.length > 0 ? 16 : 8 }}>
           {notices.map((notice, idx) => (
             <p
               key={idx}
               style={{
-                fontSize: 13,
-                color: "var(--color-merch-muted)",
+                fontSize: 16,
+                color: "var(--color-merch-ink-dark)",
                 lineHeight: 1.5,
-                margin: idx > 0 ? "4px 0 0" : 0,
+                margin: idx > 0 ? "6px 0 0" : 0,
               }}
             >
               {notice}
@@ -355,81 +486,81 @@ export function MerchPurchasePanel({
         </div>
       )}
 
-      <div style={DIVIDER} />
-
-      {/* ── Quantity stepper ────────────────────────────────────────────── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
-        <button
-          type="button"
-          aria-label="Decrease quantity"
-          disabled={safeQty <= 1}
-          onClick={() => onQuantityChange?.(Math.max(1, safeQty - 1))}
-          style={{
-            width: 40,
-            height: 40,
-            border: "1px solid var(--color-merch-border)",
-            backgroundColor: "var(--color-merch-bg)",
-            color: "var(--color-merch-ink)",
-            fontSize: 18,
-            cursor: safeQty <= 1 ? "not-allowed" : "pointer",
-            opacity: safeQty <= 1 ? 0.4 : 1,
-            fontFamily: "inherit",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          −
-        </button>
-        <div
-          aria-label={`Quantity: ${safeQty}`}
-          style={{
-            width: 40,
-            height: 40,
-            border: "1px solid var(--color-merch-border)",
-            borderLeft: "none",
-            borderRight: "none",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 15,
-            color: "var(--color-merch-ink)",
-            userSelect: "none",
-          }}
-        >
-          {safeQty}
+      {/* ── Quantity stepper (PDP-off by default) ───────────────────────── */}
+      {showQuantity && (
+        <div style={{ display: "flex", alignItems: "center", gap: 0, marginTop: 20 }}>
+          <button
+            type="button"
+            aria-label="Decrease quantity"
+            disabled={safeQty <= 1}
+            onClick={() => onQuantityChange?.(Math.max(1, safeQty - 1))}
+            style={{
+              width: 40,
+              height: 40,
+              border: "1px solid var(--color-merch-border)",
+              backgroundColor: "var(--color-merch-bg)",
+              color: "var(--color-merch-ink)",
+              fontSize: 18,
+              cursor: safeQty <= 1 ? "not-allowed" : "pointer",
+              opacity: safeQty <= 1 ? 0.4 : 1,
+              fontFamily: "inherit",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            −
+          </button>
+          <div
+            aria-label={`Quantity: ${safeQty}`}
+            style={{
+              width: 40,
+              height: 40,
+              border: "1px solid var(--color-merch-border)",
+              borderLeft: "none",
+              borderRight: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 15,
+              color: "var(--color-merch-ink)",
+              userSelect: "none",
+            }}
+          >
+            {safeQty}
+          </div>
+          <button
+            type="button"
+            aria-label="Increase quantity"
+            onClick={() => onQuantityChange?.(safeQty + 1)}
+            style={{
+              width: 40,
+              height: 40,
+              border: "1px solid var(--color-merch-border)",
+              backgroundColor: "var(--color-merch-bg)",
+              color: "var(--color-merch-ink)",
+              fontSize: 18,
+              cursor: "pointer",
+              fontFamily: "inherit",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            +
+          </button>
         </div>
-        <button
-          type="button"
-          aria-label="Increase quantity"
-          onClick={() => onQuantityChange?.(safeQty + 1)}
-          style={{
-            width: 40,
-            height: 40,
-            border: "1px solid var(--color-merch-border)",
-            backgroundColor: "var(--color-merch-bg)",
-            color: "var(--color-merch-ink)",
-            fontSize: 18,
-            cursor: "pointer",
-            fontFamily: "inherit",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          +
-        </button>
-      </div>
+      )}
 
-      <div style={{ marginTop: 16 }}>
-        {/* ── Add to Cart ───────────────────────────────────────────────── */}
+      {/* ── Add to Cart ───────────────────────────────────────────────────── */}
+      <div style={{ marginTop: 20 }}>
         <button
           type="button"
           disabled={outOfStock}
           onClick={() => !outOfStock && onAddToCart?.()}
           style={{
             display: "block",
-            width: "100%",
+            width: 239,
             height: 50,
             backgroundColor: outOfStock
               ? "var(--color-merch-muted)"
@@ -438,10 +569,10 @@ export function MerchPurchasePanel({
             fontSize: 16,
             fontWeight: 600,
             textTransform: "uppercase",
-            letterSpacing: "0.1em",
+            letterSpacing: "0.02em",
             border: "none",
             cursor: outOfStock ? "not-allowed" : "pointer",
-            fontFamily: "inherit",
+            fontFamily: "var(--font-merch-display, var(--font-merch))",
             transition: "background-color 150ms ease",
           }}
           onMouseEnter={(e) => {
@@ -460,23 +591,6 @@ export function MerchPurchasePanel({
           {outOfStock ? "Out of Stock" : "Add to Cart"}
         </button>
       </div>
-
-      {/* ── Description ─────────────────────────────────────────────────── */}
-      {description && (
-        <>
-          <div style={DIVIDER} />
-          <p
-            style={{
-              fontSize: 14,
-              color: "var(--color-merch-body)",
-              lineHeight: 1.6,
-              margin: 0,
-            }}
-          >
-            {description}
-          </p>
-        </>
-      )}
     </div>
   );
 }

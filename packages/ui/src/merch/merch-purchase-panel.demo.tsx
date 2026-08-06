@@ -28,6 +28,7 @@ export function MerchPurchasePanelDemo() {
         variantLabel="Size"
         selectedVariant={variant}
         onVariantChange={setVariant}
+        showQuantity
         quantity={qty}
         onQuantityChange={setQty}
         onAddToCart={() => alert(`Added to cart: Size ${variant} × ${qty}`)}

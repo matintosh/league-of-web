@@ -43,12 +43,12 @@ const APPAREL_SIZES = [
 
 const DEFAULT_NOTICES = [
   "This product is not intended as a toy or children's product.",
-  "Ships within 3–5 business days.",
+  "This item typically ships within 2 weeks from purchase.",
 ];
 
 const PLUSH_NOTICES = [
-  "Recommended for ages 15+.",
-  "Ships within 3–5 business days.",
+  "This product is not intended as a toy or children's product.",
+  "This item typically ships within 2 weeks from purchase.",
 ];
 
 /**
