@@ -1,6 +1,7 @@
 /**
  * Showcase for MerchInfoPage — server-safe (NO 'use client').
- * Inline dummy content; does NOT import MERCH_INFO_PAGES values.
+ * MerchInfoPage itself is 'use client' for accordion state; the showcase
+ * wraps it without needing its own client boundary.
  */
 
 import type { ShowcaseEntry } from "../showcase";
@@ -11,57 +12,69 @@ export const merchInfoPageShowcase: ShowcaseEntry = {
   name: "Merch Info Page",
   area: "merch",
   description:
-    "Long-form prose template for /merch/pages/[slug]. Renders a title (h1) and an ordered block list (heading2, heading3, paragraph, ul, ol) inside a max-w-screen-md centered container. Matches merch.riotgames.com info-page layout: white bg, --color-merch-ink headings, --color-merch-body prose, 1px --color-merch-border section dividers.",
+    "Long-form prose + FAQ accordion template for /merch/pages/[slug]. Renders a title (h2) and an ordered block list (heading2, heading3, paragraph, ul, ol, faq-accordion). FAQ accordion: collapsible Q&A with category h2 (Inter 18px/600, no uppercase, black), question h3 triggers (18.72px/700) with right chevrons, answers hidden until expanded. White bg, --color-merch-ink-dark headings, --color-merch-body prose, 1px --color-merch-border dividers.",
   variants: [
     {
-      name: "FAQ page",
+      name: "FAQ page — accordion model",
       notes:
-        "Multi-section FAQ with h2 dividers, paragraph copy, and a ul list. Matches /merch/pages/faqs.",
+        "FAQs page with accordion: 3 category sections (GENERAL QUESTIONS, BILLING AND ORDER QUESTIONS, TECHNICAL QUESTIONS), each with collapsible Q&A pairs. Matches /merch/pages/faqs per issue #826.",
       backgrounds: ["light"],
       render: () => (
         <MerchInfoPage
-          title="Frequently Asked Questions"
+          title="FAQs"
           blocks={[
-            { type: "heading2", content: "Orders" },
             {
-              type: "paragraph",
-              content:
-                "Once your order is placed you will receive a confirmation email. Orders are typically processed within 1–3 business days before shipping.",
-            },
-            { type: "heading3", content: "Can I change or cancel my order?" },
-            {
-              type: "paragraph",
-              content:
-                "Orders can be modified or cancelled within 1 hour of placement. Please contact our support team as quickly as possible for assistance.",
-            },
-            { type: "heading3", content: "What payment methods do you accept?" },
-            {
-              type: "ul",
-              content: [
-                "Credit and debit cards (Visa, Mastercard, American Express)",
-                "PayPal",
-                "Riot Games Gift Cards",
-                "Apple Pay and Google Pay (where available)",
+              type: "faq-accordion",
+              content: "",
+              sections: [
+                {
+                  heading: "GENERAL QUESTIONS",
+                  items: [
+                    {
+                      question: "Are your products officially licensed?",
+                      answer:
+                        "Yes. All products sold in the Riot Games Merch Store are officially licensed and produced to Riot's quality standards.",
+                    },
+                    {
+                      question: "Can I purchase gift cards?",
+                      answer:
+                        "Yes, Riot Games Gift Cards are available in select denominations and can be redeemed on any eligible order at checkout.",
+                    },
+                  ],
+                },
+                {
+                  heading: "BILLING AND ORDER QUESTIONS",
+                  items: [
+                    {
+                      question: "What payment methods do you accept?",
+                      answer:
+                        "We accept credit and debit cards (Visa, Mastercard, American Express), PayPal, Riot Games Gift Cards, and Apple Pay or Google Pay where available.",
+                    },
+                    {
+                      question: "Can I change or cancel my order?",
+                      answer:
+                        "Orders can be modified or cancelled within 1 hour of placement. Please contact our support team as quickly as possible.",
+                    },
+                  ],
+                },
+                {
+                  heading: "TECHNICAL QUESTIONS",
+                  items: [
+                    {
+                      question: "Why can't I add items to my cart?",
+                      answer:
+                        "Items that are sold out or no longer available cannot be added to your cart. Try clearing your browser cache or using a different browser.",
+                    },
+                  ],
+                },
               ],
-            },
-            { type: "heading2", content: "Shipping" },
-            {
-              type: "paragraph",
-              content:
-                "We ship to most countries worldwide. Shipping times and costs vary depending on your location and the shipping method selected at checkout.",
-            },
-            { type: "heading2", content: "Returns & Exchanges" },
-            {
-              type: "paragraph",
-              content:
-                "We accept returns and exchanges within 30 days of delivery for most items. Please see our Returns page for full details.",
             },
           ]}
         />
       ),
     },
     {
-      name: "Shipping page",
+      name: "Shipping page — prose model",
       notes:
         "Shipping info with h2 headings, paragraphs, and an ol numbered list. Matches /merch/pages/shipping.",
       backgrounds: ["light"],
