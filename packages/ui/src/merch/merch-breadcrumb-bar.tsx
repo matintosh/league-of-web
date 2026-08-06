@@ -7,15 +7,15 @@
  * Use --color-merch-* tokens only. NOT the Hextech client.
  *
  * Measured from merch.riotgames.com @ 1280 and 390 (re-verified 2026-08-06):
- *   Bar: 60px height desktop, 40px mobile; transparent bg, no border-bottom
+ *   Bar: 60px height desktop, 40px mobile; solid white bg (--color-merch-bg)
  *   Container: full-width, inner max-w-7xl mx-auto flex items-center justify-between
  *   Horizontal padding: 40px desktop (px-10), 24px mobile (px-6)
  *   Parent crumbs: 16px/400 black — var(--color-merch-ink-dark)
  *   Separator "/": var(--color-merch-ink-dark)
- *   Current crumb (last): var(--color-merch-ink-dark), font-weight 400
+ *   Current crumb (last): var(--color-merch-ink-dark), font-weight 600
  *   Count: rendered as <sup> at 12px, color var(--color-merch-ink-dark)
  *   Mobile (< md): only last crumb visible, hidden rest; x-pad 24px
- *   REFINE button: bg var(--color-merch-refine) #eb0029; 113×40; radius 2; pl-2 pr-4; label 16px/700/uppercase
+ *   REFINE button: bg var(--color-merch-refine) #eb0029; 113×40; radius 2; padding 8px 16px 8px 8px; label 13.33px/400/uppercase; icon 24×24; gap 8px
  */
 
 // ---------------------------------------------------------------------------
@@ -48,7 +48,7 @@ export interface MerchBreadcrumbBarProps {
 }
 
 // ---------------------------------------------------------------------------
-// Sliders icon — shared with MerchProductGrid's RefineIcon
+// Sliders icon — 24×24, matching measured icon size on real merch.riotgames.com
 // ---------------------------------------------------------------------------
 
 function SlidersIcon() {
@@ -56,19 +56,19 @@ function SlidersIcon() {
     <svg
       aria-hidden
       focusable="false"
-      viewBox="0 0 16 16"
+      viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
       strokeWidth={1.5}
       strokeLinecap="round"
-      style={{ width: 14, height: 14, display: "block" }}
+      style={{ width: 24, height: 24, display: "block" }}
     >
-      <line x1="2" y1="4" x2="14" y2="4" />
-      <line x1="2" y1="8" x2="14" y2="8" />
-      <line x1="2" y1="12" x2="14" y2="12" />
-      <circle cx="5" cy="4" r="1.5" fill="currentColor" stroke="none" />
-      <circle cx="10" cy="8" r="1.5" fill="currentColor" stroke="none" />
-      <circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+      <circle cx="7" cy="6" r="2.25" fill="currentColor" stroke="none" />
+      <circle cx="15" cy="12" r="2.25" fill="currentColor" stroke="none" />
+      <circle cx="9" cy="18" r="2.25" fill="currentColor" stroke="none" />
     </svg>
   );
 }
@@ -80,7 +80,7 @@ function SlidersIcon() {
 /**
  * Full-width breadcrumb bar with optional product count and inline REFINE button.
  * Height: 40px mobile / 60px desktop. Horizontal inner padding: 24px mobile / 40px desktop.
- * Transparent background, no bottom border (page bg is already white).
+ * Background: solid white (--color-merch-bg). Current crumb: 16px/600.
  *
  * Mobile: all non-last crumbs (and their separators) are hidden; only the current crumb
  * is shown, at 24px from the left edge, matching merch.riotgames.com at 390.
@@ -93,12 +93,19 @@ export function MerchBreadcrumbBar({
 }: MerchBreadcrumbBarProps) {
   return (
     <div
-      /* h-10 = 40px mobile, md:h-15 = 60px desktop */
+      /*
+       * Outer bar: solid white bg, 40px mobile / 60px desktop.
+       * min-height enforces the bar even when crumbs are short.
+       * Real: bar y=130-190 @ 1280, y=90-130 @ 390 — flush under header.
+       */
       className="flex w-full items-center"
-      style={{ minHeight: "var(--merch-bar-h, 40px)" }}
+      style={{
+        backgroundColor: "var(--color-merch-bg)",
+        minHeight: 40,
+      }}
     >
       {/*
-       * Responsive outer wrapper: 40px mobile / 60px desktop height.
+       * Inner height-constrained wrapper: 40px mobile / 60px desktop.
        * Tailwind h-10 = 2.5rem = 40px; md:h-[60px] = 60px at md+.
        */}
       <div className="flex h-10 w-full items-center md:h-[60px]">
@@ -106,6 +113,7 @@ export function MerchBreadcrumbBar({
         <nav
           aria-label={ariaLabel}
           className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 md:px-10"
+          style={{ color: "var(--color-merch-ink-dark)" }}
         >
           {/* Left: crumb trail */}
           <ol
@@ -115,6 +123,7 @@ export function MerchBreadcrumbBar({
               margin: 0,
               padding: 0,
               fontSize: 16,
+              color: "var(--color-merch-ink-dark)",
             }}
           >
             {crumbs.map((crumb, idx) => {
@@ -142,7 +151,8 @@ export function MerchBreadcrumbBar({
                     </span>
                   )}
                   {isLast ? (
-                    <span style={{ color: "var(--color-merch-ink-dark)", fontWeight: 400 }}>
+                    /* Current crumb: 16px/600 — measured from real merch.riotgames.com */
+                    <span style={{ color: "var(--color-merch-ink-dark)", fontWeight: 600 }}>
                       {crumb.label}
                       {count !== undefined && (
                         <sup
@@ -182,11 +192,13 @@ export function MerchBreadcrumbBar({
             })}
           </ol>
 
-          {/* Right: optional REFINE button — 113×40, bg var(--color-merch-refine), radius 2, label 16px/700/uppercase */}
+          {/* Right: optional REFINE button — 113×40, bg var(--color-merch-refine), radius 2,
+               label 13.33px/400/uppercase, icon 24×24, gap 8px, padding 8px 16px 8px 8px.
+               Measured from merch.riotgames.com 2026-08-06. */}
           {onRefineClick && (
             <button
               type="button"
-              className="flex items-center gap-1.5 pl-2 pr-4 text-[16px] font-bold uppercase transition-colors duration-150"
+              className="flex items-center uppercase transition-colors duration-150"
               style={{
                 width: 113,
                 height: 40,
@@ -197,6 +209,11 @@ export function MerchBreadcrumbBar({
                 cursor: "pointer",
                 flexShrink: 0,
                 letterSpacing: "normal",
+                fontSize: "13.33px",
+                fontWeight: 400,
+                fontFamily: "riotSans, Arial, sans-serif",
+                gap: 8,
+                padding: "8px 16px 8px 8px",
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.backgroundColor =
