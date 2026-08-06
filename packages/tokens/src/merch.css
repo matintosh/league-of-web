@@ -90,6 +90,9 @@
   --color-merch-announcement-pill-border: #eb0029; /* rgb(235,0,41) sampled from real */
   /* Support page tab-strip band background — rgb(235,0,41) measured from real .support-page-hero_hero-nav-container */
   --color-merch-support-band: #eb0029;
+  /* REFINE button fill — rgb(235,0,41) measured live 2026-08-06 on shop-all/collection/PDP; hover is a darker tint */
+  --color-merch-refine:       #eb0029;
+  --color-merch-refine-dark:  #c20022; /* hover / pressed state */
 
   /* ── Franchise category chip colors ────────────────────────────────── */
   /* Brand palette for the homepage category chip strip (MerchCategoryStrip)

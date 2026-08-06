@@ -229,21 +229,25 @@ export function MerchProductGrid({
               <button
                 type="button"
                 onClick={onRefineClick}
-                className="flex items-center gap-1.5 px-4 text-[11px] font-bold uppercase tracking-[0.08em] transition-colors duration-150"
+                className="flex items-center gap-1.5 pl-2 pr-4 text-[16px] font-bold uppercase transition-colors duration-150"
                 style={{
-                  height: 36,
-                  backgroundColor: "var(--color-merch-red)",
+                  width: 113,
+                  height: 40,
+                  backgroundColor: "var(--color-merch-refine)",
                   color: "var(--color-merch-on-dark)",
                   border: "none",
+                  borderRadius: 2,
                   cursor: "pointer",
+                  flexShrink: 0,
+                  letterSpacing: "normal",
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    "var(--color-merch-red-dark)";
+                    "var(--color-merch-refine-dark)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    "var(--color-merch-red)";
+                    "var(--color-merch-refine)";
                 }}
               >
                 <RefineIcon id={refineIconId} />
