@@ -4,7 +4,7 @@ import { MerchCollabCarousel } from "./merch-collab-carousel";
 import type { MerchCollabEntry } from "./merch-collab-carousel";
 
 // ---------------------------------------------------------------------------
-// Fixture data — product-name headlines match real merch.riotgames.com style
+// Fixture data — headlines match real merch.riotgames.com campaign style (mixed-case)
 // ---------------------------------------------------------------------------
 
 const REAL_COLLABS: MerchCollabEntry[] = [
@@ -12,17 +12,15 @@ const REAL_COLLABS: MerchCollabEntry[] = [
     slug: "hp-omen",
     partnerName: "HP OMEN",
     headline: "HyperX OMEN 16 VALORANT Edition",
-    copy: "HP OMEN x Riot Games. Performance laptops and peripherals built for the competitive edge.",
+    copy: "A unique VALORANT design built with every competitive advantage. Performance laptops and peripherals built for the competitive edge.",
     imageUrl: championSplashUrl("Vi", 0),
-    ctaLabel: "Shop HP OMEN",
   },
   {
     slug: "secretlab",
     partnerName: "Secretlab",
     headline: "Secretlab TITAN Evo",
-    copy: "Secretlab x Riot Games. Engineered for long sessions — the official gaming chair of Riot esports.",
+    copy: "Engineered for long sessions — the official gaming chair of Riot esports.",
     imageUrl: championSplashUrl("Jinx", 0),
-    ctaLabel: "Shop Secretlab",
   },
 ];
 
@@ -32,9 +30,15 @@ const MANY_COLLABS: MerchCollabEntry[] = [
     slug: "logitech",
     partnerName: "Logitech G",
     headline: "Logitech G PRO X Superlight",
-    copy: "Logitech G x Riot Games. Pro-grade mice, keyboards, and headsets for the competitive edge.",
+    copy: "Pro-grade mice, keyboards, and headsets for the competitive edge.",
     imageUrl: championSplashUrl("Ezreal", 0),
-    ctaLabel: "Shop Logitech G",
+  },
+  {
+    slug: "hyperx",
+    partnerName: "HyperX",
+    headline: "HyperX Cloud Alpha VALORANT Edition",
+    copy: "Iconic red design. Dual-chamber drivers for best-in-class sound.",
+    imageUrl: championSplashUrl("Caitlyn", 0),
   },
 ];
 
@@ -47,12 +51,12 @@ export const merchCollabCarouselShowcase: ShowcaseEntry = {
   name: "Merch Collab Carousel",
   area: "merch",
   description:
-    'The "— LATEST COLLABORATIONS" section from the merch homepage. White-bg 2-up product panels at 1280px with large black product-name headings, 01/02 slide index numbers, and 64px round bordered arrow buttons. Mobile: full-bleed image on top → white text block below (heading + copy + centered arrows, no CTA). Matches merch.riotgames.com.',
+    'The "Latest Collaborations" swiper section from the merch homepage (issue #855). Full-width #f7f7f7 band, single-slide snap swiper: text LEFT (plain index "01", 48px/600 mixed-case headline, body, 48px arrow buttons) + landscape image RIGHT. Next slide peeks ~56px at right edge. No CTA anywhere. Mobile: full-bleed image top + text below. Matches merch.riotgames.com.',
   variants: [
     {
       name: "Default — 2 collabs (HP OMEN + Secretlab)",
       notes:
-        "The real homepage layout: 2 white panels side-by-side at 1280px. Each panel shows 01/02 slide index. At 390px, switches to image-then-text stack with centered arrow nav.",
+        "Real homepage layout. Slide shows plain '01' index above a 48px mixed-case headline and body copy. 48px arrow buttons below text (prev disabled on first slide). No CTA. #f7f7f7 band.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 1280, fontFamily: "var(--font-merch, system-ui)" }}>
@@ -61,9 +65,9 @@ export const merchCollabCarouselShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "3 collabs — arrow nav active",
+      name: "4 collabs — arrow nav active",
       notes:
-        "With more than 2 collabs, desktop shows 2 at a time and the next arrow advances by 2. Mobile scrolls one tile at a time. Prev arrow is disabled on the first page.",
+        "With 4 collabs, both prev/next arrows are enabled (except at the edges). Next slide peeks at right edge at desktop width.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 1280, fontFamily: "var(--font-merch, system-ui)" }}>
@@ -73,7 +77,7 @@ export const merchCollabCarouselShowcase: ShowcaseEntry = {
     },
     {
       name: "Single collab",
-      notes: "Edge case: one panel fills the left slot; the right slot shows an empty placeholder.",
+      notes: "Edge case: one slide fills the track. Both arrows are disabled.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 1280, fontFamily: "var(--font-merch, system-ui)" }}>
