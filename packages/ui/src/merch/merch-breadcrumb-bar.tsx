@@ -6,16 +6,16 @@
  * MERCH COMPONENT — 1:1 with merch.riotgames.com shared breadcrumb-bar.
  * Use --color-merch-* tokens only. NOT the Hextech client.
  *
- * Measured from merch.riotgames.com @ 1280 and 390 (fdiff-pdp, 2026-08-04):
+ * Measured from merch.riotgames.com @ 1280 and 390 (re-verified 2026-08-06):
  *   Bar: 60px height desktop, 40px mobile; transparent bg, no border-bottom
  *   Container: full-width, inner max-w-7xl mx-auto flex items-center justify-between
- *   Horizontal padding: 40px (10 in Tailwind spacing units)
- *   Crumb text: 16px, color --color-merch-ink
- *   Separator: "/" between crumbs, color --color-merch-muted
- *   Parent crumbs: clickable, color --color-merch-muted, hover underline
- *   Current crumb (last): non-link, color --color-merch-ink
- *   Optional count "(N)": appended after last crumb label
- *   Optional REFINE button: right-aligned, red bg, 36px height, white text/icon
+ *   Horizontal padding: 40px desktop (px-10), 24px mobile (px-6)
+ *   Parent crumbs: 16px/400 black — var(--color-merch-ink-dark)
+ *   Separator "/": var(--color-merch-ink-dark)
+ *   Current crumb (last): var(--color-merch-ink-dark), font-weight 400
+ *   Count: rendered as <sup> at 12px, color var(--color-merch-ink-dark)
+ *   Mobile (< md): only last crumb visible, hidden rest; x-pad 24px
+ *   REFINE button: bg var(--color-merch-refine) #eb0029; 113×40; radius 2; pl-2 pr-4; label 16px/700/uppercase
  */
 
 // ---------------------------------------------------------------------------
@@ -36,7 +36,7 @@ export interface MerchBreadcrumbBarProps {
    */
   crumbs: MerchCrumb[];
   /**
-   * When provided, appended in parentheses after the last crumb label, e.g. "(42)".
+   * When provided, rendered as a 12px superscript after the last crumb label, e.g. " (691)".
    */
   count?: number;
   /**
@@ -79,8 +79,11 @@ function SlidersIcon() {
 
 /**
  * Full-width breadcrumb bar with optional product count and inline REFINE button.
- * Height: 40px mobile / 60px desktop. Horizontal inner padding: 40px.
+ * Height: 40px mobile / 60px desktop. Horizontal inner padding: 24px mobile / 40px desktop.
  * Transparent background, no bottom border (page bg is already white).
+ *
+ * Mobile: all non-last crumbs (and their separators) are hidden; only the current crumb
+ * is shown, at 24px from the left edge, matching merch.riotgames.com at 390.
  */
 export function MerchBreadcrumbBar({
   crumbs,
@@ -99,10 +102,10 @@ export function MerchBreadcrumbBar({
        * Tailwind h-10 = 2.5rem = 40px; md:h-[60px] = 60px at md+.
        */}
       <div className="flex h-10 w-full items-center md:h-[60px]">
-        {/* Inner container — max-w-7xl, 40px horizontal padding */}
+        {/* Inner container — max-w-7xl, 24px mobile / 40px desktop horizontal padding */}
         <nav
           aria-label={ariaLabel}
-          className="mx-auto flex w-full max-w-7xl items-center justify-between px-10"
+          className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 md:px-10"
         >
           {/* Left: crumb trail */}
           <ol
@@ -119,21 +122,41 @@ export function MerchBreadcrumbBar({
               return (
                 <li
                   key={idx}
-                  className="flex items-center gap-1"
-                  style={{ display: "flex", alignItems: "center", gap: 4 }}
+                  /*
+                   * Mobile: hide all non-last crumbs (and their "/" separators).
+                   * Real at 390: only "Shop All (691)" is visible at x=24; "Home /" is display:none.
+                   */
+                  className={
+                    isLast
+                      ? "flex items-center gap-1"
+                      : "hidden items-center gap-1 md:flex"
+                  }
+                  style={{ alignItems: "center", gap: 4 }}
                 >
                   {idx > 0 && (
                     <span
                       aria-hidden
-                      style={{ color: "var(--color-merch-muted)" }}
+                      style={{ color: "var(--color-merch-ink-dark)" }}
                     >
                       /
                     </span>
                   )}
                   {isLast ? (
-                    <span style={{ color: "var(--color-merch-ink)" }}>
+                    <span style={{ color: "var(--color-merch-ink-dark)", fontWeight: 400 }}>
                       {crumb.label}
-                      {count !== undefined ? ` (${count})` : ""}
+                      {count !== undefined && (
+                        <sup
+                          style={{
+                            fontSize: 12,
+                            color: "var(--color-merch-ink-dark)",
+                            fontWeight: 400,
+                            verticalAlign: "super",
+                            lineHeight: 1,
+                          }}
+                        >
+                          {` (${count})`}
+                        </sup>
+                      )}
                     </span>
                   ) : (
                     <button
@@ -144,9 +167,10 @@ export function MerchBreadcrumbBar({
                         border: "none",
                         cursor: "pointer",
                         padding: 0,
-                        color: "var(--color-merch-muted)",
+                        color: "var(--color-merch-ink-dark)",
                         fontSize: "inherit",
                         fontFamily: "inherit",
+                        fontWeight: 400,
                       }}
                       onClick={crumb.onClick}
                     >
@@ -158,26 +182,29 @@ export function MerchBreadcrumbBar({
             })}
           </ol>
 
-          {/* Right: optional REFINE button */}
+          {/* Right: optional REFINE button — 113×40, bg var(--color-merch-refine), radius 2, label 16px/700/uppercase */}
           {onRefineClick && (
             <button
               type="button"
-              className="flex items-center gap-1.5 px-4 text-[11px] font-bold uppercase tracking-[0.08em] transition-colors duration-150"
+              className="flex items-center gap-1.5 pl-2 pr-4 text-[16px] font-bold uppercase transition-colors duration-150"
               style={{
-                height: 36,
-                backgroundColor: "var(--color-merch-red)",
+                width: 113,
+                height: 40,
+                backgroundColor: "var(--color-merch-refine)",
                 color: "var(--color-merch-on-dark)",
                 border: "none",
+                borderRadius: 2,
                 cursor: "pointer",
                 flexShrink: 0,
+                letterSpacing: "normal",
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--color-merch-red-dark)";
+                  "var(--color-merch-refine-dark)";
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--color-merch-red)";
+                  "var(--color-merch-refine)";
               }}
               onClick={onRefineClick}
             >
