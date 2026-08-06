@@ -90,6 +90,8 @@ export const palette = {
   loginSurface: "#ececec",
   /** Floating label and disabled-button arrow color */
   loginPlaceholder: "#a7a7b7",
+  /** Submit button arrow glyph — pixel-sampled from riot-login-page.png core (#c4c4c4, issue #782) */
+  loginArrow: "#c4c4c4",
   /** Login body text color */
   loginInk: "#343434",
   /** Facebook brand button (normalized canonical value) */
