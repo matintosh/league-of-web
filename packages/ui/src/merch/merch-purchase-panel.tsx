@@ -3,17 +3,22 @@
 /**
  * MerchPurchasePanel — PDP right column: category trail, title, heart/share row
  * (with heart 40×40, share 40×40, and badge at row end), price, variant chips,
- * optional quantity stepper, Add to Cart CTA.
+ * optional quantity stepper, Add to Cart + Buy It Now CTAs.
  *
  * Measured from merch.riotgames.com (amumu-plush, 1280px desktop):
  *   Category trail: 14px / 600 / uppercase / 0.02em ls / #666666 color, NO "/" glyphs
- *   Title H1: clamp(38px, 3.75vw, 48px) / 700 / lh 1.1 / --color-merch-ink-dark / uppercase / -0.02em tracking
- *   Heart/share row: 40×40 icon buttons below H1; badge at row end
- *   Badge "New": green bg --color-merch-badge-new, BLACK text, 16px/400, mixed-case, 4px 8px pad, radius 2px
- *   Price: 28px / 400 / lh 35px / --color-merch-ink-dark; ~24px vertical padding; NO dividers above/below
+ *     Separator: '|' pipe glyph colored #d0d0d0 (--color-merch-trail-sep)
+ *     Trail terms: "COLLECTIBLES | LEAGUE OF LEGENDS" (2 terms only)
+ *   Title H1: clamp(38px, 3.75vw, 48px) / 700 / lh 1.1 / --color-merch-ink-dark / uppercase / -0.03em tracking
+ *   Heart/share row: 40×40 borderless icon buttons below H1; badge at row end
+ *     Icons: border-width 0 (bare float), color pure black (#000000 = --color-merch-ink-dark)
+ *     Share glyph: export box-with-up-arrow (not 3-node network glyph)
+ *   Badge "New": 165×40 fixed, text LEFT-aligned, lh 20px; stacks vertically when multiple
+ *   Price: 28px / 400 / lh 35px / --color-merch-ink-dark; 24px top/bottom padding
+ *   Notices: single RED line rgb(235,0,41) = --color-merch-red; login notice copy
  *   Variant chips: 8px 16px / 13px / flex-wrap / 8px gap
- *   Notices: 16px / --color-merch-ink-dark (BLACK)
- *   Add to Cart: 50px tall / 239px desktop / merch-red bg / riotSans 16/600 / 0.02em ls
+ *   Add to Cart: 50px tall / fills row minus Buy It Now / merch-red bg / riotSans 16/600 / 0.02em ls
+ *   Buy It Now: 50×50 / same disabled state as ATC
  *   No qty stepper on PDP (showQuantity=false default)
  *   No dividers between badge/price/notices sections
  *
@@ -61,7 +66,10 @@ function HeartIcon() {
   );
 }
 
-/* SVG icon for share */
+/**
+ * Share icon — export box-with-up-arrow (matches real merch.riotgames.com PDP).
+ * Distinct from the 3-node network/graph glyph that was previously used.
+ */
 function ShareIcon() {
   return (
     <svg
@@ -75,11 +83,12 @@ function ShareIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <circle cx="18" cy="5" r="3" />
-      <circle cx="6" cy="12" r="3" />
-      <circle cx="18" cy="19" r="3" />
-      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+      {/* Box outline — bottom + sides */}
+      <polyline points="8 17 3 17 3 21 21 21 21 17 16 17" />
+      {/* Up arrow shaft */}
+      <line x1="12" y1="3" x2="12" y2="15" />
+      {/* Up arrow head */}
+      <polyline points="8 7 12 3 16 7" />
     </svg>
   );
 }
@@ -99,14 +108,14 @@ export interface MerchPurchasePanelProps {
   breadcrumb?: string[];
   /**
    * Category trail rendered immediately above the h1 as a 14px uppercase row.
-   * Matches the real PDP: "Collectibles · Plush · League of Legends" before the title.
-   * E.g. ["Collectibles", "Plush", "League of Legends"].
+   * Matches the real PDP: "COLLECTIBLES | LEAGUE OF LEGENDS" (2 terms, pipe separator).
+   * E.g. ["COLLECTIBLES", "LEAGUE OF LEGENDS"].
    */
   categoryTrail?: string[];
   /**
-   * Notice lines rendered between the price and the CTA.
-   * Real PDP copy: "This product is not intended as a toy or children's product." etc.
-   * Rendered at 16px, --color-merch-ink-dark (BLACK).
+   * Purchase notices rendered between the price and the CTA.
+   * Real PDP shows a SINGLE red notice: "You need to be logged in to a Riot account…"
+   * Rendered at 16px, --color-merch-red for the login notice.
    */
   notices?: string[];
   /** Size/variant chips. Omit for products with no variant selector. */
@@ -127,7 +136,9 @@ export interface MerchPurchasePanelProps {
   onQuantityChange?: (qty: number) => void;
   /** Called when "Add to Cart" is clicked. */
   onAddToCart?: () => void;
-  /** If true, CTA is disabled and shows "Out of Stock". */
+  /** Called when "Buy It Now" is clicked. */
+  onBuyNow?: () => void;
+  /** If true, both CTAs are disabled and ATC shows "Out of Stock". */
   outOfStock?: boolean;
   /** If true, renders a "Size Guide" text link in the variant-label row. */
   showSizeGuideLink?: boolean;
@@ -158,6 +169,7 @@ export function MerchPurchasePanel({
   quantity = 1,
   onQuantityChange,
   onAddToCart,
+  onBuyNow,
   outOfStock = false,
   showSizeGuideLink = false,
   onSizeGuideClick,
@@ -198,14 +210,17 @@ export function MerchPurchasePanel({
                 textTransform: "uppercase",
                 letterSpacing: "0.02em",
                 color: "var(--color-merch-price-struck)",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
               }}
             >
               {idx > 0 && (
                 <span
                   aria-hidden="true"
-                  style={{ marginRight: "4px" }}
+                  style={{ color: "var(--color-merch-trail-sep)" }}
                 >
-                  ·
+                  |
                 </span>
               )}
               {seg}
@@ -222,7 +237,7 @@ export function MerchPurchasePanel({
           lineHeight: 1.1,
           color: "var(--color-merch-ink-dark)",
           textTransform: "uppercase",
-          letterSpacing: "-0.02em",
+          letterSpacing: "-0.03em",
           margin: "0 0 12px",
           fontFamily: "var(--font-merch-display, var(--font-merch))",
         }}
@@ -239,7 +254,7 @@ export function MerchPurchasePanel({
           marginBottom: 20,
         }}
       >
-        {/* Wishlist heart */}
+        {/* Wishlist heart — borderless, pure black icon */}
         <button
           type="button"
           aria-label="Add to wishlist"
@@ -247,28 +262,21 @@ export function MerchPurchasePanel({
           style={{
             width: 40,
             height: 40,
-            border: "1px solid var(--color-merch-border)",
+            border: "none",
             background: "none",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "var(--color-merch-ink)",
+            color: "var(--color-merch-ink-dark)",
             flexShrink: 0,
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor =
-              "var(--color-merch-ink)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor =
-              "var(--color-merch-border)";
+            padding: 0,
           }}
         >
           <HeartIcon />
         </button>
 
-        {/* Share */}
+        {/* Share — borderless, pure black icon, export box-with-up-arrow glyph */}
         <button
           type="button"
           aria-label="Share product"
@@ -276,42 +284,42 @@ export function MerchPurchasePanel({
           style={{
             width: 40,
             height: 40,
-            border: "1px solid var(--color-merch-border)",
+            border: "none",
             background: "none",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "var(--color-merch-ink)",
+            color: "var(--color-merch-ink-dark)",
             flexShrink: 0,
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor =
-              "var(--color-merch-ink)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor =
-              "var(--color-merch-border)";
+            padding: 0,
           }}
         >
           <ShareIcon />
         </button>
 
-        {/* Badges at row end */}
+        {/* Badges at row end — 165×40 each, stacked vertically when multiple */}
         {badges && badges.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {badges.map((badge) => (
               <span
                 key={badge}
                 style={{
+                  width: 165,
+                  height: 40,
                   fontSize: 16,
                   fontWeight: 400,
                   letterSpacing: "0",
-                  padding: "4px 8px",
+                  padding: "0 10px",
                   borderRadius: 2,
                   backgroundColor: badgeBg(badge),
                   color: badgeTextColor(badge),
-                  lineHeight: 1.2,
+                  lineHeight: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  flexShrink: 0,
+                  boxSizing: "border-box",
                 }}
               >
                 {badge}
@@ -327,8 +335,8 @@ export function MerchPurchasePanel({
           display: "flex",
           alignItems: "center",
           gap: 10,
-          paddingTop: 12,
-          paddingBottom: 12,
+          paddingTop: 24,
+          paddingBottom: 24,
         }}
       >
         {isSale ? (
@@ -475,7 +483,7 @@ export function MerchPurchasePanel({
               key={idx}
               style={{
                 fontSize: 16,
-                color: "var(--color-merch-ink-dark)",
+                color: "var(--color-merch-red)",
                 lineHeight: 1.5,
                 margin: idx > 0 ? "6px 0 0" : 0,
               }}
@@ -552,15 +560,27 @@ export function MerchPurchasePanel({
         </div>
       )}
 
-      {/* ── Add to Cart ───────────────────────────────────────────────────── */}
-      <div style={{ marginTop: 20 }}>
+      {/* ── CTA row: Add to Cart + Buy It Now ────────────────────────────── */}
+      {/*
+       * Desktop: ATC fills remaining width, BIN is 50×50 square at right.
+       * Mobile (@390): ATC fills width minus the 50px BIN — flex row, full width.
+       * Disabled state: both follow outOfStock (logged user decision, do not change).
+       */}
+      <div
+        style={{
+          marginTop: 20,
+          display: "flex",
+          gap: 8,
+          width: "100%",
+        }}
+      >
+        {/* Add to Cart — flex-1 so it fills row minus the 50px BIN */}
         <button
           type="button"
           disabled={outOfStock}
           onClick={() => !outOfStock && onAddToCart?.()}
           style={{
-            display: "block",
-            width: 239,
+            flex: "1 1 auto",
             height: 50,
             backgroundColor: outOfStock
               ? "var(--color-merch-muted)"
@@ -589,6 +609,51 @@ export function MerchPurchasePanel({
           }}
         >
           {outOfStock ? "Out of Stock" : "Add to Cart"}
+        </button>
+
+        {/* Buy It Now — 50×50 square secondary button */}
+        <button
+          type="button"
+          aria-label="Buy It Now"
+          disabled={outOfStock}
+          onClick={() => !outOfStock && onBuyNow?.()}
+          style={{
+            width: 50,
+            height: 50,
+            flexShrink: 0,
+            backgroundColor: outOfStock
+              ? "var(--color-merch-muted)"
+              : "var(--color-merch-ink-dark)",
+            color: "var(--color-merch-on-dark)",
+            fontSize: 11,
+            fontWeight: 600,
+            textTransform: "uppercase",
+            letterSpacing: "0.01em",
+            border: "none",
+            cursor: outOfStock ? "not-allowed" : "pointer",
+            fontFamily: "var(--font-merch-display, var(--font-merch))",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            lineHeight: 1.2,
+            padding: "4px 2px",
+            transition: "background-color 150ms ease",
+          }}
+          onMouseEnter={(e) => {
+            if (!outOfStock) {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                "var(--color-merch-ink)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!outOfStock) {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                "var(--color-merch-ink-dark)";
+            }
+          }}
+        >
+          Buy It Now
         </button>
       </div>
     </div>

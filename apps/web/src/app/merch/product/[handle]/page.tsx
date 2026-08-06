@@ -53,15 +53,15 @@ const APPAREL_SIZES = [
   { label: "XXL", available: true },
 ];
 
+/**
+ * Real PDP notice — single line, shown in red (--color-merch-red) per issue #823.
+ * Copy measured from merch.riotgames.com/en-us/product/amumu-plush.
+ */
 const DEFAULT_NOTICES = [
-  "This product is not intended as a toy or children's product.",
-  "This item typically ships within 2 weeks from purchase.",
+  "You need to be logged in to a Riot account to complete your purchase.",
 ];
 
-const PLUSH_NOTICES = [
-  "This product is not intended as a toy or children's product.",
-  "This item typically ships within 2 weeks from purchase.",
-];
+const PLUSH_NOTICES = DEFAULT_NOTICES;
 
 /**
  * PDP-specific extra data keyed by product slug.
@@ -112,7 +112,8 @@ const PDP_EXTRAS: Record<string, PdpExtra> = {
   },
   "amumu-plush": {
     breadcrumb: ["Home", "Collectibles", "Amumu Plush"],
-    categoryTrail: ["Collectibles", "Plush", "League of Legends"],
+    /* Real PDP trail: "COLLECTIBLES | LEAGUE OF LEGENDS" (2 terms) */
+    categoryTrail: ["Collectibles", "League of Legends"],
     notices: PLUSH_NOTICES,
     variants: [],
     description:
