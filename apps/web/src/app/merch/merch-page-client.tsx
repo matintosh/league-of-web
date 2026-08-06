@@ -183,7 +183,7 @@ export function MerchPageClient() {
 
   return (
     <div
-      className="flex min-h-screen flex-col overflow-x-hidden"
+      className="flex min-h-screen flex-col"
       style={{
         backgroundColor: "var(--color-merch-bg)",
         fontFamily: "var(--font-merch)",
