@@ -10,7 +10,7 @@
  */
 import React from "react";
 import { notFound } from "next/navigation";
-import { MERCH_PRODUCTS, AMUMU_PLUSH_DESCRIPTION, merchAssetUrl } from "@low/fixtures";
+import { MERCH_PRODUCTS, AMUMU_PLUSH_DESCRIPTION, merchAssetUrl, championSplashUrl } from "@low/fixtures";
 import type { MerchProduct } from "@low/fixtures";
 import { ProductPageClient } from "./product-page-client";
 
@@ -286,6 +286,14 @@ export default async function MerchProductPage({ params }: Props) {
   const carouselProducts = carouselFor(handle);
   // Use the product's primary image as the carousel banner.
   const carouselBannerImageUrl = extra.images[0];
+  /**
+   * Collection band franchise splash — wide 1215×717 landscape splash art.
+   * Real merch.riotgames.com PDP band shows a branded League of Legends
+   * franchise banner (dark blue / LoL lockup), not the product square.
+   * We use the DDragon champion splash for Jinx (skin 0) as a representative
+   * wide LoL franchise image available from the public CDN without API key.
+   */
+  const collectionBannerImageUrl = championSplashUrl("Jinx", 0);
 
   return (
     <ProductPageClient
@@ -303,6 +311,7 @@ export default async function MerchProductPage({ params }: Props) {
       fgImageUrl={extra.fgImageUrl}
       carouselProducts={carouselProducts}
       carouselBannerImageUrl={carouselBannerImageUrl}
+      collectionBannerImageUrl={collectionBannerImageUrl}
     />
   );
 }

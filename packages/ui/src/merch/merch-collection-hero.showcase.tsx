@@ -14,15 +14,16 @@ export const merchCollectionHeroShowcase: ShowcaseEntry = {
   name: "Merch Collection Hero",
   area: "merch",
   description:
-    "Compact banner (~160px min-height) for collection/category pages on the Riot merch store. Renders breadcrumb trail, large heading (text-4xl, uppercase), optional item count, and optional description. Supports solid dark/light background or full-bleed image with dark scrim. Measured from merch.riotgames.com/en-us/collection/league-classic/ and /category/league-of-legends/.",
+    "Compact banner (~160px min-height) for collection/category pages on the Riot merch store. Renders breadcrumb trail, large heading (text-4xl, uppercase), optional item count, optional description, and optional gold SHOP NOW CTA. Supports solid dark/light background or full-bleed image with dark scrim. Measured from merch.riotgames.com/en-us/collection/league-classic/, /category/league-of-legends/, and the PDP collection band.",
   variants: [
     {
       name: "Dark theme — solid background (default)",
       notes:
-        "Dark solid background (--color-merch-ink), white text, breadcrumb with muted/white crumb links. Matches the real store's collection banner with no image.",
+        "Dark solid background (--color-merch-ink), white text, breadcrumb with muted/white crumb links. Matches the real store's collection banner with no image. headingAs='h1' for stand-alone category pages.",
       backgrounds: ["light"],
       render: () => (
         <MerchCollectionHero
+          headingAs="h1"
           heading="League Classic"
           itemCount={7}
           breadcrumbs={[HOME_CRUMB, COLL_CRUMB, { label: "League Classic" }]}
@@ -37,6 +38,7 @@ export const merchCollectionHeroShowcase: ShowcaseEntry = {
       backgrounds: ["light"],
       render: () => (
         <MerchCollectionHero
+          headingAs="h1"
           heading="Arcane Collection"
           itemCount={12}
           backgroundImageUrl={IMG_JINX}
@@ -53,6 +55,7 @@ export const merchCollectionHeroShowcase: ShowcaseEntry = {
       backgrounds: ["light"],
       render: () => (
         <MerchCollectionHero
+          headingAs="h1"
           heading="League of Legends"
           theme="light"
           breadcrumbs={[HOME_CRUMB, { label: "League of Legends" }]}
@@ -67,6 +70,7 @@ export const merchCollectionHeroShowcase: ShowcaseEntry = {
       backgrounds: ["light"],
       render: () => (
         <MerchCollectionHero
+          headingAs="h1"
           heading="PROJECT Collection"
           itemCount={5}
           theme="light"
@@ -77,12 +81,29 @@ export const merchCollectionHeroShowcase: ShowcaseEntry = {
       ),
     },
     {
+      name: "PDP collection band — gold SHOP NOW, franchise splash, h2",
+      notes:
+        "The real PDP collection band: dark theme, wide franchise splash background, gold SHOP NOW button (--color-merch-gold #f9c824). Heading renders as h2 (decorative) because the PDP panel above owns the h1.",
+      backgrounds: ["light"],
+      render: () => (
+        <MerchCollectionHero
+          heading="League of Legends"
+          description="Explore the full collection of officially licensed League of Legends merchandise."
+          backgroundImageUrl={IMG_JINX}
+          backgroundImageAlt="League of Legends franchise splash"
+          theme="dark"
+          ctaLabel="SHOP NOW"
+        />
+      ),
+    },
+    {
       name: "Shop All — no breadcrumbs, no item count",
       notes:
         "Minimal variant: heading only. Matches /shop-all page: 'Home > Shop All'.",
       backgrounds: ["light"],
       render: () => (
         <MerchCollectionHero
+          headingAs="h1"
           heading="Shop All"
           breadcrumbs={[HOME_CRUMB, { label: "Shop All" }]}
         />
@@ -95,6 +116,7 @@ export const merchCollectionHeroShowcase: ShowcaseEntry = {
       backgrounds: ["light"],
       render: () => (
         <MerchCollectionHero
+          headingAs="h1"
           heading="New Arrivals"
           itemCount={24}
           breadcrumbs={[HOME_CRUMB, { label: "New Arrivals" }]}

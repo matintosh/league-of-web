@@ -342,6 +342,8 @@ export function ProductPageClient({
          * ── Collection SHOP NOW band ───────────────────────────────────────
          * Real site: 1280×320 band between the product section and related carousel.
          * Uses MerchCollectionHero as the band component.
+         * heading is decorative (h2) — the PDP panel above owns the h1.
+         * CTA: gold SHOP NOW button (--color-merch-gold), measured from live site.
          */}
         <div style={{ marginTop: 16 }}>
           <MerchCollectionHero
@@ -349,6 +351,8 @@ export function ProductPageClient({
             description="Explore the full collection of officially licensed League of Legends merchandise."
             backgroundImageUrl={collectionBannerImageUrl ?? carouselBannerImageUrl}
             theme="dark"
+            ctaLabel="SHOP NOW"
+            onCtaClick={() => router.push("/merch/shop-all")}
           />
         </div>
       </main>
