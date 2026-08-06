@@ -8,9 +8,9 @@
  *
  * Measured from merch.riotgames.com info pages (/en-us/faqs/, /en-us/shipping/):
  *   - Page background: --color-merch-bg (white)
- *   - Content container: max-w-screen-md centered, left-aligned prose
+ *   - Content container: max-w-[1000px] centered, left-aligned prose (real content ~936px wide at 1280)
  *   - Section headings (h2): 28px mobile / 38px desktop, font-weight 700, uppercase
- *   - Sub-headings (h3): ~15px, font-weight 600, --color-merch-ink
+ *   - Sub-headings (h3): ~19px (real: 18.72px), font-weight 700, --color-merch-ink
  *   - Body paragraph: 16px, line-height ~1.6, --color-merch-body
  *   - Lists: default browser list style, 16px, --color-merch-body, left-indented ~1.5rem
  *   - Section divider: 1px --color-merch-border between major h2 sections
@@ -48,10 +48,10 @@ function Block({ block, index }: { block: MerchInfoBlock; index: number }) {
             style={{ borderColor: "var(--color-merch-border)" }}
           />
         )}
-        {/* 28px on mobile → 38px on md+ (measured from real merch.riotgames.com) */}
+        {/* 28px on mobile → 38px on md+; ls -0.02em (real: -0.76px@38px / -0.28px@390; was +0.05em — wrong direction) */}
         <h2
-          className="mb-3 mt-6 text-[28px] font-bold uppercase tracking-[0.05em] first:mt-0 md:text-[38px]"
-          style={{ color: "var(--color-merch-ink)" }}
+          className="mb-3 mt-6 text-[28px] font-bold uppercase first:mt-0 md:text-[38px]"
+          style={{ color: "var(--color-merch-ink)", letterSpacing: "-0.02em" }}
         >
           {content as string}
         </h2>
@@ -60,9 +60,10 @@ function Block({ block, index }: { block: MerchInfoBlock; index: number }) {
   }
 
   if (type === "heading3") {
+    /* real h3: 18.72px / 700 (measured live 2026-08-06) — ours was 15px/600 */
     return (
       <h3
-        className="mb-2 mt-4 text-[15px] font-semibold"
+        className="mb-2 mt-4 text-[19px] font-bold"
         style={{ color: "var(--color-merch-ink)" }}
       >
         {content as string}
@@ -134,11 +135,13 @@ export function MerchInfoPage({ title, blocks }: MerchInfoPageProps) {
       className="w-full flex-1"
       style={{ backgroundColor: "var(--color-merch-bg)", fontFamily: "var(--font-merch)" }}
     >
-      <div className="mx-auto max-w-screen-md px-6 pb-16 pt-10 md:pt-12">
+      {/* max-w-[1000px]: real content ~936px wide at x=172 (left edge measured live); was max-w-screen-md=720px */}
+      <div className="mx-auto max-w-[1000px] px-6 pb-16 pt-10 md:pt-12">
         {/* Section title — h2 because the page h1 is "SUPPORT" in the shared hero */}
+        {/* ls -0.02em: real h2 ls -0.76px@1280 / -0.28px@390; was normal (no tracking) */}
         <h2
           className="mb-8 text-[28px] font-bold uppercase md:text-[38px]"
-          style={{ color: "var(--color-merch-ink)" }}
+          style={{ color: "var(--color-merch-ink)", letterSpacing: "-0.02em" }}
         >
           {title}
         </h2>

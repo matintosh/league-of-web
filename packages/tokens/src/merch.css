@@ -86,6 +86,8 @@
   --color-merch-emblem-bg: #1a1a1a;
   /* Announcement pill border — same red as the band; gives a subtle raised outline */
   --color-merch-announcement-pill-border: #eb0029; /* rgb(235,0,41) sampled from real */
+  /* Support page tab-strip band background — rgb(235,0,41) measured from real .support-page-hero_hero-nav-container */
+  --color-merch-support-band: #eb0029;
 
   /* ── Franchise category chip colors ────────────────────────────────── */
   /* Brand palette for the homepage category chip strip (MerchCategoryStrip)

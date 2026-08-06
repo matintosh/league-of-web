@@ -7,9 +7,9 @@
  * Types are imported from @low/fixtures; mascot image URL is supplied by the page.
  *
  * Measured from merch.riotgames.com/en-us/faqs/ (desktop 1280px):
- *   - Background: white (--color-merch-bg) / light grey (--color-merch-surface-alt) band
+ *   - Background: white (--color-merch-bg) — real: first non-transparent ancestor of SUPPORT h1 is body at rgb(255,255,255)
  *   - h1 "SUPPORT": 48px desktop / 38px mobile, font-weight 700, uppercase
- *     letter-spacing ≈ -1.44px (measured), color --color-merch-ink, left-aligned
+ *     letter-spacing -0.03em (scales with font size; -1.44px at 48px measured, -0.76px at 390px), color --color-merch-ink, left-aligned
  *   - Mascot illustration: right-aligned image; real asset is a Riot CDN PNG
  *     (unavailable — accept any URL or fall back to a decorative placeholder block)
  *   - Band height: ~140px desktop; auto on mobile (padding 32px 24px)
@@ -49,19 +49,21 @@ export function MerchSupportHero({
   mascotAlt = "Support mascot",
 }: MerchSupportHeroProps) {
   return (
+    /* White hero band — real: first non-transparent ancestor of SUPPORT h1 is body at rgb(255,255,255) */
     <div
       className="w-full"
-      style={{ backgroundColor: "var(--color-merch-surface-alt)" }}
+      style={{ backgroundColor: "var(--color-merch-bg)" }}
     >
       <div
         className="mx-auto flex max-w-screen-xl items-center justify-between px-6 py-8 md:px-10 md:py-10 lg:px-16"
       >
         {/* Left — SUPPORT h1 */}
+        {/* letter-spacing: -0.03em scales with font size (-1.44px at 48px desktop, -0.76px at mobile ~38px) */}
         <h1
           className="text-[38px] font-bold uppercase leading-none md:text-[48px]"
           style={{
             color: "var(--color-merch-ink)",
-            letterSpacing: "-1.44px",
+            letterSpacing: "-0.03em",
           }}
         >
           SUPPORT
