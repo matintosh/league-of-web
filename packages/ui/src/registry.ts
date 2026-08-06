@@ -149,6 +149,7 @@ import { merchProductGridShowcase } from "./merch/merch-product-grid.showcase";
 import { merchProductInfoTabsShowcase } from "./merch/merch-product-info-tabs.showcase";
 import { merchPurchasePanelShowcase } from "./merch/merch-purchase-panel.showcase";
 import { merchSearchBarShowcase } from "./merch/merch-search-bar.showcase";
+import { merchSearchHeroShowcase } from "./merch/merch-search-hero.showcase";
 import { merchShopCarouselShowcase } from "./merch/merch-shop-carousel.showcase";
 import { merchSignInPanelShowcase } from "./merch/merch-sign-in-panel.showcase";
 import { merchSizeGuideModalShowcase } from "./merch/merch-size-guide-modal.showcase";
@@ -299,7 +300,7 @@ export const registry: ShowcaseEntry[] = [
   launcherTabBarShowcase,
   launcherWindowBarShowcase,
   patchNoteCardShowcase,
-  // merch — alphabetical: MerchBreadcrumbBar < MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollabCarousel < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchShopCarousel < MerchSignInPanel < MerchSizeGuideModal < MerchStore < MerchSupportForm < MerchSupportHero < MerchSupportTabStrip
+  // merch — alphabetical: MerchBreadcrumbBar < MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollabCarousel < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchSearchHero < MerchShopCarousel < MerchSignInPanel < MerchSizeGuideModal < MerchStore < MerchSupportForm < MerchSupportHero < MerchSupportTabStrip
   merchBreadcrumbBarShowcase,
   merchCartDrawerShowcase,
   merchCartPageShowcase,
@@ -321,6 +322,7 @@ export const registry: ShowcaseEntry[] = [
   merchProductInfoTabsShowcase,
   merchPurchasePanelShowcase,
   merchSearchBarShowcase,
+  merchSearchHeroShowcase,
   merchShopCarouselShowcase,
   merchSignInPanelShowcase,
   merchSizeGuideModalShowcase,

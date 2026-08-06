@@ -311,7 +311,7 @@ export { YourShopIcon } from "./store/your-shop-icon";
 export type { YourShopIconProps, YourShopIconVideoSources } from "./store/your-shop-icon";
 export { YourShopScreen } from "./store/your-shop-screen";
 export type { YourShopScreenProps, YourShopCard } from "./store/your-shop-screen";
-// merch — alphabetical: MerchBreadcrumbBar < MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchShopCarousel < MerchSignInPanel < MerchStore < MerchSupportForm < MerchSupportHero < MerchSupportTabStrip
+// merch — alphabetical: MerchBreadcrumbBar < MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchSearchHero < MerchShopCarousel < MerchSignInPanel < MerchStore < MerchSupportForm < MerchSupportHero < MerchSupportTabStrip
 export { MerchBreadcrumbBar } from "./merch/merch-breadcrumb-bar";
 export type { MerchBreadcrumbBarProps, MerchCrumb } from "./merch/merch-breadcrumb-bar";
 export { MerchCartDrawer } from "./merch/merch-cart-drawer";
@@ -373,6 +373,8 @@ export { MerchPurchasePanel } from "./merch/merch-purchase-panel";
 export type { MerchPurchasePanelProps, MerchVariant } from "./merch/merch-purchase-panel";
 export { MerchSearchBar } from "./merch/merch-search-bar";
 export type { MerchSearchBarProps } from "./merch/merch-search-bar";
+export { MerchSearchHero } from "./merch/merch-search-hero";
+export type { MerchSearchHeroProps } from "./merch/merch-search-hero";
 export { MerchShopCarousel } from "./merch/merch-shop-carousel";
 export type { MerchShopCarouselProps } from "./merch/merch-shop-carousel";
 export { MerchSignInPanel } from "./merch/merch-sign-in-panel";
