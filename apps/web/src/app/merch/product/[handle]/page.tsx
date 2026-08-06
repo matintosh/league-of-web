@@ -8,8 +8,9 @@
  *
  * For interactive demos (variant switching, qty stepper) see the /showcase entries.
  */
+import React from "react";
 import { notFound } from "next/navigation";
-import { MERCH_PRODUCTS, merchAssetUrl } from "@low/fixtures";
+import { MERCH_PRODUCTS, AMUMU_PLUSH_DESCRIPTION, merchAssetUrl } from "@low/fixtures";
 import type { MerchProduct } from "@low/fixtures";
 import { ProductPageClient } from "./product-page-client";
 
@@ -28,8 +29,11 @@ interface PdpExtra {
   breadcrumb: string[];
   /** Size/variant chips. Empty array = no selector. */
   variants: { label: string; available: boolean }[];
-  /** Full-text description. */
-  description: string;
+  /**
+   * Description content — ReactNode for rich products (multi-paragraph, measurements,
+   * disclaimer), plain string for simple products. Rendered in the accordion panel.
+   */
+  description: React.ReactNode;
   /**
    * URL for the upper background layer of the diagonal PDP hero surface.
    * Measured: light/white textured webp from Sanity consumer_products dataset.
@@ -116,8 +120,45 @@ const PDP_EXTRAS: Record<string, PdpExtra> = {
     categoryTrail: ["Collectibles", "League of Legends"],
     notices: PLUSH_NOTICES,
     variants: [],
-    description:
-      "The Sad Mummy is here — soft, huggable Amumu plush. Perfect for any League fan. Officially licensed.",
+    /**
+     * Rich description rendered from AMUMU_PLUSH_DESCRIPTION fixture (merch.ts).
+     * Multi-paragraph body + Approximate Measurements block + PURCHASING DISCLAIMER(S).
+     * Matches the real PDP panel at merch.riotgames.com/en-us/product/amumu-plush.
+     */
+    description: (
+      <div>
+        {AMUMU_PLUSH_DESCRIPTION.paragraphs.map((p, i) => (
+          <p
+            key={i}
+            style={{ margin: i < AMUMU_PLUSH_DESCRIPTION.paragraphs.length - 1 ? "0 0 12px" : "0 0 16px" }}
+          >
+            {p}
+          </p>
+        ))}
+        {AMUMU_PLUSH_DESCRIPTION.measurements && (
+          <div style={{ marginBottom: 16 }}>
+            <p style={{ margin: "0 0 6px", fontWeight: 400 }}>
+              {AMUMU_PLUSH_DESCRIPTION.measurements.heading}
+            </p>
+            <ul style={{ margin: 0, paddingLeft: 20 }}>
+              {AMUMU_PLUSH_DESCRIPTION.measurements.items.map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {AMUMU_PLUSH_DESCRIPTION.disclaimer && (
+          <div>
+            <p style={{ margin: "0 0 4px", fontWeight: 700 }}>
+              {AMUMU_PLUSH_DESCRIPTION.disclaimer.heading}
+            </p>
+            <p style={{ margin: 0 }}>
+              {AMUMU_PLUSH_DESCRIPTION.disclaimer.body}
+            </p>
+          </div>
+        )}
+      </div>
+    ),
     /**
      * Real merch.riotgames.com/en-us/product/amumu-plush has 5 gallery images:
      * hero (bac8ecd0...) + 4 secondary (d8a05fd5..., 736bd931..., 31e7c2c7..., 7297076e...).

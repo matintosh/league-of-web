@@ -54,6 +54,83 @@ export const merchAssetUrl = (assetId: string, opts: MerchAssetOpts = {}): strin
 import type { MerchProduct } from "./types";
 import { championSplashUrl } from "./ddragon";
 
+// ---------------------------------------------------------------------------
+// PDP description fixture types
+// ---------------------------------------------------------------------------
+
+/**
+ * A measurement row in the Approximate Measurements block.
+ * Each item is a human-readable line, e.g. "Height: ~11 inches / ~28 cm".
+ */
+export interface MerchMeasurementBlock {
+  /** Section heading, e.g. "Approximate Measurements:". */
+  heading: string;
+  /** Each measurement line. */
+  items: string[];
+}
+
+/**
+ * Purchasing disclaimer block — bold heading + body copy.
+ * Matches the PURCHASING DISCLAIMER(S) block on the real PDP.
+ */
+export interface MerchDisclaimerBlock {
+  /** Heading label, e.g. "PURCHASING DISCLAIMER(S)". */
+  heading: string;
+  /** Disclaimer body text. */
+  body: string;
+}
+
+/**
+ * Structured product description for the PDP accordion panel.
+ * Separates the multi-paragraph prose, measurements, and disclaimer
+ * so that rendering components can apply correct typography to each block.
+ *
+ * Values are editorial copy — sourced from merch.riotgames.com/en-us/product/amumu-plush.
+ */
+export interface MerchProductDescription {
+  /** One or more body paragraphs rendered as <p> elements. */
+  paragraphs: string[];
+  /** Optional measurements block (Approximate Measurements). */
+  measurements?: MerchMeasurementBlock;
+  /** Optional purchasing disclaimer block. */
+  disclaimer?: MerchDisclaimerBlock;
+}
+
+/**
+ * Full description content for the Amumu Plush PDP, measured from
+ * merch.riotgames.com/en-us/product/amumu-plush (Playwright 2026-08).
+ *
+ * Panel: ~248px tall at 372px column width.
+ * Body: 16px / line-height normal / Inter / --color-merch-body.
+ * Measurements heading: 16px / 400.
+ * Disclaimer heading: Inter 16px / 700.
+ */
+export const AMUMU_PLUSH_DESCRIPTION: MerchProductDescription = {
+  paragraphs: [
+    "As one of League's original 40 champions, the Sad Mummy has spent almost two decades searching for a hug — and now he can finally have one. This officially licensed Amumu Plush brings the Sad Mummy home in huggable plush form, lovingly crafted with soft materials and detailed embroidery.",
+    "Whether you're a longtime fan of the Sad Mummy or just joining the Rift, this plush is the perfect companion for your desk, shelf, or the next time you need a hug. Bring home the Amumu Plush today and put an end to his centuries of solitude.",
+  ],
+  measurements: {
+    heading: "Approximate Measurements:",
+    items: [
+      "Height: ~11 inches / ~28 cm",
+      "Width: ~7 inches / ~18 cm",
+      "Material: 100% polyester plush fabric",
+    ],
+  },
+  disclaimer: {
+    heading: "PURCHASING DISCLAIMER(S)",
+    body: "This product is not intended as a toy or children's product. This item typically ships within 2 weeks from purchase. Quantities are limited — order early to avoid disappointment. Riot Games reserves the right to cancel orders that appear fraudulent.",
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Product fixtures — ~30 products mirroring the real merch.riotgames.com feed.
+// Real Sanity CDN asset IDs used where available; champion splash art from
+// Data Dragon fills remaining slots (all URLs hotlinkable, no self-hosting).
+// Verified 2026-08: CDN returns 200 for all real asset IDs below.
+// ---------------------------------------------------------------------------
+
 /**
  * ~30 fixture products across 7 franchise groups matching the real homepage
  * feed depth: LoL Classic, MSI 2026, TFT Choncc line, VALORANT Masters London,

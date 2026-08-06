@@ -2,7 +2,7 @@ import type { ShowcaseEntry } from "../showcase";
 import { MerchProductInfoTabs } from "./merch-product-info-tabs";
 import { MerchProductInfoTabsDemo } from "./merch-product-info-tabs.demo";
 
-/** Single-tab content — non-apparel collector box. */
+/** Single-row content — non-apparel collector box. */
 const SINGLE_TAB_CONTENT = (
   <div>
     <p style={{ margin: "0 0 12px" }}>
@@ -22,20 +22,81 @@ const SINGLE_TAB_CONTENT = (
   </div>
 );
 
+/** Amumu Plush description — mirrors AMUMU_PLUSH_DESCRIPTION fixture, rendered here as JSX. */
+const AMUMU_PLUSH_CONTENT = (
+  <div>
+    <p style={{ margin: "0 0 12px" }}>
+      As one of League's original 40 champions, the Sad Mummy has spent almost
+      two decades searching for a hug — and now he can finally have one. This
+      officially licensed Amumu Plush brings the Sad Mummy home in huggable
+      plush form, lovingly crafted with soft materials and detailed embroidery.
+    </p>
+    <p style={{ margin: "0 0 16px" }}>
+      Whether you're a longtime fan of the Sad Mummy or just joining the Rift,
+      this plush is the perfect companion for your desk, shelf, or the next
+      time you need a hug. Bring home the Amumu Plush today and put an end to
+      his centuries of solitude.
+    </p>
+    <div style={{ marginBottom: 16 }}>
+      <p style={{ margin: "0 0 6px", fontWeight: 400 }}>
+        Approximate Measurements:
+      </p>
+      <ul style={{ margin: 0, paddingLeft: 20 }}>
+        <li>Height: ~11 inches / ~28 cm</li>
+        <li>Width: ~7 inches / ~18 cm</li>
+        <li>Material: 100% polyester plush fabric</li>
+      </ul>
+    </div>
+    <div>
+      <p style={{ margin: "0 0 4px", fontWeight: 700 }}>
+        PURCHASING DISCLAIMER(S)
+      </p>
+      <p style={{ margin: 0 }}>
+        This product is not intended as a toy or children's product. This item
+        typically ships within 2 weeks from purchase. Quantities are limited —
+        order early to avoid disappointment. Riot Games reserves the right to
+        cancel orders that appear fraudulent.
+      </p>
+    </div>
+  </div>
+);
+
 export const merchProductInfoTabsShowcase: ShowcaseEntry = {
   slug: "merch-product-info-tabs",
   name: "Merch Product Info Tabs",
   area: "merch",
   description:
-    "Tab strip ([role=tablist]) + panel ([role=tabpanel]) below the PDP purchase panel. " +
-    "39px strip, 16px/600 tab labels, 2px solid ink active underline, 16px body panel. " +
-    "Measured from merch.riotgames.com PDP. Supports 1–N tabs (Description / Shipping / Returns).",
+    "Accordion-style info section below the PDP purchase panel. " +
+    "Each row: 39px header (16px/600), chevron toggles panel open/closed, " +
+    "COLLAPSED by default. Panel: 16px / line-height normal / --color-merch-body. " +
+    "Measured from merch.riotgames.com PDP.",
   variants: [
     {
-      name: "Single tab — Description only",
+      name: "Single row — Description (collapsed, real Amumu copy)",
       notes:
-        "Non-apparel PDP: only one tab rendered. Active tab is underlined; " +
-        "panel renders rich text (paragraphs + bullet list).",
+        "Starts COLLAPSED per the real PDP. Click 'Description' to expand. " +
+        "Full multi-paragraph body + Approximate Measurements + PURCHASING DISCLAIMER(S). " +
+        "Body 16px / line-height normal / --color-merch-body.",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 560, padding: 24, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductInfoTabs
+            tabs={[
+              {
+                id: "description",
+                label: "Description",
+                content: AMUMU_PLUSH_CONTENT,
+              },
+            ]}
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Single row — pre-expanded (selectedTab)",
+      notes:
+        "Pass selectedTab='description' to seed the open state on mount. " +
+        "Simulates arriving on the page with the panel already open.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 560, padding: 24, fontFamily: "system-ui, sans-serif" }}>
@@ -53,49 +114,13 @@ export const merchProductInfoTabsShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "Multi-tab — Description / Shipping / Returns (interactive)",
+      name: "Multi-row — Description / Shipping / Returns (interactive)",
       notes:
-        "Three tabs with interactive switching via MerchProductInfoTabsDemo (client " +
-        "component). Clicking a tab header swaps the panel content.",
+        "Three accordion rows. All start collapsed. " +
+        "Click any header to expand; click again to collapse. " +
+        "onTabChange callback logs the last toggle state below.",
       backgrounds: ["light"],
       render: () => <MerchProductInfoTabsDemo />,
-    },
-    {
-      name: "Inactive tab hover state",
-      notes:
-        "\"Shipping\" is preselected so Description and Returns are inactive. " +
-        "Hover them to see color transition to --color-merch-ink.",
-      backgrounds: ["light"],
-      render: () => (
-        <div style={{ maxWidth: 560, padding: 24, fontFamily: "system-ui, sans-serif" }}>
-          <MerchProductInfoTabs
-            tabs={[
-              {
-                id: "description",
-                label: "Description",
-                content: <p style={{ margin: 0 }}>Description content.</p>,
-              },
-              {
-                id: "shipping",
-                label: "Shipping",
-                content: (
-                  <p style={{ margin: 0 }}>
-                    Standard shipping: 5–7 business days.
-                  </p>
-                ),
-              },
-              {
-                id: "returns",
-                label: "Returns",
-                content: (
-                  <p style={{ margin: 0 }}>Returns accepted within 30 days.</p>
-                ),
-              },
-            ]}
-            selectedTab="shipping"
-          />
-        </div>
-      ),
     },
   ],
 };
