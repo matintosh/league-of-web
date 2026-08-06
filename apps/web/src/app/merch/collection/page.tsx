@@ -83,18 +83,22 @@ export default function CollectionIndexPage() {
 
       <main className="flex-1">
         {/* ------------------------------------------------------------------ */}
-        {/* Page heading — #638: "All Collections", 48px/600/uppercase/ink     */}
-        {/* Real site: text-4xl equivalent ~48px, weight 600, uppercase, black */}
+        {/* Page heading — #762: "All Collections", 48px/600/uppercase        */}
+        {/* Real site: pure black (ink-dark), ~52px line-height on 48px text, */}
+        {/* content left edge x=40 → px-10 at desktop (was px-6 / 24px).     */}
         {/* ------------------------------------------------------------------ */}
-        <div className="mx-auto max-w-7xl px-6 py-10">
+        <div className="mx-auto max-w-7xl px-6 py-10 md:px-10">
           <h1
             style={{
               fontSize: 48,
               fontWeight: 600,
               textTransform: "uppercase",
-              color: "var(--color-merch-ink)",
+              /* ink-dark = pure black, matching real site (was --color-merch-ink = #1a1a1a) */
+              color: "var(--color-merch-ink-dark)",
               margin: 0,
               letterSpacing: 0,
+              /* ~1.08 line-height matches the real site's ~52px / 48px ratio */
+              lineHeight: 1.08,
             }}
           >
             All Collections

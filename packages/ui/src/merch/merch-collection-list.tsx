@@ -7,8 +7,9 @@
  * Measured from merch.riotgames.com/en-us/collection/ at 1280px desktop:
  *   - Layout: vertically stacked strips, one per collection
  *   - Each strip: banner image ~1200×300 (4:1 aspect) with a rotated vertical
- *     collection-name tab at left:~91px (~60×185px, 16px/bold/uppercase, dark bg)
- *     + a horizontal CSS scroll-snap row of ~253px-wide product cards
+ *     collection-name tab at left:~91px (~60×185px, 16px/bold/uppercase, WHITE bg + BLACK text)
+ *     + a horizontal scroll row of 355×375 landscape product cards overlapping the banner bottom
+ *   - Strip card: 355px wide, 225px landscape image area, franchise label line above title
  *   - Strip separator: border-bottom in --color-merch-border
  *   - Container: max-w-7xl mx-auto
  *
@@ -16,6 +17,11 @@
  * without the exact asset id). Pages supply `bannerImageUrl` per collection using
  * available assets (championSplashUrl or merchandised heroes) as placeholders.
  * This is a known asset limitation — see PR notes.
+ *
+ * Delta #762:
+ *   1. Name-tab color INVERTED: white bg (--color-merch-bg) + black text (--color-merch-ink-dark).
+ *   2. Strip cards: 355×375 landscape — 225px image area + franchise label + info strip.
+ *   3. Card row OVERLAPS banner by ~80px (negative marginTop, not positive).
  */
 
 import type { MerchProduct } from "@low/fixtures";
@@ -60,13 +66,62 @@ export interface MerchCollectionListProps {
 }
 
 // ---------------------------------------------------------------------------
+// Sub-component — StripProductCard
+// ---------------------------------------------------------------------------
+
+/**
+ * StripProductCard — 355×375 landscape card cell used in collection strips.
+ *
+ * Wraps MerchProductCard (client component) in a fixed-width cell so the
+ * card scales to 355px. Overrides MerchProductCard's default 1:1 image
+ * ratio with a 225px-tall landscape image area via a wrapping shell.
+ *
+ * Recipe (measured from merch.riotgames.com/en-us/collection/ at 1280px):
+ *   - Cell: 355px wide, 1px border frame, flex column
+ *   - Image area: 353×225 (contain, white bg)
+ *   - Info strip: franchise label above title + price (supplied via franchiseLabel prop)
+ *
+ * MerchProductCard is "use client"; rendering it from the server-safe parent is
+ * fine — Next.js serialises only its props (all plain values) and handles hydration.
+ */
+function StripProductCard({
+  product,
+  onClick,
+}: {
+  product: MerchProduct;
+  onClick?: (slug: string) => void;
+}) {
+  return (
+    /* Fixed-width 355px cell wrapper */
+    <div style={{ flex: "0 0 355px", width: 355 }}>
+      <MerchProductCard
+        slug={product.slug}
+        title={product.title}
+        imageUrl={product.imageUrl}
+        price={product.price}
+        originalPrice={product.originalPrice}
+        badge={product.badge}
+        franchiseLabel={product.franchiseLabel}
+        /* landscape: contain fits packshot / card artwork in 353×225 area */
+        imageFit="contain"
+        onClick={onClick}
+      />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Sub-component — CollectionStrip
 // ---------------------------------------------------------------------------
 
 /**
  * CollectionStrip — one banner + rotated name tab + horizontal product card row.
- * The rotated name tab sits at left ~91px, overlapping the banner bottom edge,
- * as seen on the real site.
+ *
+ * Key geometry (measured from merch.riotgames.com/en-us/collection/ at 1280px):
+ *   - Banner: 1200×300 at y=282 (bottom y=582)
+ *   - Card row starts y=502 → cards overlap UP into the banner's lower ~80px
+ *   - Name-tab: 60×185px at left=91, WHITE bg (#fff) + BLACK text, bottom extends
+ *     past banner bottom edge (bottom: -24px to straddle banner/card row boundary)
  */
 function CollectionStrip({
   entry,
@@ -90,6 +145,7 @@ function CollectionStrip({
     >
       {/* ------------------------------------------------------------------ */}
       {/* Banner area — 4:1 aspect, full-width, relative for name-tab overlay */}
+      {/* overflow: visible so the name-tab and cards can overlap             */}
       {/* ------------------------------------------------------------------ */}
       <div
         style={{
@@ -97,43 +153,50 @@ function CollectionStrip({
           width: "100%",
           /* 4:1 aspect — 25% padding-top */
           paddingTop: "25%",
-          overflow: "hidden",
+          overflow: "visible",
           backgroundColor: "var(--color-merch-surface)",
           minHeight: 120,
         }}
       >
-        {/* Banner image — covers the padded box */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={entry.bannerImageUrl}
-          alt={`${entry.name} collection banner`}
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            objectPosition: "center",
-          }}
-          loading="lazy"
-          draggable={false}
-        />
-
-        {/* Subtle left scrim so the name tab reads clearly over any image */}
+        {/* Banner image — absolute inside the padded box */}
         <div
-          aria-hidden
           style={{
             position: "absolute",
             inset: 0,
-            background:
-              "linear-gradient(to right, var(--color-merch-scrim-strong) 0%, transparent 40%)",
+            overflow: "hidden",
           }}
-        />
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={entry.bannerImageUrl}
+            alt={`${entry.name} collection banner`}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center",
+              display: "block",
+            }}
+            loading="lazy"
+            draggable={false}
+          />
+
+          {/* Subtle left scrim so the name tab reads clearly over any image */}
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(to right, var(--color-merch-scrim-strong) 0%, transparent 40%)",
+            }}
+          />
+        </div>
 
         {/* ---------------------------------------------------------------- */}
-        {/* Rotated name tab — positioned over the lower-left of the banner  */}
-        {/* ~60px wide × 185px tall, 16px bold uppercase, dark bg            */}
-        {/* transform-origin: center so rotation is stable                    */}
+        {/* Rotated name tab — #762: WHITE bg + BLACK text (inverted from    */}
+        {/* original). 60×185px at left=91px, bottom=-24px so it straddles  */}
+        {/* the banner's bottom edge into the card row.                       */}
         {/* ---------------------------------------------------------------- */}
         <div
           aria-hidden
@@ -143,7 +206,8 @@ function CollectionStrip({
             left: 91,
             width: 60,
             height: 185,
-            backgroundColor: "var(--color-merch-ink-dark)",
+            /* WHITE background (was ink-dark) */
+            backgroundColor: "var(--color-merch-bg)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -153,7 +217,8 @@ function CollectionStrip({
           <span
             style={{
               display: "block",
-              color: "var(--color-merch-on-dark)",
+              /* BLACK text (was on-dark/white) */
+              color: "var(--color-merch-ink-dark)",
               fontSize: 16,
               fontWeight: 700,
               textTransform: "uppercase",
@@ -170,48 +235,50 @@ function CollectionStrip({
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Product card row — horizontal scroll, 253px cards                  */}
-      {/* Left padding accounts for the name-tab width (91+60=151px) +       */}
-      {/* a 16px gutter so cards start just right of the tab.                */}
+      {/* Product card row — #762: 355×375 landscape cards; NEGATIVE          */}
+      {/* marginTop so cards overlap the banner's bottom ~80px.               */}
+      {/* Left padding (167px) = name-tab left (91) + tab width (60) + 16px  */}
+      {/* gutter, so cards start just right of the tab.                       */}
       {/* ------------------------------------------------------------------ */}
       <div
         style={{
-          marginTop: 40, /* clear the name tab that extends below the banner */
+          marginTop: -80, /* overlap up into the banner's lower region */
           paddingLeft: 167,
           paddingRight: 24,
           overflowX: "auto",
           scrollbarWidth: "none",
+          /* IE/Edge compat */
           msOverflowStyle: "none",
+          position: "relative",
+          zIndex: 1,
         }}
       >
         <div
           style={{
             display: "flex",
             gap: 16,
-            alignItems: "stretch",
+            alignItems: "flex-start",
           }}
         >
           {entry.products.map((product) => (
-            <div
+            <StripProductCard
               key={product.slug}
-              style={{ flex: "0 0 253px", width: 253 }}
-            >
-              <MerchProductCard
-                slug={product.slug}
-                title={product.title}
-                imageUrl={product.imageUrl}
-                price={product.price}
-                originalPrice={product.originalPrice}
-                badge={product.badge}
-                onClick={onProductClick}
-              />
-            </div>
+              product={product}
+              onClick={onProductClick}
+            />
           ))}
 
-          {/* "View All" card — shown when href or onViewAllClick is provided */}
+          {/* "View All" CTA — shown when href or onViewAllClick is provided */}
           {(entry.href || onViewAllClick) && (
             <div
-              style={{ flex: "0 0 120px", width: 120, display: "flex", alignItems: "center" }}
+              style={{
+                flex: "0 0 120px",
+                width: 120,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: 375,
+              }}
             >
               {entry.href ? (
                 <a
@@ -316,9 +383,11 @@ function CollectionStrip({
 /**
  * MerchCollectionList — vertically stacked collection strips.
  *
- * Each strip: banner (4:1 aspect, cover) with rotated vertical name tab at
- * left ~91px, followed by a horizontal scroll row of MerchProductCard tiles
- * (253px wide each). Mirrors the layout of merch.riotgames.com/en-us/collection/.
+ * Each strip: banner (4:1 aspect, cover) with a rotated vertical name tab
+ * (60×185px, white bg, black text) at left=91px, followed by a horizontal
+ * scroll row of 355×375 landscape StripProductCard tiles. The card row starts
+ * with a −80px margin so it overlaps the banner's lower region, matching the
+ * real merch.riotgames.com/en-us/collection/ layout.
  *
  * @example
  * <MerchCollectionList
