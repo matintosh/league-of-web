@@ -144,9 +144,11 @@
 
   /* ── Form / input tokens (support-page forms — MerchSupportForm) ────── */
   /* Measured from merch.riotgames.com support forms (order-lookup, gift-card-balance, product-validation) */
-  --color-merch-input-bg:       #f7f7f7; /* filled input background (text fields without border)        */
-  --color-merch-input-border:   #d0d0d0; /* 1px solid border on email / authenticity-code inputs        */
-  --color-merch-input-disabled: #d1d1d1; /* disabled submit button fill                                 */
+  --color-merch-input-bg:           #f7f7f7; /* filled input background (text fields without border)        */
+  --color-merch-input-border:       #d0d0d0; /* 1px solid border on email / authenticity-code inputs        */
+  --color-merch-input-disabled:     #d1d1d1; /* disabled submit button fill                                 */
+  /* Footer contact-form inputs — dark filled (rgb(27,29,31)) measured 2026-08-06 from footer on merch.riotgames.com */
+  --color-merch-input-dark-bg:      #1b1d1f; /* rgb(27,29,31) — dark filled input bg in footer contact form */
 
   /* ── Search hero background ─────────────────────────────────────────── */
   /* Diagonal purple/crimson split measured from merch.riotgames.com/en-us/search
