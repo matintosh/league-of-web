@@ -217,20 +217,21 @@ function FriendRow({
         dim={isOffline}
       />
       <div className="min-w-0 flex-1">
+        {/* Name: always bold + primary color regardless of availability */}
         <p
-          className={`truncate font-body text-[12px] leading-tight ${isOffline ? "font-normal" : "font-bold"}`}
-          style={{
-            color: isOffline
-              ? "var(--color-launcher-text-dim)"
-              : "var(--color-launcher-text-primary)",
-          }}
+          className="truncate font-body text-[12px] font-bold leading-tight"
+          style={{ color: "var(--color-launcher-text-primary)" }}
         >
           {gameName}
         </p>
-        {/* Status line: neutral gray + leading client glyph for all states */}
+        {/* Status line: neutral gray for online states; dimmed for offline */}
         <p
           className="flex min-w-0 items-center gap-[3px] truncate font-body text-[11px] leading-tight"
-          style={{ color: "var(--color-launcher-status-text)" }}
+          style={{
+            color: isOffline
+              ? "var(--color-launcher-text-dim)"
+              : "var(--color-launcher-status-text)",
+          }}
         >
           <ClientGlyph clipId={clipId} />
           <span className="truncate">{displayStatus}</span>
@@ -284,7 +285,7 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
     <div className="flex items-center gap-1 px-2 py-1">
       <span
         className="font-body text-[11px] font-semibold"
-        style={{ color: "var(--color-launcher-text-muted)" }}
+        style={{ color: "var(--color-launcher-status-text)" }}
       >
         {label}{" "}
         <span style={{ color: "var(--color-launcher-text-dim)" }}>{count}</span>
