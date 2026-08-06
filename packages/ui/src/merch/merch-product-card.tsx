@@ -11,17 +11,15 @@
  * NO fetching in @low/ui, types from @low/fixtures), showcase server-safe
  * (no 'use client'), SVG/gradient ids from useId.
  *
- * Real 2-col listing design (measured from merch.riotgames.com shop-all at 1280px):
- *   - Card width: ~640px (2-col flush, no gap)
- *   - Card has 1px --color-merch-border frame (cards tessellate flush)
- *   - Image: aspect-ratio 1/1, object-fit: cover (or contain on white)
- *   - Image hover: scale(1.04) over 200ms ease-out
- *   - Franchise label: top-left overlay — uppercase, small white text on dark scrim
- *   - Badges: top-right absolute, stacked column, colored chips (multi-badge)
- *     "New" → green (#7ac043), "Limited"/"Limited Edition" → yellow (#e8c33c),
- *     "Preorder"/"Restock" → grey (#5a5a5a), "Sale" → red, "Out of Stock" → muted border fill
- *   - Heart / wishlist: top-right corner of the image (outside badge column)
- *   - Info strip: px-3 pt-3 pb-2; title 16px/700/ink, line-clamp 2; price 13px/muted
+ * Real card anatomy (measured from merch.riotgames.com shop-all at 1280px):
+ *   - Card article: 640×375, background --color-merch-surface-alt (#f7f7f7)
+ *   - Header row (~57px): franchise wordmark (top-left), badge chips (top-right),
+ *     heart/wishlist (top-right after badges) — ALL ABOVE the image, no overlays
+ *   - Image box: 638×225, object-fit: contain, transparent bg (grey card shows through)
+ *   - Info strip: ~20px inset; title black, line-height 18px; price 16px/400/black
+ *   - Badge chips: 14px mixed-case, black text; New=#8CD50B, Preorder=#666, Limited=#FFD700
+ *   - Franchise label: grey (#666666), ~16px/400, title-case, in header row (no scrim)
+ *   - In-card CTA: "Add to Cart" / "Login to purchase", uppercase, 600, ~598px wide
  */
 
 import { useId } from "react";
@@ -48,25 +46,33 @@ export interface MerchProductCardProps {
    */
   badge?: MerchProduct["badge"];
   /**
-   * Multi-badge array for the real 2-col card design (top-right stacked chips).
+   * Multi-badge array for the real 2-col card design (top-right in header row).
    * When provided, supersedes `badge`. E.g. ["New", "Limited Edition"].
    */
   badges?: string[];
   /**
-   * Franchise brand label rendered as text overlay top-left of the image.
-   * E.g. "LEAGUE OF LEGENDS", "ARCANE", "VALORANT".
+   * Franchise brand label rendered as text in the header row above the image.
+   * E.g. "League of Legends", "Arcane", "Valorant".
    */
   franchiseLabel?: string;
   /**
-   * Controls how the product image is fitted inside its square container.
-   * Use `"contain"` for packshot photography on white; `"cover"` for lifestyle shots.
-   * @default "cover"
+   * Controls how the product image is fitted inside its container.
+   * Use `"contain"` for packshot photography; `"cover"` for lifestyle shots.
+   * @default "contain"
    */
   imageFit?: "cover" | "contain";
+  /**
+   * CTA label for the in-card button. Defaults to "Add to Cart".
+   * Pass "Login to purchase" or similar when user is not signed in.
+   * @default "Add to Cart"
+   */
+  ctaLabel?: string;
   /** Called when the card is clicked. */
   onClick?: (slug: string) => void;
   /** Called when the wishlist heart is clicked. Receives the slug. */
   onWishlist?: (slug: string) => void;
+  /** Called when the in-card CTA button is clicked. Receives the slug. */
+  onAddToCart?: (slug: string) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -78,25 +84,28 @@ type BadgeLabel = NonNullable<MerchProduct["badge"]> | string;
 function badgeStyle(badge: BadgeLabel): React.CSSProperties {
   const b = badge.toLowerCase();
   if (b === "new" || b === "restock") {
+    // New/Restock: green #8CD50B, black text (remeasured 2026-08-06)
     return {
       backgroundColor: "var(--color-merch-badge-new)",
-      color: "var(--color-merch-on-dark)",
+      color: "var(--color-merch-ink-dark)",
     };
   }
   if (b === "limited" || b === "limited edition") {
+    // Limited Edition: gold #FFD700, black text
     return {
       backgroundColor: "var(--color-merch-badge-limited)",
-      color: "var(--color-merch-ink)",
+      color: "var(--color-merch-ink-dark)",
     };
   }
   if (b === "preorder") {
+    // Preorder: mid-grey #666666, white text
     return {
       backgroundColor: "var(--color-merch-badge-preorder)",
       color: "var(--color-merch-on-dark)",
     };
   }
   if (b === "sale") {
-    // "Sale" chip replaced by green %-discount badge on the image — skip here
+    // "Sale" chip hidden — replaced by green %-discount badge near image
     return {
       backgroundColor: "var(--color-merch-surface)",
       color: "var(--color-merch-muted)",
@@ -146,14 +155,14 @@ function HeartIcon({ id }: { id: string }) {
 // ---------------------------------------------------------------------------
 
 /**
- * MerchProductCard — 2-col flush listing card matching merch.riotgames.com real design.
+ * MerchProductCard — 2-col flush listing card matching merch.riotgames.com real anatomy.
  *
- * - Franchise label text overlay top-left (uppercase, white on dark scrim)
- * - Multi-badge chips top-right stacked column (`badges` preferred, falls back to `badge`)
- * - Heart/wishlist icon top-right corner of image
+ * Real card: 640×375 at 1280px, surface-alt (#f7f7f7) background.
+ * - Header row (~57px): franchise wordmark left, badge chips + heart right (all ABOVE image)
+ * - Image box: 225px tall, object-contain, transparent bg (card grey shows through)
+ * - Info strip: ~20px inset, title black 18px-lh, price 16px/400 pure black
+ * - In-card CTA: uppercase 600, full width inside card padding
  * - 1px --color-merch-border frame (no border-radius) so cards tessellate flush
- * - Image centered, hover scale, aspect 1/1
- * - Title sentence-case 16px/700, price below
  *
  * Grid usage: place inside `grid grid-cols-2 gap-0` with border dividers.
  */
@@ -166,9 +175,11 @@ export function MerchProductCard({
   badge,
   badges,
   franchiseLabel,
-  imageFit = "cover",
+  imageFit = "contain",
+  ctaLabel = "Add to Cart",
   onClick,
   onWishlist,
+  onAddToCart,
 }: MerchProductCardProps) {
   const heartTitleId = useId();
 
@@ -194,7 +205,7 @@ export function MerchProductCard({
     return Math.round((1 - curr / orig) * 100);
   })();
 
-  // Render non-sale badges only; the "Sale" label is replaced by the %-badge on the image.
+  // Render non-sale badges only; "Sale" label is replaced by the %-badge near the image.
   const activeBadges = allBadges.filter((b) => b.toLowerCase() !== "sale");
 
   return (
@@ -204,21 +215,75 @@ export function MerchProductCard({
       style={{
         fontFamily: "var(--font-merch)",
         border: "1px solid var(--color-merch-border)",
+        backgroundColor: "var(--color-merch-surface-alt)",
       }}
       onClick={() => onClick?.(slug)}
     >
       {/* ------------------------------------------------------------------ */}
-      {/* Image container                                                      */}
+      {/* Header row — franchise label + badges + heart, ALL above the image  */}
       {/* ------------------------------------------------------------------ */}
       <div
-        className="relative overflow-hidden"
-        style={{
-          aspectRatio: "1 / 1",
-          backgroundColor:
-            imageFit === "contain"
-              ? "var(--color-merch-bg)"
-              : "var(--color-merch-surface)",
-        }}
+        className="flex items-center justify-between px-5 py-3"
+        style={{ minHeight: 57 }}
+      >
+        {/* Franchise wordmark — grey, title-case, ~16px/400, no scrim */}
+        <span
+          className="text-[16px] font-normal leading-tight"
+          style={{ color: "var(--color-merch-franchise-label)" }}
+        >
+          {franchiseLabel ?? ""}
+        </span>
+
+        {/* Right cluster: badge chips + heart */}
+        <div
+          className="flex items-center gap-2"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Badge chips — 14px mixed-case, black text for New/Limited, white for Preorder */}
+          {activeBadges.map((b) => (
+            <span
+              key={b}
+              className="px-2 py-0.5 text-[14px] font-normal leading-tight"
+              style={badgeStyle(b)}
+            >
+              {b}
+            </span>
+          ))}
+
+          {/* Heart / wishlist */}
+          <button
+            type="button"
+            aria-label={`Add ${title} to wishlist`}
+            className="flex items-center justify-center p-1 transition-opacity duration-150"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "var(--color-merch-heart)",
+              opacity: 0.7,
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.opacity = "1";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.opacity = "0.7";
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onWishlist?.(slug);
+            }}
+          >
+            <HeartIcon id={heartTitleId} />
+          </button>
+        </div>
+      </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Image container — 225px tall, contain, transparent bg               */}
+      {/* ------------------------------------------------------------------ */}
+      <div
+        className="relative w-full overflow-hidden"
+        style={{ height: 225, backgroundColor: "transparent" }}
       >
         {/* Product image — scale on hover */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -226,32 +291,14 @@ export function MerchProductCard({
           src={imageUrl}
           alt={title}
           loading="lazy"
-          className={`h-full w-full transition-transform duration-200 ease-out group-hover:scale-[1.04] ${imageFit === "contain" ? "object-contain" : "object-cover"}`}
+          className={`h-full w-full transition-transform duration-200 ease-out group-hover:scale-[1.04] ${imageFit === "cover" ? "object-cover" : "object-contain"}`}
           style={{ display: "block" }}
         />
 
-        {/* Franchise label — top-left overlay */}
-        {franchiseLabel && (
-          <div
-            className="absolute left-0 top-0 px-2 py-1"
-            style={{ backgroundColor: "var(--color-merch-franchise-bg)" }}
-          >
-            <span
-              className="text-[9px] font-semibold uppercase tracking-[0.12em]"
-              style={{ color: "var(--color-merch-franchise-label)" }}
-            >
-              {franchiseLabel}
-            </span>
-          </div>
-        )}
-
-        {/* Discount %-badge — top-left of image (below franchise label when both present).
-            Green bg (#8CD50B), black text, 14px/400. Only rendered when on sale + parseable prices. */}
+        {/* Discount %-badge — bottom-left of image, above info strip.
+            Green bg (#8CD50B), black text, 14px/400. Only when on sale + parseable prices. */}
         {discountPct !== null && (
-          <div
-            className="absolute left-0"
-            style={{ top: franchiseLabel ? "calc(1px + 1.75rem)" : 0 }}
-          >
+          <div className="absolute bottom-0 left-0">
             <span
               className="block px-2 py-0.5 text-[14px] font-normal leading-tight"
               style={{
@@ -263,70 +310,26 @@ export function MerchProductCard({
             </span>
           </div>
         )}
-
-        {/* Badge column — top-right, stacked */}
-        {activeBadges.length > 0 && (
-          <div
-            className="absolute right-2 top-2 flex flex-col items-end gap-1"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {activeBadges.map((b) => (
-              <span
-                key={b}
-                className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em]"
-                style={badgeStyle(b)}
-              >
-                {b}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Heart / wishlist — bottom-right of image */}
-        <button
-          type="button"
-          aria-label={`Add ${title} to wishlist`}
-          className="absolute bottom-2 right-2 flex items-center justify-center p-1 transition-opacity duration-150"
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            color: "var(--color-merch-heart)",
-            opacity: 0.7,
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.opacity = "1";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.opacity = "0.7";
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onWishlist?.(slug);
-          }}
-        >
-          <HeartIcon id={heartTitleId} />
-        </button>
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Info strip                                                           */}
+      {/* Info strip — title + price                                           */}
       {/* ------------------------------------------------------------------ */}
-      <div
-        className="flex flex-col gap-0.5 px-3 pt-3 pb-2"
-        style={{ backgroundColor: "var(--color-merch-bg)" }}
-      >
-        {/* Title — 16px/700 sentence-case, line-clamp 2 */}
+      <div className="flex flex-col gap-1 px-5 pt-3 pb-2">
+        {/* Title — black, line-height 18px, line-clamp 2 */}
         <p
-          className="line-clamp-2 text-[16px] font-bold leading-snug"
-          style={{ color: "var(--color-merch-ink)" }}
+          className="line-clamp-2 text-[14px] font-normal"
+          style={{
+            color: "var(--color-merch-ink-dark)",
+            lineHeight: "18px",
+          }}
         >
           {title}
         </p>
 
         {/* Price row.
-            Sale: struck original in grey (#666) at 16px, current price in dark ink (not red).
-            Non-sale: price in muted grey. Matches real /category/sales/ measurements. */}
+            Sale: struck original in grey (#666) at 16px, current price in dark ink.
+            Non-sale: 16px/400/pure-black. Matches real measurements 2026-08-06. */}
         <div className="flex items-center gap-2">
           {isOnSale && originalPrice ? (
             <>
@@ -337,21 +340,44 @@ export function MerchProductCard({
                 {originalPrice}
               </span>
               <span
-                className="text-[13px] font-medium"
-                style={{ color: "var(--color-merch-ink)" }}
+                className="text-[16px] font-normal"
+                style={{ color: "var(--color-merch-ink-dark)" }}
               >
                 {price}
               </span>
             </>
           ) : (
             <span
-              className="text-[13px]"
-              style={{ color: "var(--color-merch-muted)" }}
+              className="text-[16px] font-normal"
+              style={{ color: "var(--color-merch-ink-dark)", lineHeight: "20px" }}
             >
               {price}
             </span>
           )}
         </div>
+      </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* In-card CTA — "Add to Cart" / "Login to purchase"                   */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="px-5 pb-4 pt-1">
+        <button
+          type="button"
+          className="w-full py-2.5 text-[16px] font-semibold uppercase tracking-wide"
+          style={{
+            backgroundColor: "var(--color-merch-ink-dark)",
+            color: "var(--color-merch-on-dark)",
+            border: "none",
+            cursor: "pointer",
+            fontFamily: "var(--font-merch)",
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToCart?.(slug);
+          }}
+        >
+          {ctaLabel}
+        </button>
       </div>
     </article>
   );

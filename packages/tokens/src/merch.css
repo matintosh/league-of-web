@@ -50,10 +50,10 @@
   --color-merch-muted-on-dark: #a0a0a0; /* muted grey links/labels on black backgrounds */
 
   /* ── Badge colors (sampled from merch.riotgames.com filter chips) ──── */
-  --color-merch-badge-new:      #7ac043; /* New — green chip                              */
-  --color-merch-badge-limited:  #e8c33c; /* Limited Edition — yellow chip                 */
-  --color-merch-badge-preorder: #5a5a5a; /* Preorder — grey chip                          */
-  --color-merch-badge-sale:     #8cd50b; /* Sale discount badge — sampled #8CD50B, black text */
+  --color-merch-badge-new:      #8cd50b; /* New — green chip (remeasured 2026-08-06: rgb(140,213,11), black text) */
+  --color-merch-badge-limited:  #ffd700; /* Limited Edition — yellow chip (remeasured 2026-08-06)                 */
+  --color-merch-badge-preorder: #666666; /* Preorder — mid-grey chip (remeasured 2026-08-06)                      */
+  --color-merch-badge-sale:     #8cd50b; /* Sale discount badge — green, black text                               */
   --color-merch-badge-progress: #f0a500; /* build-status "in progress / deltas open" amber badge */
   /* Former "Sale" chip used --color-merch-red; replaced by green %-badge on image */
 
@@ -108,10 +108,10 @@
   --color-merch-hero-progress-bar: rgba(255, 255, 255, 0.85); /* progress bar fill   */
   --color-merch-hero-progress-bg:  rgba(255, 255, 255, 0.25); /* progress bar track  */
 
-  /* ── Card overlays (2-col listing card design) ─────────────────────── */
-  /* Franchise label text overlay (top-left of card image) */
-  --color-merch-franchise-label: #ffffff;      /* white text on semi-transparent dark bg */
-  --color-merch-franchise-bg:    rgba(0, 0, 0, 0.48); /* scrim behind franchise label    */
+  /* ── Card header row (2-col listing card design) ─────────────────────── */
+  /* Franchise label in the header row above the image (no scrim) */
+  --color-merch-franchise-label: #666666;      /* grey wordmark text in header row (remeasured 2026-08-06: rgb(102,102,102)) */
+  --color-merch-franchise-bg:    rgba(0, 0, 0, 0.48); /* scrim behind franchise label (legacy — not used in header-row layout) */
   /* Heart / wishlist icon — unfilled outline on card */
   --color-merch-heart:           #1a1a1a;      /* ink-colored heart outline on light cards */
 
