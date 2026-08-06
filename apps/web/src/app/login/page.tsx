@@ -115,9 +115,10 @@ export default function LoginPage() {
 
       {/* Bounded login window — fixed size, centered on the dark backdrop. */}
       <div className="shrink-0" style={{ width: LOGIN_WIDTH, height: LOGIN_HEIGHT }}>
-        {/* Fix #10: classic has no title text — ref title bar is bare; current keeps its title */}
+        {/* fix(login): #780 — current variant drops title chrome; ref has no labeled title bar.
+            Classic already had title={undefined}; now both variants omit the title text. */}
         <WindowFrame
-          title={isClassic ? undefined : "League of Web"}
+          title={undefined}
           onHelp={() => console.log("help")}
           onMinimize={() => console.log("minimize")}
           onClose={() => console.log("close")}
@@ -274,32 +275,35 @@ export default function LoginPage() {
             </div>
           ) : (
             /* ============================================================ */
-            /* CURRENT THEME — original layout, UNCHANGED from origin/main  */
+            /* CURRENT THEME — ref proportion + centered axis (fix #780,   */
+            /* #781, #785). Form panel 400px = 29.4% of 1360px frame.      */
             /* ============================================================ */
             <div className="flex h-full w-full overflow-hidden bg-login-bg">
               {/* -------------------------------------------------------- */}
-              {/* LEFT PANEL — form + wordmark                              */}
+              {/* LEFT PANEL — form + wordmark, 400px ≈ 29.4% of frame     */}
               {/* -------------------------------------------------------- */}
               <div
-                className="relative z-10 flex shrink-0 flex-col bg-login-bg"
+                className="relative z-10 flex shrink-0 flex-col items-center bg-login-bg"
                 style={{ width: 400 }}
               >
-                {/* Wordmark — Riot Games logo stand-in */}
-                <div className="px-10 pt-10 pb-6">
+                {/* fix(login): #781 — wordmark centered on panel axis (~9% from top).
+                    Riot Games logo stand-in; two-line stacked lockup centered. */}
+                <div className="pt-10 pb-6 text-center">
                   <span className="font-body text-sm font-bold uppercase tracking-widest text-riot-red">
                     League of Web
                   </span>
                 </div>
 
-                {/* Form body — centered vertically in remaining space */}
-                <div className="flex flex-1 flex-col justify-center px-10 pb-10">
-                  {/* "Sign in" heading */}
-                  <h1 className="mb-6 font-body text-2xl font-bold text-login-ink">
+                {/* Form body — centered vertically in remaining space; axis-centered */}
+                <div className="flex flex-1 flex-col items-center justify-center w-full pb-10">
+                  {/* fix(login): #781 — heading centered on panel axis */}
+                  <h1 className="mb-6 font-body text-2xl font-bold text-login-ink text-center">
                     Sign in
                   </h1>
 
-                  <form onSubmit={handleSubmit} noValidate>
-                    <div className="flex flex-col gap-3">
+                  {/* fix(login): #785 — form column 0.72 × 400px = 288px → px-14 = 56px side → 288px inner */}
+                  <form onSubmit={handleSubmit} noValidate className="w-full px-14">
+                    <div className="flex flex-col gap-4">
                       {/* Username input */}
                       <LoginTextInput
                         value={username}
@@ -322,29 +326,32 @@ export default function LoginPage() {
                         />
                       </div>
 
-                      {/* Keep me signed in + submit row */}
-                      <div className="flex items-center justify-between">
+                      {/* fix(login): #781 — checkbox on its own row, left-aligned */}
+                      <div>
                         <LoginCheckbox
                           checked={keepSignedIn}
                           onChange={setKeepSignedIn}
                           label="Keep me signed in"
                         />
-
-                        <CircleSubmitButton
-                          disabled={!bothFilled}
-                          ariaLabel="Sign in"
-                        />
                       </div>
                     </div>
                   </form>
 
-                  {/* Footer links */}
-                  <div className="mt-6 flex gap-4">
+                  {/* fix(login): #781 — submit standalone centered, ~56px below checkbox row */}
+                  <div className="mt-14 flex justify-center">
+                    <CircleSubmitButton
+                      disabled={!bothFilled}
+                      ariaLabel="Sign in"
+                    />
+                  </div>
+
+                  {/* fix(login): #781 — footer stacked vertically centered (two lines) */}
+                  <div className="mt-6 flex flex-col items-center gap-1.5">
                     <a
                       href="#"
                       aria-disabled="true"
                       onClick={(e) => e.preventDefault()}
-                      className="footer-link font-body text-xs font-bold tracking-wide text-login-placeholder"
+                      className="footer-link font-body text-xs font-bold tracking-wide text-login-placeholder text-center"
                       style={{ textTransform: "uppercase" }}
                     >
                       Can't sign in?
@@ -353,7 +360,7 @@ export default function LoginPage() {
                       href="#"
                       aria-disabled="true"
                       onClick={(e) => e.preventDefault()}
-                      className="footer-link font-body text-xs font-bold tracking-wide text-login-placeholder"
+                      className="footer-link font-body text-xs font-bold tracking-wide text-login-placeholder text-center"
                       style={{ textTransform: "uppercase" }}
                     >
                       Create account
@@ -363,7 +370,7 @@ export default function LoginPage() {
               </div>
 
               {/* -------------------------------------------------------- */}
-              {/* RIGHT — full-bleed champion splash                       */}
+              {/* RIGHT — full-bleed champion splash (70.6% of frame)      */}
               {/* -------------------------------------------------------- */}
               <div className="relative flex-1">
                 <Image
@@ -372,7 +379,7 @@ export default function LoginPage() {
                   fill
                   priority
                   className="object-cover object-center"
-                  sizes="624px"
+                  sizes="960px"
                 />
               </div>
             </div>

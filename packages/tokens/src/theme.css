@@ -128,7 +128,8 @@
   --color-riot-red: #eb022b;
   --color-login-bg: #ffffff;
   --color-login-surface: #ececec;
-  --color-login-placeholder: #a7a7b7;
+  /* fix(login): #785 — placeholder neutral grey, was #a7a7b7 (blue +16) */
+  --color-login-placeholder: #a7a7a7;
   /* login-arrow: submit button arrow glyph — pixel-sampled from riot-login-page.png core (#c4c4c4, issue #782) */
   --color-login-arrow: #c4c4c4;
   --color-login-ink: #343434;
@@ -465,7 +466,8 @@
     --color-riot-red: #eb022b;
     --color-login-bg: #ffffff;
     --color-login-surface: #ececec;
-    --color-login-placeholder: #a7a7b7;
+    /* fix(login): #785 — placeholder neutral grey, was #a7a7b7 (blue +16) */
+    --color-login-placeholder: #a7a7a7;
     /* login-arrow: submit button arrow glyph — pixel-sampled from riot-login-page.png core (#c4c4c4, issue #782) */
     --color-login-arrow: #c4c4c4;
     --color-login-ink: #343434;
