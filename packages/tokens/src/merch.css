@@ -68,6 +68,10 @@
   /* ── Price treatment ────────────────────────────────────────────────── */
   --color-merch-price-struck:   #666666; /* struck-through original price (sale items)    */
 
+  /* ── Category trail separator ───────────────────────────────────────── */
+  /* Real PDP: '|' pipe glyph rgb(208,208,208) — lighter than the #666 text */
+  --color-merch-trail-sep:      #d0d0d0; /* pipe separator between category trail terms   */
+
   /* ── Overlays / scrims ──────────────────────────────────────────────── */
   --color-merch-overlay-soft: rgba(0, 0, 0, 0.28); /* nav arrow button bg overlay        */
   --color-merch-scrim-strong: rgba(0, 0, 0, 0.45); /* banner scrim left stop (logo reads) */

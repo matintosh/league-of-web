@@ -30,6 +30,7 @@ import {
   MerchCollectionHero,
   MerchShopCarousel,
   MerchSizeGuideModal,
+  LolWordmark,
 } from "@low/ui";
 import type { MerchCartItem, MerchProduct } from "@low/fixtures";
 
@@ -140,8 +141,9 @@ export function ProductPageClient({
 
         {/*
          * ── Mobile-only compact header row ────────────────────────────────
-         * Sits above the gallery on 390px viewports:
-         *   [compact title 16px] + [LoL logo] [heart] [share] [badge]
+         * Sits above the gallery on 390px viewports (real site measurement):
+         *   LEFT: compact title 16px/600
+         *   RIGHT: [LoL logo] [heart] [share] [badge chip]
          * Hidden on desktop (>768px) — the full panel handles it there.
          */}
         <div
@@ -151,9 +153,9 @@ export function ProductPageClient({
             padding: "12px 16px 0",
             alignItems: "center",
             gap: 8,
-            flexWrap: "wrap",
           }}
         >
+          {/* Compact title — truncates with ellipsis if too long */}
           <span
             style={{
               fontSize: 16,
@@ -168,7 +170,92 @@ export function ProductPageClient({
           >
             {title}
           </span>
-          {/* Badge chip — real site shows badge in the purchase panel, not gallery */}
+
+          {/* LoL logo — appears right of title on mobile */}
+          <span
+            aria-label="League of Legends"
+            style={{
+              color: "var(--color-merch-ink-dark)",
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <LolWordmark />
+          </span>
+
+          {/* Heart icon — borderless, pure black */}
+          <button
+            type="button"
+            aria-label="Add to wishlist"
+            onClick={() => {}}
+            style={{
+              width: 40,
+              height: 40,
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--color-merch-ink-dark)",
+              flexShrink: 0,
+              padding: 0,
+            }}
+          >
+            {/* Heart SVG — outline */}
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </button>
+
+          {/* Share icon — borderless, export box-with-up-arrow */}
+          <button
+            type="button"
+            aria-label="Share product"
+            onClick={() => {}}
+            style={{
+              width: 40,
+              height: 40,
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--color-merch-ink-dark)",
+              flexShrink: 0,
+              padding: 0,
+            }}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="8 17 3 17 3 21 21 21 21 17 16 17" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+              <polyline points="8 7 12 3 16 7" />
+            </svg>
+          </button>
+
+          {/* Badge chip — first badge only in mobile header */}
           {badges[0] && (
             <span
               style={{
@@ -231,6 +318,7 @@ export function ProductPageClient({
               onWishlist={() => {}}
               onShare={() => {}}
               onAddToCart={() => {}}
+              onBuyNow={() => {}}
             />
             <div style={{ marginTop: 32 }}>
               <MerchProductInfoTabs
