@@ -14,15 +14,15 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
   name: "Merch Product Gallery",
   area: "merch",
   description:
-    "PDP left column: grey 664×664 surface panel (--color-merch-surface-alt, 24px padding) + LoL wordmark watermark + optional badge overlay (top-right) + vertical franchise label (left edge). Main image 1:1 square inside the panel. Secondary images in a horizontal carousel with › arrow. Mobile: portrait hero (342×629 ~1:1.84), 351px square thumbnail strip. Matches merch.riotgames.com PDP gallery (verified 2026-08).",
+    "PDP left column: themed diagonal hero surface (upper light texture layer + lower dark navy band clipped by diagonal polygon). League of Legends wordmark top-left at full opacity. Secondary images in a horizontal carousel below. Mobile: shorter hero (390×674) with scaled diagonal. Matches merch.riotgames.com PDP gallery (verified 2026-08 via Playwright). No grey panel, no watermark opacity, no vertical label, no badge overlay in gallery.",
   variants: [
     {
-      name: "Single image — no carousel (grey surface + watermark)",
+      name: "Single image — no carousel (diagonal hero surface, token fallbacks)",
       notes:
-        "One image: thumbnail carousel hidden. Grey surface panel with LoL watermark visible. No badge overlay.",
+        "One image: thumbnail carousel hidden. Diagonal hero surface with LoL wordmark at full opacity. No bgImageUrl/fgImageUrl → token fallbacks render (--color-merch-surface + --color-merch-pdp-hero-navy).",
       backgrounds: ["light"],
       render: () => (
-        <div style={{ maxWidth: 680, fontFamily: "system-ui, sans-serif" }}>
+        <div style={{ maxWidth: 828, fontFamily: "system-ui, sans-serif" }}>
           <MerchProductGallery
             images={[IMG_A]}
             alt="Single product image"
@@ -32,29 +32,28 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "4-image gallery — first selected + New badge overlay",
+      name: "5-image gallery — first selected (hero + 4 secondary tiles)",
       notes:
-        "selectedIndex=0; 3 secondary images in horizontal carousel. Green 'New' badge overlaid top-right. LoL watermark top-left.",
+        "selectedIndex=0; 4 secondary images in horizontal carousel below the hero. Matches amumu-plush real layout (5 images total). No badge in gallery — badge lives in the purchase panel.",
       backgrounds: ["light"],
       render: () => (
-        <div style={{ maxWidth: 680, fontFamily: "system-ui, sans-serif" }}>
+        <div style={{ maxWidth: 828, fontFamily: "system-ui, sans-serif" }}>
           <MerchProductGallery
-            images={[IMG_A, IMG_B, IMG_C, IMG_D]}
+            images={[IMG_A, IMG_B, IMG_C, IMG_D, IMG_E]}
             alt="Amumu Plush"
             selectedIndex={0}
-            badgeLabel="New"
           />
         </div>
       ),
     },
     {
-      name: "4-image gallery — second selected (static)",
+      name: "5-image gallery — second selected (static)",
       notes: "selectedIndex=1 to show active border on second carousel tile.",
       backgrounds: ["light"],
       render: () => (
-        <div style={{ maxWidth: 680, fontFamily: "system-ui, sans-serif" }}>
+        <div style={{ maxWidth: 828, fontFamily: "system-ui, sans-serif" }}>
           <MerchProductGallery
-            images={[IMG_A, IMG_B, IMG_C, IMG_D]}
+            images={[IMG_A, IMG_B, IMG_C, IMG_D, IMG_E]}
             alt="MSI 2026 Tee"
             selectedIndex={1}
           />
@@ -66,7 +65,7 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
       notes: "selectedIndex=3 shows fourth carousel tile active-bordered.",
       backgrounds: ["light"],
       render: () => (
-        <div style={{ maxWidth: 680, fontFamily: "system-ui, sans-serif" }}>
+        <div style={{ maxWidth: 828, fontFamily: "system-ui, sans-serif" }}>
           <MerchProductGallery
             images={[IMG_A, IMG_B, IMG_C, IMG_D, IMG_E, IMG_F]}
             alt="MSI 2026 Jacket"
@@ -80,7 +79,7 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
       notes: "Arrow › only renders when images.length > 2. With 2 images the carousel scrolls but no arrow.",
       backgrounds: ["light"],
       render: () => (
-        <div style={{ maxWidth: 680, fontFamily: "system-ui, sans-serif" }}>
+        <div style={{ maxWidth: 828, fontFamily: "system-ui, sans-serif" }}>
           <MerchProductGallery
             images={[IMG_C, IMG_D]}
             alt="Collector's Print"

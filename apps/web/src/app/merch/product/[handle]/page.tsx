@@ -30,6 +30,18 @@ interface PdpExtra {
   variants: { label: string; available: boolean }[];
   /** Full-text description. */
   description: string;
+  /**
+   * URL for the upper background layer of the diagonal PDP hero surface.
+   * Measured: light/white textured webp from Sanity consumer_products dataset.
+   * When omitted, gallery falls back to --color-merch-surface.
+   */
+  bgImageUrl?: string;
+  /**
+   * URL for the lower diagonal navy band of the PDP hero surface.
+   * Measured: dark navy webp from Sanity consumer_products dataset.
+   * When omitted, gallery falls back to --color-merch-pdp-hero-navy.
+   */
+  fgImageUrl?: string;
 }
 
 const APPAREL_SIZES = [
@@ -105,9 +117,32 @@ const PDP_EXTRAS: Record<string, PdpExtra> = {
     variants: [],
     description:
       "The Sad Mummy is here — soft, huggable Amumu plush. Perfect for any League fan. Officially licensed.",
+    /**
+     * Real merch.riotgames.com/en-us/product/amumu-plush has 5 gallery images:
+     * hero (bac8ecd0...) + 4 secondary (d8a05fd5..., 736bd931..., 31e7c2c7..., 7297076e...).
+     * Measured via Playwright 2026-08.
+     */
     images: [
       merchAssetUrl("bac8ecd0218d8af9d8f0d78d4fca40cb27a8a803-2560x2560.png", { w: 1200 }),
+      merchAssetUrl("d8a05fd55a322393be9d6727dca794eaf5868d6c-2560x2560.png", { w: 1200 }),
+      merchAssetUrl("736bd931d4307cafcc4709bf1057a422a557a770-2560x2560.png", { w: 1200 }),
+      merchAssetUrl("31e7c2c734b4df133b027edbbbc66c84273b94c9-2560x2560.png", { w: 1200 }),
+      merchAssetUrl("7297076e445b28c11566e5afe6d348dff38d499e-2560x2560.png", { w: 1200 }),
     ],
+    /**
+     * Diagonal hero background layers — measured from the real PDP via Playwright 2026-08.
+     * bg: upper light/white textured surface (828×800 at desktop).
+     * fg: lower dark navy diagonal band (828×360, clip-path polygon diagonal).
+     * Both from the Sanity "consumer_products" (campaign) dataset.
+     */
+    bgImageUrl: merchAssetUrl("b8551562d7525bee89839714bb667923f7515d6e-2176x1912.webp", {
+      w: 1200,
+      dataset: "consumer_products",
+    }),
+    fgImageUrl: merchAssetUrl("2ed0b8698a386ef2ceaf35a679ddf0fa2c93f917-2176x814.webp", {
+      w: 1200,
+      dataset: "consumer_products",
+    }),
   },
   "lol-classic-hoodie": {
     breadcrumb: ["Home", "Apparel", "League of Legends Classic Hoodie"],
@@ -222,6 +257,8 @@ export default async function MerchProductPage({ params }: Props) {
       notices={extra.notices}
       variants={extra.variants}
       images={extra.images}
+      bgImageUrl={extra.bgImageUrl}
+      fgImageUrl={extra.fgImageUrl}
       carouselProducts={carouselProducts}
       carouselBannerImageUrl={carouselBannerImageUrl}
     />
