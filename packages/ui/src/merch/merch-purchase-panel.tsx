@@ -36,6 +36,18 @@ export interface MerchPurchasePanelProps {
   description?: string;
   /** Breadcrumb segments, e.g. ["Home", "Tops", "MSI 2026 Tee"]. */
   breadcrumb?: string[];
+  /**
+   * Category trail rendered immediately above the h1 as a small muted uppercase row.
+   * Matches the real PDP: "Collectibles / Plush / League of Legends" before the title.
+   * E.g. ["Collectibles", "Plush", "League of Legends"].
+   */
+  categoryTrail?: string[];
+  /**
+   * Notice lines rendered between the price and the qty stepper/CTA.
+   * Matches real PDP: "This product is not intended as a toy or children's product."
+   * etc. Rendered as ~13px muted lines.
+   */
+  notices?: string[];
   /** Size/variant chips. Omit for products with no variant selector. */
   variants?: MerchVariant[];
   /** Label above the chips, e.g. "Size". Defaults to "Size". */
@@ -74,6 +86,8 @@ export function MerchPurchasePanel({
   badges,
   description,
   breadcrumb,
+  categoryTrail,
+  notices,
   variants,
   variantLabel = "Size",
   selectedVariant,
@@ -96,6 +110,47 @@ export function MerchPurchasePanel({
         width: "100%",
       }}
     >
+      {/* ── Category trail ──────────────────────────────────────────────── */}
+      {categoryTrail && categoryTrail.length > 0 && (
+        <ul
+          aria-label="Category trail"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: 0,
+            margin: "0 0 8px",
+            padding: 0,
+            listStyle: "none",
+          }}
+        >
+          {categoryTrail.map((seg, idx) => (
+            <li
+              key={idx}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                fontSize: 11,
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                color: "var(--color-merch-muted)",
+              }}
+            >
+              {idx > 0 && (
+                <span
+                  aria-hidden="true"
+                  style={{ margin: "0 6px", color: "var(--color-merch-muted)" }}
+                >
+                  /
+                </span>
+              )}
+              {seg}
+            </li>
+          ))}
+        </ul>
+      )}
+
       {/* ── Title ───────────────────────────────────────────────────────── */}
       <h1
         style={{
@@ -279,6 +334,25 @@ export function MerchPurchasePanel({
             </div>
           </div>
         </>
+      )}
+
+      {/* ── Purchase notices ────────────────────────────────────────────── */}
+      {notices && notices.length > 0 && (
+        <div style={{ marginTop: 10 }}>
+          {notices.map((notice, idx) => (
+            <p
+              key={idx}
+              style={{
+                fontSize: 13,
+                color: "var(--color-merch-muted)",
+                lineHeight: 1.5,
+                margin: idx > 0 ? "4px 0 0" : 0,
+              }}
+            >
+              {notice}
+            </p>
+          ))}
+        </div>
       )}
 
       <div style={DIVIDER} />
