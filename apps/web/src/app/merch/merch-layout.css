@@ -1,0 +1,32 @@
+/*
+ * Merch layout scoped styles — applied to the /merch route only.
+ *
+ * Sets riotSans (--font-merch-display) on headings, card titles, CTA buttons,
+ * footer links, and uppercase display labels — matching the real merch.riotgames.com
+ * font split: riotSans for display/heading/CTA, Inter for body/prices/chrome.
+ *
+ * Selector scope: all rules are limited to the [data-merch-layout] attribute
+ * set on the layout root div, so they cannot leak into Hextech routes.
+ *
+ * DO NOT add raw hex here — only var(--color-merch-*) or var(--font-merch-*).
+ */
+
+/* Prevent the root Hextech-navy <body> from bleeding through on overscroll
+   (rubber-band) for merch routes — the real store body is white (#791). */
+body:has([data-merch-layout]) {
+  background-color: var(--color-merch-bg);
+}
+
+/* Apply display font to all headings and prominent text within the merch layout. */
+[data-merch-layout] h1,
+[data-merch-layout] h2,
+[data-merch-layout] h3,
+[data-merch-layout] h4 {
+  font-family: var(--font-merch-display);
+}
+
+/* CTA and primary buttons — riotSans weight 600, matching the real store */
+[data-merch-layout] button,
+[data-merch-layout] a[role="button"] {
+  font-family: var(--font-merch-display);
+}
