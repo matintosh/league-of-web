@@ -5,6 +5,15 @@
  * Wraps the gallery + purchase panel in MerchHeader + MerchFooter,
  * matching the shell pattern used by all other merch pages.
  * Holds cartOpen state and renders MerchCartDrawer.
+ *
+ * Layout (1280px desktop):
+ *   Full-bleed 2-col grid: 64.7% (gallery) / 35.3% (panel), NO outer max-width cap.
+ *   Gallery left edge at x=0; panel H1 lands ~x=867.
+ *   Breadcrumb bar spans full width above the grid.
+ *
+ * Layout (390px mobile):
+ *   Order: breadcrumb → compact title + [LoL logo][heart][share][badge] row → gallery → price/CTA.
+ *   The mobile header row sits ABOVE the gallery image (hoisted out of the panel).
  */
 
 import { useState } from "react";
@@ -18,6 +27,7 @@ import {
   MerchProductInfoTabs,
   MerchPurchasePanel,
   MerchCartDrawer,
+  MerchCollectionHero,
   MerchShopCarousel,
   MerchSizeGuideModal,
 } from "@low/ui";
@@ -34,7 +44,7 @@ export interface ProductPageClientProps {
   badges: string[];
   /** Full-text product description. */
   description: string;
-  /** Breadcrumb trail for MerchPurchasePanel. */
+  /** Breadcrumb trail for MerchBreadcrumbBar. */
   breadcrumb: string[];
   /**
    * Category trail rendered above the h1 in the purchase panel.
@@ -43,7 +53,8 @@ export interface ProductPageClientProps {
   categoryTrail?: string[];
   /**
    * Purchase notices between the price and the CTA.
-   * E.g. ["This product is not intended as a toy or children's product.", "Ships in 3–5 business days."]
+   * Real copy: "This product is not intended as a toy or children's product."
+   * + "This item typically ships within 2 weeks from purchase."
    */
   notices?: string[];
   /** Size/variant options with availability flags. */
@@ -54,6 +65,8 @@ export interface ProductPageClientProps {
   carouselProducts?: MerchProduct[];
   /** Banner image URL for the franchise carousel (e.g. a wide splash from Data Dragon). */
   carouselBannerImageUrl?: string;
+  /** Collection hero background image URL (used for the SHOP NOW band). */
+  collectionBannerImageUrl?: string;
 }
 
 /** /merch/product/[handle] interactive page shell. */
@@ -70,6 +83,7 @@ export function ProductPageClient({
   images,
   carouselProducts,
   carouselBannerImageUrl,
+  collectionBannerImageUrl,
 }: ProductPageClientProps) {
   const router = useRouter();
   const handleNavSelect = useMerchNav();
@@ -77,6 +91,13 @@ export function ProductPageClient({
   const [cartItems] = useState<MerchCartItem[]>([]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [sizeGuideUnit, setSizeGuideUnit] = useState<"in" | "cm">("in");
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const [selectedVariant, setSelectedVariant] = useState(
+    variants.length > 0 ? variants[0]?.label : undefined
+  );
+
+  // First badge for gallery badge overlay
+  const primaryBadge = badges.length > 0 ? badges[0] : undefined;
 
   return (
     <div
@@ -98,7 +119,6 @@ export function ProductPageClient({
         {/*
          * Breadcrumb bar — FULL WIDTH, above the 2-col gallery/panel row.
          * Real site: ~1280×60 bar at y≈130, spanning the page container.
-         * 16px ink text, 40px padding, 60px desktop / 40px mobile height.
          */}
         {breadcrumb && breadcrumb.length > 0 && (
           <MerchBreadcrumbBar
@@ -109,77 +129,131 @@ export function ProductPageClient({
           />
         )}
 
-        {/* 2-col gallery + purchase panel */}
-        <div
-          className="px-4 py-8 md:px-6 md:py-10"
-          style={{ maxWidth: "80rem", margin: "0 auto", width: "100%" }}
-        >
         {/*
-         * Desktop: grid with gallery ~62% / panel ~38% — gallery is the dominant column.
-         * Mobile: single column stack (flex-col), gallery full-width, no overflow.
-         * Measured real site at 1280px: gallery 688–828px, panel ~452px (grid, no gap).
+         * ── Mobile-only compact header row ────────────────────────────────
+         * Sits above the gallery on 390px viewports:
+         *   [compact title 16px] + [LoL logo] [heart] [share] [badge]
+         * Hidden on desktop (>768px) — the full panel handles it there.
          */}
-        <div className="flex flex-col gap-6 md:grid md:gap-0 md:items-start" style={{ gridTemplateColumns: "62% 38%" }}>
-          {/* Left: gallery — full-width on mobile, ~62% on desktop */}
-          <div className="w-full">
+        <div
+          className="merch-pdp-mobile-header"
+          style={{
+            display: "none",
+            padding: "12px 16px 0",
+            alignItems: "center",
+            gap: 8,
+            flexWrap: "wrap",
+          }}
+        >
+          <span
+            style={{
+              fontSize: 16,
+              fontWeight: 600,
+              color: "var(--color-merch-ink-dark)",
+              flex: "1 1 auto",
+              minWidth: 0,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {title}
+          </span>
+          {/* Badge chip */}
+          {primaryBadge && (
+            <span
+              style={{
+                fontSize: 13,
+                fontWeight: 400,
+                padding: "3px 7px",
+                borderRadius: 2,
+                backgroundColor: "var(--color-merch-badge-new)",
+                color: "var(--color-merch-ink-dark)",
+                flexShrink: 0,
+              }}
+            >
+              {primaryBadge}
+            </span>
+          )}
+        </div>
+
+        {/*
+         * ── Full-bleed 2-col PDP grid ─────────────────────────────────────
+         * Desktop: 64.7% gallery / 35.3% panel, full viewport width, ~40px internal gutters.
+         * Mobile: single column stack.
+         */}
+        <div
+          className="merch-pdp-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "64.7% 35.3%",
+            width: "100%",
+            alignItems: "start",
+          }}
+        >
+          {/* Left: gallery — full-bleed to left edge, 24px right padding on desktop */}
+          <div style={{ padding: "32px 24px 32px 40px", minWidth: 0 }}>
             <MerchProductGallery
               images={images}
               alt={title}
-              selectedIndex={0}
-              largeTiles
+              selectedIndex={galleryIndex}
+              onSelect={setGalleryIndex}
+              badgeLabel={primaryBadge}
+              carousel
             />
           </div>
 
-          {/* Right: purchase panel — full-width on mobile, ~38% on desktop with left padding */}
-          <div className="min-w-0" style={{ paddingLeft: "clamp(0px, 2.5vw, 40px)" }}>
+          {/* Right: purchase panel — 40px left padding matches real site ~x=867 */}
+          <div style={{ padding: "32px 40px 32px 24px", minWidth: 0 }}>
             <MerchPurchasePanel
               title={title}
               price={price}
               originalPrice={originalPrice}
               badges={badges}
-              description={description}
               categoryTrail={categoryTrail}
               notices={notices}
               variants={variants}
               variantLabel="Size"
-              selectedVariant="M"
-              quantity={1}
-              showSizeGuideLink
+              selectedVariant={selectedVariant}
+              onVariantChange={setSelectedVariant}
+              showQuantity={false}
+              showSizeGuideLink={variants.length > 0}
               onSizeGuideClick={() => setSizeGuideOpen(true)}
+              onWishlist={() => {}}
+              onShare={() => {}}
+              onAddToCart={() => {}}
             />
-            <MerchProductInfoTabs
-              tabs={[
-                {
-                  id: "description",
-                  label: "Description",
-                  content: <p style={{ margin: 0 }}>{description}</p>,
-                },
-              ]}
-              selectedTab="description"
-            />
+            <div style={{ marginTop: 32 }}>
+              <MerchProductInfoTabs
+                tabs={[
+                  {
+                    id: "description",
+                    label: "Description",
+                    content: <p style={{ margin: 0 }}>{description}</p>,
+                  },
+                ]}
+                selectedTab="description"
+              />
+            </div>
           </div>
         </div>
 
-        <p
-          style={{
-            marginTop: 32,
-            fontSize: 12,
-            color: "var(--color-merch-muted)",
-          }}
-        >
-          Demo route — static props. For interactive variant/qty/cart demo see{" "}
-          <a
-            href="/showcase/merch-purchase-panel"
-            style={{ color: "var(--color-merch-red)" }}
-          >
-            /showcase/merch-purchase-panel
-          </a>
-          .
-        </p>
+        {/*
+         * ── Collection SHOP NOW band ───────────────────────────────────────
+         * Real site: 1280×320 band between the product section and related carousel.
+         * Uses MerchCollectionHero as the band component.
+         */}
+        <div style={{ marginTop: 16 }}>
+          <MerchCollectionHero
+            heading="League of Legends"
+            description="Explore the full collection of officially licensed League of Legends merchandise."
+            backgroundImageUrl={collectionBannerImageUrl ?? carouselBannerImageUrl}
+            theme="dark"
+          />
         </div>
       </main>
 
-      {/* Franchise carousel — rendered below the product section when products are supplied */}
+      {/* Franchise carousel — below the collection band when products are supplied */}
       {carouselProducts && carouselProducts.length > 0 && carouselBannerImageUrl && (
         <section
           className="px-4 md:px-8"
@@ -219,6 +293,18 @@ export function ProductPageClient({
           { size: "2XL", measurements: { a: 29,   b: 30.5,  c: 25.25 } },
         ]}
       />
+
+      {/* Responsive styles — mobile layout overrides */}
+      <style>{`
+        @media (max-width: 768px) {
+          .merch-pdp-mobile-header {
+            display: flex !important;
+          }
+          .merch-pdp-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

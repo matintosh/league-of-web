@@ -106,17 +106,17 @@ export function MerchProductInfoTabs({
                   height: 39,
                   padding: "0 0 2px",
                   marginRight: 24,
-                  fontSize: 16,
-                  fontWeight: 600,
+                  fontSize: 18,
+                  fontWeight: 400,
                   fontFamily: "inherit",
                   cursor: "pointer",
                   background: "none",
                   border: "none",
                   borderBottom: isActive
-                    ? "2px solid var(--color-merch-ink)"
+                    ? "2px solid var(--color-merch-ink-dark)"
                     : "2px solid transparent",
                   color: isActive
-                    ? "var(--color-merch-ink)"
+                    ? "var(--color-merch-ink-dark)"
                     : "var(--color-merch-muted)",
                   transition: "color 120ms ease, border-color 120ms ease",
                   outline: "none",
@@ -151,8 +151,8 @@ export function MerchProductInfoTabs({
           style={{
             paddingTop: 16,
             fontSize: 16,
-            lineHeight: "normal",
-            color: "var(--color-merch-body)",
+            lineHeight: 1.6,
+            color: "var(--color-merch-ink-dark)",
           }}
         >
           {activeTab.content}
