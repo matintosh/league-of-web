@@ -135,7 +135,11 @@ export default function CollectionIndexPage() {
         {/* Real site: ink-dark (pure black), x=40 → px-10.                  */}
         {/* ------------------------------------------------------------------ */}
         <div className="mx-auto max-w-7xl px-10">
+          {/* H1: 48px desktop / 32px mobile single line (#827 fix).           */}
+          {/* merch-collection-list-h1 class used by RESPONSIVE_STYLES in     */}
+          {/* MerchCollectionList to apply the 32px mobile override.           */}
           <h1
+            className="merch-collection-list-h1"
             style={{
               fontSize: 48,
               fontWeight: 600,
