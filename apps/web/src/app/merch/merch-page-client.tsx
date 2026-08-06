@@ -18,10 +18,11 @@
  *
  * Homepage depth (matching real merch.riotgames.com ~9286px at 1280px):
  *   - Hero banner + franchise strip
- *   - Per-franchise group: full-width 1278×748 feature card + 4-up product grid
- *   - LOAD MORE button (presentational; matches the real red gold CTA)
- *   - LATEST COLLABORATIONS section (MerchCollabCarousel — HP/OMEN + Secretlab)
+ *   - ONE continuous 2-column add-to-cart product grid (no section headings,
+ *     no per-franchise rails, no feature cards, no SALE section)
+ *   - LOAD MORE button (gold full-bleed at 390; centered red at desktop)
  *   - Gift card promo band
+ *   - LATEST COLLABORATIONS section (MerchCollabCarousel — HP/OMEN + Secretlab)
  *   - Footer
  */
 
@@ -50,52 +51,22 @@ import {
 import {
   championSplashUrl,
   MERCH_PRODUCTS,
-  MERCH_FRANCHISE_FEATURE_CARDS,
   merchAssetUrl,
 } from "@low/fixtures";
-import type { MerchCartItem, MerchProduct, MerchFranchiseFeatureCard } from "@low/fixtures";
+import type { MerchCartItem } from "@low/fixtures";
 import type { MerchHeroSlide } from "@low/ui";
 import { useRouter } from "next/navigation";
 import { useMerchNav } from "@/lib/merch-nav";
 
 // ---------------------------------------------------------------------------
-// Product groups — partition MERCH_PRODUCTS by franchiseLabel for section layout
+// Product list — all products shown in one continuous grid (no Sale split)
 // ---------------------------------------------------------------------------
 
-/** Franchise groups in the order they appear on the real homepage. */
-const FRANCHISE_ORDER = [
-  "League of Legends",
-  "LoL Esports",
-  "Teamfight Tactics",
-  "VALORANT",
-  "Riftbound",
-  "Arcane",
-];
+/** All products in the order the fixtures define them. */
+const ALL_PRODUCTS = MERCH_PRODUCTS;
 
-function groupProductsByFranchise(products: MerchProduct[]): Map<string, MerchProduct[]> {
-  const map = new Map<string, MerchProduct[]>();
-  // Insert in franchise order first so Map iteration order is deterministic.
-  for (const label of FRANCHISE_ORDER) {
-    map.set(label, []);
-  }
-  for (const p of products) {
-    const label = p.franchiseLabel ?? "Other";
-    if (!map.has(label)) map.set(label, []);
-    map.get(label)!.push(p);
-  }
-  // Drop empty groups (e.g. if a franchise has no products).
-  for (const [k, v] of map.entries()) {
-    if (v.length === 0) map.delete(k);
-  }
-  return map;
-}
-
-// Products excluding sale items — sale items appear in a separate Sale group at the end
-const MAIN_PRODUCTS = MERCH_PRODUCTS.filter((p) => !p.badges?.includes("Sale"));
-const SALE_PRODUCTS = MERCH_PRODUCTS.filter((p) => p.badges?.includes("Sale"));
-
-// How many groups to show before the LOAD MORE button
-const INITIAL_GROUP_LIMIT = 4;
+/** Initial count of products to show before Load More. */
+const INITIAL_PRODUCT_COUNT = 16;
 
 // ---------------------------------------------------------------------------
 // Hero slides
@@ -103,6 +74,7 @@ const INITIAL_GROUP_LIMIT = 4;
 
 // Real hero banners — full-art campaign banners sourced from cdn.sanity.io (hotlinkable).
 // Slide A: League of Legends Classic campaign (consumer_products_live, 3296x1030).
+//   → This is the FIRST slide matching the real site's initial active hero.
 // Slide B: Riftbound Vendetta Akali (consumer_products_live, 3296x1030).
 const HERO_SLIDES: MerchHeroSlide[] = [
   {
@@ -247,158 +219,17 @@ const LATEST_COLLABS: MerchCollabEntry[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Franchise feature card component (page-local, not exported)
-// ---------------------------------------------------------------------------
-
-/**
- * FranchiseFeatureCard — full-width 1278×748 campaign card opening each brand
- * section. Matches the real merch homepage feature card design: full-bleed image
- * with a dark gradient scrim, franchise label, campaign headline, and CTA.
- */
-function FranchiseFeatureCard({
-  card,
-  onCtaClick,
-}: {
-  card: MerchFranchiseFeatureCard;
-  onCtaClick?: () => void;
-}) {
-  return (
-    <div
-      style={{
-        position: "relative",
-        width: "100%",
-        // Real: 1278×748 → aspect ratio ~17:10; we pin height at desktop to match.
-        aspectRatio: "1278 / 748",
-        maxHeight: 748,
-        overflow: "hidden",
-        backgroundColor: "var(--color-merch-ink-dark)",
-      }}
-    >
-      {/* Feature image */}
-      <img
-        src={card.imageUrl}
-        alt={`${card.franchiseLabel} — ${card.headline}`}
-        draggable={false}
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-        }}
-      />
-
-      {/* Scrim — dark gradient from bottom-left so text reads clearly */}
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(135deg, color-mix(in srgb, var(--color-merch-ink-dark) 72%, transparent) 0%, color-mix(in srgb, var(--color-merch-ink-dark) 35%, transparent) 55%, color-mix(in srgb, var(--color-merch-ink-dark) 8%, transparent) 100%)",
-        }}
-      />
-
-      {/* Content overlay */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-end",
-          padding: "40px 48px",
-          gap: 16,
-          fontFamily: "var(--font-merch)",
-        }}
-      >
-        {/* Franchise label — small uppercase muted */}
-        <span
-          style={{
-            fontSize: 13,
-            fontWeight: 600,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: "var(--color-merch-muted-on-dark)",
-            fontFamily: "var(--font-merch-display)",
-          }}
-        >
-          {card.franchiseLabel}
-        </span>
-
-        {/* Headline */}
-        <h2
-          style={{
-            margin: 0,
-            fontFamily: "var(--font-merch-display)",
-            fontSize: "clamp(32px, 4vw, 56px)",
-            fontWeight: 700,
-            lineHeight: 1.1,
-            color: "var(--color-merch-on-dark)",
-            textTransform: "uppercase",
-            letterSpacing: "0.04em",
-          }}
-        >
-          {card.headline}
-        </h2>
-
-        {/* Subcopy */}
-        {card.subcopy && (
-          <p
-            style={{
-              margin: 0,
-              fontSize: 16,
-              lineHeight: 1.6,
-              color: "var(--color-merch-body-on-dark)",
-              maxWidth: 420,
-            }}
-          >
-            {card.subcopy}
-          </p>
-        )}
-
-        {/* CTA */}
-        {card.ctaLabel && (
-          <button
-            type="button"
-            onClick={onCtaClick}
-            style={{
-              alignSelf: "flex-start",
-              padding: "13px 32px",
-              backgroundColor: "var(--color-merch-red)",
-              color: "var(--color-merch-on-dark)",
-              fontFamily: "var(--font-merch-display)",
-              fontSize: 16,
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              border: "none",
-              cursor: "pointer",
-              transition: "background-color 150ms",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                "var(--color-merch-red-dark)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                "var(--color-merch-red)";
-            }}
-          >
-            {card.ctaLabel}
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
 // Announcement
 // ---------------------------------------------------------------------------
 
 const ANNOUNCEMENT =
   "We're upgrading our warehouse! Orders (Riftbound excluded) may experience shipping delays, but we expect to resume normal operations before…";
+
+// ---------------------------------------------------------------------------
+// Footer artwork — faint character-art background wash (real site has this)
+// ---------------------------------------------------------------------------
+
+const FOOTER_ARTWORK_SRC = championSplashUrl("Jinx", 0);
 
 // ---------------------------------------------------------------------------
 // Page component
@@ -411,35 +242,15 @@ export function MerchPageClient() {
   const [announcement, setAnnouncement] = useState<string | undefined>(ANNOUNCEMENT);
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems] = useState<MerchCartItem[]>([]);
-  const [showAllGroups, setShowAllGroups] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_PRODUCT_COUNT);
 
   function handleContactSubmit(values: MerchContactFormValues) {
     // Presentational stub — a real implementation would POST to a support API.
     console.log("[MerchFooter] Contact form submitted:", values);
   }
 
-  // Build franchise groups from main (non-sale) products
-  const franchiseGroups = groupProductsByFranchise(MAIN_PRODUCTS);
-  const groupEntries = Array.from(franchiseGroups.entries());
-  const visibleGroups = showAllGroups
-    ? groupEntries
-    : groupEntries.slice(0, INITIAL_GROUP_LIMIT);
-  const hasMoreGroups = groupEntries.length > INITIAL_GROUP_LIMIT && !showAllGroups;
-
-  // Build a lookup from franchiseSlug → feature card
-  const featureCardByFranchise = new Map<string, MerchFranchiseFeatureCard>(
-    MERCH_FRANCHISE_FEATURE_CARDS.map((c) => [c.franchiseSlug, c]),
-  );
-
-  // Slug map: franchiseLabel → route slug
-  const labelToSlug: Record<string, string> = {
-    "League of Legends": "league-of-legends",
-    "LoL Esports": "lol-esports",
-    "Teamfight Tactics": "tft",
-    "VALORANT": "valorant",
-    "Riftbound": "riftbound",
-    "Arcane": "arcane",
-  };
+  const visibleProducts = ALL_PRODUCTS.slice(0, visibleCount);
+  const hasMore = visibleCount < ALL_PRODUCTS.length;
 
   return (
     <div
@@ -462,8 +273,7 @@ export function MerchPageClient() {
 
       {/* Main content */}
       <main className="flex-1">
-        {/* Hero banner — franchise control bar is NOW INSIDE the hero (1:1 real site).
-            The standalone MerchCategoryStrip is no longer rendered on this page.
+        {/* Hero banner — franchise control bar is INSIDE the hero (1:1 real site).
             Tiles with slideId switch the hero slide; others route to their collection. */}
         <MerchHeroBanner
           slides={HERO_SLIDES}
@@ -472,118 +282,72 @@ export function MerchPageClient() {
           onSelectFranchise={(slug) => router.push(`/merch/collection/${slug}`)}
         />
 
-        {/* Franchise product sections — feature card + 4-up product grid per brand */}
-        {visibleGroups.map(([label, products]) => {
-          const slug = labelToSlug[label] ?? label.toLowerCase().replace(/\s+/g, "-");
-          const featureCard = featureCardByFranchise.get(slug);
-          return (
-            <section key={label} aria-label={label}>
-              {/* Full-width franchise feature card (1278×748) */}
-              {featureCard && (
-                <FranchiseFeatureCard
-                  card={featureCard}
-                  onCtaClick={() => router.push(`/merch/collection/${slug}`)}
-                />
-              )}
+        {/* ── Continuous 2-column product grid ──────────────────────────────
+            Real homepage below the hero: ONE flush 2-col grid, NO per-franchise
+            rails, NO feature-card headlines, NO section headings, NO SALE section.
+            Products in the order the fixture defines them (sale items included
+            in the same stream, not a separate block). */}
+        <MerchProductGrid columns={2}>
+          {visibleProducts.map((product) => (
+            <MerchProductCard
+              key={product.slug}
+              slug={product.slug}
+              title={product.title}
+              imageUrl={product.imageUrl}
+              price={product.price}
+              originalPrice={product.originalPrice}
+              badge={product.badge}
+              badges={product.badges}
+              franchiseLabel={product.franchiseLabel}
+              onClick={() => router.push(`/merch/product/${product.slug}`)}
+            />
+          ))}
+        </MerchProductGrid>
 
-              {/* 4-up product grid with brand rail */}
-              <MerchProductGrid
-                brandRail={label.toUpperCase()}
-                filterBadges={[
-                  { label: "New", active: true },
-                  { label: "Limited Edition" },
-                  { label: "Preorder" },
-                ]}
-                columns={4}
-                onShopAll={() => router.push(`/merch/collection/${slug}`)}
-              >
-                {products.map((product) => (
-                  <MerchProductCard
-                    key={product.slug}
-                    slug={product.slug}
-                    title={product.title}
-                    imageUrl={product.imageUrl}
-                    price={product.price}
-                    originalPrice={product.originalPrice}
-                    badge={product.badge}
-                    badges={product.badges}
-                    franchiseLabel={product.franchiseLabel}
-                    onClick={() => router.push(`/merch/product/${product.slug}`)}
-                  />
-                ))}
-              </MerchProductGrid>
-            </section>
-          );
-        })}
-
-        {/* Sale section — always at the end */}
-        {SALE_PRODUCTS.length > 0 && (
-          <section aria-label="Sale">
-            <MerchProductGrid
-              brandRail="SALE"
-              filterBadges={[{ label: "Sale", active: true }]}
-              columns={4}
-              onShopAll={() => router.push("/merch/collection/sale")}
-            >
-              {SALE_PRODUCTS.map((product) => (
-                <MerchProductCard
-                  key={product.slug}
-                  slug={product.slug}
-                  title={product.title}
-                  imageUrl={product.imageUrl}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                  badge={product.badge}
-                  badges={product.badges}
-                  franchiseLabel={product.franchiseLabel}
-                  onClick={() => router.push(`/merch/product/${product.slug}`)}
-                />
-              ))}
-            </MerchProductGrid>
-          </section>
-        )}
-
-        {/* LOAD MORE button — red riotSans CTA, centered, 239×50, matches real site */}
-        {hasMoreGroups && (
+        {/* ── Load More — homepage variant ──────────────────────────────────
+            Real merch homepage (1280px): red, centered, 239×50.
+            Real merch homepage (390px): full-bleed 390×50, gold (#C49933) bg,
+              black text, thin white outline.
+            The text is 'Load more' CSS-uppercased (not hard-coded 'LOAD MORE'). */}
+        {hasMore && (
           <div
             style={{
               display: "flex",
               justifyContent: "center",
-              padding: "32px 24px 48px",
             }}
           >
+            {/*
+              data-hp-load-more: picked up by merch-layout.css for responsive colors:
+              - mobile: full-bleed gold (#C49933) bg, black text, 1px white outline
+              - desktop (≥768): centered 239×50 red, white text, no outline
+            */}
             <button
               type="button"
-              onClick={() => setShowAllGroups(true)}
+              data-hp-load-more
+              onClick={() => setVisibleCount((n) => n + INITIAL_PRODUCT_COUNT)}
               style={{
-                width: 239,
                 height: 50,
-                backgroundColor: "var(--color-merch-red)",
-                color: "var(--color-merch-on-dark)",
-                fontFamily: "var(--font-merch-display)",
                 fontSize: 16,
                 fontWeight: 600,
                 textTransform: "uppercase",
-                letterSpacing: "0.06em",
+                letterSpacing: "0.32px",
                 border: "none",
                 cursor: "pointer",
                 transition: "background-color 150ms",
               }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--color-merch-red-dark)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--color-merch-red)";
-              }}
             >
-              LOAD MORE
+              Load more
             </button>
           </div>
         )}
 
-        {/* LATEST COLLABORATIONS — ~506px section, after products, before gift band */}
+        {/* ── Gift card promo band — BEFORE collabs (real section order) ── */}
+        <MerchGiftCardBand
+          cards={GIFT_CARDS}
+          onCtaClick={() => router.push("/merch/shop-all")}
+        />
+
+        {/* ── Latest Collaborations — after gift band, before footer ──── */}
         <MerchCollabCarousel
           collabs={LATEST_COLLABS.map((c) => ({
             ...c,
@@ -592,15 +356,10 @@ export function MerchPageClient() {
         />
       </main>
 
-      {/* Gift card promo band — above footer, ~447px */}
-      <MerchGiftCardBand
-        cards={GIFT_CARDS}
-        onCtaClick={() => router.push("/merch/shop-all")}
-      />
-
-      {/* Footer */}
+      {/* Footer — artworkSrc supplies the faint character-art background wash */}
       <MerchFooter
         copyrightText="Copyright Riot Games 2025"
+        artworkSrc={FOOTER_ARTWORK_SRC}
         onContactSubmit={handleContactSubmit}
       />
 
