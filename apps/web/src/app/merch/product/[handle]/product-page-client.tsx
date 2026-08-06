@@ -16,7 +16,7 @@
  *   The mobile header row sits ABOVE the gallery image (hoisted out of the panel).
  */
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMerchNav } from "@/lib/merch-nav";
 import {
@@ -43,8 +43,11 @@ export interface ProductPageClientProps {
   originalPrice?: string;
   /** Badge labels rendered by MerchPurchasePanel. */
   badges: string[];
-  /** Full-text product description. */
-  description: string;
+  /**
+   * Description panel content — ReactNode for rich products (multi-paragraph,
+   * measurements, disclaimer), plain string or <p> for simple products.
+   */
+  description: React.ReactNode;
   /** Breadcrumb trail for MerchBreadcrumbBar. */
   breadcrumb: string[];
   /**
@@ -321,15 +324,15 @@ export function ProductPageClient({
               onBuyNow={() => {}}
             />
             <div style={{ marginTop: 32 }}>
+              {/* Accordion starts COLLAPSED per real PDP — no selectedTab passed */}
               <MerchProductInfoTabs
                 tabs={[
                   {
                     id: "description",
                     label: "Description",
-                    content: <p style={{ margin: 0 }}>{description}</p>,
+                    content: description,
                   },
                 ]}
-                selectedTab="description"
               />
             </div>
           </div>

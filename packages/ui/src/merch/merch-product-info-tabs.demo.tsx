@@ -1,8 +1,8 @@
 "use client";
 
 /**
- * MerchProductInfoTabsDemo — interactive multi-tab demo with useState.
- * Client component; imported by the showcase for the multi-tab variant.
+ * MerchProductInfoTabsDemo — interactive multi-row accordion demo with useState.
+ * Client component; imported by the showcase for the multi-row variant.
  */
 
 import { useState } from "react";
@@ -74,17 +74,30 @@ const MULTI_TABS = [
   },
 ];
 
-/** Interactive multi-tab demo for the showcase. */
+/** Interactive multi-row accordion demo for the showcase. */
 export function MerchProductInfoTabsDemo() {
-  const [selected, setSelected] = useState("description");
+  const [lastToggle, setLastToggle] = useState<string | null>(null);
 
   return (
     <div style={{ maxWidth: 560, padding: 24, fontFamily: "system-ui, sans-serif" }}>
       <MerchProductInfoTabs
         tabs={MULTI_TABS}
-        selectedTab={selected}
-        onTabChange={setSelected}
+        onTabChange={(id, open) =>
+          setLastToggle(`"${id}" is now ${open ? "open" : "closed"}`)
+        }
       />
+      {lastToggle && (
+        <p
+          style={{
+            marginTop: 12,
+            fontSize: 12,
+            color: "var(--color-merch-muted)",
+            fontFamily: "monospace",
+          }}
+        >
+          Last toggle: {lastToggle}
+        </p>
+      )}
     </div>
   );
 }
