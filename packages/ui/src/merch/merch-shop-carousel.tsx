@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * MerchShopCarousel — franchise-branded product carousel for the merch PDP.
+ * MerchShopCarousel — franchise-branded related-products carousel for the merch PDP.
  *
  * MERCH COMPONENT — use the merch design system: --color-merch-* tokens
  * (add a token to @low/tokens if one is missing, sampled from the real store)
@@ -12,19 +12,23 @@
  * out, NO fetching in @low/ui, types from @low/fixtures), showcase server-safe
  * (no 'use client'; stateful demos in *.demo.tsx), SVG ids from useId.
  *
- * Measured from merch.riotgames.com/en-us/product/league-classic-collectors-box/
- * at 1280px desktop:
- *   - Section:      full-width, padding-bottom: 48px
- *   - Banner area:  320px tall, full-width, background-image cover
- *   - Banner logo:  ~200px wide, left-aligned with ~40px left inset
- *   - Banner CTA:   "Shop Now" — primary red button, right of logo ~24px gap
- *   - Label h2:     16px / 700 / --color-merch-ink, left-aligned, ~24px padding
- *   - Card track:   355px × 375px cards, ~3+ visible at 1280px, CSS scroll-snap
- *   - Nav arrows:   prev/next positioned at vertical center of card track
- *   - Bottom pad:   48px
+ * Measured from merch.riotgames.com/en-us/product/<handle>/ at 1280px desktop:
+ *   - Section:        full-width, pb 48px
+ *   - Banner area:    320px tall, full-width, background-image cover
+ *   - Banner logo:    ~200px wide, left-aligned with ~40px left inset
+ *   - Banner CTA:     "Shop Now" — primary red button, right of logo ~24px gap
+ *   - Franchise label: VERTICAL rotated uppercase wordmark on left edge of card row
+ *                     (NOT a horizontal h2); ~197px left padding of first card
+ *   - Card track:     343px × 375px cards, 3 per view at 1280px, CSS scroll-snap
+ *   - Card gap:       20px between cards
+ *   - Card x-offsets: 197 / 560 / 923 (measured)
+ *   - Cards:          hasAddToCart=false — no ATC bar, navigation intent only
+ *   - Nav arrows:     prev/next positioned at vertical center of card track
+ *   - Pagination dots: centered below card track; dark dots on light bg
+ *   - Bottom pad:     48px
  */
 
-import { useId, useRef } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { MerchProduct } from "@low/fixtures";
 import { MerchProductCard } from "./merch-product-card";
 
@@ -33,7 +37,7 @@ import { MerchProductCard } from "./merch-product-card";
 // ---------------------------------------------------------------------------
 
 export interface MerchShopCarouselProps {
-  /** Franchise name shown as the h2 label, e.g. "League of Legends". */
+  /** Franchise name shown as the rotated vertical label on the left edge, e.g. "League of Legends". */
   franchiseName: string;
   /** Banner background image URL (supplied by page — 1680×400 WebP). */
   bannerImageUrl: string;
@@ -48,17 +52,23 @@ export interface MerchShopCarouselProps {
 }
 
 // ---------------------------------------------------------------------------
-// Constants
+// Constants (measured from merch.riotgames.com)
 // ---------------------------------------------------------------------------
 
-/** Card width in px (measured from merch.riotgames.com). */
-const CARD_W = 355;
+/** Card width in px — measured: first card x=197, second x=560 → step=363, card=343, gap=20. */
+const CARD_W = 343;
 
-/** Card height in px. */
+/** Card height in px — measured at 1280px. */
 const CARD_H = 375;
 
 /** Gap between cards in the scroll track (px). */
-const CARD_GAP = 16;
+const CARD_GAP = 20;
+
+/**
+ * Cards visible per page — 3-up as measured on the real site at 1280px.
+ * Used for pagination dot count and scroll-by-page logic.
+ */
+const CARDS_PER_PAGE = 3;
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -66,7 +76,7 @@ const CARD_GAP = 16;
 
 /**
  * CarouselArrow — prev/next nav button.
- * Uses a unique SVG id to avoid collisions when multiple carousels mount.
+ * Uses a unique SVG clip-path id to avoid collisions when multiple carousels mount.
  */
 function CarouselArrow({
   direction,
@@ -133,10 +143,16 @@ function CarouselArrow({
 // ---------------------------------------------------------------------------
 
 /**
- * MerchShopCarousel — franchise-branded product carousel.
- * Composes a 320px banner area (bg image + optional logo + "Shop Now" CTA),
- * a franchise h2 label, and a CSS scroll-snap card track of MerchProductCards
- * (355×375px each, ~3+ visible at 1280px) with prev/next arrow controls.
+ * MerchShopCarousel — franchise-branded related-products carousel.
+ *
+ * Layout (1280px):
+ *   1. 320px banner (bg image + optional logo + "Shop Now" CTA)
+ *   2. Card row: vertical rotated franchise wordmark on LEFT edge + 3-up scroll-snap
+ *      card track (343×375px each, gap 20px) with prev/next arrows
+ *   3. Pagination dots centered below the card track
+ *
+ * Cards render WITHOUT the Add-to-Cart bar (hasAddToCart=false) — related-products
+ * intent is navigation, not in-page purchase.
  *
  * Place below the gallery+panel row on /merch/product/[handle] pages.
  */
@@ -153,13 +169,44 @@ export function MerchShopCarousel({
   const prevClipId = `${uid}-prev-clip`;
   const nextClipId = `${uid}-next-clip`;
 
-  /** Scroll the card track by approximately one card width. */
-  function scrollBy(dir: "prev" | "next") {
+  // ---------------------------------------------------------------------------
+  // Pagination state — track which "page" (group of CARDS_PER_PAGE) is active
+  // ---------------------------------------------------------------------------
+  const totalPages = Math.max(1, Math.ceil(products.length / CARDS_PER_PAGE));
+  const [activePage, setActivePage] = useState(0);
+
+  /** Scroll the card track by one full page (CARDS_PER_PAGE cards). */
+  const scrollBy = useCallback(
+    (dir: "prev" | "next") => {
+      const track = trackRef.current;
+      if (!track) return;
+      const delta = (CARD_W + CARD_GAP) * CARDS_PER_PAGE * (dir === "prev" ? -1 : 1);
+      track.scrollBy({ left: delta, behavior: "smooth" });
+    },
+    []
+  );
+
+  /** Scroll to a specific page index. */
+  const scrollToPage = useCallback((page: number) => {
     const track = trackRef.current;
     if (!track) return;
-    const delta = (CARD_W + CARD_GAP) * (dir === "prev" ? -1 : 1);
-    track.scrollBy({ left: delta, behavior: "smooth" });
-  }
+    const left = page * CARDS_PER_PAGE * (CARD_W + CARD_GAP);
+    track.scrollTo({ left, behavior: "smooth" });
+  }, []);
+
+  /** Keep activePage in sync with the track's scroll position. */
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    function onScroll() {
+      if (!track) return;
+      const pageWidth = CARDS_PER_PAGE * (CARD_W + CARD_GAP);
+      const page = Math.round(track.scrollLeft / pageWidth);
+      setActivePage(Math.min(page, totalPages - 1));
+    }
+    track.addEventListener("scroll", onScroll, { passive: true });
+    return () => track.removeEventListener("scroll", onScroll);
+  }, [totalPages]);
 
   return (
     <section
@@ -253,83 +300,178 @@ export function MerchShopCarousel({
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Franchise label h2                                                  */}
-      {/* ------------------------------------------------------------------ */}
-      <h2
-        style={{
-          fontSize: 16,
-          fontWeight: 700,
-          color: "var(--color-merch-ink)",
-          margin: 0,
-          padding: "16px 24px 12px",
-        }}
-      >
-        {franchiseName}
-      </h2>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Card track + arrow controls                                          */}
+      {/* Card row: vertical franchise label (left edge) + card track + arrows */}
+      {/*                                                                     */}
+      {/* Real 1280px layout:                                                 */}
+      {/*   Left label column ~40px wide — vertical rotated uppercase text    */}
+      {/*   Card track — 3-up, 343px cards, 20px gap, CSS scroll-snap        */}
+      {/*   Prev/next arrows overlap the track at track left/right edges      */}
       {/* ------------------------------------------------------------------ */}
       <div
         style={{
           position: "relative",
-          height: CARD_H,
+          display: "flex",
+          alignItems: "stretch",
+          marginTop: 24,
         }}
       >
-        {/* Prev arrow */}
-        <CarouselArrow
-          direction="prev"
-          ariaLabel="Previous products"
-          onClick={() => scrollBy("prev")}
-          clipId={prevClipId}
-        />
-
-        {/* Scrollable card track — CSS scroll-snap */}
+        {/* ── Vertical rotated franchise wordmark ────────────────────────── */}
+        {/*   "LEAGUE OF LEGENDS" rotated 90° CCW on the left edge.          */}
+        {/*   Container is ~40px wide; text is rotated with writing-mode or  */}
+        {/*   transform. Using transform rotate(-90deg) for crisp rendering. */}
         <div
-          ref={trackRef}
+          aria-hidden
           style={{
+            width: 40,
+            flexShrink: 0,
             display: "flex",
-            gap: CARD_GAP,
-            overflowX: "auto",
-            scrollSnapType: "x mandatory",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            height: CARD_H,
-            paddingInline: 40,
-            boxSizing: "border-box",
+            alignItems: "center",
+            justifyContent: "center",
+            /* Enough height to contain the track */
+            minHeight: CARD_H,
+            position: "relative",
           }}
         >
-          {products.map((product) => (
-            <div
-              key={product.slug}
-              style={{
-                flex: `0 0 ${CARD_W}px`,
-                width: CARD_W,
-                height: CARD_H,
-                scrollSnapAlign: "start",
-              }}
-            >
-              <MerchProductCard
-                slug={product.slug}
-                title={product.title}
-                imageUrl={product.imageUrl}
-                price={product.price}
-                originalPrice={product.originalPrice}
-                badge={product.badge}
-                onClick={onProductClick}
-              />
-            </div>
-          ))}
+          <span
+            style={{
+              display: "block",
+              transformOrigin: "center center",
+              transform: "rotate(-90deg)",
+              whiteSpace: "nowrap",
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "var(--color-merch-franchise-label)",
+              fontFamily: "var(--font-merch)",
+              /* Keep the rotated text within the 40px column */
+              position: "absolute",
+            }}
+          >
+            {franchiseName}
+          </span>
         </div>
 
-        {/* Next arrow */}
-        <CarouselArrow
-          direction="next"
-          ariaLabel="Next products"
-          onClick={() => scrollBy("next")}
-          clipId={nextClipId}
-        />
+        {/* ── Card track + arrows ────────────────────────────────────────── */}
+        <div
+          style={{
+            position: "relative",
+            flex: 1,
+            minWidth: 0,
+            height: CARD_H,
+          }}
+        >
+          {/* Prev arrow */}
+          <CarouselArrow
+            direction="prev"
+            ariaLabel="Previous products"
+            onClick={() => scrollBy("prev")}
+            clipId={prevClipId}
+          />
+
+          {/* Scrollable card track — CSS scroll-snap, 3-up */}
+          <div
+            ref={trackRef}
+            style={{
+              display: "flex",
+              gap: CARD_GAP,
+              overflowX: "auto",
+              scrollSnapType: "x mandatory",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              height: CARD_H,
+              paddingInline: 40,
+              boxSizing: "border-box",
+            }}
+          >
+            {products.map((product) => (
+              <div
+                key={product.slug}
+                style={{
+                  flex: `0 0 ${CARD_W}px`,
+                  width: CARD_W,
+                  height: CARD_H,
+                  scrollSnapAlign: "start",
+                }}
+              >
+                <MerchProductCard
+                  slug={product.slug}
+                  title={product.title}
+                  imageUrl={product.imageUrl}
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                  badge={product.badge}
+                  hasAddToCart={false}
+                  onClick={onProductClick}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Next arrow */}
+          <CarouselArrow
+            direction="next"
+            ariaLabel="Next products"
+            onClick={() => scrollBy("next")}
+            clipId={nextClipId}
+          />
+        </div>
       </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Pagination dots — centered below the card track.                   */}
+      {/* Dark dots on light bg (--color-merch-dot-active-light /            */}
+      {/* --color-merch-dot-inactive-light). One dot per page group.         */}
+      {/* ------------------------------------------------------------------ */}
+      {totalPages > 1 && (
+        <div
+          role="tablist"
+          aria-label={`${franchiseName} carousel pages`}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            marginTop: 16,
+          }}
+        >
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              role="tab"
+              type="button"
+              aria-selected={i === activePage}
+              aria-label={`Page ${i + 1} of ${totalPages}`}
+              onClick={() => scrollToPage(i)}
+              style={{
+                width: i === activePage ? 20 : 8,
+                height: 8,
+                borderRadius: 4,
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                transition: "width 0.2s ease, background-color 0.2s ease",
+                backgroundColor:
+                  i === activePage
+                    ? "var(--color-merch-dot-active-light)"
+                    : "var(--color-merch-dot-inactive-light)",
+              }}
+              onMouseEnter={(e) => {
+                if (i !== activePage) {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    "var(--color-merch-dot-inactive-light-hover)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (i !== activePage) {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    "var(--color-merch-dot-inactive-light)";
+                }
+              }}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
