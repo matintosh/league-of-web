@@ -112,7 +112,7 @@ export const MERCH_SUPPORT_TABS: MerchSupportTab[] = [
   { slug: "returns",              label: "Return Policy" },
   { slug: "riot-mart",            label: "Riot Mart | My Shop" },
   { slug: "shipping",             label: "Shipping Methods & Estimated Arrival Times" },
-  { slug: "verify-your-product",  label: "Verify Your Order" },
+  { slug: "verify-your-product",  label: "Verify Your Product" },
 ];
 
 // ---------------------------------------------------------------------------
