@@ -14,7 +14,7 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
   name: "Merch Product Gallery",
   area: "merch",
   description:
-    "PDP left column: main image (1:1 square, object-fit contain — product art floats on the surface) + thumbnail strip (72×72, 8px gap). Active thumb: 2px ink border. Inactive: 1px border. Strip hidden for single image. Controlled via selectedIndex + onSelect. Measured from merch.riotgames.com PDPs.",
+    "PDP left column: main image (1:1 square, max 640px, object-fit contain) + secondary images. Default: 72×72 thumbnail strip. largeTiles=true (real PDP): secondary images as ~640×640 tiles in a 2-up grid below the hero (verified merch.riotgames.com 2026-08). Active thumb/tile: 2px ink border. Inactive: 1px border. Strip/tiles hidden for single image.",
   variants: [
     {
       name: "4-image gallery — first selected (static)",
@@ -84,6 +84,37 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
             alt="Collector's Print"
             aspectRatio="4 / 5"
             selectedIndex={0}
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Large-tile layout — 4 images (real PDP style)",
+      notes:
+        "largeTiles=true: hero constrained to 640px wide; secondary images render as ~640×640 tiles in a 2-up grid below. Matches verified real PDP at y≈930.",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 680, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductGallery
+            images={[IMG_A, IMG_B, IMG_C, IMG_D]}
+            alt="Amumu Plush"
+            selectedIndex={0}
+            largeTiles
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Large-tile layout — 3 images",
+      notes: "3 images with largeTiles=true; third tile spans full width when odd count.",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 680, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductGallery
+            images={[IMG_C, IMG_D, IMG_E]}
+            alt="Collector's Box"
+            selectedIndex={0}
+            largeTiles
           />
         </div>
       ),

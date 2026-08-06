@@ -15,20 +15,25 @@ export const merchPurchasePanelShowcase: ShowcaseEntry = {
   name: "Merch Purchase Panel",
   area: "merch",
   description:
-    "PDP right column: title (clamp 32–48px/700), inline badge chips, price (16px/400; sale = struck original + red), size chip strip (active ink bg+border, disabled 0.35 opacity+line-through), qty stepper (40×40, minus disabled at 1), full-width Add to Cart (50px, 16px/600, merch-red). Measured from merch.riotgames.com PDP.",
+    "PDP right column: category trail (muted uppercase above h1), title (clamp 32–48px/700), inline badge chips, price (16px/400; sale = struck original + red), purchase notices (13px muted between price and CTA), size chip strip (active ink bg+border, disabled 0.35 opacity+line-through), qty stepper (40×40, minus disabled at 1), full-width Add to Cart (50px, 16px/600, merch-red). Measured from merch.riotgames.com PDP.",
   variants: [
     {
-      name: "Normal — sizes, one selected",
+      name: "Normal — sizes, one selected, category trail + notices",
       notes:
-        "M selected (active chip); XS/S/XL available; L/XXL disabled (out of stock). Qty=1 so minus is disabled.",
+        "Category trail above h1; M selected (active chip); XS/S/XL available; L/XXL disabled (out of stock). Qty=1 so minus is disabled. Purchase notices between price and CTA.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 560, padding: 24, fontFamily: "system-ui, sans-serif" }}>
           <MerchPurchasePanel
             breadcrumb={["Home", "Tops", "MSI 2026 Tee"]}
+            categoryTrail={["Apparel", "T-Shirts", "League of Legends"]}
             title="MSI 2026 Tee"
             price="$39.99"
             badges={["New"]}
+            notices={[
+              "This product is not intended as a toy or children's product.",
+              "Ships within 3–5 business days.",
+            ]}
             variants={SIZES}
             variantLabel="Size"
             selectedVariant="M"

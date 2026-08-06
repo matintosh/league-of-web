@@ -36,6 +36,16 @@ export interface ProductPageClientProps {
   description: string;
   /** Breadcrumb trail for MerchPurchasePanel. */
   breadcrumb: string[];
+  /**
+   * Category trail rendered above the h1 in the purchase panel.
+   * E.g. ["Collectibles", "Plush", "League of Legends"].
+   */
+  categoryTrail?: string[];
+  /**
+   * Purchase notices between the price and the CTA.
+   * E.g. ["This product is not intended as a toy or children's product.", "Ships in 3–5 business days."]
+   */
+  notices?: string[];
   /** Size/variant options with availability flags. */
   variants: { label: string; available: boolean }[];
   /** Ordered list of gallery image URLs. */
@@ -54,6 +64,8 @@ export function ProductPageClient({
   badges,
   description,
   breadcrumb,
+  categoryTrail,
+  notices,
   variants,
   images,
   carouselProducts,
@@ -114,6 +126,7 @@ export function ProductPageClient({
               images={images}
               alt={title}
               selectedIndex={0}
+              largeTiles
             />
           </div>
 
@@ -125,6 +138,8 @@ export function ProductPageClient({
               originalPrice={originalPrice}
               badges={badges}
               description={description}
+              categoryTrail={categoryTrail}
+              notices={notices}
               variants={variants}
               variantLabel="Size"
               selectedVariant="M"
