@@ -46,6 +46,7 @@
   --color-merch-surface:     #f5f5f5; /* card / panel / footer background              */
   --color-merch-surface-alt: #f7f7f7; /* gift-card band / alternate section bg          */
   --color-merch-border:      #e5e5e5; /* dividers, card outlines                       */
+  --color-merch-border-light: #d0d0d0; /* lighter divider — FAQs h2 bottom rule, strip arrow borders */
 
   /* ── Header / Footer (dark bar sampled from merch.riotgames.com) ──── */
   /* Header background — remeasured per issue #856: real header is pure black rgb(0,0,0),

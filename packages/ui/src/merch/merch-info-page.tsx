@@ -13,15 +13,20 @@
  *
  * Measured from merch.riotgames.com info pages (/en-us/faqs/, /en-us/shipping/):
  *   - Page background: --color-merch-bg (white).
- *   - Content container: max-w-[1000px] centered, left-aligned prose (real content ~936px wide at 1280).
- *   - Page title (h2 'FAQs'): 32px top+bottom padding; riotSans 38px desktop / 28px mobile (same as before).
- *   - FAQ category h2: Inter 18px/600, no uppercase, black (--color-merch-ink-dark).
+ *   - Content container: padding 0 32px → content x=172, w=936 at 1280; top rhythm
+ *     comes from the h2's own 32px top padding (not from pt-10/12 on the container).
+ *   - Page title (h2 "FAQs"): padding 32px 0 top+bottom; 1px bottom border
+ *     --color-merch-border-light (#d0d0d0); riotSans 38px desktop / 28px mobile; lh 1.1.
+ *   - FAQ category h2: Inter 18px/600, no uppercase, black (--color-merch-ink-dark);
+ *     line-height 1.25 (22.5px at 18px — real: 22.5 measured).
+ *   - FAQ question rows: ~56px tall, 16px vertical padding (py-4 = 16px each side).
  *   - FAQ question h3 triggers: riotSans 18.72px/700, right chevron, collapsible.
  *   - FAQ answer: 16px, line-height normal (~1.2), --color-merch-body; hidden until expanded.
+ *   - Chevron: small filled right-pointing triangle ~10px grey (not stroked SVG).
  *   - Body paragraph: 16px, line-height normal (~1.2), --color-merch-body.
  *   - Lists: default browser list style, 16px, --color-merch-body, left-indented ~1.5rem.
  *   - Section divider: 1px --color-merch-border between major h2 sections.
- *   - Page top padding: ~40–48px (py-10 md:py-12); bottom ~64px (pb-16).
+ *   - Bottom: ~64px (pb-16).
  */
 
 import { useState } from "react";
@@ -67,7 +72,11 @@ function FaqAccordion({ sections }: FaqAccordionProps) {
     <div>
       {sections.map((section, si) => (
         <div key={section.heading} className="mb-8">
-          {/* Category heading: Inter 18px/600, no uppercase, black — real: "GENERAL QUESTIONS" etc. */}
+          {/*
+            Category heading: Inter 18px/600, no uppercase, black.
+            Line-height 1.25 (real: 22.5px at 18px, measured live).
+            Real labels: "GENERAL QUESTIONS", "BILLING AND ORDER QUESTIONS", "TECHNICAL QUESTIONS".
+          */}
           <h2
             className="mb-4 text-[18px] font-semibold"
             style={{
@@ -75,6 +84,7 @@ function FaqAccordion({ sections }: FaqAccordionProps) {
               fontFamily: "Inter, sans-serif",
               textTransform: "none",
               letterSpacing: "normal",
+              lineHeight: 1.25,
             }}
           >
             {section.heading}
@@ -92,7 +102,8 @@ function FaqAccordion({ sections }: FaqAccordionProps) {
                 <div key={key}>
                   {/*
                     Question trigger — riotSans 18.72px/700, right chevron.
-                    Real: collapsible h3 button with chevron pointing right (collapsed) / down (expanded).
+                    Row height: ~56px, 16px vertical padding (py-4).
+                    Real: collapsible h3 button with filled triangle chevron.
                   */}
                   <button
                     type="button"
@@ -103,33 +114,36 @@ function FaqAccordion({ sections }: FaqAccordionProps) {
                       color: "var(--color-merch-ink-dark)",
                       background: "none",
                       border: "none",
+                      minHeight: 56,
                     }}
                   >
                     <h3
-                      className="text-[18.72px] font-bold leading-normal"
-                      style={{ color: "var(--color-merch-ink-dark)" }}
+                      className="text-[18.72px] font-bold"
+                      style={{
+                        color: "var(--color-merch-ink-dark)",
+                        lineHeight: 1.1,
+                      }}
                     >
                       {item.question}
                     </h3>
-                    {/* Chevron — right when collapsed, down when expanded */}
+                    {/*
+                      Chevron — small filled right-pointing triangle ~10px grey.
+                      Real: filled triangle (not stroked SVG); rotates down when expanded.
+                    */}
                     <svg
-                      width={20}
-                      height={20}
-                      viewBox="0 0 20 20"
-                      fill="none"
+                      width={10}
+                      height={10}
+                      viewBox="0 0 10 10"
                       aria-hidden
                       className="shrink-0 transition-transform duration-200"
                       style={{
                         transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
-                        color: "var(--color-merch-ink)",
                       }}
                     >
-                      <path
-                        d="M7 4l6 6-6 6"
-                        stroke="currentColor"
-                        strokeWidth={1.5}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                      {/* Filled right-pointing triangle */}
+                      <polygon
+                        points="0,0 10,5 0,10"
+                        fill="var(--color-merch-muted)"
                       />
                     </svg>
                   </button>
@@ -178,10 +192,14 @@ function Block({ block, index }: { block: MerchInfoBlock; index: number }) {
             style={{ borderColor: "var(--color-merch-border)" }}
           />
         )}
-        {/* 28px on mobile → 38px on md+; ls -0.02em */}
+        {/* 28px on mobile → 38px on md+; ls -0.02em; lh 1.1 */}
         <h2
           className="mb-3 mt-6 text-[28px] font-bold uppercase first:mt-0 md:text-[38px]"
-          style={{ color: "var(--color-merch-ink)", letterSpacing: "-0.02em" }}
+          style={{
+            color: "var(--color-merch-ink)",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.1,
+          }}
         >
           {content as string}
         </h2>
@@ -193,8 +211,8 @@ function Block({ block, index }: { block: MerchInfoBlock; index: number }) {
     /* real h3: 18.72px / 700 (measured live) */
     return (
       <h3
-        className="mb-2 mt-4 text-[19px] font-bold leading-normal"
-        style={{ color: "var(--color-merch-ink)" }}
+        className="mb-2 mt-4 text-[19px] font-bold"
+        style={{ color: "var(--color-merch-ink)", lineHeight: 1.1 }}
       >
         {content as string}
       </h3>
@@ -203,7 +221,7 @@ function Block({ block, index }: { block: MerchInfoBlock; index: number }) {
 
   if (type === "paragraph") {
     return (
-      /* 16px / line-height normal — real: ~19px@16 (was leading-relaxed) */
+      /* 16px / line-height normal */
       <p
         className="mb-4 text-[16px] leading-normal"
         style={{ color: "var(--color-merch-body)" }}
@@ -254,8 +272,12 @@ function Block({ block, index }: { block: MerchInfoBlock; index: number }) {
 
 /**
  * MerchInfoPage — renders a section title (h2) + prose block list (or FAQ
- * accordion) inside a centered max-w-[1000px] container, matching the real
- * store's info-page template.
+ * accordion) inside a centered container, matching the real store's info-page
+ * template.
+ *
+ * Container: padding 0 32px (px-8) → content x=172, w=936 at 1280px (measured live).
+ * Page title h2 has 32px top + bottom padding (py-8) and a 1px bottom border
+ * using --color-merch-border-light (#d0d0d0).
  *
  * The shared page h1 ("SUPPORT") is rendered by MerchSupportHero, which wraps this.
  * Wrap with MerchHeader + MerchSupportHero + MerchSupportTabStrip + MerchFooter
@@ -268,20 +290,30 @@ export function MerchInfoPage({ title, blocks }: MerchInfoPageProps) {
       style={{ backgroundColor: "var(--color-merch-bg)", fontFamily: "var(--font-merch)" }}
     >
       {/*
-        max-w-[1000px]: real content ~936px wide at x=172 (left edge measured live).
-        Page title has 32px top+bottom padding (py-8) matching real 'FAQs' h2.
+        Container: px-8 (32px) — real content x=172, w=936 at 1280px.
+        Top rhythm comes from the h2 title's own 32px top padding (py-8).
+        No pt-10/12 here — the h2 carries the top spacing.
       */}
-      <div className="mx-auto max-w-[1000px] px-6 pb-16 pt-10 md:pt-12">
-        {/* Section title — h2, 32px top+bottom spacing, riotSans */}
+      <div className="mx-auto max-w-[1000px] px-8 pb-16">
+        {/*
+          Section title — h2 with 32px top + bottom padding (py-8), riotSans.
+          1px bottom border: --color-merch-border-light (#d0d0d0).
+          Line-height 1.1 (real: 41.8px at 38px font-size).
+        */}
         <h2
-          className="mb-8 text-[28px] font-bold uppercase md:text-[38px]"
-          style={{ color: "var(--color-merch-ink-dark)", letterSpacing: "-0.02em" }}
+          className="pb-8 pt-8 text-[28px] font-bold uppercase md:text-[38px]"
+          style={{
+            color: "var(--color-merch-ink-dark)",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.1,
+            borderBottom: "1px solid var(--color-merch-border-light)",
+          }}
         >
           {title}
         </h2>
 
-        {/* Content blocks */}
-        <div>
+        {/* Content blocks — top margin after the h2 rule */}
+        <div className="mt-8">
           {blocks.map((block, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <Block key={i} block={block} index={i} />

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * MerchSupportTabStrip — wrapping white-pill tab row for /merch/pages/[slug].
+ * MerchSupportTabStrip — wrapping red-band tab row for /merch/pages/[slug].
  *
  * MERCH COMPONENT — use the merch design system: --color-merch-* tokens.
  * This is NOT the Hextech client.
@@ -11,12 +11,13 @@
  * Measured from merch.riotgames.com/en-us/faqs/ (9 section tabs):
  *   - Strip: full-bleed --color-merch-support-band (#eb0029) background.
  *   - Band padding: 32px top/bottom (py-8); ~160px tall desktop with 9 wrapping tabs.
- *   - Pills: WHITE-filled (--color-merch-on-dark bg), white/light border (#ffffff80), DARK text (--color-merch-ink-dark).
- *     Active pill: same white fill with slightly stronger border or shadow.
+ *   - Pills: TRANSPARENT bg, 1px solid --color-merch-on-dark border, --color-merch-on-dark text.
+ *     Active pill: same transparent bg with 2px solid white border (slightly stronger).
  *   - Pill layout: flex-wrap — 9 real tabs WRAP onto two rows; NO overflow-x scroll.
- *   - Label: Inter 16px, font-weight ~400, mixed-case (NOT uppercase, NOT riotSans).
+ *   - Label: Inter 16px, font-weight 600 on ALL pills (capitalize), mixed-case.
+ *   - Padding per pill: 4px 8px inside a 40px-tall container.
  *   - Gap between pills: 8px.
- *   - Border-radius per pill: 9999px (full pill shape).
+ *   - Border-radius per pill: 2px (near-square chip, NOT rounded-full).
  *   - NO 390 overflow — wrapping prevents off-screen pills at any viewport.
  */
 
@@ -43,10 +44,10 @@ export interface MerchSupportTabStripProps {
 // ---------------------------------------------------------------------------
 
 /**
- * MerchSupportTabStrip — white-pill tab row matching the real support portal
- * tab navigation. Pills WRAP to multiple rows at narrow viewports — no horizontal
- * scroll. Active pill shares the same white fill as inactive; all pills are
- * white-filled with dark text on the red band.
+ * MerchSupportTabStrip — transparent-pill tab row matching the real support portal
+ * tab navigation on the red band. Pills are transparent with a white border and
+ * white text — the inverse of the old white-filled treatment. Near-square 2px
+ * radius chips, not rounded-full. Wraps to multiple rows at narrow viewports.
  */
 export function MerchSupportTabStrip({
   sections,
@@ -73,36 +74,42 @@ export function MerchSupportTabStrip({
               type="button"
               onClick={() => onSelect?.(tab.slug)}
               aria-current={isActive ? "page" : undefined}
-              className="inline-flex cursor-pointer items-center justify-center rounded-full px-4 transition-colors duration-150"
+              className="inline-flex cursor-pointer items-center justify-center transition-colors duration-150"
               style={
                 /*
-                 * Real: WHITE-filled pills, white/light border, dark ink text.
-                 * Active pill gets a slightly stronger border to distinguish it.
-                 * Label: Inter 16px/400 mixed-case — NOT uppercase, NOT riotSans.
+                 * Real: TRANSPARENT pills, white border, white text.
+                 * Active pill: same transparent bg with 2px border (stronger outline).
+                 * Label: Inter 16px/600 mixed-case (capitalize) on ALL pills — NOT uppercase.
+                 * Padding: 4px 8px inside 40px-tall pill.
+                 * Border-radius: 2px (near-square chip, NOT 9999px).
                  */
                 isActive
                   ? {
                       height: 40,
-                      backgroundColor: "var(--color-merch-on-dark)",
-                      color: "var(--color-merch-ink-dark)",
+                      backgroundColor: "transparent",
+                      color: "var(--color-merch-on-dark)",
                       border: "2px solid var(--color-merch-on-dark)",
+                      borderRadius: 2,
+                      padding: "4px 8px",
                       fontSize: 16,
                       fontWeight: 600,
                       fontFamily: "Inter, sans-serif",
                       letterSpacing: "normal",
-                      textTransform: "none",
+                      textTransform: "capitalize",
                     }
                   : {
                       height: 40,
-                      backgroundColor: "var(--color-merch-on-dark)",
-                      color: "var(--color-merch-ink)",
+                      backgroundColor: "transparent",
+                      color: "var(--color-merch-on-dark)",
                       border:
-                        "1px solid color-mix(in srgb, var(--color-merch-on-dark) 50%, transparent)",
+                        "1px solid color-mix(in srgb, var(--color-merch-on-dark) 70%, transparent)",
+                      borderRadius: 2,
+                      padding: "4px 8px",
                       fontSize: 16,
-                      fontWeight: 400,
+                      fontWeight: 600,
                       fontFamily: "Inter, sans-serif",
                       letterSpacing: "normal",
-                      textTransform: "none",
+                      textTransform: "capitalize",
                     }
               }
             >

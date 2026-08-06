@@ -8,13 +8,17 @@
  *
  * Measured from merch.riotgames.com/en-us/faqs/ (desktop 1280px):
  *   - Background: red splash (#eb0029 == --color-merch-support-band) filling the band.
- *   - h1 "SUPPORT": 48px desktop / 38px mobile, font-weight 700, uppercase
- *     letter-spacing -0.02em desktop (-0.76px at 38px @390), color --color-merch-ink-dark (pure black),
- *     left-aligned, line-height ~1.1 (leading-none/tight).
- *   - Mascot illustration: full-band-height (~140px), right-edge bleeding, occupying ~30% right.
+ *   - Band height: ~250px desktop (h1 baseline y=229, tab strip y=380 measured live).
+ *     Ours was 140px — too short. New: minHeight 250px.
+ *   - h1 "SUPPORT": 48px desktop / 38px mobile, font-weight 700, uppercase,
+ *     letter-spacing -0.03em (== -1.44px at 48px, -1.14px at 38px),
+ *     line-height 1.1 (52.8px at 48px), color --color-merch-ink-dark (pure black).
+ *     x=32 (32px page gutter) — NOT centered in max-w-screen-xl; real h1 is flush
+ *     to the page left edge with only 32px of padding.
+ *   - Background decoration: faint light-grey dot/texture pattern on the left half
+ *     + a hard diagonal red splash wedge behind the mascot (clip-path polygon).
+ *   - Mascot illustration: right-edge of the band, occupying ~30% right.
  *     Real asset is a Riot CDN PNG (unavailable — accept any URL or fall back to decorative block).
- *   - Band height: ~140px desktop; auto on mobile (padding 32px 24px).
- *   - Padding: px-6 md:px-10 lg:px-16, py-8.
  *
  * NOTE — mascot asset limitation: the real panda mascot image is hosted on
  * Riot's CDN with no public stable URL. A `mascotSrc` prop accepts any URL;
@@ -44,7 +48,8 @@ export interface MerchSupportHeroProps {
 /**
  * MerchSupportHero — red-splash hero band with h1 "SUPPORT" and a
  * mascot illustration slot. Shared across all /merch/pages/[slug] info pages.
- * Real: red diagonal splash fills the band; large panda mascot ~30% right.
+ * Real: 250px tall, 32px left-gutter h1, diagonal wedge behind mascot,
+ * faint pattern texture on the left half.
  */
 export function MerchSupportHero({
   mascotSrc,
@@ -52,39 +57,66 @@ export function MerchSupportHero({
 }: MerchSupportHeroProps) {
   return (
     /* Red-splash hero band — measured: --color-merch-support-band (#eb0029) */
+    /* Band height: 250px desktop (h1 baseline y=229, tab strip y=380 measured) */
     <div
       className="relative w-full overflow-hidden"
       style={{
         backgroundColor: "var(--color-merch-support-band)",
-        /* Band height: ~140px desktop; auto on mobile */
-        minHeight: 140,
+        minHeight: 250,
       }}
     >
-      {/* Diagonal splash overlay — decorative red-on-red tint for depth */}
+      {/*
+        Faint light-grey dot/texture pattern on the left half of the band.
+        Real: a subtle repeating pattern is visible left of the mascot.
+        Using a radial-gradient dot pattern as a CSS approximation.
+      */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-0"
+        style={{
+          width: "60%",
+          backgroundImage:
+            "radial-gradient(circle, color-mix(in srgb, var(--color-merch-on-dark) 12%, transparent) 1px, transparent 1px)",
+          backgroundSize: "16px 16px",
+        }}
+      />
+
+      {/*
+        Hard diagonal red splash wedge behind the mascot (right side).
+        Real: a diagonal red-on-red lighter wedge sits behind the mascot area,
+        giving the band depth. clip-path creates a hard diagonal edge from
+        lower-left to upper-right, lighter shade on the masked area.
+      */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            "linear-gradient(118deg, var(--color-merch-support-band) 60%, var(--color-merch-red-dark) 100%)",
+          background: "var(--color-merch-red-dark)",
+          clipPath: "polygon(55% 0%, 100% 0%, 100% 100%, 40% 100%)",
         }}
       />
 
+      {/*
+        Content row: h1 at 32px left gutter (real x=32) — NOT centered within max-w-screen-xl.
+        We use px-8 (32px) directly; the real h1 is flush to the 32px page margin.
+      */}
       <div
-        className="relative mx-auto flex max-w-screen-xl items-center justify-between px-6 py-8 md:px-10 lg:px-16"
-        style={{ minHeight: 140 }}
+        className="relative flex w-full items-center justify-between px-8"
+        style={{ minHeight: 250 }}
       >
         {/* Left — SUPPORT h1 */}
         {/*
-          letter-spacing: -0.02em — real: -0.76px@38px @390 (was -0.03em which gave -1.44px desktop / -1.14px mobile).
-          line-height ~1.1 (leading-tight) — real: 52.8px at 48px font-size.
+          letter-spacing: -0.03em — real: -1.44px at 48px desktop / -1.14px at 38px mobile.
+          line-height 1.1 (leading-tight ~1.1) — real: 52.8px at 48px.
           color: --color-merch-ink-dark (pure black #000000) — real: #000 on the h1.
+          x=32: 32px page-left gutter; NOT centered in max-w column.
         */}
         <h1
-          className="text-[38px] font-bold uppercase leading-tight md:text-[48px]"
+          className="text-[38px] font-bold uppercase md:text-[48px]"
           style={{
             color: "var(--color-merch-ink-dark)",
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.03em",
+            lineHeight: 1.1,
           }}
         >
           SUPPORT
@@ -95,7 +127,6 @@ export function MerchSupportHero({
           className="relative ml-6 shrink-0 self-stretch"
           style={{
             width: "clamp(120px, 30%, 340px)",
-            /* Mascot bleeds to band edges vertically */
           }}
           aria-hidden={!mascotSrc}
         >
@@ -112,7 +143,7 @@ export function MerchSupportHero({
             <div
               className="flex h-full w-full items-center justify-center"
               aria-label="Mascot placeholder"
-              style={{ backgroundColor: "var(--color-merch-red-dark)", opacity: 0.4 }}
+              style={{ opacity: 0.4 }}
             >
               <svg
                 width={56}
