@@ -238,8 +238,13 @@ export const FranchiseLogos: Record<string, (props: { className?: string }) => J
   riftbound: RiftboundLogo,
   "lol-esports": LolEsportsLogo,
   tft: TftLogo,
+  // "Teamfight Tactics" normalises to "teamfight-tactics" — alias so the
+  // logo resolves from the fixture franchiseLabel without needing franchiseKey.
+  "teamfight-tactics": TftLogo,
   vct: VctLogo,
   valorant: ValorantLogo,
+  // "VALORANT" normalises to "valorant" — uppercase alias for fixture labels.
+  VALORANT: ValorantLogo,
   "2xko": TwoXkoLogo,
   arcane: ArcaneLogo,
 };
