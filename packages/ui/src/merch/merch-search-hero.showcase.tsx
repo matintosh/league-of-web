@@ -12,19 +12,39 @@ export const merchSearchHeroShowcase: ShowcaseEntry = {
   name: "Merch Search Hero",
   area: "merch",
   description:
-    'Permanent hero for /merch/search — always rendered regardless of ?q=. Matches the real merch.riotgames.com/en-us/search which is a non-functional placeholder at all times. Light bg (--color-merch-bg / #ffffff), black H1 "NO SEARCH TERM PROVIDED" (48px/700/uppercase, ls -1.44px desktop, 38px/-0.76px mobile), chamfered purple CTA "SEARCH PRODUCTS" (clip-path corners, --color-merch-purple #4500d5, 239×50).',
+    'Permanent hero for /merch/search — always rendered regardless of ?q=. Matches the real merch.riotgames.com/en-us/search. THREE layered background assets: arcade_riven_ahri.svg (full-bleed cover), pattern-404.svg (contain top-right), ziggs.png (320×288 at left=704px top=208px). High-anchored content (paddingTop 320px desktop / 240px mobile). Black H1 (48px/700/uppercase desktop, 38px mobile), 12px H1→CTA gap, chamfered purple CTA (--color-merch-purple #4500d5, 239×50).',
   variants: [
     {
-      name: "Default (no art src) — light bg",
+      name: "Real layered art — arcade + pattern + Ziggs",
       notes:
-        "Standard hero shown at /merch/search at all URLs. Light near-white background matches the real site. Art slot uses a decorative placeholder because the real Riot CDN SVG has no stable public URL.",
+        "Full hero with three real assets from merch.riotgames.com/assets/ (hotlinkable). " +
+        "arcade_riven_ahri.svg is intrinsically faint/grayscale — no extra opacity wrapper. " +
+        "pattern-404.svg contains at top-right. ziggs.png at left=704px, top=208px within the band. " +
+        "Content high-anchored: paddingTop 320px desktop, 240px mobile. H1→CTA gap 12px.",
+      backgrounds: ["light"],
+      render: () => (
+        <MerchSearchHero
+          arcadeSrc="https://merch.riotgames.com/assets/arcade_riven_ahri.svg"
+          patternSrc="https://merch.riotgames.com/assets/pattern-404.svg"
+          ziggsSrc="https://merch.riotgames.com/assets/ziggs.png"
+        />
+      ),
+    },
+    {
+      name: "No art (placeholder) — light bg",
+      notes:
+        "Fallback when no arcadeSrc is supplied. The decorative diagonal placeholder renders " +
+        "at 0.08 opacity (--color-merch-search-hero-art-opacity) so the white bg still reads. " +
+        "High anchoring and 12px gap still apply.",
       backgrounds: ["light"],
       render: () => <MerchSearchHero />,
     },
     {
-      name: "With champion splash as art stand-in",
+      name: "With champion splash as arcade stand-in (backwards compat)",
       notes:
-        "The page route can supply any image URL as artSrc. A champion splash is used here as a visual stand-in for the real arcade_riven_ahri.svg art. Rendered faint (opacity 0.08) over the light bg.",
+        "artSrc prop (deprecated alias for arcadeSrc) still works. " +
+        "A champion splash is a visual stand-in for arcade_riven_ahri.svg. " +
+        "When arcadeSrc/artSrc is supplied, NO opacity wrapper is applied — the image renders at natural fidelity.",
       backgrounds: ["light"],
       render: () => (
         <MerchSearchHero

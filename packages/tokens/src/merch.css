@@ -192,12 +192,17 @@
   --color-merch-input-dark-bg:      #1b1d1f; /* rgb(27,29,31) — dark filled input bg in footer contact form */
 
   /* ── Search hero background ─────────────────────────────────────────── */
-  /* Real merch.riotgames.com/en-us/search is a LIGHT near-white hero with
-     a grayscale arcade SVG overlay. The dark gradient approach was wrong.
-     Hero uses --color-merch-bg (#ffffff) as base; art layer is a faint SVG.
+  /* Real merch.riotgames.com/en-us/search layered art (page supplies URLs):
+       1. arcade_riven_ahri.svg — full-bleed cover; intrinsically faint/grayscale
+          so no opacity wrapper needed when the real asset is present.
+       2. pattern-404.svg — contain at top-right (background-position: 100% 0)
+       3. ziggs.png — 320×288 character art at absolute x=704, y=338
+     Hero base: --color-merch-bg (#ffffff). NOT dark/gradient.
+     When no arcadeSrc prop is supplied, a diagonal placeholder renders
+     at the opacity below (0.08) so the light bg still reads clearly.
      Previous dark tokens (search-hero-dark/crimson/lines) removed — no longer
      needed now that the hero is light-bg / matches the real permanent placeholder. */
-  --color-merch-search-hero-art-opacity: 0.08; /* faint grayscale art overlay opacity */
+  --color-merch-search-hero-art-opacity: 0.08; /* fallback placeholder opacity (no real art URL) */
 
   /* ── PDP gallery hero surface ──────────────────────────────────────── */
   /* Themed diagonal hero surface on the PDP left column.
