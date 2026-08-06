@@ -81,8 +81,9 @@ export function ShopAllPageClient({ products }: ShopAllPageClientProps) {
         />
 
         {/* 2-col flush product grid — no resultCount/onRefineClick (de-duped;
-            count + REFINE are now in the breadcrumb bar above). */}
-        <MerchProductGrid columns={2}>
+            count + REFINE are now in the breadcrumb bar above).
+            LOAD MORE shown below grid — presentational (fixtures don't paginate). */}
+        <MerchProductGrid columns={2} showLoadMore>
           {products.map((product) => (
             <MerchProductCard
               key={product.slug}

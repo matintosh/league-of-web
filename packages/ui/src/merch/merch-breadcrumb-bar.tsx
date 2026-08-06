@@ -112,7 +112,7 @@ export function MerchBreadcrumbBar({
         {/* Inner container — max-w-7xl, 24px mobile / 40px desktop horizontal padding */}
         <nav
           aria-label={ariaLabel}
-          className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 md:px-10"
+          className="mx-auto flex w-full max-w-7xl items-center justify-between px-2 md:px-6"
           style={{ color: "var(--color-merch-ink-dark)" }}
         >
           {/* Left: crumb trail */}
