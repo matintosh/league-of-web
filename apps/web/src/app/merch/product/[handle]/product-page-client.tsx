@@ -61,6 +61,16 @@ export interface ProductPageClientProps {
   variants: { label: string; available: boolean }[];
   /** Ordered list of gallery image URLs. */
   images: string[];
+  /**
+   * URL for the upper background layer of the diagonal PDP hero surface.
+   * Measured: 828×800 webp textured light surface (Sanity consumer_products dataset).
+   */
+  bgImageUrl?: string;
+  /**
+   * URL for the lower/foreground diagonal navy band of the PDP hero surface.
+   * Measured: 828×360 webp dark navy band (Sanity consumer_products dataset).
+   */
+  fgImageUrl?: string;
   /** Products for the "Shop More" franchise carousel below the product section. */
   carouselProducts?: MerchProduct[];
   /** Banner image URL for the franchise carousel (e.g. a wide splash from Data Dragon). */
@@ -81,6 +91,8 @@ export function ProductPageClient({
   notices,
   variants,
   images,
+  bgImageUrl,
+  fgImageUrl,
   carouselProducts,
   carouselBannerImageUrl,
   collectionBannerImageUrl,
@@ -95,9 +107,6 @@ export function ProductPageClient({
   const [selectedVariant, setSelectedVariant] = useState(
     variants.length > 0 ? variants[0]?.label : undefined
   );
-
-  // First badge for gallery badge overlay
-  const primaryBadge = badges.length > 0 ? badges[0] : undefined;
 
   return (
     <div
@@ -159,8 +168,8 @@ export function ProductPageClient({
           >
             {title}
           </span>
-          {/* Badge chip */}
-          {primaryBadge && (
+          {/* Badge chip — real site shows badge in the purchase panel, not gallery */}
+          {badges[0] && (
             <span
               style={{
                 fontSize: 13,
@@ -172,7 +181,7 @@ export function ProductPageClient({
                 flexShrink: 0,
               }}
             >
-              {primaryBadge}
+              {badges[0]}
             </span>
           )}
         </div>
@@ -198,8 +207,8 @@ export function ProductPageClient({
               alt={title}
               selectedIndex={galleryIndex}
               onSelect={setGalleryIndex}
-              badgeLabel={primaryBadge}
-              carousel
+              bgImageUrl={bgImageUrl}
+              fgImageUrl={fgImageUrl}
             />
           </div>
 

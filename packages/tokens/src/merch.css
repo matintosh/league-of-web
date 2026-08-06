@@ -170,6 +170,14 @@
      needed now that the hero is light-bg / matches the real permanent placeholder. */
   --color-merch-search-hero-art-opacity: 0.08; /* faint grayscale art overlay opacity */
 
+  /* ── PDP gallery hero surface ──────────────────────────────────────── */
+  /* Themed diagonal hero surface on the PDP left column.
+     Measured from merch.riotgames.com/en-us/product/amumu-plush via Playwright 2026-08:
+     - Upper ~55% of the hero: light/white textured webp background
+     - Lower ~45%: dark navy band clipped by diagonal (clip-path polygon)
+     The band color comes from the webp asset; this token provides a CSS fallback. */
+  --color-merch-pdp-hero-navy: #1a2035; /* dark navy fallback for the lower diagonal band */
+
   /* ── Shadows ─────────────────────────────────────────────────────────── */
   /* Raw rgba allowed here (tokens file); raw rgba NOT allowed in components */
   --shadow-merch-modal: 0 8px 32px rgba(0, 0, 0, 0.18); /* centered dialog elevation */

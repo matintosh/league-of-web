@@ -1,20 +1,36 @@
 "use client";
 
 /**
- * MerchProductGallery — PDP left column: grey surface panel + logo watermark +
- * badge overlay + main image + secondary image carousel.
+ * MerchProductGallery — PDP left column: themed diagonal hero surface +
+ * main image + secondary image carousel below.
  *
- * Measured from merch.riotgames.com (amumu-plush, 1280px + 390px):
- *   Desktop:
- *     Grey surface panel: 664×664px, bg --color-merch-surface-alt (#f7f7f7), 24px padding.
- *     Hero inside: 616×616 square (1:1), object-fit contain, art floats on grey.
- *     Franchise wordmark: absolute top-left ~16px inset, white fill.
- *     "New" badge overlay: green --color-merch-badge-new, black text, radius 2, top-right.
- *     Vertical franchise label: rotated "LEAGUE OF LEGENDS" along left edge.
- *     Secondary images: horizontal carousel of 640×640 square tiles on grey, › arrow.
+ * Measured from merch.riotgames.com (amumu-plush, 1280px + 390px via Playwright):
+ *
+ *   Desktop (1280px):
+ *     Hero zone: 828×800px, two-layer background —
+ *       Upper layer (bg): light/white textured webp, full 828×800.
+ *       Lower layer (fg): dark navy webp, 828×360 at y=440, clipped by
+ *         polygon(0 0, 100% 102.4px, 100% 100%, 0 100%) → diagonal cut.
+ *     League of Legends wordmark: absolute, top-left, SOLID BLACK opacity 1.
+ *     Product image container: 664×664, positioned at (82, 68) inside hero.
+ *     Actual <img>: 616×616 within that container.
+ *     Secondary carousel: Swiper-style, 4 slides × 590×590 on grey (#f7f7f7)
+ *       below the hero at y=800, full-width 1280px.
+ *
  *   Mobile (390px):
- *     Hero: 342×629 portrait (~1:1.84) on grey surface.
- *     Secondary strip: 351×351 square tiles in horizontal scroll below hero.
+ *     Hero zone: 390×674px, same two-layer structure.
+ *     fg band: 390×303 at y=371. Diagonal top-right offset: 39px.
+ *     Product image: 342×573, positioned at (24, 247).
+ *     Secondary carousel: same tiles below hero.
+ *
+ *   NOT present on the real site:
+ *     - Grey padded surface panel (--color-merch-surface-alt)
+ *     - Rotated vertical "LEAGUE OF LEGENDS" side label
+ *     - Green "New" badge overlay in the gallery (badge is in purchase panel)
+ *
+ *   Background assets: two Sanity webp files from the "consumer_products"
+ *   dataset (campaign-specific), supplied via bgImageUrl / fgImageUrl props.
+ *   The page provides these URLs; the component is presentational.
  *
  * Controlled: pass selectedIndex + onSelect from parent demo/page.
  */
@@ -22,28 +38,35 @@ import React, { useId } from "react";
 import { LolWordmark } from "./franchise-logos";
 
 export interface MerchProductGalleryProps {
-  /** Ordered list of image URLs. First is shown as the initial main image. */
+  /** Ordered list of product image URLs. First is shown as the initial hero image. */
   images: string[];
-  /** Alt text for the main image (product title). */
+  /** Alt text for the main/hero image (product title). */
   alt: string;
   /** Index of the currently selected image — controlled. Defaults to 0. */
   selectedIndex?: number;
-  /** Called when a secondary image is clicked — pass new index. */
+  /** Called when a secondary image tile is clicked — pass the new index. */
   onSelect?: (index: number) => void;
   /**
-   * Badge label to overlay on the top-right of the surface panel.
-   * Typically the first badge from the product (e.g. "New").
+   * URL for the upper/background layer of the diagonal hero surface.
+   * Measured: 828×800 webp textured light surface from Sanity consumer_products dataset.
+   * Falls back to --color-merch-surface when omitted.
    */
-  badgeLabel?: string;
+  bgImageUrl?: string;
   /**
-   * When true, renders secondary images as a horizontal carousel with › arrow.
-   * Default true (matches real PDP gallery layout).
+   * URL for the lower/foreground layer of the diagonal hero surface (dark navy band).
+   * Measured: 828×360 webp dark navy from Sanity consumer_products dataset.
+   * Falls back to --color-merch-pdp-hero-navy when omitted.
    */
-  carousel?: boolean;
+  fgImageUrl?: string;
 }
 
+/** Known Sanity asset IDs for the PDP hero background layers (consumer_products dataset). */
+export const PDP_HERO_BG_ID = "b8551562d7525bee89839714bb667923f7515d6e-2176x1912.webp";
+export const PDP_HERO_FG_ID = "2ed0b8698a386ef2ceaf35a679ddf0fa2c93f917-2176x814.webp";
+
 /**
- * MerchProductGallery — grey-surface image gallery for the PDP left column.
+ * MerchProductGallery — themed diagonal hero surface + product image + secondary carousel.
+ * Matches the real merch.riotgames.com PDP gallery (verified 2026-08 via Playwright).
  * Place inside the 64.7% left cell of the PDP grid alongside MerchPurchasePanel.
  */
 export function MerchProductGallery({
@@ -51,8 +74,8 @@ export function MerchProductGallery({
   alt,
   selectedIndex = 0,
   onSelect,
-  badgeLabel,
-  carousel = true,
+  bgImageUrl,
+  fgImageUrl,
 }: MerchProductGalleryProps) {
   const uid = useId();
   const activeIdx = Math.max(0, Math.min(selectedIndex, images.length - 1));
@@ -68,19 +91,65 @@ export function MerchProductGallery({
   return (
     <div style={{ fontFamily: "var(--font-merch)", width: "100%" }}>
 
-      {/* ── Grey surface panel ─────────────────────────────────────────── */}
+      {/* ── Themed diagonal hero surface ─────────────────────────────────── */}
+      {/*
+       * Two stacked background layers reproduce the real PDP hero surface:
+       *   bg layer  — upper white/light textured webp, full height
+       *   fg layer  — dark navy webp band, lower ~45%, clipped diagonally
+       * The clip-path matches the measured polygon from the real site.
+       */}
       <div
+        className="merch-gallery-hero-zone"
         style={{
           position: "relative",
-          backgroundColor: "var(--color-merch-surface-alt)",
-          padding: 24,
-          /* Desktop: 664×664 panel; shrinks naturally on smaller viewports */
-          maxWidth: 664,
           width: "100%",
-          /* Responsive: square on desktop, portrait on mobile via aspect-ratio trick */
+          /* Desktop: 800px tall (828×800 measured). Mobile override via <style>. */
+          height: 800,
+          overflow: "hidden",
         }}
       >
-        {/* Franchise wordmark — top-left overlay */}
+        {/* Upper background layer — light textured surface */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: bgImageUrl ? `url(${bgImageUrl})` : undefined,
+            backgroundColor: bgImageUrl ? undefined : "var(--color-merch-surface)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+
+        {/* Lower diagonal band — dark navy, clipped */}
+        {/*
+         * clip-path measured at 1280px: polygon(0 0, 100% 102.4px, 100% 100%, 0 100%)
+         * Creates a diagonal slash from top-left (y=0) to top-right (y=102.4px).
+         * At mobile (390px): top-right offset shrinks to 39px.
+         * Height: 360px at desktop (sits at y=440 inside 800px hero).
+         */}
+        <div
+          aria-hidden="true"
+          className="merch-gallery-hero-fg"
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 360,
+            backgroundImage: fgImageUrl ? `url(${fgImageUrl})` : undefined,
+            backgroundColor: fgImageUrl ? undefined : "var(--color-merch-pdp-hero-navy)",
+            backgroundSize: "cover",
+            backgroundPosition: "center top",
+            clipPath: "polygon(0 0, 100% 102.4px, 100% 100%, 0 100%)",
+          }}
+        />
+
+        {/* League of Legends wordmark — top-left, solid black opacity 1 */}
+        {/*
+         * Real site: black wordmark at top-left of hero, fully opaque.
+         * NOT a watermark (no reduced opacity). NOT a coloured fill.
+         */}
         <div
           aria-hidden="true"
           style={{
@@ -88,70 +157,33 @@ export function MerchProductGallery({
             top: 16,
             left: 16,
             color: "var(--color-merch-ink)",
-            opacity: 0.35,
+            opacity: 1,
             pointerEvents: "none",
-            zIndex: 1,
+            zIndex: 10,
           }}
         >
           <LolWordmark />
         </div>
 
-        {/* "New" badge overlay — top-right */}
-        {badgeLabel && (
-          <div
-            style={{
-              position: "absolute",
-              top: 16,
-              right: 16,
-              zIndex: 1,
-              fontSize: 16,
-              fontWeight: 400,
-              padding: "4px 8px",
-              borderRadius: 2,
-              backgroundColor: "var(--color-merch-badge-new)",
-              color: "var(--color-merch-ink-dark)",
-              lineHeight: 1.2,
-              pointerEvents: "none",
-            }}
-          >
-            {badgeLabel}
-          </div>
-        )}
-
-        {/* Vertical franchise label — left edge */}
+        {/* ── Main hero product image ──────────────────────────────────── */}
+        {/*
+         * Desktop: 664×664px container at (82, 68), actual img 616×616.
+         * Mobile: 342×573px img at (24, 247) inside a shorter hero.
+         * object-fit: contain so art floats naturally on the background.
+         */}
         <div
-          aria-hidden="true"
+          className="merch-gallery-product-image"
           style={{
             position: "absolute",
-            left: 0,
-            top: "50%",
-            transform: "translateX(-50%) translateY(-50%) rotate(-90deg)",
-            transformOrigin: "center center",
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            color: "var(--color-merch-ink)",
-            opacity: 0.25,
-            whiteSpace: "nowrap",
-            pointerEvents: "none",
-            zIndex: 1,
+            top: 68,
+            left: 82,
+            width: 664,
+            height: 664,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 5,
           }}
-        >
-          League of Legends
-        </div>
-
-        {/* ── Main hero image ──────────────────────────────────────────── */}
-        {/* Desktop: 1:1 square. Mobile: portrait ~1:1.84 via responsive trick */}
-        <div
-          style={{
-            /* Desktop square */
-            aspectRatio: "1 / 1",
-            width: "100%",
-            overflow: "hidden",
-            position: "relative",
-          }}
-          className="merch-gallery-hero"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -159,8 +191,8 @@ export function MerchProductGallery({
             alt={alt}
             loading="eager"
             style={{
-              width: "100%",
-              height: "100%",
+              width: 616,
+              height: 616,
               objectFit: "contain",
               display: "block",
             }}
@@ -168,13 +200,17 @@ export function MerchProductGallery({
         </div>
       </div>
 
-      {/* ── Secondary images — horizontal carousel ───────────────────── */}
-      {hasSecondary && carousel && (
+      {/* ── Secondary images — horizontal carousel ────────────────────────── */}
+      {/*
+       * Real: Swiper.js asset-carousel, 590×590 grey tiles at y=800 (below hero).
+       * We render a scrollable flex row with 160px thumbnails + › arrow nav.
+       * Grey tile bg (#f7f7f7) matches the real carousel slide background.
+       */}
+      {hasSecondary && (
         <div
           style={{
             position: "relative",
             marginTop: 4,
-            maxWidth: 664,
             width: "100%",
           }}
         >
@@ -188,7 +224,6 @@ export function MerchProductGallery({
               overflowX: "auto",
               scrollSnapType: "x mandatory",
               scrollbarWidth: "none",
-              /* msOverflowStyle is not typed; set via string in JSX style */
             } as React.CSSProperties}
           >
             {secondaryImages.map((src, idx) => {
@@ -247,7 +282,7 @@ export function MerchProductGallery({
             })}
           </div>
 
-          {/* › arrow control */}
+          {/* › arrow control — only when >2 images */}
           {images.length > 2 && onSelect && (
             <button
               type="button"
@@ -287,16 +322,32 @@ export function MerchProductGallery({
         </div>
       )}
 
-      {/* ── Mobile portrait hero + secondary strip styles ─────────────── */}
+      {/* ── Responsive overrides ──────────────────────────────────────────── */}
       {/*
-       * On 390px viewports: hero becomes portrait (342×629, ~1:1.84).
-       * Secondary tiles: 351×351 in horizontal scroll strip.
-       * Implemented via a <style> tag scoped to this component.
+       * Desktop (828px hero) is the default above.
+       * Mobile (390px):
+       *   hero zone: 674px tall.
+       *   fg diagonal band: 303px, top-right offset 39px.
+       *   product image: 342×573, positioned at (24, 247).
        */}
       <style>{`
         @media (max-width: 480px) {
-          .merch-gallery-hero {
-            aspect-ratio: 342 / 629 !important;
+          .merch-gallery-hero-zone {
+            height: 674px !important;
+          }
+          .merch-gallery-hero-fg {
+            height: 303px !important;
+            clip-path: polygon(0 0, 100% 39px, 100% 100%, 0 100%) !important;
+          }
+          .merch-gallery-product-image {
+            top: 247px !important;
+            left: 24px !important;
+            width: 342px !important;
+            height: 573px !important;
+          }
+          .merch-gallery-product-image img {
+            width: 342px !important;
+            height: 573px !important;
           }
         }
       `}</style>
