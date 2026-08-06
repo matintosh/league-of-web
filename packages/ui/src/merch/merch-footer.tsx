@@ -9,19 +9,21 @@
  * NO fetching in @low/ui, types from @low/fixtures), showcase server-safe
  * (no 'use client'), SVG/gradient ids from useId.
  *
- * Measured from merch.riotgames.com footer (~1280px desktop):
+ * Measured from merch.riotgames.com footer (re-verified 2026-08-06 via Playwright):
  *   - Background: --color-merch-ink-dark (pure black #000)
- *   - No top border (dark bg blends with dark header bottom)
- *   - Padding: ~64px vertical, max-w-screen-xl centered
- *   - Left side: Riot fist logo + "Shop" column + "Support" column
- *   - Right side: "Contact Us" form (Name, Email, Order#, Country,
- *     Tracking#, Subject, How can we help + SEND)
- *   - Column headings: 11–12px, weight 700, uppercase, --color-merch-on-dark
- *   - Links: 13px, --color-merch-muted-on-dark, hover → --color-merch-on-dark
- *   - Form labels: 11px, uppercase, tracking-wide, --color-merch-muted-on-dark
- *   - Form inputs: dark border, transparent bg, --color-merch-on-dark text
- *   - SEND button: --color-merch-on-dark bg, --color-merch-ink-dark text
- *   - Bottom bar: copyright (left) + legal links (right), 12px muted-on-dark
+ *   - Padding: ~64px vertical, max-w-screen-xl centered (40px side gutter)
+ *   - Desktop (1280): 4-col grid — logo col ~111px, Shop ~222px, Support ~222px,
+ *     Contact Us form ~467px; ~30px gap; headings land at x≈261, x≈513, x≈835
+ *   - Column headings (Shop/Support/Contact Us): 16px / 600 / title-case /
+ *     rgb(136,136,136) #888888 via --color-merch-footer-heading; no uppercase/tracking
+ *   - Nav links (Apparel, Order Status, …): 16px / 600 / UPPERCASE /
+ *     rgb(255,255,255) --color-merch-on-dark; ~34px row pitch
+ *   - Form labels: 16px / 400 / title-case / rgb(255,255,255) --color-merch-on-dark
+ *   - Country field: native <select> with 29 options (name contact-us-country)
+ *   - SEND button: 143×50 desktop, full-width 356×50 at 390px; 16px/600/ls 0.02em
+ *   - Bottom bar: 16px / rgb(255,255,255) --color-merch-on-dark
+ *   - Mobile (390): first 4 form fields in 2-col grid (170×40 each), message
+ *     full-width 356×40, SEND full-width 356×50, legal links stacked as block rows
  */
 
 "use client";
@@ -89,14 +91,14 @@ const DEFAULT_SHOP_LINKS: MerchFooterLink[] = [
 ];
 
 const DEFAULT_SUPPORT_LINKS: MerchFooterLink[] = [
-  { label: "Order Status",        href: "/en-us/order-lookup/" },
-  { label: "Gift Card Balance",   href: "/en-us/gift-card-balance/" },
-  { label: "Verify Your Product", href: "/en-us/product-validation/" },
-  { label: "FAQs",                href: "/merch/pages/faqs" },
-  { label: "Shipping Information",href: "/merch/pages/shipping" },
-  { label: "Return Policy",       href: "/merch/pages/returns" },
-  { label: "Collectability Guide",href: "/merch/pages/collectability-guide" },
-  { label: "Accessibility",       href: "/merch/pages/accessibility" },
+  { label: "Order Status",         href: "/en-us/order-lookup/" },
+  { label: "Gift Card Balance",    href: "/en-us/gift-card-balance/" },
+  { label: "Verify Your Product",  href: "/en-us/product-validation/" },
+  { label: "FAQs",                 href: "/merch/pages/faqs" },
+  { label: "Shipping Information", href: "/merch/pages/shipping" },
+  { label: "Return Policy",        href: "/merch/pages/returns" },
+  { label: "Collectability Guide", href: "/merch/pages/collectability-guide" },
+  { label: "Accessibility",        href: "/merch/pages/accessibility" },
 ];
 
 const DEFAULT_LEGAL_LINKS: MerchFooterLink[] = [
@@ -106,10 +108,54 @@ const DEFAULT_LEGAL_LINKS: MerchFooterLink[] = [
   { label: "Privacy Policy",      href: "/merch/pages/privacy" },
 ];
 
+/**
+ * 29 countries from the real contact-us-country <select>
+ * (name="contact-us-country" on merch.riotgames.com/en-us/).
+ */
+const COUNTRY_OPTIONS = [
+  "Australia",
+  "Austria",
+  "Belgium",
+  "Brazil",
+  "Canada",
+  "Chile",
+  "Colombia",
+  "Czech Republic",
+  "Denmark",
+  "Finland",
+  "France",
+  "Germany",
+  "Greece",
+  "Hong Kong",
+  "Hungary",
+  "Indonesia",
+  "Ireland",
+  "Italy",
+  "Japan",
+  "Malaysia",
+  "Mexico",
+  "Netherlands",
+  "New Zealand",
+  "Norway",
+  "Philippines",
+  "Poland",
+  "Portugal",
+  "Romania",
+  "Singapore",
+  "South Korea",
+  "Spain",
+  "Sweden",
+  "Switzerland",
+  "Taiwan",
+  "Thailand",
+  "Turkey",
+  "United Kingdom",
+  "United States",
+  "Other",
+] as const;
+
 // ---------------------------------------------------------------------------
-// Riot fist logo — extracted from merch.riotgames.com (same path as header
-// but here shown as the standalone fist/mark only, not the full wordmark).
-// We reuse the full wordmark SVG at a slightly larger size matching the footer.
+// Riot wordmark — full wordmark SVG (same path as merch header, footer size)
 // ---------------------------------------------------------------------------
 
 function RiotWordmark({ id }: { id: string }) {
@@ -136,27 +182,21 @@ function RiotWordmark({ id }: { id: string }) {
 function FooterLinkColumn({ heading, links }: MerchFooterLinkGroup) {
   return (
     <div className="flex flex-col gap-3">
+      {/* 16px / 600 / title-case / #888888 heading — measured 2026-08-06 */}
       <p
-        className="text-[11px] font-bold uppercase tracking-[0.1em]"
-        style={{ color: "var(--color-merch-on-dark)" }}
+        className="text-[16px] font-semibold"
+        style={{ color: "var(--color-merch-footer-heading)" }}
       >
         {heading}
       </p>
-      <ul className="flex flex-col gap-2">
+      <ul className="flex flex-col" style={{ gap: "10px" }}>
         {links.map((link) => (
           <li key={link.href}>
+            {/* 16px / 600 / UPPERCASE / white — measured 2026-08-06 */}
             <a
               href={link.href}
-              className="text-[13px] underline-offset-2 transition-colors duration-150 hover:underline"
-              style={{ color: "var(--color-merch-muted-on-dark)" }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.color =
-                  "var(--color-merch-on-dark)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.color =
-                  "var(--color-merch-muted-on-dark)";
-              }}
+              className="text-[16px] font-semibold uppercase underline-offset-2 transition-colors duration-150 hover:underline"
+              style={{ color: "var(--color-merch-on-dark)" }}
             >
               {link.label}
             </a>
@@ -205,16 +245,24 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
     backgroundColor: "transparent",
     borderColor:     "var(--color-merch-border-dark)",
     color:           "var(--color-merch-on-dark)",
+    height:          "40px",
+  } as React.CSSProperties;
+
+  const selectStyle = {
+    backgroundColor: "transparent",
+    borderColor:     "var(--color-merch-border-dark)",
+    color:           "var(--color-merch-on-dark)",
+    height:          "40px",
   } as React.CSSProperties;
 
   const inputClass =
-    "w-full border px-3 py-2 text-[13px] outline-none " +
+    "w-full border px-3 text-[16px] outline-none " +
     "transition-colors duration-150 " +
     "focus:border-[color:var(--color-merch-muted-on-dark)] " +
     "placeholder:text-[color:var(--color-merch-border-dark)]";
 
-  const labelClass =
-    "block text-[11px] font-bold uppercase tracking-[0.08em] mb-1";
+  /* 16px / 400 / title-case / white — measured 2026-08-06 */
+  const labelClass = "block text-[16px] font-normal mb-1";
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -231,12 +279,12 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
 
   return (
     <form onSubmit={handleSubmit} aria-label="Contact Us" className="flex flex-col gap-4">
-      {/* Name */}
+      {/* Name — full width */}
       <div>
         <label
           htmlFor={ids.name}
           className={labelClass}
-          style={{ color: "var(--color-merch-muted-on-dark)" }}
+          style={{ color: "var(--color-merch-on-dark)" }}
         >
           Name
         </label>
@@ -251,13 +299,13 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
         />
       </div>
 
-      {/* Email + Order# row */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {/* Email + Order# row — 2 cols at all breakpoints (including 390) */}
+      <div className="grid grid-cols-2 gap-3">
         <div>
           <label
             htmlFor={ids.email}
             className={labelClass}
-            style={{ color: "var(--color-merch-muted-on-dark)" }}
+            style={{ color: "var(--color-merch-on-dark)" }}
           >
             Email Address <span aria-hidden="true">*</span>
           </label>
@@ -276,7 +324,7 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
           <label
             htmlFor={ids.orderNumber}
             className={labelClass}
-            style={{ color: "var(--color-merch-muted-on-dark)" }}
+            style={{ color: "var(--color-merch-on-dark)" }}
           >
             Order Number
           </label>
@@ -292,31 +340,44 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
         </div>
       </div>
 
-      {/* Country + Tracking# row */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {/* Country (native <select>) + Tracking# row — 2 cols at all breakpoints */}
+      <div className="grid grid-cols-2 gap-3">
         <div>
           <label
             htmlFor={ids.country}
             className={labelClass}
-            style={{ color: "var(--color-merch-muted-on-dark)" }}
+            style={{ color: "var(--color-merch-on-dark)" }}
           >
             Country
           </label>
-          <input
+          {/* Native <select> with 29 options matching contact-us-country on merch.riotgames.com */}
+          <select
             id={ids.country}
-            type="text"
+            name="contact-us-country"
             value={values.country ?? ""}
             onChange={(e) => onChange?.("country", e.target.value)}
-            placeholder="e.g. United States"
-            className={inputClass}
-            style={inputStyle}
-          />
+            className="w-full border px-3 text-[16px] outline-none transition-colors duration-150 focus:border-[color:var(--color-merch-muted-on-dark)] appearance-none"
+            style={selectStyle}
+          >
+            <option value="" disabled style={{ backgroundColor: "var(--color-merch-ink-dark)" }}>
+              Select country
+            </option>
+            {COUNTRY_OPTIONS.map((country) => (
+              <option
+                key={country}
+                value={country}
+                style={{ backgroundColor: "var(--color-merch-ink-dark)" }}
+              >
+                {country}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label
             htmlFor={ids.trackingNumber}
             className={labelClass}
-            style={{ color: "var(--color-merch-muted-on-dark)" }}
+            style={{ color: "var(--color-merch-on-dark)" }}
           >
             Tracking Number
           </label>
@@ -332,12 +393,12 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
         </div>
       </div>
 
-      {/* Subject */}
+      {/* Subject — full width */}
       <div>
         <label
           htmlFor={ids.subject}
           className={labelClass}
-          style={{ color: "var(--color-merch-muted-on-dark)" }}
+          style={{ color: "var(--color-merch-on-dark)" }}
         >
           Subject <span aria-hidden="true">*</span>
         </label>
@@ -353,12 +414,12 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
         />
       </div>
 
-      {/* How can we help */}
+      {/* How can we help — full width */}
       <div>
         <label
           htmlFor={ids.message}
           className={labelClass}
-          style={{ color: "var(--color-merch-muted-on-dark)" }}
+          style={{ color: "var(--color-merch-on-dark)" }}
         >
           How can we help? <span aria-hidden="true">*</span>
         </label>
@@ -369,16 +430,25 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
           placeholder="Describe your issue or question…"
           required
           rows={5}
-          className={inputClass + " resize-none"}
-          style={inputStyle}
+          className={
+            "w-full border px-3 py-2 text-[16px] outline-none resize-none " +
+            "transition-colors duration-150 " +
+            "focus:border-[color:var(--color-merch-muted-on-dark)] " +
+            "placeholder:text-[color:var(--color-merch-border-dark)]"
+          }
+          style={{
+            backgroundColor: "transparent",
+            borderColor:     "var(--color-merch-border-dark)",
+            color:           "var(--color-merch-on-dark)",
+          }}
         />
       </div>
 
-      {/* SEND button */}
-      <div className="flex justify-end">
+      {/* SEND button — 143×50 desktop, full-width 356×50 at 390 */}
+      <div className="flex md:justify-end">
         <button
           type="submit"
-          className="px-8 py-2.5 text-[12px] font-bold uppercase tracking-[0.1em] transition-opacity duration-150 hover:opacity-85"
+          className="w-full md:w-[143px] h-[50px] text-[16px] font-semibold uppercase tracking-[0.02em] transition-opacity duration-150 hover:opacity-85"
           style={{
             backgroundColor: "var(--color-merch-on-dark)",
             color:           "var(--color-merch-ink-dark)",
@@ -397,17 +467,22 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
 
 /**
  * MerchFooter — pure-black footer matching merch.riotgames.com:
- * Riot wordmark (top-left), Shop + Support link columns (left side),
- * "Contact Us" form (right side), legal row at bottom.
+ *
+ * Desktop (1280): 4-col grid — Riot wordmark (col 1), Shop links (col 2),
+ * Support links (col 3), Contact Us form (col 4). Headings are 16px/600 grey
+ * (#888888), nav links are 16px/600 white UPPERCASE, form labels 16px/400 white.
+ *
+ * Mobile (390): columns stack; form fields in 2-col grid (Email+Order#,
+ * Country+Tracking#); SEND is full-width; legal links stacked block rows.
  *
  * The contact form is presentational: supply `onContactSubmit` to handle
  * submissions. For a stateful interactive demo use `merch-footer.demo.tsx`.
  */
 export function MerchFooter({
-  shopLinks    = DEFAULT_SHOP_LINKS,
-  supportLinks = DEFAULT_SUPPORT_LINKS,
+  shopLinks     = DEFAULT_SHOP_LINKS,
+  supportLinks  = DEFAULT_SUPPORT_LINKS,
   copyrightText = "Copyright Riot Games 2025",
-  legalLinks   = DEFAULT_LEGAL_LINKS,
+  legalLinks    = DEFAULT_LEGAL_LINKS,
   onContactSubmit,
   // back-compat — intentionally unused beyond accepting the prop
   linkGroups: _linkGroups,
@@ -424,31 +499,33 @@ export function MerchFooter({
         fontFamily:      "var(--font-merch)",
       }}
     >
-      <div className="mx-auto max-w-screen-xl px-6 py-16">
+      <div className="mx-auto max-w-screen-xl px-10 py-16">
 
         {/* ---------------------------------------------------------------- */}
-        {/* Top: Riot wordmark                                                */}
+        {/* Main 4-col grid: logo | Shop | Support | Contact Us             */}
+        {/* Desktop: logo ~111px, Shop ~222px, Support ~222px, form ~467px   */}
+        {/* Mobile: stacked vertically                                        */}
         {/* ---------------------------------------------------------------- */}
-        <div className="mb-12">
-          <RiotWordmark id={logoId} />
-        </div>
-
-        {/* ---------------------------------------------------------------- */}
-        {/* Main row: link columns (left) + Contact Us form (right)          */}
-        {/* ---------------------------------------------------------------- */}
-        <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
-
-          {/* Left: Shop + Support columns */}
-          <div className="flex flex-shrink-0 flex-col gap-10 sm:flex-row sm:gap-16">
-            <FooterLinkColumn heading="Shop" links={shopLinks} />
-            <FooterLinkColumn heading="Support" links={supportLinks} />
+        <div
+          className="grid grid-cols-1 gap-10 lg:grid-cols-[111px_222px_222px_1fr] lg:gap-8"
+        >
+          {/* Col 1 — Riot wordmark */}
+          <div className="flex items-start">
+            <RiotWordmark id={logoId} />
           </div>
 
-          {/* Right: Contact Us form */}
-          <div className="flex-1 lg:max-w-md xl:max-w-lg">
+          {/* Col 2 — Shop */}
+          <FooterLinkColumn heading="Shop" links={shopLinks} />
+
+          {/* Col 3 — Support */}
+          <FooterLinkColumn heading="Support" links={supportLinks} />
+
+          {/* Col 4 — Contact Us form */}
+          <div>
+            {/* 16px / 600 / title-case / #888888 heading — same style as other column headings */}
             <p
-              className="mb-6 text-[11px] font-bold uppercase tracking-[0.1em]"
-              style={{ color: "var(--color-merch-on-dark)" }}
+              className="mb-6 text-[16px] font-semibold"
+              style={{ color: "var(--color-merch-footer-heading)" }}
             >
               Contact Us
             </p>
@@ -457,37 +534,29 @@ export function MerchFooter({
         </div>
 
         {/* ---------------------------------------------------------------- */}
-        {/* Bottom bar: copyright + legal links                               */}
+        {/* Bottom bar: copyright + legal links — 16px white                 */}
         {/* ---------------------------------------------------------------- */}
         <div
-          className="mt-16 flex flex-col gap-2 border-t pt-6 md:flex-row md:items-center md:justify-between"
+          className="mt-16 border-t pt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
           style={{ borderColor: "var(--color-merch-border-dark)" }}
         >
-          {/* Copyright */}
+          {/* Copyright — 16px white */}
           <p
-            className="text-[12px]"
-            style={{ color: "var(--color-merch-muted-on-dark)" }}
+            className="text-[16px]"
+            style={{ color: "var(--color-merch-on-dark)" }}
           >
             {copyrightText}
           </p>
 
-          {/* Legal links */}
+          {/* Legal links — stacked (block) on mobile, row on desktop */}
           {legalLinks && legalLinks.length > 0 && (
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
+            <div className="flex flex-col gap-1 md:flex-row md:gap-4">
               {legalLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className="text-[12px] underline-offset-2 transition-colors duration-150 hover:underline"
-                  style={{ color: "var(--color-merch-muted-on-dark)" }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.color =
-                      "var(--color-merch-on-dark)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.color =
-                      "var(--color-merch-muted-on-dark)";
-                  }}
+                  className="block text-[16px] underline-offset-2 transition-colors duration-150 hover:underline"
+                  style={{ color: "var(--color-merch-on-dark)" }}
                 >
                   {link.label}
                 </a>

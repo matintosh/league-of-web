@@ -20,6 +20,7 @@
  *   Dark grey        #333333  — body text
  *   Warm mid-grey    #737373  — muted / secondary text
  *   Mid grey on dark #a0a0a0  — muted links/labels on black backgrounds
+ *   Footer heading   #888888  — footer column headings (Shop/Support/Contact Us)
  *   Light grey       #e5e5e5  — borders, dividers
  *   Soft surface     #f5f5f5  — card / section background
  *   White            #ffffff  — page background
@@ -44,10 +45,11 @@
   --color-merch-border:      #e5e5e5; /* dividers, card outlines                       */
 
   /* ── Header / Footer (dark bar sampled from merch.riotgames.com) ──── */
-  --color-merch-ink-dark:      #000000; /* header/footer background — pure black       */
-  --color-merch-border-dark:   #2a2a2a; /* dark section border separator               */
-  --color-merch-on-dark:       #ffffff; /* white text/icons on dark backgrounds        */
-  --color-merch-muted-on-dark: #a0a0a0; /* muted grey links/labels on black backgrounds */
+  --color-merch-ink-dark:       #000000; /* header/footer background — pure black       */
+  --color-merch-border-dark:    #2a2a2a; /* dark section border separator               */
+  --color-merch-on-dark:        #ffffff; /* white text/icons on dark backgrounds        */
+  --color-merch-muted-on-dark:  #a0a0a0; /* muted grey links/labels on black backgrounds */
+  --color-merch-footer-heading: #888888; /* footer column headings — 16px/600, rgb(136,136,136) measured live */
 
   /* ── Badge colors (sampled from merch.riotgames.com filter chips) ──── */
   --color-merch-badge-new:      #8cd50b; /* New — green chip (remeasured 2026-08-06: rgb(140,213,11), black text) */
