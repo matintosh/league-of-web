@@ -17,6 +17,14 @@ body:has([data-merch-layout]) {
   background-color: var(--color-merch-bg);
 }
 
+/* Base font + color reset — stop globals.css 'spiegel'/grey-1 from leaking
+   into merch body text. Real merch.riotgames.com body is Inter (system sans)
+   at rgb(0,0,0). h1–h4 and button rules below override by specificity/order. */
+[data-merch-layout] {
+  font-family: var(--font-merch);
+  color: var(--color-merch-ink-dark);
+}
+
 /* Apply display font to all headings and prominent text within the merch layout. */
 [data-merch-layout] h1,
 [data-merch-layout] h2,
