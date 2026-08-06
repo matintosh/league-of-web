@@ -12,20 +12,20 @@ export const merchSearchHeroShowcase: ShowcaseEntry = {
   name: "Merch Search Hero",
   area: "merch",
   description:
-    'No-query hero for /merch/search. Shown when the URL has no ?q= term. Displays h1 "NO SEARCH TERM PROVIDED" (48px / 700 / uppercase, letter-spacing -1.44px) on a diagonal purple/crimson split background with a champion art slot, plus a purple "SEARCH PRODUCTS" CTA (--color-merch-purple, 239×50, radius 0). Gates the results UI — only the product grid is shown once a query is present.',
+    'Permanent hero for /merch/search — always rendered regardless of ?q=. Matches the real merch.riotgames.com/en-us/search which is a non-functional placeholder at all times. Light bg (--color-merch-bg / #ffffff), black H1 "NO SEARCH TERM PROVIDED" (48px/700/uppercase, ls -1.44px desktop, 38px/-0.76px mobile), chamfered purple CTA "SEARCH PRODUCTS" (clip-path corners, --color-merch-purple #4500d5, 239×50).',
   variants: [
     {
-      name: "Default (no art src)",
+      name: "Default (no art src) — light bg",
       notes:
-        "Standard empty-state shown at /merch/search with no ?q=. Art slot uses a decorative placeholder because the real Riot CDN SVG has no stable public URL.",
-      backgrounds: ["dark"],
+        "Standard hero shown at /merch/search at all URLs. Light near-white background matches the real site. Art slot uses a decorative placeholder because the real Riot CDN SVG has no stable public URL.",
+      backgrounds: ["light"],
       render: () => <MerchSearchHero />,
     },
     {
       name: "With champion splash as art stand-in",
       notes:
-        "The page route can supply any image URL as artSrc. A champion splash is used here as a visual stand-in for the real arcade_riven_ahri.svg art.",
-      backgrounds: ["dark"],
+        "The page route can supply any image URL as artSrc. A champion splash is used here as a visual stand-in for the real arcade_riven_ahri.svg art. Rendered faint (opacity 0.08) over the light bg.",
+      backgrounds: ["light"],
       render: () => (
         <MerchSearchHero
           artSrc="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg"
