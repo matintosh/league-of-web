@@ -2,12 +2,16 @@
 
 /**
  * ShopAllPageClient — client shell for /merch/shop-all.
- * Holds interactive state: active sort, active filter, cart open/close.
+ * Holds interactive state: active sort, active filter, cart open/close,
+ * and the LOAD MORE visible-count cursor (8 per page).
  * Receives all products from the server page.
  *
  * Header: white breadcrumb bar "Home / Shop All (N)" + inline red REFINE button,
  * matching the real /en-us/shop-all/ and the Sale/PDP treatment (#643/#654).
  * No dark MerchCollectionHero band. Count + REFINE appear once (in the bar).
+ *
+ * Pagination: renders 8 products on first load; each LOAD MORE click appends 8 more,
+ * matching the real /en-us/shop-all/ (8 per page; LOAD MORE at y≈1710 @1280).
  */
 
 import { useState } from "react";
@@ -27,6 +31,9 @@ import type { MerchProduct, MerchCartItem } from "@low/fixtures";
 
 const FILTER_OPTIONS = ["All", "New", "Sale", "Limited", "Out of Stock"] as const;
 
+/** Products shown per page on initial load and per LOAD MORE click. */
+const PAGE_SIZE = 8;
+
 export interface ShopAllPageClientProps {
   products: MerchProduct[];
 }
@@ -39,6 +46,11 @@ export function ShopAllPageClient({ products }: ShopAllPageClientProps) {
   const [cartItems] = useState<MerchCartItem[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("All");
   const [activeSort, setActiveSort] = useState<MerchSortOption>("featured");
+  // Visible-count cursor — starts at PAGE_SIZE (8), grows by PAGE_SIZE on each click.
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  const visibleProducts = products.slice(0, visibleCount);
+  const hasMore = visibleCount < products.length;
 
   return (
     <div
@@ -80,11 +92,16 @@ export function ShopAllPageClient({ products }: ShopAllPageClientProps) {
           onSortChange={setActiveSort}
         />
 
-        {/* 2-col flush product grid — no resultCount/onRefineClick (de-duped;
-            count + REFINE are now in the breadcrumb bar above).
-            LOAD MORE shown below grid — presentational (fixtures don't paginate). */}
-        <MerchProductGrid columns={2} showLoadMore>
-          {products.map((product) => (
+        {/* 2-col flush product grid — paginated at 8 per LOAD MORE click.
+            Matches real /en-us/shop-all/: 8 products first page, LOAD MORE
+            at y≈1710 / docHeight≈2608 @1280. No resultCount/onRefineClick
+            (de-duped; count + REFINE live in the breadcrumb bar above). */}
+        <MerchProductGrid
+          columns={2}
+          showLoadMore={hasMore}
+          onLoadMore={() => setVisibleCount((n) => n + PAGE_SIZE)}
+        >
+          {visibleProducts.map((product) => (
             <MerchProductCard
               key={product.slug}
               slug={product.slug}
