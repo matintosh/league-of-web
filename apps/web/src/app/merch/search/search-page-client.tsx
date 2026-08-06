@@ -68,8 +68,17 @@ export function SearchPageClient(_props: SearchPageClientProps) {
          * Permanent hero — always shown regardless of ?q=.
          * Matches the real merch.riotgames.com/en-us/search which never
          * renders a results view.
+         *
+         * Art URLs: served directly from merch.riotgames.com/assets/ (stable,
+         * hotlinkable — confirmed 200 via Playwright, 2026-08).
+         *   arcade_riven_ahri.svg — full-bleed cover, intrinsically faint/grayscale
+         *   pattern-404.svg       — contain, top-right
+         *   ziggs.png             — 320×288 at left=704px top=208px (band-relative)
          */}
         <MerchSearchHero
+          arcadeSrc="https://merch.riotgames.com/assets/arcade_riven_ahri.svg"
+          patternSrc="https://merch.riotgames.com/assets/pattern-404.svg"
+          ziggsSrc="https://merch.riotgames.com/assets/ziggs.png"
           onSearchClick={() => {
             /* Real site CTA does nothing functional — kept as no-op prop. */
           }}
