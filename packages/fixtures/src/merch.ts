@@ -46,13 +46,11 @@ export const merchAssetUrl = (assetId: string, opts: MerchAssetOpts = {}): strin
 
 // ---------------------------------------------------------------------------
 // Product fixtures — ~30 products mirroring the real merch.riotgames.com feed.
-// Real Sanity CDN asset IDs used where available; champion splash art from
-// Data Dragon fills remaining slots (all URLs hotlinkable, no self-hosting).
-// Verified 2026-08: CDN returns 200 for all real asset IDs below.
+// All URLs use real Sanity CDN asset IDs (hotlinkable, no self-hosting).
+// Verified 2026-08: CDN returns 200 for all asset IDs below.
 // ---------------------------------------------------------------------------
 
 import type { MerchProduct } from "./types";
-import { championSplashUrl } from "./ddragon";
 
 // ---------------------------------------------------------------------------
 // PDP description fixture types
@@ -126,16 +124,16 @@ export const AMUMU_PLUSH_DESCRIPTION: MerchProductDescription = {
 
 // ---------------------------------------------------------------------------
 // Product fixtures — ~30 products mirroring the real merch.riotgames.com feed.
-// Real Sanity CDN asset IDs used where available; champion splash art from
-// Data Dragon fills remaining slots (all URLs hotlinkable, no self-hosting).
-// Verified 2026-08: CDN returns 200 for all real asset IDs below.
+// All image URLs use real Sanity CDN assets sourced from merch.riotgames.com
+// (Playwright, 2026-08). No champion splash art used as product imagery.
+// Verified 2026-08: CDN returns 200 for all asset IDs below.
 // ---------------------------------------------------------------------------
 
 /**
  * ~30 fixture products across 7 franchise groups matching the real homepage
  * feed depth: LoL Classic, MSI 2026, TFT Choncc line, VALORANT Masters London,
- * Riftbound TCG, Arcane, Sale items. Real Sanity asset IDs used for the 8
- * verified live products; champion splash art used for the remaining fixtures.
+ * Riftbound TCG, Arcane, Sale items. All images use real Sanity CDN asset IDs
+ * sourced from merch.riotgames.com (Playwright, 2026-08). No splash art.
  */
 export const MERCH_PRODUCTS: MerchProduct[] = [
   // ── League of Legends Classic ────────────────────────────────────────────
@@ -196,7 +194,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "lol-classic-logo-cap",
     title: "League of Legends Classic Logo Cap",
-    imageUrl: championSplashUrl("Jinx", 0),
+    imageUrl: merchAssetUrl("f8855c0e351de66671faf5e009fd161ed508bd4c-2560x2560.png"),
     price: "$34.99",
     badges: ["New"],
     badge: "New",
@@ -205,7 +203,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "lol-classic-poro-plush",
     title: "Poro Limited Edition Plush",
-    imageUrl: championSplashUrl("Lux", 0),
+    imageUrl: merchAssetUrl("31e7c2c734b4df133b027edbbbc66c84273b94c9-2560x2560.png"),
     price: "$29.99",
     badges: ["New", "Limited Edition"],
     badge: "New",
@@ -216,7 +214,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "msi-2026-jacket",
     title: "MSI 2026 Track Jacket",
-    imageUrl: championSplashUrl("Lux", 6),
+    imageUrl: merchAssetUrl("9304d3ab3b0d8d0aa985e99627828a9f8f7a2502-2560x2560.png"),
     price: "$84.99",
     badges: ["New"],
     badge: "New",
@@ -225,7 +223,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "msi-2026-jersey",
     title: "MSI 2026 Jersey",
-    imageUrl: championSplashUrl("Ahri", 0),
+    imageUrl: merchAssetUrl("5a1126c290b43c946f25ffc7b1b3096e9f0837d0-2560x2560.png"),
     price: "$54.99",
     badges: ["New"],
     badge: "New",
@@ -234,7 +232,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "msi-2026-tee",
     title: "MSI 2026 Tee",
-    imageUrl: championSplashUrl("Ezreal", 0),
+    imageUrl: merchAssetUrl("f7782d9ffd1177af0bb59798540ffece932b6124-2560x2560.png"),
     price: "$29.99",
     badges: ["New"],
     badge: "New",
@@ -243,7 +241,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "msi-2026-hat",
     title: "MSI 2026 Snapback Hat",
-    imageUrl: championSplashUrl("Caitlyn", 0),
+    imageUrl: merchAssetUrl("cbf765370a7166e0586050862a57f9b69040b654-2560x2560.png"),
     price: "$39.99",
     badges: ["New"],
     badge: "New",
@@ -254,7 +252,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "tft-choncc-plush-xl",
     title: "TFT Choncc XL Plush",
-    imageUrl: championSplashUrl("Tristana", 0),
+    imageUrl: merchAssetUrl("7297076e445b28c11566e5afe6d348dff38d499e-2560x2560.png"),
     price: "$49.99",
     badges: ["New"],
     badge: "New",
@@ -263,7 +261,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "tft-choncc-hoodie",
     title: "TFT Choncc Graphic Hoodie",
-    imageUrl: championSplashUrl("Lulu", 0),
+    imageUrl: merchAssetUrl("0522c3c67034b27104400207ff3e6426ce945aa6-2560x2560.png"),
     price: "$69.99",
     badges: ["New"],
     badge: "New",
@@ -272,7 +270,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "tft-little-legends-pin-set",
     title: "TFT Little Legends Enamel Pin Set",
-    imageUrl: championSplashUrl("Teemo", 0),
+    imageUrl: merchAssetUrl("6c5085455d8e8802cb29dd2d38b660e16aa446e4-2560x2560.png"),
     price: "$24.99",
     badges: ["New", "Limited Edition"],
     badge: "New",
@@ -283,7 +281,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "valorant-masters-london-jersey",
     title: "VALORANT Masters London 2026 Jersey",
-    imageUrl: championSplashUrl("Vi", 0),
+    imageUrl: merchAssetUrl("5c091e4fdde681d4149ae8c426f1a1851f446f9e-2560x2560.png"),
     price: "$64.99",
     badges: ["New"],
     badge: "New",
@@ -292,7 +290,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "valorant-masters-london-hoodie",
     title: "VALORANT Masters London Pullover Hoodie",
-    imageUrl: championSplashUrl("Vi", 3),
+    imageUrl: merchAssetUrl("d81d93d506631a487defed36a75d99cb2d52af13-2560x2560.png"),
     price: "$79.99",
     badges: ["New"],
     badge: "New",
@@ -301,7 +299,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "valorant-masters-london-tee",
     title: "VALORANT Masters London Event Tee",
-    imageUrl: championSplashUrl("Jinx", 3),
+    imageUrl: merchAssetUrl("4b7290d0746f9e40ac250bfe25aa184ac6a0bd8a-2560x2560.jpg"),
     price: "$34.99",
     badges: ["New"],
     badge: "New",
@@ -310,7 +308,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "valorant-jett-figure",
     title: "VALORANT Jett Collector Figure",
-    imageUrl: championSplashUrl("Akali", 0),
+    imageUrl: merchAssetUrl("869e6cbe35d94e4378183c52db179c4edc39c503-2560x2560.png"),
     price: "$54.99",
     badges: ["New", "Limited Edition"],
     badge: "New",
@@ -321,7 +319,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "vct-2026-championship-hoodie",
     title: "VCT 2026 Championship Pullover Hoodie",
-    imageUrl: championSplashUrl("Jinx", 6),
+    imageUrl: merchAssetUrl("550d5115df74771d4aef0d92cecbe4f4cdd3712c-2560x2560.png"),
     price: "$74.99",
     badges: ["New"],
     badge: "New",
@@ -330,7 +328,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "vct-2026-championship-jersey",
     title: "VCT 2026 Championship Jersey",
-    imageUrl: championSplashUrl("Ahri", 3),
+    imageUrl: merchAssetUrl("0798a315abc7945e2e23107a533a0b09f69bf1af-2560x2560.png"),
     price: "$59.99",
     badges: ["New"],
     badge: "New",
@@ -339,7 +337,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "vct-2026-snapback-cap",
     title: "VCT 2026 Event Snapback Cap",
-    imageUrl: championSplashUrl("Caitlyn", 3),
+    imageUrl: merchAssetUrl("fe2c947d0053041cca174e40b76bc324cdf1c624-2560x2560.png"),
     price: "$39.99",
     badges: ["New"],
     badge: "New",
@@ -350,7 +348,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "2xko-launch-tee",
     title: "2XKO Launch Event Tee",
-    imageUrl: championSplashUrl("Ekko", 0),
+    imageUrl: merchAssetUrl("39ef595b21b59cc4fb45ef5af962454cb72c6a95-2560x2560.png"),
     price: "$29.99",
     badges: ["New"],
     badge: "New",
@@ -359,7 +357,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "2xko-duelists-hoodie",
     title: "2XKO Duelists Pullover Hoodie",
-    imageUrl: championSplashUrl("Ekko", 3),
+    imageUrl: merchAssetUrl("b6755dec3164466c86fac5b695df9f1cbb704a14-2560x2560.png"),
     price: "$64.99",
     badges: ["New", "Limited Edition"],
     badge: "New",
@@ -388,7 +386,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "riftbound-origins-starter-deck",
     title: "Riftbound: Origins Starter Deck — Jinx",
-    imageUrl: championSplashUrl("Jinx", 0),
+    imageUrl: merchAssetUrl("7f07ffee92dabe0e6b2dac03d219e574eebdb870-2560x2560.png"),
     price: "$19.99",
     badges: ["New"],
     badge: "New",
@@ -397,7 +395,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "riftbound-vendetta-booster-pack",
     title: "Riftbound: Vendetta Booster Pack (10-card)",
-    imageUrl: championSplashUrl("Zed", 0),
+    imageUrl: merchAssetUrl("e0a08c2f8d9e931a799617aaf74cb1f89a71e148-2560x2560.png"),
     price: "$4.99",
     badges: ["New"],
     badge: "New",
@@ -408,7 +406,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "arcane-vi-hoodie",
     title: "Arcane Vi Graphic Hoodie",
-    imageUrl: championSplashUrl("Vi", 5),
+    imageUrl: merchAssetUrl("74c1cee04be48521280fd81d65a7ded689500c53-2560x2560.png"),
     price: "$64.99",
     badges: ["New"],
     badge: "New",
@@ -417,7 +415,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "arcane-jinx-chaos-tee",
     title: "Arcane Jinx Chaos Agent Tee",
-    imageUrl: championSplashUrl("Jinx", 5),
+    imageUrl: merchAssetUrl("03aa395bfc5d6e3b4345eec4dcafa76927a36ef5-2560x2560.png"),
     price: "$29.99",
     badges: ["New"],
     badge: "New",
@@ -426,7 +424,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "arcane-caitlyn-figure",
     title: "Arcane Caitlyn Collector's Resin Figure",
-    imageUrl: championSplashUrl("Caitlyn", 5),
+    imageUrl: merchAssetUrl("5ca9a0f2ed65245214c48d97cd6378466db9a42f-2560x2560.png"),
     price: "$49.99",
     badges: ["New", "Limited Edition"],
     badge: "New",
@@ -457,7 +455,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "lol-classic-keychain-sale",
     title: "League of Legends Classic Keychain Set",
-    imageUrl: championSplashUrl("Lux", 0),
+    imageUrl: merchAssetUrl("8c31457af6be19f63c1c7db02a17cf35b294f69f-2560x2560.png"),
     price: "$9.99",
     originalPrice: "$16.99",
     badges: ["Sale"],
@@ -467,7 +465,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "valorant-logo-tee-sale",
     title: "VALORANT Logo Tee",
-    imageUrl: championSplashUrl("Vi", 0),
+    imageUrl: merchAssetUrl("2482e51bfb07ecd0cc0ed90998bce58bfe1f6699-2560x2560.png"),
     price: "$14.99",
     originalPrice: "$29.99",
     badges: ["Sale"],
@@ -477,7 +475,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "tft-choncc-sticker-pack-sale",
     title: "TFT Choncc Sticker Pack",
-    imageUrl: championSplashUrl("Teemo", 0),
+    imageUrl: merchAssetUrl("52512e6bfb59c2507b4956ec3a7007da267fc1e1-2560x2560.png"),
     price: "$5.99",
     originalPrice: "$9.99",
     badges: ["Sale"],
@@ -487,7 +485,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
   {
     slug: "riftbound-acrylic-standee-sale",
     title: "Riftbound Acrylic Standee — Zed",
-    imageUrl: championSplashUrl("Zed", 0),
+    imageUrl: merchAssetUrl("ee62b36ebf58552edf4feccef6a0f69efe06fe6e-2560x2560.png"),
     price: "$7.99",
     originalPrice: "$12.99",
     badges: ["Sale"],
