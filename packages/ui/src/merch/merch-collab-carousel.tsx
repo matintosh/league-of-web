@@ -545,6 +545,15 @@ export function MerchCollabCarousel({ collabs, onPrev, onNext }: MerchCollabCaro
         fontFamily: "var(--font-merch)",
         backgroundColor: "var(--color-merch-bg)",
         paddingBottom: 48,
+        /*
+         * overflow-x:clip contains the desktop side-arrow buttons that use
+         * position:absolute with left:-40/right:-40 to bleed outside the
+         * paddingInline:24 container. Without this the right arrow pushed
+         * scrollWidth to 1320 at a 1280px viewport (40px overflow).
+         * clip does not create a scroll container (unlike hidden) so sticky
+         * ancestors remain unaffected.
+         */
+        overflowX: "clip",
       }}
     >
       {/* Section heading */}
