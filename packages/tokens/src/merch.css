@@ -161,6 +161,22 @@
   --color-merch-franchise-bg:    rgba(0, 0, 0, 0.48); /* scrim behind franchise label (legacy — not used in header-row layout) */
   /* Heart / wishlist icon — unfilled outline on card */
   --color-merch-heart:           #1a1a1a;      /* ink-colored heart outline on light cards */
+  /* Heart / wishlist icon on dark-surface related cards (PDP franchise band) */
+  --color-merch-heart-on-dark:   #ffffff;      /* white heart outline on dark band cards   */
+
+  /* ── PDP franchise band (related / Shop Now section) ───────────────────── */
+  /* Single blue band below the PDP gallery+panel (merch.riotgames.com PDP).
+     Measured via Playwright: sampled #0A4266 with radial/streak overlays.
+     Uses a gradient from a darker to lighter blue-navy for depth (no product image). */
+  --color-merch-pdp-band-bg:       #0a3a5a; /* base navy-blue for the franchise band      */
+  --color-merch-pdp-band-bg-light: #0e4d78; /* lighter stop for radial gradient effect    */
+  /* "Special Edition" teal badge on dark-surface related cards */
+  --color-merch-badge-special:     #00b4d8; /* teal "Special Edition" badge bg            */
+  /* Dark-surface card borders and image tints (PDP related carousel) */
+  --color-merch-card-border-on-dark: rgba(255, 255, 255, 0.12); /* subtle white seam on dark-band cards  */
+  --color-merch-card-img-scrim:      rgba(0, 0, 0, 0.15);       /* subtle dark tint behind card images   */
+  /* Dark-surface carousel arrow bg overlay — darker than the light-mode arrow */
+  --color-merch-carousel-arrow-dark: rgba(0, 0, 0, 0.30);       /* arrow button bg on dark-surface carousel */
 
   /* ── Overlay ────────────────────────────────────────────────────────── */
   /* Full-viewport backdrop for modal dialogs (size guide, etc.) */

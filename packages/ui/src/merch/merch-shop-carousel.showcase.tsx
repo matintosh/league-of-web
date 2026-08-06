@@ -88,6 +88,29 @@ export const merchShopCarouselShowcase: ShowcaseEntry = {
       ),
     },
     {
+      name: "Dark surface — PDP franchise band (issue #859)",
+      notes:
+        "darkSurface=true: cards sit on the blue franchise band. Transparent card bg, white title text, 'LEAGUE OF LEGENDS' label top-left, heart top-right, optional teal 'Special Edition' badge, 353×225 landscape images, red 313×50 'Add to Cart' per card. Dots are white on dark. No banner — band provided by MerchCollectionHero (variant='pdp-band') above.",
+      backgrounds: ["dark"],
+      render: () => (
+        <div
+          style={{
+            maxWidth: 1280,
+            fontFamily: "var(--font-merch, system-ui)",
+            background: `radial-gradient(ellipse 80% 80% at 50% 110%, var(--color-merch-pdp-band-bg-light) 0%, var(--color-merch-pdp-band-bg) 100%)`,
+            padding: "24px 0 0",
+          }}
+        >
+          <MerchShopCarousel
+            franchiseName="League of Legends"
+            bannerImageUrl={BANNER_URL}
+            products={LOL_PRODUCTS}
+            darkSurface={true}
+          />
+        </div>
+      ),
+    },
+    {
       name: "Interactive demo",
       notes:
         "Client-side demo: onProductClick fires an alert. Scroll the card track with the arrows or drag.",

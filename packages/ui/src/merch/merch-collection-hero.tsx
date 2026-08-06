@@ -25,9 +25,14 @@
  *   - Item count: 14px, font-weight 400, --color-merch-muted, inline ml-2
  *   - Description: mt-2, text-sm, max-w-lg
  *   - Container: max-w-7xl mx-auto px-6
- *   - PDP collection band SHOP NOW: gold (#f9c824) button, uppercase 13px/700, px-6 py-2
+ *   - PDP franchise band SHOP NOW (pdp-band variant): gold (#c4993b) 239×50 button,
+ *     uppercase 16px/600 riotSans, black text, both viewports.
+ *   - PDP franchise band: single blue-gradient band (#0A4266 sampled), ~300px tall,
+ *     LoL logo lockup + gold CTA — NO product/champion photo, NO description paragraph.
  *   - PDP collection band heading: decorative h2 (not h1 — PDP already has its own h1)
  */
+
+import { useId } from "react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -66,7 +71,11 @@ export interface MerchCollectionHeroProps {
   headingAs?: "h1" | "h2";
   /** Optional product count shown inline after the heading, e.g. 7 → "(7)". */
   itemCount?: number;
-  /** Optional short description below the heading. */
+  /**
+   * Optional short description below the heading.
+   * NOT shown in "pdp-band" variant (real site has no description paragraph
+   * on the franchise band — only the logo lockup + CTA).
+   */
   description?: string;
   /** Background image URL (full-bleed with dark scrim). Omit for solid background. */
   backgroundImageUrl?: string;
@@ -81,8 +90,11 @@ export interface MerchCollectionHeroProps {
   /**
    * Label for the gold SHOP NOW CTA button.
    * Pass a non-empty string to show the button; omit or pass undefined to hide it.
-   * Measured from the real PDP collection band: gold (#f9c824) fill, black text,
-   * uppercase 13px/700, px-6 py-2, no border-radius (square corners like real site).
+   *
+   * "pdp-band" variant: gold (#c4993b) fill, black text, 239×50 fixed size,
+   * uppercase 16px/600 riotSans — matches the real franchise band at all viewports.
+   *
+   * Default variant: gold fill, uppercase 13px/700, px-6 py-2.
    * @default "SHOP NOW"
    */
   ctaLabel?: string;
@@ -91,6 +103,32 @@ export interface MerchCollectionHeroProps {
    * If undefined and ctaLabel is set, the button renders but does nothing.
    */
   onCtaClick?: () => void;
+  /**
+   * Variant controls which rendering mode is used.
+   *
+   * "default" (or omitted) — standard collection/category banner.
+   *   Solid or image background, breadcrumbs, heading, description, small CTA.
+   *
+   * "pdp-band" — the PDP franchise "SHOP NOW" band.
+   *   Single blue-gradient band (~300px, sampled #0A4266). No product image,
+   *   no background image prop, no description paragraph. LoL logo lockup (or
+   *   heading text) centered-stacked above a gold 239×50 "SHOP NOW" button.
+   *   backgroundImageUrl is IGNORED in this variant (CSS gradient only).
+   *
+   * @default "default"
+   */
+  variant?: "default" | "pdp-band";
+  /**
+   * Logo image URL for the LoL lockup in the pdp-band variant.
+   * When provided the image is rendered at ~230×87. If omitted the heading
+   * text falls back as the lockup.
+   */
+  lockupImageUrl?: string;
+  /**
+   * Alt text for the lockup image.
+   * @default heading
+   */
+  lockupImageAlt?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -109,14 +147,12 @@ export interface MerchCollectionHeroProps {
  *   breadcrumbs={[{label:"Home",href:"/"},{label:"Collections",href:"/collection"},{label:"League Classic"}]}
  * />
  *
- * @example — PDP collection band (h2, gold SHOP NOW, franchise splash)
+ * @example — PDP franchise band (pdp-band variant, gold 239×50 SHOP NOW)
  * <MerchCollectionHero
+ *   variant="pdp-band"
  *   heading="League of Legends"
- *   description="Explore the full collection."
- *   backgroundImageUrl={franchiseSplashUrl}
  *   ctaLabel="SHOP NOW"
  *   onCtaClick={() => router.push("/merch/shop-all")}
- *   theme="dark"
  * />
  */
 export function MerchCollectionHero({
@@ -130,9 +166,124 @@ export function MerchCollectionHero({
   theme = "dark",
   ctaLabel,
   onCtaClick,
+  variant = "default",
+  lockupImageUrl,
+  lockupImageAlt,
 }: MerchCollectionHeroProps) {
   const isDark = theme === "dark";
   const HeadingTag = headingAs ?? "h2";
+  const gradientId = useId();
+  const isPdpBand = variant === "pdp-band";
+
+  // ── PDP franchise band variant ───────────────────────────────────────────
+  // Single ~300px blue-gradient band. CSS-only background (no image prop).
+  // Content: LoL logo lockup (~230×87) centered-stacked + gold 239×50 SHOP NOW.
+  // Real site: lockup+CTA centered — left-indented variant also observed at ~x=176.
+  // We render centered-stacked as the safe default.
+  if (isPdpBand) {
+    return (
+      <section
+        aria-label={`${heading} franchise band`}
+        style={{
+          width: "100%",
+          minHeight: 300,
+          position: "relative",
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "var(--font-merch)",
+          /* Blue gradient — sampled #0A4266 with radial depth from the real site. */
+          background: `radial-gradient(ellipse 80% 80% at 50% 110%, var(--color-merch-pdp-band-bg-light) 0%, var(--color-merch-pdp-band-bg) 100%)`,
+        }}
+      >
+        {/* Subtle streak overlay — hidden SVG gradient for visual depth (id via useId) */}
+        <svg
+          aria-hidden
+          style={{ position: "absolute", width: 0, height: 0 }}
+        >
+          <defs>
+            <radialGradient id={gradientId} cx="50%" cy="110%" r="80%">
+              <stop offset="0%" stopColor="var(--color-merch-pdp-band-bg-light)" />
+              <stop offset="100%" stopColor="var(--color-merch-pdp-band-bg)" />
+            </radialGradient>
+          </defs>
+        </svg>
+
+        {/* Centered-stacked content: lockup + CTA */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 24,
+            padding: "40px 24px",
+            width: "100%",
+            maxWidth: 600,
+          }}
+        >
+          {/* LoL logo lockup — image at ~230×87 or heading text fallback */}
+          {lockupImageUrl ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={lockupImageUrl}
+              alt={lockupImageAlt ?? heading}
+              style={{
+                width: 230,
+                height: 87,
+                objectFit: "contain",
+                objectPosition: "center",
+              }}
+              loading="eager"
+              draggable={false}
+            />
+          ) : (
+            <HeadingTag
+              style={{
+                fontFamily: "var(--font-merch-display)",
+                fontSize: 36,
+                fontWeight: 800,
+                textTransform: "uppercase",
+                letterSpacing: "0.04em",
+                color: "var(--color-merch-on-dark)",
+                margin: 0,
+                textAlign: "center",
+              }}
+            >
+              {heading}
+            </HeadingTag>
+          )}
+
+          {/* Gold 239×50 "SHOP NOW" CTA — real: gold bg (#c4993b), black text,
+              uppercase 16px/600 riotSans. Fixed 239×50 at both viewports. */}
+          {ctaLabel && (
+            <button
+              type="button"
+              onClick={onCtaClick}
+              style={{
+                width: 239,
+                height: 50,
+                backgroundColor: "var(--color-merch-gold-cta)",
+                color: "var(--color-merch-ink-dark)",
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "var(--font-merch-display)",
+                fontSize: 16,
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                flexShrink: 0,
+              }}
+            >
+              {ctaLabel}
+            </button>
+          )}
+        </div>
+      </section>
+    );
+  }
+
+  // ── Default variant — collection/category banner ─────────────────────────
 
   return (
     <section
@@ -280,7 +431,7 @@ export function MerchCollectionHero({
           </p>
         )}
 
-        {/* Gold SHOP NOW CTA — PDP collection band only */}
+        {/* Gold SHOP NOW CTA — default variant (smaller: px-6 py-2, 13px/700) */}
         {ctaLabel && (
           <div className="mt-5">
             <button
