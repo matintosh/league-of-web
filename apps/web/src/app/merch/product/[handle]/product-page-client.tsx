@@ -102,7 +102,7 @@ export function ProductPageClient({
   fgImageUrl,
   carouselProducts,
   carouselBannerImageUrl,
-  collectionBannerImageUrl,
+  // collectionBannerImageUrl consumed by page.tsx for the pdp-band (CSS gradient, not an image)
 }: ProductPageClientProps) {
   const router = useRouter();
   const handleNavSelect = useMerchNav();
@@ -382,39 +382,53 @@ export function ProductPageClient({
         </div>
 
         {/*
-         * ── Collection SHOP NOW band ───────────────────────────────────────
-         * Real site: 1280×320 band between the product section and related carousel.
-         * Uses MerchCollectionHero as the band component.
-         * heading is decorative (h2) — the PDP panel above owns the h1.
-         * CTA: gold SHOP NOW button (--color-merch-gold), measured from live site.
+         * ── PDP franchise band: single blue band + dark-surface related carousel ──
+         *
+         * Real site structure below the gallery+panel:
+         *   1. Single ~300px blue-gradient band (sampled #0A4266, radial/streaks,
+         *      NO product/champion photo). Contains:
+         *        - LoL logo lockup (~230×87) centered or left-indented at ~x=176
+         *        - Gold 239×50 "SHOP NOW" CTA (16px/600, black text)
+         *      NO paragraph copy.
+         *   2. Related-products carousel ON that blue band (dark surface):
+         *      transparent card bg, white title, "LEAGUE OF LEGENDS" label + heart per card,
+         *      optional teal "Special Edition" badge, 353×225 images,
+         *      red 313×50 per-card Add to Cart, pagination dots (white on dark).
+         *
+         * Both sections share the same blue band surface rendered by MerchCollectionHero
+         * (variant="pdp-band") + MerchShopCarousel (darkSurface=true) nested inside it.
+         * Ours previously had: MerchCollectionHero (red CTA, Jinx splash, description)
+         * + duplicate plush-image band + separate white carousel — now collapsed.
          */}
-        <div style={{ marginTop: 16 }}>
-          <MerchCollectionHero
-            heading="League of Legends"
-            description="Explore the full collection of officially licensed League of Legends merchandise."
-            backgroundImageUrl={collectionBannerImageUrl ?? carouselBannerImageUrl}
-            theme="dark"
-            ctaLabel="SHOP NOW"
-            onCtaClick={() => router.push("/merch/shop-all")}
-          />
-        </div>
-      </main>
+        {carouselProducts && carouselProducts.length > 0 && (
+          <div
+            style={{
+              marginTop: 0,
+              /* Blue band background — matches pdp-band gradient in MerchCollectionHero */
+              background: `radial-gradient(ellipse 80% 80% at 50% 110%, var(--color-merch-pdp-band-bg-light) 0%, var(--color-merch-pdp-band-bg) 100%)`,
+              width: "100%",
+            }}
+          >
+            {/* SHOP NOW lockup band — LoL logo + gold 239×50 CTA */}
+            <MerchCollectionHero
+              variant="pdp-band"
+              heading="League of Legends"
+              ctaLabel="SHOP NOW"
+              onCtaClick={() => router.push("/merch/shop-all")}
+            />
 
-      {/* Franchise carousel — below the collection band when products are supplied */}
-      {carouselProducts && carouselProducts.length > 0 && carouselBannerImageUrl && (
-        <section
-          className="px-4 md:px-8"
-          style={{ maxWidth: 1280, margin: "0 auto", width: "100%" }}
-        >
-          <MerchShopCarousel
-            franchiseName="League of Legends"
-            bannerImageUrl={carouselBannerImageUrl}
-            products={carouselProducts}
-            onProductClick={(slug) => router.push(`/merch/product/${slug}`)}
-            onShopNowClick={() => router.push("/merch/shop-all")}
-          />
-        </section>
-      )}
+            {/* Dark-surface related carousel — cards sit on the blue band */}
+            <MerchShopCarousel
+              franchiseName="League of Legends"
+              bannerImageUrl={carouselBannerImageUrl ?? ""}
+              products={carouselProducts}
+              darkSurface={true}
+              onProductClick={(slug) => router.push(`/merch/product/${slug}`)}
+              onShopNowClick={() => router.push("/merch/shop-all")}
+            />
+          </div>
+        )}
+      </main>
 
       <MerchFooter copyrightText="Copyright Riot Games 2025" />
 

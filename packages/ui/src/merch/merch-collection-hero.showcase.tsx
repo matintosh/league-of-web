@@ -81,9 +81,9 @@ export const merchCollectionHeroShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "PDP collection band — gold SHOP NOW, franchise splash, h2",
+      name: "PDP collection band — gold SHOP NOW, franchise splash, h2 (default variant)",
       notes:
-        "The real PDP collection band: dark theme, wide franchise splash background, gold SHOP NOW button (--color-merch-gold #f9c824). Heading renders as h2 (decorative) because the PDP panel above owns the h1.",
+        "Default variant with franchise splash background: dark theme, gold SHOP NOW button (--color-merch-gold). Heading renders as h2 (decorative) because the PDP panel above owns the h1.",
       backgrounds: ["light"],
       render: () => (
         <MerchCollectionHero
@@ -92,6 +92,19 @@ export const merchCollectionHeroShowcase: ShowcaseEntry = {
           backgroundImageUrl={IMG_JINX}
           backgroundImageAlt="League of Legends franchise splash"
           theme="dark"
+          ctaLabel="SHOP NOW"
+        />
+      ),
+    },
+    {
+      name: "PDP franchise band — pdp-band variant (blue gradient, 239×50 gold CTA)",
+      notes:
+        "Issue #859: single ~300px blue-gradient band (sampled #0A4266). CSS-only background — no product/champion photo. Centered LoL heading lockup + gold 239×50 'SHOP NOW' at 16px/600 riotSans. This is the correct variant for the PDP related/franchise band.",
+      backgrounds: ["light"],
+      render: () => (
+        <MerchCollectionHero
+          variant="pdp-band"
+          heading="League of Legends"
           ctaLabel="SHOP NOW"
         />
       ),

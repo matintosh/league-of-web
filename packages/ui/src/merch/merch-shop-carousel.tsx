@@ -12,36 +12,53 @@
  * out, NO fetching in @low/ui, types from @low/fixtures), showcase server-safe
  * (no 'use client'; stateful demos in *.demo.tsx), SVG ids from useId.
  *
- * Measured from merch.riotgames.com/en-us/product/<handle>/ at 1280px desktop:
+ * Two rendering modes:
+ *
+ * darkSurface=false (default — standalone section with banner):
+ *   Measured from merch.riotgames.com/en-us/product/<handle>/ at 1280px desktop
+ *   prior to issue #859. Rendered on a light surface with a banner above.
  *   - Section:        full-width, pb 48px
  *   - Banner area:    320px tall, full-width, background-image cover
  *   - Banner logo:    ~200px wide, left-aligned with ~40px left inset
  *   - Banner CTA:     "Shop Now" — primary red button, right of logo ~24px gap
  *   - Franchise label: VERTICAL rotated uppercase wordmark on left edge of card row
- *                     (NOT a horizontal h2); ~197px left padding of first card
  *   - Card track:     343px × 375px cards, 3 per view at 1280px, CSS scroll-snap
- *   - Card gap:       20px between cards
- *   - Card x-offsets: 197 / 560 / 923 (measured)
- *   - Cards:          hasAddToCart=false — no ATC bar, navigation intent only
- *   - Nav arrows:     prev/next positioned at vertical center of card track
- *   - Pagination dots: centered below card track; dark dots on light bg
- *   - Bottom pad:     48px
+ *   - Pagination dots: --color-merch-dot-active-light / --color-merch-dot-inactive-light
+ *
+ * darkSurface=true (PDP related-products band — issue #859):
+ *   Cards sit ON the blue franchise band (no separate banner — the band is rendered by
+ *   MerchCollectionHero above). Cards have:
+ *   - Transparent card bg (dark band shows through)
+ *   - White title text (--color-merch-on-dark)
+ *   - "LEAGUE OF LEGENDS" label top-left per card (small uppercase, white/muted-on-dark)
+ *   - Heart icon top-right per card (white, --color-merch-heart-on-dark)
+ *   - Optional teal "Special Edition" badge (--color-merch-badge-special)
+ *   - Card image: 353×225px landscape, object-cover
+ *   - Price: white, 14px/400
+ *   - Red full-width "Add to Cart" 313×50 under price (--color-merch-red, always visible)
+ *   - Pagination dots: white (--color-merch-dot-inactive / --color-merch-on-dark)
+ *   - No banner, no rotated wordmark, no separate banner CTA
  */
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { MerchProduct } from "@low/fixtures";
-import { MerchProductCard } from "./merch-product-card";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 export interface MerchShopCarouselProps {
-  /** Franchise name shown as the rotated vertical label on the left edge, e.g. "League of Legends". */
+  /** Franchise name shown as the rotated vertical label on the left edge (light mode). */
   franchiseName: string;
-  /** Banner background image URL (supplied by page — 1680×400 WebP). */
+  /**
+   * Banner background image URL (supplied by page — 1680×400 WebP).
+   * Only rendered in light (darkSurface=false) mode.
+   */
   bannerImageUrl: string;
-  /** Franchise logo image URL shown in the banner (supplied by page). */
+  /**
+   * Franchise logo image URL shown in the banner (supplied by page).
+   * Only rendered in light (darkSurface=false) mode.
+   */
   franchiseLogoUrl?: string;
   /** Product cards to render in the scroll track. */
   products: MerchProduct[];
@@ -49,45 +66,300 @@ export interface MerchShopCarouselProps {
   onProductClick?: (slug: string) => void;
   /** Called when the "Shop Now" CTA is clicked. */
   onShopNowClick?: () => void;
+  /**
+   * When true, renders in dark-surface mode for the PDP franchise band:
+   * cards have transparent bg, white text, "LEAGUE OF LEGENDS" top-left,
+   * heart top-right, optional teal badge, red 313×50 ATC. No banner.
+   * @default false
+   */
+  darkSurface?: boolean;
 }
 
 // ---------------------------------------------------------------------------
 // Constants (measured from merch.riotgames.com)
 // ---------------------------------------------------------------------------
 
-/** Card width in px — measured: first card x=197, second x=560 → step=363, card=343, gap=20. */
-const CARD_W = 343;
-
-/** Card height in px — measured at 1280px. */
-const CARD_H = 375;
-
-/** Gap between cards in the scroll track (px). */
-const CARD_GAP = 20;
+/** Card width in px — light mode: 343px step (first x=197, second x=560, card=343, gap=20). */
+const CARD_W_LIGHT = 343;
 
 /**
- * Cards visible per page — 3-up as measured on the real site at 1280px.
- * Used for pagination dot count and scroll-by-page logic.
+ * Card width in px — dark-surface mode.
+ * Real: "353×225" per issue #859 measurement.
  */
+const CARD_W_DARK = 353;
+
+/** Card gap between cards in the scroll track (px). */
+const CARD_GAP = 20;
+
+/** Cards visible per page — 3-up as measured on the real site at 1280px. */
 const CARDS_PER_PAGE = 3;
 
 // ---------------------------------------------------------------------------
-// Sub-components
+// Heart SVG (white outline for dark-surface cards)
 // ---------------------------------------------------------------------------
 
-/**
- * CarouselArrow — prev/next nav button.
- * Uses a unique SVG clip-path id to avoid collisions when multiple carousels mount.
- */
+function HeartIcon({ color }: { color: string }) {
+  return (
+    <svg
+      aria-hidden
+      focusable="false"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ width: 20, height: 20, display: "block" }}
+    >
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// DarkSurfaceCard — card rendered on the PDP blue franchise band
+// ---------------------------------------------------------------------------
+
+interface DarkSurfaceCardProps {
+  product: MerchProduct;
+  cardWidth: number;
+  onProductClick?: (slug: string) => void;
+  onAddToCart?: (slug: string) => void;
+  onWishlist?: (slug: string) => void;
+}
+
+function DarkSurfaceCard({
+  product,
+  cardWidth,
+  onProductClick,
+  onAddToCart,
+  onWishlist,
+}: DarkSurfaceCardProps) {
+  // Determine if "Special Edition" badge applies
+  const isSpecialEdition =
+    product.badge?.toLowerCase() === "special edition" ||
+    product.badges?.some((b) => b.toLowerCase() === "special edition");
+
+  return (
+    <a
+      href={`/merch/product/${product.slug}`}
+      role="article"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width: cardWidth,
+        flexShrink: 0,
+        textDecoration: "none",
+        color: "inherit",
+        /* Transparent bg — dark band shows through */
+        backgroundColor: "transparent",
+        /* Subtle white border so cards read as distinct cells */
+        border: "1px solid var(--color-merch-card-border-on-dark)",
+        fontFamily: "var(--font-merch)",
+        cursor: "pointer",
+      }}
+      onClick={(e) => {
+        onProductClick?.(product.slug);
+        if (onProductClick) e.preventDefault();
+      }}
+    >
+      {/* ── Header row: "LEAGUE OF LEGENDS" label top-left + heart top-right ── */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "10px 12px 8px",
+          minHeight: 40,
+        }}
+      >
+        {/* Franchise label — small uppercase, muted white */}
+        <span
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "var(--color-merch-muted-on-dark)",
+            lineHeight: 1,
+          }}
+        >
+          LEAGUE OF LEGENDS
+        </span>
+
+        {/* Optional teal "Special Edition" badge */}
+        {isSpecialEdition && (
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              backgroundColor: "var(--color-merch-badge-special)",
+              color: "var(--color-merch-ink-dark)",
+              padding: "3px 6px",
+              borderRadius: 2,
+              marginRight: 6,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Special Edition
+          </span>
+        )}
+
+        {/* Heart / wishlist icon — white on dark */}
+        <button
+          type="button"
+          aria-label={`Add ${product.title} to wishlist`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onWishlist?.(product.slug);
+          }}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: 0.7,
+            flexShrink: 0,
+          }}
+        >
+          <HeartIcon color="var(--color-merch-heart-on-dark)" />
+        </button>
+      </div>
+
+      {/* ── Product image — 353×225 landscape, object-cover ── */}
+      <div
+        style={{
+          width: "100%",
+          height: 225,
+          overflow: "hidden",
+          flexShrink: 0,
+          backgroundColor: "var(--color-merch-card-img-scrim)",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={product.imageUrl}
+          alt={product.title}
+          loading="lazy"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center top",
+            display: "block",
+          }}
+          draggable={false}
+        />
+      </div>
+
+      {/* ── Info strip: title + price ── */}
+      <div
+        style={{
+          padding: "12px 12px 8px",
+          flex: "1 1 auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+        }}
+      >
+        {/* Title — white, 14px/600 riotSans */}
+        <span
+          style={{
+            fontFamily: "var(--font-merch-display)",
+            fontSize: 14,
+            fontWeight: 600,
+            lineHeight: "18px",
+            color: "var(--color-merch-on-dark)",
+            display: "block",
+          }}
+        >
+          {product.title}
+        </span>
+
+        {/* Price — white muted, 14px/400 */}
+        <span
+          style={{
+            fontSize: 14,
+            fontWeight: 400,
+            lineHeight: "20px",
+            color: "var(--color-merch-body-on-dark)",
+          }}
+        >
+          {product.originalPrice && product.originalPrice !== product.price ? (
+            <>
+              <span
+                style={{
+                  textDecoration: "line-through",
+                  color: "var(--color-merch-muted-on-dark)",
+                  marginRight: 4,
+                }}
+              >
+                {product.originalPrice}
+              </span>
+              {product.price}
+            </>
+          ) : (
+            product.price
+          )}
+        </span>
+      </div>
+
+      {/* ── Red full-width Add to Cart — 313×50 (real measurement) ── */}
+      {/* Real: red (#eb0029) fill, white text, 16px/600 uppercase riotSans, always visible */}
+      <div style={{ padding: "0 12px 12px" }}>
+        <button
+          type="button"
+          aria-label={`Add ${product.title} to cart`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onAddToCart?.(product.slug);
+          }}
+          style={{
+            width: "100%",
+            height: 50,
+            backgroundColor: "var(--color-merch-red)",
+            color: "var(--color-merch-on-dark)",
+            border: "none",
+            cursor: "pointer",
+            fontFamily: "var(--font-merch-display)",
+            fontSize: 14,
+            fontWeight: 600,
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+          }}
+        >
+          Add to Cart
+        </button>
+      </div>
+    </a>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// CarouselArrow — prev/next nav button (shared)
+// ---------------------------------------------------------------------------
+
 function CarouselArrow({
   direction,
   ariaLabel,
   onClick,
   clipId,
+  cardH,
+  darkSurface,
 }: {
   direction: "prev" | "next";
   ariaLabel: string;
   onClick: () => void;
   clipId: string;
+  cardH: number;
+  darkSurface: boolean;
 }) {
   return (
     <button
@@ -96,22 +368,23 @@ function CarouselArrow({
       onClick={onClick}
       className="absolute top-0 flex cursor-pointer items-center justify-center border-0 transition-opacity duration-150 hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1"
       style={{
-        /* Vertically centered over the card track (CARD_H = 375px) */
-        height: CARD_H,
+        height: cardH,
         width: 40,
         [direction === "prev" ? "left" : "right"]: 0,
-        backgroundColor: "var(--color-merch-overlay-soft)",
+        backgroundColor: darkSurface
+          ? "var(--color-merch-carousel-arrow-dark)"
+          : "var(--color-merch-overlay-soft)",
         color: "var(--color-merch-on-dark)",
         borderRadius: 0,
         zIndex: 2,
         outlineColor: "var(--color-merch-red)",
       }}
     >
-      {/* Hidden SVG clip — included so useId is exercised for each button */}
+      {/* Hidden SVG clip — useId exercised per button */}
       <svg width="0" height="0" aria-hidden className="absolute">
         <defs>
           <clipPath id={clipId}>
-            <rect width="40" height={CARD_H} />
+            <rect width="40" height={cardH} />
           </clipPath>
         </defs>
       </svg>
@@ -145,16 +418,17 @@ function CarouselArrow({
 /**
  * MerchShopCarousel — franchise-branded related-products carousel.
  *
- * Layout (1280px):
- *   1. 320px banner (bg image + optional logo + "Shop Now" CTA)
- *   2. Card row: vertical rotated franchise wordmark on LEFT edge + 3-up scroll-snap
+ * Light mode (darkSurface=false, default):
+ *   1. 320px banner (bg image + optional logo + red "Shop Now" CTA)
+ *   2. Rotated vertical franchise wordmark on LEFT edge + 3-up scroll-snap
  *      card track (343×375px each, gap 20px) with prev/next arrows
- *   3. Pagination dots centered below the card track
+ *   3. Pagination dots — dark on light bg
  *
- * Cards render WITHOUT the Add-to-Cart bar (hasAddToCart=false) — related-products
- * intent is navigation, not in-page purchase.
- *
- * Place below the gallery+panel row on /merch/product/[handle] pages.
+ * Dark-surface mode (darkSurface=true, PDP related-products band):
+ *   No banner (the blue band is rendered by MerchCollectionHero above).
+ *   Card track: 353×(header+225+info+ATC)px, transparent bg, white text,
+ *   "LEAGUE OF LEGENDS" label + heart per card, teal Special Edition badge,
+ *   red 313×50 per-card ATC. Pagination dots — white on dark.
  */
 export function MerchShopCarousel({
   franchiseName,
@@ -163,11 +437,16 @@ export function MerchShopCarousel({
   products,
   onProductClick,
   onShopNowClick,
+  darkSurface = false,
 }: MerchShopCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const uid = useId();
   const prevClipId = `${uid}-prev-clip`;
   const nextClipId = `${uid}-next-clip`;
+
+  const CARD_W = darkSurface ? CARD_W_DARK : CARD_W_LIGHT;
+  // Dark-surface card total height: header(40) + image(225) + info(~60) + ATC(62) ≈ 387px
+  const CARD_H = darkSurface ? 387 : 375;
 
   // ---------------------------------------------------------------------------
   // Pagination state — track which "page" (group of CARDS_PER_PAGE) is active
@@ -175,7 +454,6 @@ export function MerchShopCarousel({
   const totalPages = Math.max(1, Math.ceil(products.length / CARDS_PER_PAGE));
   const [activePage, setActivePage] = useState(0);
 
-  /** Scroll the card track by one full page (CARDS_PER_PAGE cards). */
   const scrollBy = useCallback(
     (dir: "prev" | "next") => {
       const track = trackRef.current;
@@ -183,18 +461,19 @@ export function MerchShopCarousel({
       const delta = (CARD_W + CARD_GAP) * CARDS_PER_PAGE * (dir === "prev" ? -1 : 1);
       track.scrollBy({ left: delta, behavior: "smooth" });
     },
-    []
+    [CARD_W],
   );
 
-  /** Scroll to a specific page index. */
-  const scrollToPage = useCallback((page: number) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const left = page * CARDS_PER_PAGE * (CARD_W + CARD_GAP);
-    track.scrollTo({ left, behavior: "smooth" });
-  }, []);
+  const scrollToPage = useCallback(
+    (page: number) => {
+      const track = trackRef.current;
+      if (!track) return;
+      const left = page * CARDS_PER_PAGE * (CARD_W + CARD_GAP);
+      track.scrollTo({ left, behavior: "smooth" });
+    },
+    [CARD_W],
+  );
 
-  /** Keep activePage in sync with the track's scroll position. */
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
@@ -206,153 +485,142 @@ export function MerchShopCarousel({
     }
     track.addEventListener("scroll", onScroll, { passive: true });
     return () => track.removeEventListener("scroll", onScroll);
-  }, [totalPages]);
+  }, [totalPages, CARD_W]);
 
   return (
     <section
-      aria-label={`${franchiseName} shop carousel`}
+      aria-label={`${franchiseName} related products`}
       style={{
         width: "100%",
-        paddingBottom: 48,
+        paddingBottom: darkSurface ? 40 : 48,
         fontFamily: "var(--font-merch)",
         position: "relative",
         overflowX: "hidden",
       }}
     >
-      {/* ------------------------------------------------------------------ */}
-      {/* Banner area — 320px tall, full-width, bg-image cover               */}
-      {/* ------------------------------------------------------------------ */}
-      <div
-        style={{
-          width: "100%",
-          height: 320,
-          position: "relative",
-          overflow: "hidden",
-          backgroundColor: "var(--color-merch-surface)",
-        }}
-      >
-        {/* Background image */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={bannerImageUrl}
-          alt={`${franchiseName} collection banner`}
-          className="absolute inset-0 h-full w-full object-cover object-center"
-          loading="lazy"
-          draggable={false}
-        />
-
-        {/* Subtle left-to-center scrim so logo + CTA read clearly */}
+      {/* ── Light mode only: banner area ─────────────────────────────────── */}
+      {!darkSurface && (
         <div
-          className="absolute inset-0"
           style={{
-            background:
-              "linear-gradient(to right, var(--color-merch-scrim-strong) 0%, var(--color-merch-scrim-soft) 55%, transparent 100%)",
+            width: "100%",
+            height: 320,
+            position: "relative",
+            overflow: "hidden",
+            backgroundColor: "var(--color-merch-surface)",
           }}
-          aria-hidden
-        />
-
-        {/* Banner content — logo + CTA, left-anchored */}
-        <div
-          className="absolute inset-0 flex items-center"
-          style={{ paddingInline: 40 }}
         >
-          {/* Franchise logo */}
-          {franchiseLogoUrl && (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={franchiseLogoUrl}
-              alt={`${franchiseName} logo`}
-              style={{
-                width: 200,
-                objectFit: "contain",
-                objectPosition: "center left",
-                flexShrink: 0,
-              }}
-              loading="lazy"
-              draggable={false}
-            />
-          )}
+          {/* Background image */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={bannerImageUrl}
+            alt={`${franchiseName} collection banner`}
+            className="absolute inset-0 h-full w-full object-cover object-center"
+            loading="lazy"
+            draggable={false}
+          />
 
-          {/* "Shop Now" CTA */}
-          <button
-            type="button"
-            onClick={onShopNowClick}
-            className="cursor-pointer border-0 text-[13px] font-bold uppercase tracking-[0.1em] transition-colors duration-150"
+          {/* Left-to-center scrim */}
+          <div
+            className="absolute inset-0"
             style={{
-              marginLeft: franchiseLogoUrl ? 24 : 0,
-              backgroundColor: "var(--color-merch-red)",
-              color: "var(--color-merch-on-dark)",
-              padding: "10px 28px",
-              borderRadius: 2,
+              background:
+                "linear-gradient(to right, var(--color-merch-scrim-strong) 0%, var(--color-merch-scrim-soft) 55%, transparent 100%)",
             }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                "var(--color-merch-red-dark)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                "var(--color-merch-red)";
-            }}
-          >
-            Shop Now
-          </button>
-        </div>
-      </div>
+            aria-hidden
+          />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Card row: vertical franchise label (left edge) + card track + arrows */}
-      {/*                                                                     */}
-      {/* Real 1280px layout:                                                 */}
-      {/*   Left label column ~40px wide — vertical rotated uppercase text    */}
-      {/*   Card track — 3-up, 343px cards, 20px gap, CSS scroll-snap        */}
-      {/*   Prev/next arrows overlap the track at track left/right edges      */}
-      {/* ------------------------------------------------------------------ */}
+          {/* Banner content — logo + CTA, left-anchored */}
+          <div
+            className="absolute inset-0 flex items-center"
+            style={{ paddingInline: 40 }}
+          >
+            {franchiseLogoUrl && (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={franchiseLogoUrl}
+                alt={`${franchiseName} logo`}
+                style={{
+                  width: 200,
+                  objectFit: "contain",
+                  objectPosition: "center left",
+                  flexShrink: 0,
+                }}
+                loading="lazy"
+                draggable={false}
+              />
+            )}
+
+            <button
+              type="button"
+              onClick={onShopNowClick}
+              className="cursor-pointer border-0 text-[13px] font-bold uppercase tracking-[0.1em] transition-colors duration-150"
+              style={{
+                marginLeft: franchiseLogoUrl ? 24 : 0,
+                backgroundColor: "var(--color-merch-red)",
+                color: "var(--color-merch-on-dark)",
+                padding: "10px 28px",
+                borderRadius: 2,
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                  "var(--color-merch-red-dark)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                  "var(--color-merch-red)";
+              }}
+            >
+              Shop Now
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Card row ─────────────────────────────────────────────────────── */}
       <div
         style={{
           position: "relative",
           display: "flex",
           alignItems: "stretch",
-          marginTop: 24,
+          marginTop: darkSurface ? 0 : 24,
+          paddingTop: darkSurface ? 32 : 0,
         }}
       >
-        {/* ── Vertical rotated franchise wordmark ────────────────────────── */}
-        {/*   "LEAGUE OF LEGENDS" rotated 90° CCW on the left edge.          */}
-        {/*   Container is ~40px wide; text is rotated with writing-mode or  */}
-        {/*   transform. Using transform rotate(-90deg) for crisp rendering. */}
-        <div
-          aria-hidden
-          style={{
-            width: 40,
-            flexShrink: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            /* Enough height to contain the track */
-            minHeight: CARD_H,
-            position: "relative",
-          }}
-        >
-          <span
+        {/* Rotated franchise wordmark — light mode only */}
+        {!darkSurface && (
+          <div
+            aria-hidden
             style={{
-              display: "block",
-              transformOrigin: "center center",
-              transform: "rotate(-90deg)",
-              whiteSpace: "nowrap",
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "var(--color-merch-franchise-label)",
-              fontFamily: "var(--font-merch)",
-              /* Keep the rotated text within the 40px column */
-              position: "absolute",
+              width: 40,
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: CARD_H,
+              position: "relative",
             }}
           >
-            {franchiseName}
-          </span>
-        </div>
+            <span
+              style={{
+                display: "block",
+                transformOrigin: "center center",
+                transform: "rotate(-90deg)",
+                whiteSpace: "nowrap",
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "var(--color-merch-franchise-label)",
+                fontFamily: "var(--font-merch)",
+                position: "absolute",
+              }}
+            >
+              {franchiseName}
+            </span>
+          </div>
+        )}
 
-        {/* ── Card track + arrows ────────────────────────────────────────── */}
+        {/* Card track + arrows */}
         <div
           style={{
             position: "relative",
@@ -367,9 +635,11 @@ export function MerchShopCarousel({
             ariaLabel="Previous products"
             onClick={() => scrollBy("prev")}
             clipId={prevClipId}
+            cardH={CARD_H}
+            darkSurface={darkSurface}
           />
 
-          {/* Scrollable card track — CSS scroll-snap, 3-up */}
+          {/* Scrollable card track */}
           <div
             ref={trackRef}
             style={{
@@ -380,32 +650,37 @@ export function MerchShopCarousel({
               scrollbarWidth: "none",
               msOverflowStyle: "none",
               height: CARD_H,
-              paddingInline: 40,
+              paddingInline: darkSurface ? 24 : 40,
               boxSizing: "border-box",
             }}
           >
-            {products.map((product) => (
-              <div
-                key={product.slug}
-                style={{
-                  flex: `0 0 ${CARD_W}px`,
-                  width: CARD_W,
-                  height: CARD_H,
-                  scrollSnapAlign: "start",
-                }}
-              >
-                <MerchProductCard
-                  slug={product.slug}
-                  title={product.title}
-                  imageUrl={product.imageUrl}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                  badge={product.badge}
-                  hasAddToCart={false}
-                  onClick={onProductClick}
+            {products.map((product) =>
+              darkSurface ? (
+                <div
+                  key={product.slug}
+                  style={{
+                    flex: `0 0 ${CARD_W}px`,
+                    width: CARD_W,
+                    scrollSnapAlign: "start",
+                  }}
+                >
+                  <DarkSurfaceCard
+                    product={product}
+                    cardWidth={CARD_W}
+                    onProductClick={onProductClick}
+                  />
+                </div>
+              ) : (
+                /* Light mode: lazy import avoided — inline card rendering */
+                <LightCard
+                  key={product.slug}
+                  product={product}
+                  cardW={CARD_W}
+                  cardH={CARD_H}
+                  onProductClick={onProductClick}
                 />
-              </div>
-            ))}
+              ),
+            )}
           </div>
 
           {/* Next arrow */}
@@ -414,15 +689,13 @@ export function MerchShopCarousel({
             ariaLabel="Next products"
             onClick={() => scrollBy("next")}
             clipId={nextClipId}
+            cardH={CARD_H}
+            darkSurface={darkSurface}
           />
         </div>
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Pagination dots — centered below the card track.                   */}
-      {/* Dark dots on light bg (--color-merch-dot-active-light /            */}
-      {/* --color-merch-dot-inactive-light). One dot per page group.         */}
-      {/* ------------------------------------------------------------------ */}
+      {/* ── Pagination dots ───────────────────────────────────────────────── */}
       {totalPages > 1 && (
         <div
           role="tablist"
@@ -451,21 +724,28 @@ export function MerchShopCarousel({
                 cursor: "pointer",
                 padding: 0,
                 transition: "width 0.2s ease, background-color 0.2s ease",
-                backgroundColor:
-                  i === activePage
-                    ? "var(--color-merch-dot-active-light)"
-                    : "var(--color-merch-dot-inactive-light)",
+                backgroundColor: darkSurface
+                  ? i === activePage
+                    ? "var(--color-merch-on-dark)"
+                    : "var(--color-merch-dot-inactive)"
+                  : i === activePage
+                  ? "var(--color-merch-dot-active-light)"
+                  : "var(--color-merch-dot-inactive-light)",
               }}
               onMouseEnter={(e) => {
                 if (i !== activePage) {
                   (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    "var(--color-merch-dot-inactive-light-hover)";
+                    darkSurface
+                      ? "var(--color-merch-dot-inactive-hover)"
+                      : "var(--color-merch-dot-inactive-light-hover)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (i !== activePage) {
                   (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    "var(--color-merch-dot-inactive-light)";
+                    darkSurface
+                      ? "var(--color-merch-dot-inactive)"
+                      : "var(--color-merch-dot-inactive-light)";
                 }
               }}
             />
@@ -473,5 +753,108 @@ export function MerchShopCarousel({
         </div>
       )}
     </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// LightCard — inline card for light-surface mode (avoids circular import)
+// ---------------------------------------------------------------------------
+
+/**
+ * Inline simplified card for the light-surface carousel.
+ * Keeps the product title + price + navigation intent — no ATC (hasAddToCart=false
+ * intent from the original design). Uses --color-merch-ink-dark for text.
+ */
+function LightCard({
+  product,
+  cardW,
+  cardH,
+  onProductClick,
+}: {
+  product: MerchProduct;
+  cardW: number;
+  cardH: number;
+  onProductClick?: (slug: string) => void;
+}) {
+  return (
+    <a
+      href={`/merch/product/${product.slug}`}
+      role="article"
+      style={{
+        flex: `0 0 ${cardW}px`,
+        width: cardW,
+        height: cardH,
+        scrollSnapAlign: "start",
+        display: "flex",
+        flexDirection: "column",
+        textDecoration: "none",
+        color: "inherit",
+        border: "1px solid var(--color-merch-on-dark)",
+        backgroundColor: "transparent",
+        fontFamily: "var(--font-merch)",
+        cursor: "pointer",
+        overflow: "hidden",
+        flexShrink: 0,
+      }}
+      onClick={(e) => {
+        onProductClick?.(product.slug);
+        if (onProductClick) e.preventDefault();
+      }}
+    >
+      {/* Image */}
+      <div
+        style={{
+          width: "100%",
+          flex: "1 1 auto",
+          overflow: "hidden",
+          backgroundColor: "var(--color-merch-surface)",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={product.imageUrl}
+          alt={product.title}
+          loading="lazy"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            display: "block",
+          }}
+          draggable={false}
+        />
+      </div>
+
+      {/* Info */}
+      <div
+        style={{
+          padding: "12px 16px 16px",
+          flexShrink: 0,
+        }}
+      >
+        <div
+          style={{
+            fontFamily: "var(--font-merch-display)",
+            fontSize: 16,
+            fontWeight: 700,
+            lineHeight: "18px",
+            color: "var(--color-merch-ink-dark)",
+            marginBottom: 4,
+          }}
+        >
+          {product.title}
+        </div>
+        <div
+          style={{
+            fontSize: 16,
+            fontWeight: 400,
+            lineHeight: "20px",
+            color: "var(--color-merch-ink-dark)",
+          }}
+        >
+          {product.price}
+        </div>
+      </div>
+    </a>
   );
 }
