@@ -18,9 +18,9 @@ export interface LoginCheckboxProps {
  * (e.g. "Stay signed in" or "Remember me").
  *
  * Visual spec:
- * - Small square (~16px), login-surface (#ececec) fill, 1px login-placeholder border at rest.
+ * - Small square (~16px), login-surface (#ececec) fill, no border at rest (borderless unchecked square).
  * - Checked state: riot-red (#eb022b) background fill + white checkmark SVG.
- * - Label: xs, login-ink (#343434), rendered to the right.
+ * - Label: xs, bold, login-black (#000000), rendered to the right.
  *
  * Accessibility: wraps a `sr-only` native <input type="checkbox"> inside a <label>
  * so clicking anywhere in the row (square or text) toggles the state. The visible
@@ -60,9 +60,8 @@ export function LoginCheckbox({
         aria-hidden="true"
         className={[
           "flex h-4 w-4 shrink-0 items-center justify-center",
-          "border border-login-placeholder",
           "transition-colors duration-150",
-          checked ? "border-riot-red bg-riot-red" : "bg-login-surface",
+          checked ? "border border-riot-red bg-riot-red" : "bg-login-surface",
           // Keyboard focus ring via peer
           "peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-1 peer-focus-visible:outline-riot-red",
         ].join(" ")}
@@ -84,7 +83,7 @@ export function LoginCheckbox({
       </div>
 
       {/* Label text */}
-      <span className="font-body text-xs text-login-ink">{label}</span>
+      <span className="font-body text-xs font-bold text-login-black">{label}</span>
     </label>
   );
 }
