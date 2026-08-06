@@ -21,6 +21,15 @@ import { CollectionIndexHeader } from "./collection-index-client";
  *   - LOAD MORE pill below strips
  *   - Heading rhythm: mt 60 / mb 40 (was py-10)
  *   - 390 tab overlap fixed (mobile tab above banner)
+ *
+ * Delta #860:
+ *   - Trim to exactly 4 strips (League Classic, Riftbound Vendetta, MSI 2026,
+ *     Hot Choncc Summer) — Masters London + Arcane removed from real site
+ *   - LOAD MORE: red fill --color-merch-red, white text, 239×50 @1280, 310×50 @390
+ *   - SHOP label: Inter 14/600 gray, ls 0.28 (not riotSans red); no separator
+ *   - Rotated tab visible at 390 (same matrix(0,-1,1,0)), remove horizontal overlay
+ *   - Strip pitch 715px (paddingBottom 106px); prev arrow hidden at scrollLeft=0
+ *   - 390 card cells 363px wide, first card x=85
  */
 
 // ---------------------------------------------------------------------------
@@ -44,9 +53,9 @@ function productsByFranchise(label: string): MerchProduct[] {
 // ---------------------------------------------------------------------------
 
 /**
- * Six curated collection strips derived from MERCH_PRODUCTS.
- * Tab labels match the real collection index naming conventions:
- *   "LEAGUE CLASSIC" / "RIFTBOUND VENDETTA" / "MSI 2026" / "HOT CHONCC SUMMER" / etc.
+ * Four curated collection strips matching the real /en-us/collection/ index (#860).
+ * Real order: League Classic → Riftbound Vendetta → MSI 2026 → Hot Choncc Summer.
+ * Masters London and Arcane removed (not present on real page).
  *
  * Banner URLs: wide Sanity CDN assets where available; champion splash art for others.
  */
@@ -91,24 +100,6 @@ const COLLECTIONS: MerchCollectionEntry[] = [
     /* Stand-in: Lulu splash (TFT whimsical theme) */
     bannerImageUrl: championSplashUrl("Lulu", 0),
     products: productsByFranchise("Teamfight Tactics"),
-    href: "/merch/collection/league-of-legends",
-  },
-  {
-    slug: "valorant-masters-london",
-    name: "VALORANT",
-    tabLabel: "MASTERS LONDON",
-    /* Stand-in: Vi splash (VALORANT energy) */
-    bannerImageUrl: championSplashUrl("Vi", 0),
-    products: productsByFranchise("VALORANT"),
-    href: "/merch/collection/league-of-legends",
-  },
-  {
-    slug: "arcane",
-    name: "Arcane",
-    tabLabel: "ARCANE",
-    /* Stand-in: Jinx splash (Arcane protagonist) */
-    bannerImageUrl: championSplashUrl("Jinx", 5),
-    products: productsByFranchise("Arcane"),
     href: "/merch/collection/league-of-legends",
   },
 ];
@@ -158,7 +149,7 @@ export default function CollectionIndexPage() {
         </div>
 
         {/* ------------------------------------------------------------------ */}
-        {/* Collection strips — #804: 6 curated strips                         */}
+        {/* Collection strips — #860: 4 curated strips (real site order).     */}
         {/* px-10 keeps container x=40 at 1280 (matching card inset math).    */}
         {/* ------------------------------------------------------------------ */}
         <div className="mx-auto max-w-7xl px-10 pb-0">
