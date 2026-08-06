@@ -443,119 +443,34 @@ export function MerchHeader({
   }
 
   return (
-    <div style={{ fontFamily: "var(--font-merch)" }}>
-      {/* ================================================================ */}
-      {/* Announcement bar — NOT sticky; scrolls away with page content.   */}
-      {/*                                                                  */}
-      {/* Two-tone layout:                                                 */}
-      {/*   Left gutter: brighter EB0029 red dismiss block (50×52 flush)   */}
-      {/*   Pill: starts x=50 @390 / x=94 @1280; darker C60023 red pill   */}
-      {/*         running to right edge (no right spacer at 390).          */}
-      {/*                                                                  */}
-      {/* At 1280: pill is x=94, w=1186. Dismiss ✕ sits at x=35/y=93.    */}
-      {/* At 390:  pill is x=50, w=340 (runs past right viewport edge).   */}
-      {/* ================================================================ */}
-      {announcement && (
-        <>
-          {/* Scoped keyframes — pure CSS, no JS timers needed */}
-          <style>{`
-            @keyframes merch-marquee {
-              0%   { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
-            }
-            @media (prefers-reduced-motion: reduce) {
-              .merch-marquee-track {
-                animation: none !important;
-              }
-            }
-          `}</style>
-
-          <div
-            role="status"
-            aria-live="polite"
-            className="flex w-full items-stretch overflow-x-hidden"
-            style={{ minHeight: "52px" }}
-          >
-            {/*
-             * Dismiss block — brighter red (EB0029 / --color-merch-announcement-dismiss-bg),
-             * 50px wide, flush at x=0. 24×24 stroke SVG ✕ centered.
-             * At 1280: dismiss sits in the left gutter (x=35, outside the pill).
-             * At 390:  same block, full 50×52 touch target.
-             */}
-            <button
-              type="button"
-              aria-label="Dismiss announcement"
-              onClick={onDismissAnnouncement}
-              className="flex shrink-0 items-center justify-center transition-opacity duration-150 hover:opacity-85"
-              style={{
-                backgroundColor: "var(--color-merch-announcement-dismiss-bg)",
-                color: "var(--color-merch-on-dark)",
-                width: "50px",
-                minHeight: "52px",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              <DismissIcon />
-            </button>
-
-            {/*
-             * Pill — darker C60023 red (#c60023 / --color-merch-announcement-bg).
-             * flex-1: fills remaining width to right edge (no right spacer).
-             * overflow-hidden clips the marquee track inside the capsule shape.
-             * The pill starts at x=50 on mobile matching the dismiss block width.
-             */}
-            <div
-              className="flex flex-1 items-center overflow-x-hidden"
-              style={{
-                backgroundColor: "var(--color-merch-announcement-bg)",
-                padding: "0 20px",
-              }}
-            >
-              {/*
-               * Marquee track — 20 copies side-by-side; animates translateX –50%
-               * (one full copy width) in a loop for a seamless repeat effect.
-               * 16px/700/uppercase matches the real site @390.
-               */}
-              <div
-                className="merch-marquee-track"
-                aria-hidden="true"
-                style={{
-                  display: "flex",
-                  whiteSpace: "nowrap",
-                  width: "max-content",
-                  animation: "merch-marquee 28s linear infinite",
-                }}
-              >
-                {Array.from({ length: 20 }, (_, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      color: "var(--color-merch-on-dark)",
-                      paddingRight: "80px",
-                    }}
-                  >
-                    {announcement}
-                  </span>
-                ))}
-              </div>
-              {/* Screen-reader-only single copy so SR doesn't read 20 repetitions */}
-              <span className="sr-only">{announcement}</span>
-            </div>
-          </div>
-        </>
-      )}
-
+    <>
       {/* ================================================================ */}
       {/* Sticky nav tier — stays visible at ALL scroll offsets.           */}
+      {/* Rendered FIRST so it sits at y=0 matching merch.riotgames.com.  */}
+      {/* Real: black nav bar at y=0 (h=80), red announcement at y=80.    */}
       {/* (Real site confirmed: black nav visible at scrollY 800–15000.   */}
       {/*  #773's navHidden hide-on-scroll removed after live measurement.) */}
       {/* ================================================================ */}
+      {/*
+       * The sticky <header> must be a direct child of the page's scroll
+       * container (or a tall ancestor), NOT wrapped in a short div whose
+       * height equals only the header height. position:sticky can only slide
+       * within its containing block — if the parent is 130px (nav+band) the
+       * element runs out of track immediately and scrolls away.
+       *
+       * Fix: use a React Fragment so <header> and the announcement bar are
+       * siblings in MerchPageClient's root div (min-h-screen), giving the
+       * sticky element a full-page containing block.
+       *
+       * Also: NO overflow-x-hidden on this element — overflow-x:hidden on a
+       * sticky ancestor creates an implicit scroll container (Chrome/WebKit)
+       * that breaks position:sticky. The inner wrapper already uses
+       * overflow-x:clip (safe for sticky) to prevent the cart-badge -right-1
+       * offset from widening scrollWidth at 390px.
+       */}
       <header
-        className="sticky top-0 z-50 w-full overflow-x-hidden"
+        className="sticky top-0 z-50 w-full"
+        style={{ fontFamily: "var(--font-merch)" }}
       >
         {/* overflow-x:clip prevents the cart badge's -right-1.5 offset from
             widening scrollWidth on narrow viewports. Unlike overflow-x:hidden
@@ -1115,6 +1030,114 @@ export function MerchHeader({
             </nav>
           )}
       </header>
-    </div>
+
+      {/* ================================================================ */}
+      {/* Announcement bar — NOT sticky; scrolls away with page content.   */}
+      {/*                                                                  */}
+      {/* Rendered AFTER the sticky nav so the DOM/visual order matches    */}
+      {/* merch.riotgames.com: nav at y=0 (h=80), band at y=80 (h=50).    */}
+      {/*                                                                  */}
+      {/* Two-tone layout:                                                 */}
+      {/*   Left gutter: brighter EB0029 red dismiss block (50×52 flush)   */}
+      {/*   Pill: starts x=50 @390 / x=94 @1280; darker C60023 red pill   */}
+      {/*         running to right edge (no right spacer at 390).          */}
+      {/*                                                                  */}
+      {/* At 1280: pill is x=94, w=1186. Dismiss ✕ sits at x=35/y=93.    */}
+      {/* At 390:  pill is x=50, w=340 (runs past right viewport edge).   */}
+      {/* ================================================================ */}
+      {announcement && (
+        <>
+          {/* Scoped keyframes — pure CSS, no JS timers needed */}
+          <style>{`
+            @keyframes merch-marquee {
+              0%   { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+            @media (prefers-reduced-motion: reduce) {
+              .merch-marquee-track {
+                animation: none !important;
+              }
+            }
+          `}</style>
+
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex w-full items-stretch overflow-x-hidden"
+            style={{ minHeight: "52px" }}
+          >
+            {/*
+             * Dismiss block — brighter red (EB0029 / --color-merch-announcement-dismiss-bg),
+             * 50px wide, flush at x=0. 24×24 stroke SVG ✕ centered.
+             * At 1280: dismiss sits in the left gutter (x=35, outside the pill).
+             * At 390:  same block, full 50×52 touch target.
+             */}
+            <button
+              type="button"
+              aria-label="Dismiss announcement"
+              onClick={onDismissAnnouncement}
+              className="flex shrink-0 items-center justify-center transition-opacity duration-150 hover:opacity-85"
+              style={{
+                backgroundColor: "var(--color-merch-announcement-dismiss-bg)",
+                color: "var(--color-merch-on-dark)",
+                width: "50px",
+                minHeight: "52px",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              <DismissIcon />
+            </button>
+
+            {/*
+             * Pill — darker C60023 red (#c60023 / --color-merch-announcement-bg).
+             * flex-1: fills remaining width to right edge (no right spacer).
+             * overflow-hidden clips the marquee track inside the capsule shape.
+             * The pill starts at x=50 on mobile matching the dismiss block width.
+             */}
+            <div
+              className="flex flex-1 items-center overflow-x-hidden"
+              style={{
+                backgroundColor: "var(--color-merch-announcement-bg)",
+                padding: "0 20px",
+              }}
+            >
+              {/*
+               * Marquee track — 20 copies side-by-side; animates translateX –50%
+               * (one full copy width) in a loop for a seamless repeat effect.
+               * 16px/700/uppercase matches the real site @390.
+               */}
+              <div
+                className="merch-marquee-track"
+                aria-hidden="true"
+                style={{
+                  display: "flex",
+                  whiteSpace: "nowrap",
+                  width: "max-content",
+                  animation: "merch-marquee 28s linear infinite",
+                }}
+              >
+                {Array.from({ length: 20 }, (_, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      color: "var(--color-merch-on-dark)",
+                      paddingRight: "80px",
+                    }}
+                  >
+                    {announcement}
+                  </span>
+                ))}
+              </div>
+              {/* Screen-reader-only single copy so SR doesn't read 20 repetitions */}
+              <span className="sr-only">{announcement}</span>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }
