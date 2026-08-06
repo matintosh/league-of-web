@@ -16,17 +16,20 @@
  * Measured from merch.riotgames.com (Playwright, 2026-08):
  *   Desktop (1280px):
  *     - Hero: 1280×348px  → aspect-[320/87]  (~3.68:1)
- *     - Franchise strip: sits BELOW the hero on the white page
- *     - Franchise tiles: 40px tall, skewed parallelograms (skewX(-10deg))
- *     - Franchise arrows: 40×40 rounded-full transparent buttons at x=24/x=326 @390
- *     - Slide prev/next: 40×40 rounded-full at hero right edge
- *     - CTA: 239×50, riotSans 16px/600, letter-spacing 0.32px, #eb0029 bg
- *     - Progress indicator: 2px-tall animated line under active franchise tile
+ *     - Franchise strip: sits ~83px BELOW the hero on the white page (white bg)
+ *     - Franchise tiles: 64px tall, skewed parallelograms (skewX(-10deg))
+ *     - Franchise tile radius: 2px (outer corners only)
+ *     - "Shop All" end tile: 112×40 white, black Inter 16, pad 8px 8px 8px 16px
+ *     - Franchise next-arrow: 40×40 circle, 1px --color-merch-strip-arrow-border
+ *       transparent bg, at right of tile track
+ *     - CTA: 239×50, riotSans 16px/600, 0.32px ls, #eb0029 bg, at (981,467)
+ *     - Active tile: red underline at bottom edge
  *   Mobile (390px):
- *     - Hero image band: 390×315px  (bg layer)
- *     - Inset slide card: 342×342px white card at x=24, y=162 on page bg
- *     - Full-width "SHOP NOW" CTA (342×50) at x=24 BELOW the franchise strip
- *     - Franchise arrows: 40×40 rounded-full, inset 24px from edges
+ *     - Hero image band: 390×374px (grew from 315; no caption panel below)
+ *     - Franchise strip: white band, 24px inset, slanted parallelogram edges,
+ *       white 62px circle '>' button overlapping right edge
+ *     - Active tile: red underline segment
+ *     - SHOP NOW CTA: 342×50 at x=24, clip-path corner notches top-right + bottom-left
  */
 
 import React, { useEffect, useRef, useState, useId, type ReactNode } from "react";
@@ -151,52 +154,6 @@ function ChevronRight() {
   );
 }
 
-/**
- * Circular-arrows "refresh" icon used for slide prev/next in franchise mode.
- * 16×16 viewBox.
- */
-function CircularArrows({ direction }: { direction: "prev" | "next" }) {
-  const id = useId();
-  if (direction === "next") {
-    return (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" id={`${id}-next`}>
-        <path
-          d="M14 8A6 6 0 1 1 8 2"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-        <polyline
-          points="8,0 10,2 8,4"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-        />
-      </svg>
-    );
-  }
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" id={`${id}-prev`}>
-      <path
-        d="M2 8A6 6 0 1 0 8 2"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <polyline
-        points="8,0 6,2 8,4"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-    </svg>
-  );
-}
-
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -204,13 +161,14 @@ function CircularArrows({ direction }: { direction: "prev" | "next" }) {
 /**
  * MerchHeroBanner — full-width hero carousel for the /merch homepage.
  *
- * Desktop (1280px): hero 1280×348 (aspect-[320/87]); franchise strip below
- * on the white page (40px-tall parallelogram tiles); 40×40 circular next/prev
- * at hero right edge; 239×50 red CTA at hero bottom-right; 2px progress line.
+ * Desktop (1280px): hero 1280×348 (aspect-[320/87]); franchise strip sits ~83px
+ * below hero on white page (64px-tall parallelogram tiles); single 40×40 circle
+ * next-arrow at right of tile track; 239×50 red CTA at hero bottom-right (981,467);
+ * red underline on active tile.
  *
- * Mobile (390px): 390×315 bg image band + 342×342 inset slide card; full-width
- * SHOP NOW (342×50) below the franchise strip (24px gutters); 40×40 circular
- * arrows at x=24 / x=326 flanking the franchise strip.
+ * Mobile (390px): 390×374 bg image band (no caption panel below); white franchise
+ * band with 24px inset, slanted parallelogram tiles, white 62px circle '>' button;
+ * 342×50 SHOP NOW with corner notches (clip-path).
  */
 export function MerchHeroBanner({
   slides,
@@ -225,6 +183,7 @@ export function MerchHeroBanner({
   const [progress, setProgress] = useState(0);
   const progressRef = useRef(0);
   const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const stripId = useId();
 
   const hasFranchises = !!franchises && franchises.length > 0;
 
@@ -330,10 +289,10 @@ export function MerchHeroBanner({
         className={[
           "relative w-full overflow-hidden",
           /*
-           * Mobile (< md): fixed 315px height — background image band only.
+           * Mobile (< md): 374px height — full photo band, no caption below.
            * Desktop (≥ md): aspect-[320/87] → 1280×348.
            */
-          "h-[315px] md:h-auto md:aspect-[320/87]",
+          "h-[374px] md:h-auto md:aspect-[320/87]",
         ].join(" ")}
       >
 
@@ -422,9 +381,18 @@ export function MerchHeroBanner({
           </div>
         )}
 
-        {/* ── Franchise mode: desktop CTA (239×50 red, bottom-right) ── */}
+        {/*
+         * ── Franchise mode: desktop CTA (239×50 red) ──
+         * Real site: 239×50 at (981,467) on a 1280px-wide, 348px-tall hero.
+         * x=981 → right = 1280-981-239 = 60px from right edge → right-[60px].
+         * y=467 from page top; hero bottom ~478 → 11px from hero bottom → bottom-[11px].
+         * Hidden on mobile — mobile CTA renders below the franchise strip.
+         */}
         {hasFranchises && currentSlide.ctaLabel && (
-          <div className="absolute bottom-6 right-10 hidden md:block">
+          <div
+            className="absolute hidden md:block"
+            style={{ bottom: 11, right: 60 }}
+          >
             <button
               type="button"
               onClick={handleCtaClick}
@@ -449,41 +417,6 @@ export function MerchHeroBanner({
               }}
             >
               {mobileCTALabel}
-            </button>
-          </div>
-        )}
-
-        {/* ── Slide prev/next — 40×40 rounded-full at hero right edge ── */}
-        {/* Desktop: at hero right edge; hidden on mobile (strip arrows handle it) */}
-        {slides.length > 1 && hasFranchises && (
-          <div className="absolute right-3 top-1/2 hidden -translate-y-1/2 flex-col gap-2 md:flex">
-            <button
-              type="button"
-              aria-label="Previous slide"
-              onClick={goPrev}
-              className="flex cursor-pointer items-center justify-center rounded-full border-0 transition-opacity duration-150 hover:opacity-80"
-              style={{
-                width: 40,
-                height: 40,
-                backgroundColor: "var(--color-merch-overlay-soft)",
-                color: "var(--color-merch-on-dark)",
-              }}
-            >
-              <CircularArrows direction="prev" />
-            </button>
-            <button
-              type="button"
-              aria-label="Next slide"
-              onClick={goNext}
-              className="flex cursor-pointer items-center justify-center rounded-full border-0 transition-opacity duration-150 hover:opacity-80"
-              style={{
-                width: 40,
-                height: 40,
-                backgroundColor: "var(--color-merch-overlay-soft)",
-                color: "var(--color-merch-on-dark)",
-              }}
-            >
-              <CircularArrows direction="next" />
             </button>
           </div>
         )}
@@ -567,16 +500,21 @@ export function MerchHeroBanner({
       </section>
 
       {/* ================================================================== */}
-      {/* Franchise strip — sits BELOW the hero on the white page             */}
-      {/* REAL: strip is NOT inside the hero; chips 40px tall;                */}
-      {/* flanked by 40×40 transparent circular arrows inset 24px             */}
+      {/* Franchise strip — sits ~83px BELOW the hero on the white page       */}
+      {/* REAL: white bg, 64px-tall parallelogram tiles (2px radius corners), */}
+      {/* red underline on active tile, single 40×40 circle next-arrow        */}
+      {/* Mobile: white band, 24px inset, slanted tiles, 62px circle '>'      */}
       {/* ================================================================== */}
       {hasFranchises && (
         <div
           aria-label="Shop by franchise"
           role="navigation"
-          className="relative w-full overflow-hidden"
-          style={{ backgroundColor: "var(--color-merch-hero-control-bar)" }}
+          className="relative w-full"
+          style={{
+            backgroundColor: "var(--color-merch-bg)",
+            /* ~83px gap below the hero before the strip */
+            marginTop: 83,
+          }}
         >
           {/*
            * Progress line — 2px animated fill above the franchise strip.
@@ -600,133 +538,210 @@ export function MerchHeroBanner({
           )}
 
           {/*
-           * Tile track — horizontally scrollable on mobile.
-           * Left-pad 64px on desktop (room for invisible arrow zone),
-           * 64px on mobile (24px gutter + 40px arrow).
-           * scrollbar-none hides native scrollbar on all browsers.
+           * Strip layout: tile track + next-arrow on desktop.
+           * Mobile: white band with 24px side padding, tiles inset,
+           *         62px white circle '>' button overlaps right edge.
            */}
-          <div
-            className="flex h-[40px] items-stretch overflow-x-auto"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
-          >
-            {franchises!.map((franchise, idx) => {
-              const isFirst = idx === 0;
-              const isActive = hasSlideMapping
-                ? franchise.slideId === currentSlide.id
-                : idx === active % franchises!.length;
-              const logoColor = franchise.textColorVar ?? "--color-merch-on-dark";
+          <div className="relative flex items-center">
+            {/*
+             * Tile track — horizontally scrollable on mobile.
+             * Desktop: flex row of 64px parallelogram tiles.
+             * Mobile: 24px left padding, scrollable tiles, 62px right gutter
+             *         for the circle arrow.
+             * scrollbar-none hides native scrollbar.
+             */}
+            <div
+              id={`${stripId}-track`}
+              className="flex flex-1 items-stretch overflow-x-auto"
+              style={{
+                height: 64,
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                /* Mobile: 24px left inset, 86px right for circle arrow */
+                paddingLeft: 0,
+              } as React.CSSProperties}
+            >
+              {franchises!.map((franchise, idx) => {
+                const isFirst = idx === 0;
+                const isActive = hasSlideMapping
+                  ? franchise.slideId === currentSlide.id
+                  : idx === active % franchises!.length;
+                const logoColor = franchise.textColorVar ?? "--color-merch-on-dark";
 
-              /*
-               * Desktop tile shape: skewed parallelograms.
-               * First tile: square left edge (no left-skew offset).
-               * Remaining tiles: 20px skew offset on left edge, visually tessellate.
-               * On mobile we keep rectangular tiles (no skew) to avoid clip overflow.
-               */
-              return (
-                <button
-                  key={franchise.slug}
-                  type="button"
-                  aria-label={franchise.label}
-                  aria-pressed={isActive}
-                  onClick={() => handleFranchiseClick(franchise)}
-                  className={[
-                    "group relative flex shrink-0 cursor-pointer items-center justify-center",
-                    "border-0 transition-opacity duration-150 focus-visible:outline focus-visible:outline-2",
-                    "focus-visible:outline-offset-[-2px]",
-                    /* Skewed parallelogram on desktop, straight on mobile */
-                    isFirst
-                      ? "md:[clip-path:polygon(0px_0px,100%_0px,calc(100%-20px)_100%,0px_100%)]"
-                      : "md:[clip-path:polygon(20px_0px,100%_0px,calc(100%-20px)_100%,0px_100%)]",
-                  ].join(" ")}
-                  style={{
-                    backgroundColor: `var(${franchise.colorVar})`,
-                    color: `var(${logoColor})`,
-                    /* 147px mobile, 170px desktop — matches real measurements */
-                    minWidth: "clamp(100px, 30vw, 170px)",
-                    paddingInline: 24,
-                    borderRadius: 0,
-                    opacity: isActive ? 1 : 0.75,
-                    outlineColor: `var(${logoColor})`,
-                    height: 40,
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive)
-                      (e.currentTarget as HTMLButtonElement).style.opacity = "0.9";
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive)
-                      (e.currentTarget as HTMLButtonElement).style.opacity = "0.75";
-                  }}
-                >
-                  {/* Logo */}
-                  <span className="pointer-events-none flex items-center justify-center">
-                    {franchise.logo}
-                  </span>
+                /*
+                 * Desktop tile shape: skewed parallelograms, 64px tall, 2px radius.
+                 * First tile: square left edge (no left-skew offset).
+                 * Remaining tiles: 20px skew offset on left edge, tessellate.
+                 * Mobile: rectangular tiles (no skew) to avoid clip overflow.
+                 *
+                 * Note: clip-path and border-radius interact — radius applied via
+                 * a wrapping approach; clip-path overrides radius on most browsers.
+                 * We keep radius on the first/last tile fallback and use clip-path
+                 * for the inner skew shape.
+                 */
+                return (
+                  <button
+                    key={franchise.slug}
+                    type="button"
+                    aria-label={franchise.label}
+                    aria-pressed={isActive}
+                    onClick={() => handleFranchiseClick(franchise)}
+                    className={[
+                      "group relative flex shrink-0 cursor-pointer items-center justify-center",
+                      "border-0 transition-opacity duration-150 focus-visible:outline focus-visible:outline-2",
+                      "focus-visible:outline-offset-[-2px]",
+                      /* Skewed parallelogram on desktop, straight on mobile */
+                      isFirst
+                        ? "md:[clip-path:polygon(0px_0px,100%_0px,calc(100%-20px)_100%,0px_100%)]"
+                        : "md:[clip-path:polygon(20px_0px,100%_0px,calc(100%-20px)_100%,0px_100%)]",
+                    ].join(" ")}
+                    style={{
+                      backgroundColor: `var(${franchise.colorVar})`,
+                      color: `var(${logoColor})`,
+                      /* 147px mobile, 170px desktop — matches real measurements */
+                      minWidth: "clamp(100px, 30vw, 170px)",
+                      paddingInline: 24,
+                      borderRadius: 2,
+                      opacity: isActive ? 1 : 0.75,
+                      outlineColor: `var(${logoColor})`,
+                      height: 64,
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive)
+                        (e.currentTarget as HTMLButtonElement).style.opacity = "0.9";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive)
+                        (e.currentTarget as HTMLButtonElement).style.opacity = "0.75";
+                    }}
+                  >
+                    {/* Logo */}
+                    <span className="pointer-events-none flex items-center justify-center">
+                      {franchise.logo}
+                    </span>
 
-                  {/* Active underline bar — bottom edge of tile (3px) */}
-                  {isActive && (
-                    <span
-                      className="absolute bottom-0 left-0 right-0"
-                      style={{
-                        height: 3,
-                        backgroundColor: "var(--color-merch-hero-tile-active-border)",
-                      }}
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                    {/* Active underline bar — red, bottom edge of tile (3px) */}
+                    {isActive && (
+                      <span
+                        className="absolute bottom-0 left-0 right-0"
+                        style={{
+                          height: 3,
+                          backgroundColor: "var(--color-merch-red)",
+                        }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
 
-          {/*
-           * Flanking arrows — 40×40 rounded-full, transparent background, black chevrons.
-           * Desktop: inset from strip edges. Desktop edges hidden if tile row fills full width.
-           * Mobile: x=0 / x=right-0 (over the strip), inset 24px from page edge → achieved
-           * via absolute left-0/right-0 + padding.
-           * On desktop (≥md) the arrows are hidden (real site shows none at 1280px).
-           */}
-          {slides.length > 1 && (
-            <>
+              {/*
+               * "Shop All" end tile — 112px wide, white bg, black text, 2px radius.
+               * Inter 16px (not riotSans), pad 8px 8px 8px 16px.
+               * Desktop only (hidden on mobile to avoid scroll overflow).
+               */}
               <button
                 type="button"
-                aria-label="Previous slide"
-                onClick={goPrev}
-                className="absolute left-0 top-0 flex cursor-pointer items-center justify-center rounded-full border-0 transition-opacity duration-150 hover:opacity-80 md:hidden"
+                aria-label="Shop All"
+                onClick={() => onSelectFranchise?.("all")}
+                className="hidden shrink-0 cursor-pointer items-center border-0 transition-opacity duration-150 hover:opacity-80 md:flex"
                 style={{
-                  width: 40,
+                  backgroundColor: "var(--color-merch-bg)",
+                  color: "var(--color-merch-ink)",
+                  width: 112,
                   height: 40,
-                  /* transparent background — only the chevron icon is visible */
-                  backgroundColor: "transparent",
-                  color: "var(--color-merch-on-dark)",
-                  marginLeft: 24,
+                  fontSize: 16,
+                  fontFamily: "var(--font-merch)",
+                  fontWeight: 400,
+                  padding: "8px 8px 8px 16px",
+                  borderRadius: 2,
+                  alignSelf: "center",
+                  marginLeft: 8,
                 }}
               >
-                <ChevronLeft />
+                Shop All
               </button>
+            </div>
+
+            {/*
+             * Desktop next-arrow — 40×40 circle, 1px --color-merch-strip-arrow-border
+             * border, transparent bg. Positioned at right of the tile track.
+             * Hidden on mobile (mobile uses the white circle '>' button below).
+             */}
+            {slides.length > 1 && (
               <button
                 type="button"
                 aria-label="Next slide"
                 onClick={goNext}
-                className="absolute right-0 top-0 flex cursor-pointer items-center justify-center rounded-full border-0 transition-opacity duration-150 hover:opacity-80 md:hidden"
+                className="hidden shrink-0 cursor-pointer items-center justify-center rounded-full border transition-opacity duration-150 hover:opacity-80 md:flex"
                 style={{
                   width: 40,
                   height: 40,
                   backgroundColor: "transparent",
-                  color: "var(--color-merch-on-dark)",
-                  marginRight: 24,
+                  borderColor: "var(--color-merch-strip-arrow-border)",
+                  color: "var(--color-merch-ink)",
+                  marginLeft: 8,
                 }}
               >
                 <ChevronRight />
               </button>
-            </>
+            )}
+          </div>
+
+          {/*
+           * Mobile flanking arrows — white 62px circles with chevrons.
+           * Real @390: white circle '>' button overlapping right edge of white strip.
+           * Left arrow at x=24 inset; right arrow at x≈304 (overlaps strip right).
+           * Hidden on desktop.
+           */}
+          {slides.length > 1 && (
+            <div className="absolute inset-y-0 right-0 flex items-center md:hidden">
+              <button
+                type="button"
+                aria-label="Next slide"
+                onClick={goNext}
+                className="flex cursor-pointer items-center justify-center rounded-full border-0 transition-opacity duration-150 hover:opacity-80"
+                style={{
+                  width: 62,
+                  height: 62,
+                  backgroundColor: "var(--color-merch-on-dark)",
+                  color: "var(--color-merch-ink)",
+                  /* Slight right margin so it overlaps the strip right edge */
+                  marginRight: -8,
+                  boxShadow: "0 2px 8px var(--color-merch-overlay-soft)",
+                }}
+              >
+                <ChevronRight />
+              </button>
+            </div>
+          )}
+          {slides.length > 1 && (
+            <div className="absolute inset-y-0 left-0 flex items-center md:hidden">
+              <button
+                type="button"
+                aria-label="Previous slide"
+                onClick={goPrev}
+                className="flex cursor-pointer items-center justify-center rounded-full border-0 transition-opacity duration-150 hover:opacity-80"
+                style={{
+                  width: 62,
+                  height: 62,
+                  backgroundColor: "var(--color-merch-on-dark)",
+                  color: "var(--color-merch-ink)",
+                  marginLeft: -8,
+                  boxShadow: "0 2px 8px var(--color-merch-overlay-soft)",
+                }}
+              >
+                <ChevronLeft />
+              </button>
+            </div>
           )}
         </div>
       )}
 
       {/* ================================================================== */}
       {/* Mobile full-width SHOP NOW — sits below the franchise strip         */}
-      {/* REAL: 342×50 at x=24 (24px gutters), 16/600/0.32px, red bg         */}
-      {/* Hidden on desktop (≥md) — desktop uses the overlaid 239×50 CTA     */}
+      {/* REAL: 342×50 at x=24 (24px gutters), 16/600/0.32px, red bg,       */}
+      {/* clip-path corner notches: top-right + bottom-left (~20px cut).     */}
+      {/* Hidden on desktop (≥md) — desktop uses the overlaid 239×50 CTA.   */}
       {/* ================================================================== */}
       {hasFranchises && currentSlide.ctaLabel && (
         <div className="block px-6 pt-3 md:hidden">
@@ -741,6 +756,12 @@ export function MerchHeroBanner({
               fontSize: "16px",
               fontWeight: 600,
               letterSpacing: "0.32px",
+              /*
+               * Corner notches: top-right + bottom-left (~20px diagonal cut).
+               * Real site uses an angled clip-path on mobile SHOP NOW button.
+               */
+              clipPath:
+                "polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))",
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.backgroundColor =

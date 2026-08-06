@@ -17,12 +17,12 @@ export const merchHeroBannerShowcase: ShowcaseEntry = {
   name: "Merch Hero Banner",
   area: "merch",
   description:
-    "Full-width homepage hero for the Riot merch store. Aspect ratio ~64:27 (≈2.37, matching 1280×535 from merch.riotgames.com). Art-forward: text overlay is optional so baked-in artwork carries the branding. CTA defaults to white pill + black text (radius 2px, sentence-case); red variant available. Two modes: (1) legacy dot-nav + arrow controls; (2) franchise control bar — clip-path parallelogram tiles (first tile square-left) that select hero slides, with progress indicator. Control bar sits INSIDE the hero at its bottom edge (~40px gutter from sides).",
+    "Full-width homepage hero for the Riot merch store. Aspect ratio ~320:87 (1280×348 desktop); mobile 390×374. Art-forward: text overlay is optional so baked-in artwork carries the branding. CTA defaults to white pill + black text (radius 2px, sentence-case); red variant available. Two modes: (1) legacy dot-nav + arrow controls; (2) franchise control bar — 64px-tall clip-path parallelogram tiles on white, ~83px below the hero, with red active underline + progress bar.",
   variants: [
     {
       name: "With franchise control bar (1:1 real site)",
       notes:
-        "Franchise control bar embedded at the hero's bottom edge. First tile has square left edge; others are parallelograms. Active tile highlighted with white underline + progress bar. Tiles select slides. 5s auto-advance. ~40px side gutter on content + control bar; background is full-bleed.",
+        "Franchise strip sits ~83px below hero on white page bg. 64px tiles, 2px radius, skewed parallelograms. Active tile has red bottom-edge underline. Desktop: single 40×40 circle next-arrow (1px grey border). Mobile: white 62px circle prev/next, red SHOP NOW with clip-path corner notches. 5s auto-advance.",
       backgrounds: ["dark"],
       render: () => <MerchHeroBannerWithFranchisesDemo />,
     },
