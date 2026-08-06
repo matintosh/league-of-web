@@ -9,7 +9,7 @@ export const circleSubmitButtonShowcase: ShowcaseEntry = {
   name: "Circle Submit Button",
   area: "login",
   description:
-    "48px circular submit button used on Riot's login page. Grey arrow when disabled; riot-red background with white arrow when enabled/hovered. type='submit' by design.",
+    "48×48px rounded-square (r≈12px) submit button used on Riot's login page. Light grey (#c4c4c4) arrow when disabled; riot-red background with white arrow when enabled/hovered. type='submit' by design.",
   variants: [
     {
       name: "Disabled",

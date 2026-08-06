@@ -129,6 +129,8 @@
   --color-login-bg: #ffffff;
   --color-login-surface: #ececec;
   --color-login-placeholder: #a7a7b7;
+  /* login-arrow: submit button arrow glyph — pixel-sampled from riot-login-page.png core (#c4c4c4, issue #782) */
+  --color-login-arrow: #c4c4c4;
   --color-login-ink: #343434;
   --color-brand-facebook: #1877f2;
   --color-login-black: #000000;
@@ -464,6 +466,8 @@
     --color-login-bg: #ffffff;
     --color-login-surface: #ececec;
     --color-login-placeholder: #a7a7b7;
+    /* login-arrow: submit button arrow glyph — pixel-sampled from riot-login-page.png core (#c4c4c4, issue #782) */
+    --color-login-arrow: #c4c4c4;
     --color-login-ink: #343434;
     --color-brand-facebook: #1877f2;
     --color-login-black: #000000;

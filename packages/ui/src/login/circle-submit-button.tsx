@@ -16,11 +16,11 @@ export interface CircleSubmitButtonProps {
 }
 
 /**
- * CircleSubmitButton is the 48px circular submit button used on Riot's login page.
+ * CircleSubmitButton is the 48×48px rounded-square submit button used on Riot's login page.
  *
- * Visual spec (extrapolated from reference screenshot + Riot's live login behavior):
- * - 48×48px circle with 1px login-surface (#ececec) border.
- * - Disabled / default state: white background, login-placeholder (#a7a7b7) arrow SVG.
+ * Visual spec (pixel-verified from docs/reference/riot-login-page.png, issue #782):
+ * - 48×48px rounded square, corner radius ≈12px (Tailwind rounded-xl), 1px login-surface (#ececec) border.
+ * - Disabled / default state: white background, login-arrow (#c4c4c4) arrow SVG.
  * - Enabled / hover state: riot-red (#eb022b) background, white arrow SVG.
  *   The transition from grey→red happens when the user has typed a value (controlled
  *   externally via the `disabled` prop) or on hover when enabled.
@@ -45,7 +45,7 @@ export function CircleSubmitButton({
       aria-label={ariaLabel}
       onClick={onClick}
       className={[
-        "flex h-12 w-12 shrink-0 items-center justify-center rounded-full",
+        "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
         "border border-login-surface",
         "transition-colors duration-150",
         disabled
@@ -61,8 +61,8 @@ export function CircleSubmitButton({
         className={[
           "h-5 w-5 transition-colors duration-150",
           disabled
-            ? "text-login-placeholder"
-            : "text-login-placeholder group-hover:text-white",
+            ? "text-login-arrow"
+            : "text-login-arrow group-hover:text-white",
         ].join(" ")}
         fill="none"
         stroke="currentColor"
