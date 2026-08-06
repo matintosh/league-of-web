@@ -1,7 +1,14 @@
 "use client";
 
 /**
- * MerchProductInfoTabs — accordion-style info section below the PDP purchase panel.
+ * MerchProductInfoTabs — info section below the PDP purchase panel.
+ *
+ * Supports two variants:
+ *   - "accordion" (default): collapsible rows with chevron, top/bottom borders.
+ *     Default state: COLLAPSED (closed). All rows closed unless selectedTab passed.
+ *   - "static": static always-visible sections — no chevron, no toggle, no borders.
+ *     Heading: 16px / 600 / --color-merch-ink-dark.
+ *     Body padding: 0 0 32px (matches real merch PDP Description block).
  *
  * MERCH COMPONENT — use the merch design system: --color-merch-* tokens.
  * This is NOT the Hextech client — IGNORE Hextech-only / no-default-palette
@@ -16,7 +23,8 @@
  *   Chevron: 16px SVG, right-aligned, rotates 180° when open
  *   Divider: 1px solid --color-merch-border above each row
  *   Panel: 16px / line-height normal / --color-merch-body / padding 0 0 16px
- *   Default state: COLLAPSED (closed)
+ *   Static Description heading: 16px / 600 / --color-merch-ink-dark, NO borders, NO chevron
+ *   Static Description body: padding 0 0 32px
  */
 
 import React, { useId, useState } from "react";
@@ -38,6 +46,15 @@ export interface MerchProductInfoTabsProps {
   /** Accordion row definitions — typically ["Description"]; may include Shipping/Returns. */
   tabs: MerchProductInfoTab[];
   /**
+   * Rendering variant.
+   *
+   * - "accordion" (default): collapsible rows with chevron + borders. All collapsed by default.
+   * - "static": static always-open sections — no chevron, no toggle, no top/bottom borders.
+   *   Heading is a visible h3 (16px/600); body padding 0 0 32px.
+   *   Matches the real merch.riotgames.com PDP Description block (always visible, never collapsed).
+   */
+  variant?: "accordion" | "static";
+  /**
    * Initially expanded row id(s). Accordion is COLLAPSED by default — omit to
    * start all rows closed. Pass a tab id to pre-open one row.
    *
@@ -48,6 +65,7 @@ export interface MerchProductInfoTabsProps {
   /**
    * Called when user toggles a row open/closed.
    * `id` = the toggled row; `open` = whether it is now open.
+   * Only fires in "accordion" variant.
    */
   onTabChange?: (id: string, open: boolean) => void;
 }
@@ -87,20 +105,31 @@ function Chevron({ open }: { open: boolean }) {
 // ---------------------------------------------------------------------------
 
 /**
- * MerchProductInfoTabs — renders a list of accordion rows below the PDP
- * purchase panel. Each row has a 16px/600 header button that toggles the
- * content panel. All rows start COLLAPSED by default (matching the real
- * merch.riotgames.com PDP).
+ * MerchProductInfoTabs — renders an info section below the PDP purchase panel.
  *
+ * In "accordion" variant (default): each row has a 16px/600 header button that
+ * toggles the content panel. All rows start COLLAPSED by default.
  * Pass `selectedTab` to pre-open a row on mount (e.g. for showcase demos).
  *
+ * In "static" variant: each tab renders as a static always-visible section —
+ * heading (16px/600) + body (always visible, padding 0 0 32px). No chevron,
+ * no toggle, no top/bottom borders. Matches the real merch PDP Description block.
+ *
  * @example
+ * // Accordion (default):
  * <MerchProductInfoTabs
+ *   tabs={[{ id: "description", label: "Description", content: <p>...</p> }]}
+ * />
+ *
+ * // Static (always-open):
+ * <MerchProductInfoTabs
+ *   variant="static"
  *   tabs={[{ id: "description", label: "Description", content: <p>...</p> }]}
  * />
  */
 export function MerchProductInfoTabs({
   tabs,
+  variant = "accordion",
   selectedTab,
   onTabChange,
 }: MerchProductInfoTabsProps) {
@@ -126,6 +155,47 @@ export function MerchProductInfoTabs({
     });
   }
 
+  /* ── Static variant — always-open, no chevron, no borders ─────────────── */
+  if (variant === "static") {
+    return (
+      <div
+        style={{
+          width: "100%",
+          fontFamily: "var(--font-merch)",
+        }}
+      >
+        {tabs.map((tab) => (
+          <div key={tab.id}>
+            {/* Static heading — 16px / 600 / --color-merch-ink-dark */}
+            <h3
+              style={{
+                fontSize: 16,
+                fontWeight: 600,
+                color: "var(--color-merch-ink-dark)",
+                margin: "0 0 12px",
+                fontFamily: "inherit",
+              }}
+            >
+              {tab.label}
+            </h3>
+            {/* Body — always visible, padding 0 0 32px per real PDP measurement */}
+            <div
+              style={{
+                paddingBottom: 32,
+                fontSize: 16,
+                lineHeight: "normal",
+                color: "var(--color-merch-body)",
+              }}
+            >
+              {tab.content}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* ── Accordion variant (default) ─────────────────────────────────────── */
   return (
     <div
       style={{

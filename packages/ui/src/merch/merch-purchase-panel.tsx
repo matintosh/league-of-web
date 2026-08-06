@@ -6,19 +6,22 @@
  * optional quantity stepper, Add to Cart + Buy It Now CTAs.
  *
  * Measured from merch.riotgames.com (amumu-plush, 1280px desktop):
- *   Category trail: 14px / 600 / uppercase / 0.02em ls / #666666 color, NO "/" glyphs
+ *   Category trail: 14px / 600 / uppercase / 0.02em ls / pure black (#000000 = --color-merch-ink-dark)
  *     Separator: '|' pipe glyph colored #d0d0d0 (--color-merch-trail-sep)
- *     Trail terms: "COLLECTIBLES | LEAGUE OF LEGENDS" (2 terms only)
+ *     Trail terms: "COLLECTIBLES | PLUSH | LEAGUE OF LEGENDS" (3 terms for plush)
  *   Title H1: clamp(38px, 3.75vw, 48px) / 700 / lh 1.1 / --color-merch-ink-dark / uppercase / -0.03em tracking
  *   Heart/share row: 40×40 borderless icon buttons below H1; badge at row end
  *     Icons: border-width 0 (bare float), color pure black (#000000 = --color-merch-ink-dark)
  *     Share glyph: export box-with-up-arrow (not 3-node network glyph)
- *   Badge "New": 165×40 fixed, text LEFT-aligned, lh 20px; stacks vertically when multiple
+ *   Badge "New": 165×40 fixed, text CENTERED (4px 8px padding), lh 20px; stacks vertically when multiple
  *   Price: 28px / 400 / lh 35px / --color-merch-ink-dark; 24px top/bottom padding
- *   Notices: single RED line rgb(235,0,41) = --color-merch-red; login notice copy
+ *   Notices: TWO BLACK notices (rgb(0,0,0) = --color-merch-ink-dark); 16px between notices; ~24–32px below price
+ *     1. "This product is not intended as a toy or children's product."
+ *     2. "This item typically ships within 2 weeks from purchase."
  *   Variant chips: 8px 16px / 13px / flex-wrap / 8px gap
- *   Add to Cart: 50px tall / fills row minus Buy It Now / merch-red bg / riotSans 16/600 / 0.02em ls
- *   Buy It Now: 50×50 / same disabled state as ATC
+ *   Add to Cart: 50px tall / 239px wide / merch-red bg / riotSans 16/600 / 0.02em ls
+ *   Buy It Now: 50×50 ICON BUTTON (lightning bolt SVG) — no visible text / same disabled state as ATC
+ *   CTA row: ATC (239px) + 8px gap + BIN (50×50) = ~297px inner wrapper, NOT full column width
  *   No qty stepper on PDP (showQuantity=false default)
  *   No dividers between badge/price/notices sections
  *
@@ -209,7 +212,8 @@ export function MerchPurchasePanel({
                 fontWeight: 600,
                 textTransform: "uppercase",
                 letterSpacing: "0.02em",
-                color: "var(--color-merch-price-struck)",
+                /* Real PDP: category trail text is pure black rgb(0,0,0) */
+                color: "var(--color-merch-ink-dark)",
                 display: "flex",
                 alignItems: "center",
                 gap: "4px",
@@ -310,14 +314,15 @@ export function MerchPurchasePanel({
                   fontSize: 16,
                   fontWeight: 400,
                   letterSpacing: "0",
-                  padding: "0 10px",
+                  /* Real PDP: 4px top/bottom, 8px left/right — label CENTERED */
+                  padding: "4px 8px",
                   borderRadius: 2,
                   backgroundColor: badgeBg(badge),
                   color: badgeTextColor(badge),
                   lineHeight: "20px",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "flex-start",
+                  justifyContent: "center",
                   flexShrink: 0,
                   boxSizing: "border-box",
                 }}
@@ -476,16 +481,24 @@ export function MerchPurchasePanel({
       )}
 
       {/* ── Purchase notices ────────────────────────────────────────────── */}
+      {/*
+       * Real PDP: TWO black notices (rgb(0,0,0) = --color-merch-ink-dark), Inter 16/400.
+       * Measured ~24–32px below price, ~16px between notice lines.
+       * y≈427: "This product is not intended as a toy or children's product."
+       * y≈475: "This item typically ships within 2 weeks from purchase."
+       */}
       {notices && notices.length > 0 && (
-        <div style={{ marginTop: variants && variants.length > 0 ? 16 : 8 }}>
+        <div style={{ marginTop: variants && variants.length > 0 ? 24 : 24 }}>
           {notices.map((notice, idx) => (
             <p
               key={idx}
               style={{
                 fontSize: 16,
-                color: "var(--color-merch-red)",
+                fontWeight: 400,
+                /* Real PDP: black notices (not red), rgb(0,0,0) = --color-merch-ink-dark */
+                color: "var(--color-merch-ink-dark)",
                 lineHeight: 1.5,
-                margin: idx > 0 ? "6px 0 0" : 0,
+                margin: idx > 0 ? "16px 0 0" : 0,
               }}
             >
               {notice}
@@ -562,25 +575,30 @@ export function MerchPurchasePanel({
 
       {/* ── CTA row: Add to Cart + Buy It Now ────────────────────────────── */}
       {/*
-       * Desktop: ATC fills remaining width, BIN is 50×50 square at right.
-       * Mobile (@390): ATC fills width minus the 50px BIN — flex row, full width.
-       * Disabled state: both follow outOfStock (logged user decision, do not change).
+       * Real PDP: ATC is 239px wide; BIN is 50×50 icon button (lightning bolt).
+       * Total CTA group: ~297px inner wrapper (239 ATC + 8 gap + 50 BIN).
+       * NOT full column width — constrained to 297px at desktop.
+       * Mobile: ATC fills width minus 50px BIN (flex row, still constrained to parent width).
+       * Disabled state: both follow outOfStock (logged user decision #5, do not change).
        */}
       <div
         style={{
           marginTop: 20,
           display: "flex",
           gap: 8,
-          width: "100%",
+          /* Constrain CTA group: 239px ATC + 8px gap + 50px BIN = 297px */
+          width: 297,
+          maxWidth: "100%",
         }}
       >
-        {/* Add to Cart — flex-1 so it fills row minus the 50px BIN */}
+        {/* Add to Cart — 239px wide per real PDP measurement */}
         <button
           type="button"
           disabled={outOfStock}
           onClick={() => !outOfStock && onAddToCart?.()}
           style={{
-            flex: "1 1 auto",
+            width: 239,
+            flexShrink: 0,
             height: 50,
             backgroundColor: outOfStock
               ? "var(--color-merch-muted)"
@@ -611,7 +629,7 @@ export function MerchPurchasePanel({
           {outOfStock ? "Out of Stock" : "Add to Cart"}
         </button>
 
-        {/* Buy It Now — 50×50 square secondary button */}
+        {/* Buy It Now — 50×50 ICON button (lightning bolt SVG), no visible text */}
         <button
           type="button"
           aria-label="Buy It Now"
@@ -625,19 +643,12 @@ export function MerchPurchasePanel({
               ? "var(--color-merch-muted)"
               : "var(--color-merch-ink-dark)",
             color: "var(--color-merch-on-dark)",
-            fontSize: 11,
-            fontWeight: 600,
-            textTransform: "uppercase",
-            letterSpacing: "0.01em",
             border: "none",
             cursor: outOfStock ? "not-allowed" : "pointer",
-            fontFamily: "var(--font-merch-display, var(--font-merch))",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            textAlign: "center",
-            lineHeight: 1.2,
-            padding: "4px 2px",
+            padding: 0,
             transition: "background-color 150ms ease",
           }}
           onMouseEnter={(e) => {
@@ -653,7 +664,16 @@ export function MerchPurchasePanel({
             }
           }}
         >
-          Buy It Now
+          {/* Lightning bolt SVG — real BIN glyph measured as ~30px bolt */}
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M13 2L4.5 13H11L10 22L20.5 11H14L13 2Z" />
+          </svg>
         </button>
       </div>
     </div>

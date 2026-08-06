@@ -221,8 +221,13 @@ export function ProductPageClient({
               onBuyNow={() => {}}
             />
             <div style={{ marginTop: 32 }}>
-              {/* Accordion starts COLLAPSED per real PDP — no selectedTab passed */}
+              {/*
+               * Description: static always-open section (no chevron, no toggle, no borders).
+               * Real PDP: heading "Description" visible, body always shown, padding 0 0 32px.
+               * Uses variant="static" (issue #858 — was collapsed accordion, now static).
+               */}
               <MerchProductInfoTabs
+                variant="static"
                 tabs={[
                   {
                     id: "description",
