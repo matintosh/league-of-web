@@ -14,12 +14,12 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
   name: "Merch Product Gallery",
   area: "merch",
   description:
-    "PDP left column: themed diagonal hero surface (upper light texture layer + lower dark navy band clipped by diagonal polygon). League of Legends wordmark top-left at full opacity. Secondary images in a horizontal carousel below. Mobile: shorter hero (390×674) with scaled diagonal. Matches merch.riotgames.com PDP gallery (verified 2026-08 via Playwright). No grey panel, no watermark opacity, no vertical label, no badge overlay in gallery.",
+    "PDP left column: themed hero surface (light texture background layer). League of Legends wordmark top-left at full opacity. Product image container 664×664 at (82,68) desktop. Secondary images in a full-bleed 2-up 640×640 object-fit:cover carousel with ‹ › chevron overlays and LoL wordmark bottom-left, flush under the hero. Mobile: 629px tall hero, image 342×629 at x=24. No navy overlay (faint/absent on real amumu-plush), no grey panel, no watermark opacity, no vertical label, no badge overlay in gallery.",
   variants: [
     {
-      name: "Single image — no carousel (diagonal hero surface, token fallbacks)",
+      name: "Single image — no carousel (hero surface only, token fallbacks)",
       notes:
-        "One image: thumbnail carousel hidden. Diagonal hero surface with LoL wordmark at full opacity. No bgImageUrl/fgImageUrl → token fallbacks render (--color-merch-surface + --color-merch-pdp-hero-navy).",
+        "One image: 2-up carousel hidden. Hero surface with LoL wordmark at full opacity. No bgImageUrl → token fallback (--color-merch-surface).",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 828, fontFamily: "system-ui, sans-serif" }}>
@@ -32,9 +32,9 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "5-image gallery — first selected (hero + 4 secondary tiles)",
+      name: "5-image gallery — first selected (hero + 2-up detail carousel)",
       notes:
-        "selectedIndex=0; 4 secondary images in horizontal carousel below the hero. Matches amumu-plush real layout (5 images total). No badge in gallery — badge lives in the purchase panel.",
+        "selectedIndex=0; 4 secondary images in 2-up 640×640 carousel below the hero. Matches amumu-plush real layout (5 images total). No badge in gallery — badge lives in the purchase panel.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 828, fontFamily: "system-ui, sans-serif" }}>
@@ -48,7 +48,7 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
     },
     {
       name: "5-image gallery — second selected (static)",
-      notes: "selectedIndex=1 to show active border on second carousel tile.",
+      notes: "selectedIndex=1 shows second detail image active-outlined in the 2-up carousel.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 828, fontFamily: "system-ui, sans-serif" }}>
@@ -62,7 +62,7 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
     },
     {
       name: "6-image gallery — fourth selected (static)",
-      notes: "selectedIndex=3 shows fourth carousel tile active-bordered.",
+      notes: "selectedIndex=3 shows fourth carousel tile active-outlined. 5 carousel images; ‹ › chevrons appear when >2 secondaries.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 828, fontFamily: "system-ui, sans-serif" }}>
@@ -75,8 +75,8 @@ export const merchProductGalleryShowcase: ShowcaseEntry = {
       ),
     },
     {
-      name: "No carousel arrows — 2 images (no arrow when ≤2 images)",
-      notes: "Arrow › only renders when images.length > 2. With 2 images the carousel scrolls but no arrow.",
+      name: "2-image gallery — no chevrons (≤2 secondaries: 1 carousel slide, no arrows)",
+      notes: "With only 1 secondary image, 2-up carousel shows a single tile with no ‹ › nav.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 828, fontFamily: "system-ui, sans-serif" }}>
