@@ -317,6 +317,55 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
     franchiseLabel: "VALORANT",
   },
 
+  // ── VCT ───────────────────────────────────────────────────────────────
+  {
+    slug: "vct-2026-championship-hoodie",
+    title: "VCT 2026 Championship Pullover Hoodie",
+    imageUrl: championSplashUrl("Jinx", 6),
+    price: "$74.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "VCT",
+  },
+  {
+    slug: "vct-2026-championship-jersey",
+    title: "VCT 2026 Championship Jersey",
+    imageUrl: championSplashUrl("Ahri", 3),
+    price: "$59.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "VCT",
+  },
+  {
+    slug: "vct-2026-snapback-cap",
+    title: "VCT 2026 Event Snapback Cap",
+    imageUrl: championSplashUrl("Caitlyn", 3),
+    price: "$39.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "VCT",
+  },
+
+  // ── 2XKO ──────────────────────────────────────────────────────────────
+  {
+    slug: "2xko-launch-tee",
+    title: "2XKO Launch Event Tee",
+    imageUrl: championSplashUrl("Ekko", 0),
+    price: "$29.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "2XKO",
+  },
+  {
+    slug: "2xko-duelists-hoodie",
+    title: "2XKO Duelists Pullover Hoodie",
+    imageUrl: championSplashUrl("Ekko", 3),
+    price: "$64.99",
+    badges: ["New", "Limited Edition"],
+    badge: "New",
+    franchiseLabel: "2XKO",
+  },
+
   // ── Riftbound TCG ─────────────────────────────────────────────────────
   {
     slug: "riftbound-vendetta-zed-shen-showdown-deck",

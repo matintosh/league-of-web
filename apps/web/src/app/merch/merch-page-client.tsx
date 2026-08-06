@@ -16,11 +16,14 @@
  *     calls onSelectFranchise → router.push('/merch/collection/<slug>'), matching
  *     real behavior where extra tiles route to their collection page.
  *
- * Homepage depth (matching real merch.riotgames.com ~9286px at 1280px):
+ * Homepage feed (matching real merch.riotgames.com ~9286px at 1280px):
  *   - Hero banner + franchise strip
- *   - ONE continuous 2-column add-to-cart product grid (no section headings,
- *     no per-franchise rails, no feature cards, no SALE section)
- *   - LOAD MORE button (gold full-bleed at 390; centered red at desktop)
+ *   - Full franchise groups, each starting with a full-width featured first card
+ *     (featuredFirst=true on MerchProductGrid), then regular 2-col tiles at 225px
+ *     image height (375px row rhythm = 57px header + 225px image + ~93px info strip)
+ *   - Groups in order: LoL, MSI/LoL Esports, TFT, VCT, Riftbound, VALORANT, 2XKO
+ *   - LOAD MORE button — gold (#C4993B) at ALL viewports; centered 239×50 at 1280,
+ *     full-bleed 390×50 at 390; black text + 1px white offset frame
  *   - Gift card promo band
  *   - LATEST COLLABORATIONS section (MerchCollabCarousel — HP/OMEN + Secretlab)
  *   - Footer
@@ -51,6 +54,7 @@ import {
 import {
   championSplashUrl,
   MERCH_PRODUCTS,
+  MERCH_FRANCHISE_FEATURE_CARDS,
   merchAssetUrl,
 } from "@low/fixtures";
 import type { MerchCartItem } from "@low/fixtures";
@@ -59,14 +63,57 @@ import { useRouter } from "next/navigation";
 import { useMerchNav } from "@/lib/merch-nav";
 
 // ---------------------------------------------------------------------------
-// Product list — all products shown in one continuous grid (no Sale split)
+// Franchise groups — products organised by brand for the homepage feed.
+// Real homepage order: LoL → MSI/LoL Esports → TFT → VCT → Riftbound → VALORANT → 2XKO.
+// Each group opens with a full-width featured card then regular 2-col cards.
 // ---------------------------------------------------------------------------
 
-/** All products in the order the fixtures define them. */
+/** Image height (px) for regular homepage cards — drives 375px row rhythm.
+ *  Real: 57px header + 225px image + ~93px info strip ≈ 375px per row. */
+const HP_IMAGE_HEIGHT = 225;
+
+/** Ordered franchise group keys for the homepage feed. */
+const FRANCHISE_ORDER = [
+  "League of Legends",
+  "LoL Esports",
+  "Teamfight Tactics",
+  "VCT",
+  "Riftbound",
+  "VALORANT",
+  "2XKO",
+];
+
+/** Group all products by franchiseLabel, preserving fixture order within each group. */
+function groupProductsByFranchise(
+  products: typeof MERCH_PRODUCTS,
+): { label: string; products: typeof MERCH_PRODUCTS }[] {
+  const map = new Map<string, typeof MERCH_PRODUCTS>();
+  for (const p of products) {
+    const key = p.franchiseLabel ?? "Other";
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(p);
+  }
+  // Return in the defined franchise order, then any remaining groups
+  const result: { label: string; products: typeof MERCH_PRODUCTS }[] = [];
+  for (const label of FRANCHISE_ORDER) {
+    const group = map.get(label);
+    if (group && group.length > 0) {
+      result.push({ label, products: group });
+      map.delete(label);
+    }
+  }
+  // Remaining groups not in FRANCHISE_ORDER (e.g. Sale, Arcane)
+  for (const [label, products] of map.entries()) {
+    if (products.length > 0) result.push({ label, products });
+  }
+  return result;
+}
+
+/** All products excluding sale items — sale items appear in their own trailing block. */
 const ALL_PRODUCTS = MERCH_PRODUCTS;
 
-/** Initial count of products to show before Load More. */
-const INITIAL_PRODUCT_COUNT = 16;
+/** Initial number of franchise groups visible before Load More. */
+const INITIAL_GROUP_COUNT = 4;
 
 // ---------------------------------------------------------------------------
 // Hero slides
@@ -242,15 +289,16 @@ export function MerchPageClient() {
   const [announcement, setAnnouncement] = useState<string | undefined>(ANNOUNCEMENT);
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems] = useState<MerchCartItem[]>([]);
-  const [visibleCount, setVisibleCount] = useState(INITIAL_PRODUCT_COUNT);
+  const [visibleGroupCount, setVisibleGroupCount] = useState(INITIAL_GROUP_COUNT);
 
   function handleContactSubmit(values: MerchContactFormValues) {
     // Presentational stub — a real implementation would POST to a support API.
     console.log("[MerchFooter] Contact form submitted:", values);
   }
 
-  const visibleProducts = ALL_PRODUCTS.slice(0, visibleCount);
-  const hasMore = visibleCount < ALL_PRODUCTS.length;
+  const allGroups = groupProductsByFranchise(ALL_PRODUCTS);
+  const visibleGroups = allGroups.slice(0, visibleGroupCount);
+  const hasMore = visibleGroupCount < allGroups.length;
 
   return (
     <div
@@ -282,49 +330,82 @@ export function MerchPageClient() {
           onSelectFranchise={(slug) => router.push(`/merch/collection/${slug}`)}
         />
 
-        {/* ── Continuous 2-column product grid ──────────────────────────────
-            Real homepage below the hero: ONE flush 2-col grid, NO per-franchise
-            rails, NO feature-card headlines, NO section headings, NO SALE section.
-            Products in the order the fixture defines them (sale items included
-            in the same stream, not a separate block). */}
-        <MerchProductGrid columns={2}>
-          {visibleProducts.map((product) => (
-            <MerchProductCard
-              key={product.slug}
-              slug={product.slug}
-              title={product.title}
-              imageUrl={product.imageUrl}
-              price={product.price}
-              originalPrice={product.originalPrice}
-              badge={product.badge}
-              badges={product.badges}
-              franchiseLabel={product.franchiseLabel}
-              onClick={() => router.push(`/merch/product/${product.slug}`)}
-            />
-          ))}
-        </MerchProductGrid>
+        {/* ── Franchise group sections ───────────────────────────────────────
+            Real homepage: each brand opens with a full-width featured card
+            (featuredFirst=true) then standard 2-col tiles at HP_IMAGE_HEIGHT (225px).
+            Row rhythm: 57px header + 225px image + ~93px info strip ≈ 375px.
+            Groups are shown in FRANCHISE_ORDER; Load More reveals additional groups. */}
+        {visibleGroups.map(({ label, products }) => {
+          // Look up a feature card for this franchise group (LoL and Riftbound have real assets)
+          const featureCard = MERCH_FRANCHISE_FEATURE_CARDS.find(
+            (fc) => fc.franchiseLabel === label,
+          );
 
-        {/* ── Load More — homepage variant ──────────────────────────────────
-            Real merch homepage (1280px): red, centered, 239×50.
-            Real merch homepage (390px): full-bleed 390×50, gold (#C49933) bg,
-              black text, thin white outline.
-            The text is 'Load more' CSS-uppercased (not hard-coded 'LOAD MORE'). */}
+          // Guard: groups always have at least one product (ensured by groupProductsByFranchise)
+          const firstProduct = products[0];
+          if (!firstProduct) return null;
+          const collectionSlug = label.toLowerCase().replace(/\s+/g, "-");
+
+          return (
+            <MerchProductGrid
+              key={label}
+              columns={2}
+              featuredFirst={true}
+            >
+              {/* Featured first card — full-width, 600px image, object-contain.
+                  Uses the franchise feature card asset if available; otherwise the
+                  first product image serves as the featured card artwork. */}
+              <MerchProductCard
+                key={`${label}-featured`}
+                slug={featureCard ? `collection-${collectionSlug}` : firstProduct.slug}
+                title={featureCard ? featureCard.headline : firstProduct.title}
+                imageUrl={featureCard ? featureCard.imageUrl : firstProduct.imageUrl}
+                price={featureCard ? "" : firstProduct.price}
+                badges={featureCard ? [] : (firstProduct.badges ?? [])}
+                franchiseLabel={label}
+                imageFit="contain"
+                imageHeight={600}
+                hasAddToCart={!featureCard}
+                onClick={() => router.push(`/merch/collection/${collectionSlug}`)}
+              />
+
+              {/* Regular grid cards — 225px image height for 375px row rhythm */}
+              {(featureCard ? products : products.slice(1)).map((product) => (
+                <MerchProductCard
+                  key={product.slug}
+                  slug={product.slug}
+                  title={product.title}
+                  imageUrl={product.imageUrl}
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                  badge={product.badge}
+                  badges={product.badges}
+                  franchiseLabel={product.franchiseLabel}
+                  imageFit="contain"
+                  imageHeight={HP_IMAGE_HEIGHT}
+                  onClick={() => router.push(`/merch/product/${product.slug}`)}
+                />
+              ))}
+            </MerchProductGrid>
+          );
+        })}
+
+        {/* ── Load More — gold at ALL viewports (measured from real merch.riotgames.com).
+            Centered 239×50 at 1280; full-bleed 390×50 at 390. Gold (#C4993B) bg,
+            black riotSans 16/600 text, 1px white offset outline frame.
+            data-hp-load-more: picked up by merch-layout.css for responsive sizing. */}
         {hasMore && (
           <div
             style={{
               display: "flex",
               justifyContent: "center",
+              padding: "32px 0 40px",
             }}
           >
-            {/*
-              data-hp-load-more: picked up by merch-layout.css for responsive colors:
-              - mobile: full-bleed gold (#C49933) bg, black text, 1px white outline
-              - desktop (≥768): centered 239×50 red, white text, no outline
-            */}
             <button
               type="button"
               data-hp-load-more
-              onClick={() => setVisibleCount((n) => n + INITIAL_PRODUCT_COUNT)}
+              onClick={() => setVisibleGroupCount((n) => n + INITIAL_GROUP_COUNT)}
               style={{
                 height: 50,
                 fontSize: 16,
@@ -333,7 +414,8 @@ export function MerchPageClient() {
                 letterSpacing: "0.32px",
                 border: "none",
                 cursor: "pointer",
-                transition: "background-color 150ms",
+                transition: "opacity 150ms",
+                fontFamily: "var(--font-merch-display)",
               }}
             >
               Load more

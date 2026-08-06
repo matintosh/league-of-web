@@ -25,7 +25,7 @@
  *   - 4-column grid, 20px gap (the real homepage uses the narrower 4-col)
  */
 
-import { useId, type ReactNode } from "react";
+import { useId, Children, isValidElement, cloneElement, type ReactNode, type ReactElement } from "react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -95,7 +95,7 @@ export interface MerchProductGridProps {
    * Called when the "LOAD MORE" button is clicked.
    * When provided (or `showLoadMore` is true), the LOAD MORE button renders below the grid.
    * Measured from real merch.riotgames.com: 239×50 centered at desktop; full-width 50px at mobile.
-   * riotSans 16/600 uppercase, ls 0.32px, bg --color-merch-red.
+   * riotSans 16/600 uppercase, ls 0.32px, bg --color-merch-gold-cta, black text.
    */
   onLoadMore?: () => void;
   /**
@@ -104,6 +104,15 @@ export interface MerchProductGridProps {
    * @default false
    */
   showLoadMore?: boolean;
+  /**
+   * When true, the first child spans both columns (grid-column: 1 / -1),
+   * creating the "featured first card" layout seen at the top of each
+   * franchise group on the real homepage.
+   * Real: first product container 1280×750, image 600px tall, object-contain on #F7F7F7.
+   * Only effective when columns=2.
+   * @default false
+   */
+  featuredFirst?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -196,6 +205,7 @@ export function MerchProductGrid({
   showRefine,
   onLoadMore,
   showLoadMore = false,
+  featuredFirst = false,
 }: MerchProductGridProps) {
   const refineIconId = useId();
 
@@ -273,7 +283,11 @@ export function MerchProductGrid({
           </div>
         )}
 
-        {/* Flush 2-col grid — no padding, no outer gap */}
+        {/* Flush 2-col grid — no padding, no outer gap.
+            featuredFirst: first child spans both columns (grid-column: 1 / -1),
+            matching the real homepage franchise-group featured card layout.
+            Real: first product container full-width, image 600px tall, object-contain
+            on #F7F7F7. Remaining cards are standard 640px-wide 2-col tiles. */}
         {isEmpty ? (
           <div className="mx-auto max-w-7xl px-6">
             <p
@@ -288,19 +302,36 @@ export function MerchProductGrid({
             className="grid grid-cols-2"
             style={{ borderTop: "1px solid var(--color-merch-on-dark)" }}
           >
-            {children}
+            {featuredFirst
+              ? Children.map(children, (child, index) => {
+                  if (index === 0 && isValidElement(child)) {
+                    // First child spans both columns — the "featured" card.
+                    // Wrap in a div so we don't mutate the child's own style prop.
+                    return (
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        {cloneElement(child as ReactElement<{ imageHeight?: number }>, {
+                          imageHeight: (child as ReactElement<{ imageHeight?: number }>).props.imageHeight ?? 600,
+                        })}
+                      </div>
+                    );
+                  }
+                  return child;
+                })
+              : children}
           </div>
         )}
 
         {/* LOAD MORE — centered 239×50 at desktop; full-width 50px at mobile.
-             Measured from merch.riotgames.com: riotSans 16/600 uppercase, ls 0.32px.
-             Presentational — fires onLoadMore callback; visible when provided or showLoadMore. */}
+            Measured from merch.riotgames.com: gold (#C4993B), black riotSans 16/600,
+            ls 0.32px, 1px white offset outline. Handled by [data-hp-load-more] in
+            merch-layout.css; this button provides fallback inline styles only. */}
         {showLoadMoreButton && (
           <div
             className="flex justify-center px-0 py-8 md:py-10"
           >
             <button
               type="button"
+              data-hp-load-more
               onClick={onLoadMore}
               className="w-full md:w-auto"
               style={{
@@ -308,8 +339,8 @@ export function MerchProductGrid({
                 minWidth: 239,
                 paddingLeft: 32,
                 paddingRight: 32,
-                backgroundColor: "var(--color-merch-red)",
-                color: "var(--color-merch-on-dark)",
+                backgroundColor: "var(--color-merch-gold-cta)",
+                color: "var(--color-merch-ink-dark)",
                 border: "none",
                 borderRadius: 0,
                 cursor: "pointer",
@@ -318,15 +349,15 @@ export function MerchProductGrid({
                 fontFamily: "riotSans, Arial, sans-serif",
                 textTransform: "uppercase",
                 letterSpacing: "0.32px",
+                outline: "1px solid var(--color-merch-on-dark)",
+                outlineOffset: -3,
                 transition: "background-color 150ms ease",
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--color-merch-red-dark)";
+                (e.currentTarget as HTMLButtonElement).style.opacity = "0.88";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--color-merch-red)";
+                (e.currentTarget as HTMLButtonElement).style.opacity = "1";
               }}
             >
               Load More

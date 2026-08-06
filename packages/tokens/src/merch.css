@@ -93,9 +93,10 @@
   /* MY SHOP gold link color — remeasured 2026-08-06 from live site: real is bright
      yellow-gold ~#F9C824 (rgb(249,200,36)). Previous #e0b43c was too muted/orange. */
   --color-merch-gold:      #f9c824;
-  /* Homepage Load More CTA — gold bg (#C49933) measured from merch.riotgames.com at 390px;
-     black text + thin white outline. Desktop variant: red (#eb0029) centered 239×50. */
-  --color-merch-gold-cta:  #c49933; /* rgb(196,153,51) — measured @390 real site */
+  /* Homepage Load More CTA — gold bg (#C4993B) measured from merch.riotgames.com;
+     black text + thin white offset frame with notched corners. 239×50 @1280 / 390×50 @390.
+     Same gold at ALL viewports — home LOAD MORE, PDP ADD TO CART, banner SHOP NOW identical. */
+  --color-merch-gold-cta:  #c4993b; /* rgb(196,153,59) — corrected; #c49933 was wrong sample */
   /* Purple CTA — search-hero CTA fill / empty-state accent. Measured from real site
      /en-us/search hero: #4500d5 (rgb(69,0,213)). Hover derives darker tint. */
   --color-merch-purple:      #4500d5;
