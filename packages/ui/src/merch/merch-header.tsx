@@ -11,11 +11,11 @@
  *
  * Structure (measured from merch.riotgames.com):
  *   1. Announcement bar (NOT sticky — scrolls away with page content):
- *        - Left gutter: two-tone dismiss block (brighter EB0029 red, 50×52, flush x=0)
+ *        - Left gutter: two-tone dismiss block (brighter EB0029 red, 50×50 @390 / 94×50 @1280, flush x=0)
  *          containing a 24×24 stroke SVG ✕.
  *        - Pill (starts x=50 @390 / x=94 @1280): darker C60023 red pill with
- *          marquee text 16px/700/uppercase. Pill runs past right edge at 390
- *          (no right spacer — full-bleed to right edge).
+ *          marquee text 14px/600/uppercase (issue #856 delta #7). @390: rounded pill
+ *          (border-radius 36px, 1px solid EB0029 border). @1280: flat full-bleed band.
  *   2. Sticky nav tier (~80px black bar):
  *        Desktop (≥lg):
  *          Left:  stacked RIOT GAMES wordmark + games-switcher caret + WHITE fist emblem circle (~46px)
@@ -34,8 +34,12 @@
  * Dropdown indicator: solid filled triangle (not a thin chevron).
  * No active underline — real site has none.
  *
- * Mobile drawer: full-screen WHITE panel; rows ≈56px; ~20px UPPERCASE/700 black
- * labels with right carets; 1px divider rules; white bg; burger icon stays ☰.
+ * Mobile drawer: full-screen WHITE panel; rows ≈56px; riotSans 14px/600/uppercase black
+ * labels with right carets; NO per-row dividers within a group (only group-boundary hairline);
+ * 1px amber left-edge line (--color-merch-menu-edge); white bg; burger icon stays ☰;
+ * panel top=130px (nav 80 + band 50) so announcement bar remains visible behind open drawer.
+ * Flat list two groups: (1) SHOP ALL / FEATURED / SALE / MY SHOP,
+ * (2) SHOP BY GAME / APPAREL / COLLECTIBLES / ART / ACCESSORIES + Sign In.
  *
  * Dropdown menus open on click and close on:
  *   - Outside click (mousedown on document)
@@ -127,6 +131,37 @@ const DEFAULT_NAV: MerchNavItem[] = [
   { slug: "featured",   label: "Featured",   hasDropdown: true },
   { slug: "sale",       label: "Sale" },
   { slug: "my-shop",    label: "My Shop",    isGold: true },
+];
+
+/**
+ * Mobile drawer menu — flat list, two groups separated by a hairline.
+ * Group 1: SHOP ALL / FEATURED / SALE / MY SHOP
+ * Group 2: SHOP BY GAME / APPAREL / COLLECTIBLES / ART / ACCESSORIES
+ * Matches real merch.riotgames.com @390 (issue #856, delta #11).
+ */
+interface MobileFlatItem {
+  slug: string;
+  label: string;
+  isGold?: boolean;
+  /** Marks the last item of a group — next item gets a hairline divider above it. */
+  groupEnd?: boolean;
+  /** If set, fires sign-in callback instead of onCategoryClick. */
+  isSignIn?: boolean;
+}
+
+const MOBILE_GROUP_1: MobileFlatItem[] = [
+  { slug: "shop-all", label: "Shop All" },
+  { slug: "featured",  label: "Featured" },
+  { slug: "sale",      label: "Sale" },
+  { slug: "my-shop",   label: "My Shop", isGold: true, groupEnd: true },
+];
+
+const MOBILE_GROUP_2: MobileFlatItem[] = [
+  { slug: "shop-by-game",   label: "Shop By Game" },
+  { slug: "apparel",        label: "Apparel" },
+  { slug: "collectibles",   label: "Collectibles" },
+  { slug: "art",            label: "Art" },
+  { slug: "accessories",    label: "Accessories" },
 ];
 
 /** Default Categories dropdown — product category collections. */
@@ -481,11 +516,11 @@ export function MerchHeader({
           style={{ backgroundColor: "var(--color-merch-header-bg)" }}
         >
           {/*
-           * Inner container — max-w-screen-xl, px-9 (≈36px each side) matches
-           * logo x=36 measured from real site @1280.
-           * h-[78px] (≈78px) matches real ~80px hit-area for full-height nav items.
+           * Inner container — desktop px-9 (≈36px) matches logo x=36 @1280.
+           * Mobile px-1 (4px) matches real logo x≈4–8 @390 (issue #856, delta #15).
+           * h-[80px] matches real nav height (issue #856, delta #2).
            */}
-          <div className="mx-auto flex h-[78px] max-w-screen-xl items-center px-9">
+          <div className="mx-auto flex h-[80px] max-w-screen-xl items-center px-1 lg:px-9">
 
             {/* ---------------------------------------------------------- */}
             {/* Left: wordmark lockup + games-switcher caret + fist emblem  */}
@@ -494,7 +529,8 @@ export function MerchHeader({
               type="button"
               onClick={onLogoClick}
               aria-label="Riot Games merch — home"
-              className="flex shrink-0 items-center gap-2 transition-opacity duration-150 hover:opacity-80"
+              /* Mobile: pl-0 so logo lands at x≈4 (container already has px-4). Desktop: default. */
+              className="flex shrink-0 items-center gap-2 pl-0 transition-opacity duration-150 hover:opacity-80 lg:pl-0"
             >
               {/*
                * Stacked 2-line RIOT / GAMES wordmark.
@@ -617,8 +653,10 @@ export function MerchHeader({
                         fontWeight: 600,
                         letterSpacing: "0.06em",
                         textTransform: "uppercase",
+                        /* MY SHOP: real site rgb(255,215,0) #FFD700 = --color-merch-badge-limited
+                           (issue #856, delta #17). Previous --color-merch-gold (#F9C824) was wrong. */
                         color: isGold
-                          ? "var(--color-merch-gold)"
+                          ? "var(--color-merch-badge-limited)"
                           : "var(--color-merch-on-dark)",
                         background: "none",
                         border: "none",
@@ -685,12 +723,12 @@ export function MerchHeader({
                 )}
               </button>
 
-              {/* Search — mobile: 26px icon; desktop: 20px icon */}
+              {/* Search — hidden below md (768px) per real site @390; 26px icon mobile-md, 20px desktop */}
               <button
                 type="button"
                 aria-label="Search"
                 onClick={onSearchClick}
-                className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
+                className="hidden items-center justify-center transition-opacity duration-150 hover:opacity-70 md:flex"
                 style={{
                   color: "var(--color-merch-on-dark)",
                   width: "44px",
@@ -790,7 +828,7 @@ export function MerchHeader({
                 style={{
                   backgroundColor: "var(--color-merch-signin-bg)",
                   color: "var(--color-merch-on-dark)",
-                  borderRadius: "16px",
+                  borderRadius: "6.4px",
                   width: "87px",
                   height: "32px",
                   fontSize: "13px",
@@ -879,11 +917,16 @@ export function MerchHeader({
         {/* clipped. Uses position:fixed to escape the header stacking       */}
         {/* context and cover the full viewport below the sticky nav bar.   */}
         {/*                                                                  */}
-        {/* Real site: white bg, black ink, rows ≈56px, ~20px/700/uppercase  */}
-        {/* labels with right carets, 1px divider rules. Structure:          */}
-        {/*   SHOP ALL / FEATURED / SALE / MY SHOP (bright yellow)           */}
-        {/*   then sub-sections: SHOP BY GAME / APPAREL / COLLECTIBLES /     */}
-        {/*   ART / ACCESSORIES                                               */}
+        {/* Real site (issue #856, deltas #10–14):                          */}
+        {/*   · Panel starts at y=130 (nav 80 + band 50) so announcement    */}
+        {/*     band remains visible behind the open drawer.                 */}
+        {/*   · 1px amber (#e59700) left-edge line on the panel.            */}
+        {/*   · Flat list — two groups separated by a single hairline.      */}
+        {/*   · NO per-row dividers between items within a group.           */}
+        {/*   · Group 1: SHOP ALL / FEATURED / SALE / MY SHOP               */}
+        {/*   · Group 2: SHOP BY GAME / APPAREL / COLLECTIBLES / ART /      */}
+        {/*              ACCESSORIES + Sign In row at bottom.                */}
+        {/*   · Typography: riotSans 14px/600/uppercase; row pitch 56px.    */}
         {/* ---------------------------------------------------------------- */}
         {mobileOpen && (
           <nav
@@ -891,144 +934,139 @@ export function MerchHeader({
             aria-label="Mobile store navigation"
             style={{
               backgroundColor: "var(--color-merch-bg)",
+              /* 1px amber left-edge line — measured from real site (delta #13) */
+              borderLeft: "1px solid var(--color-merch-menu-edge)",
               width: "100%",
               maxWidth: "100%",
               overflowY: "auto",
               overflowX: "hidden",
               position: "fixed",
-              top: "78px",
+              /* y=130: announcement band (50px) remains visible above drawer */
+              top: "130px",
               left: 0,
               right: 0,
               bottom: 0,
               zIndex: 200,
             }}
           >
-              <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-                {navItems.map((item, idx) => {
-                  const { slug, label, hasDropdown, isGold } = item;
-                  const subItems =
-                    slug === "categories" ? categoriesMenu :
-                    slug === "featured"   ? featuredMenu   : null;
-                  const isExpanded = mobileExpanded === slug;
-                  const isLast = idx === navItems.length - 1;
-
-                  return (
-                    <li
-                      key={slug}
-                      style={{
-                        borderBottom: isLast
-                          ? "none"
-                          : "1px solid var(--color-merch-border)",
-                      }}
+            {/* Group 1 — SHOP ALL / FEATURED / SALE / MY SHOP */}
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {MOBILE_GROUP_1.map(({ slug, label, isGold }) => (
+                <li key={slug}>
+                  <button
+                    type="button"
+                    onClick={() => handleMenuItemSelect(slug)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      height: "56px",
+                      padding: "0 20px",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      fontFamily: "var(--font-merch-display)",
+                      textTransform: "uppercase",
+                      color: isGold
+                        ? "var(--color-merch-badge-limited)"
+                        : "var(--color-merch-ink)",
+                      textAlign: "left",
+                    }}
+                  >
+                    {label}
+                    {/* Right caret — solid triangle */}
+                    <svg
+                      aria-hidden="true"
+                      width="8"
+                      height="13"
+                      viewBox="0 0 8 13"
+                      fill={isGold ? "var(--color-merch-badge-limited)" : "var(--color-merch-ink)"}
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ flexShrink: 0 }}
                     >
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (hasDropdown && subItems) {
-                            toggleMobileSection(slug);
-                          } else {
-                            handleMenuItemSelect(slug);
-                          }
-                        }}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          width: "100%",
-                          height: "56px",
-                          padding: "0 20px",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          fontSize: "20px",
-                          fontWeight: 700,
-                          letterSpacing: "0.04em",
-                          textTransform: "uppercase",
-                          color: isGold
-                            ? "var(--color-merch-gold)"
-                            : "var(--color-merch-ink)",
-                          textAlign: "left",
-                        }}
-                        aria-expanded={hasDropdown ? isExpanded : undefined}
-                      >
-                        {label}
-                        {/* Right caret — solid triangle pointing right */}
-                        <svg
-                          aria-hidden="true"
-                          width="8"
-                          height="13"
-                          viewBox="0 0 8 13"
-                          fill={isGold ? "var(--color-merch-gold)" : "var(--color-merch-ink)"}
-                          xmlns="http://www.w3.org/2000/svg"
-                          style={{
-                            transform: hasDropdown && isExpanded ? "rotate(90deg)" : "rotate(0deg)",
-                            transition: "transform 0.15s",
-                            flexShrink: 0,
-                          }}
-                        >
-                          <path d="M0 0 L8 6.5 L0 13 Z" />
-                        </svg>
-                      </button>
+                      <path d="M0 0 L8 6.5 L0 13 Z" />
+                    </svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
 
-                      {/* Sub-items expanded section */}
-                      {hasDropdown && isExpanded && subItems && (
-                        <ul
-                          style={{
-                            listStyle: "none",
-                            margin: 0,
-                            padding: "0 0 8px",
-                            borderTop: "1px solid var(--color-merch-border)",
-                          }}
-                        >
-                          {subItems.map(({ slug: subSlug, label: subLabel }) => (
-                            <li
-                              key={subSlug}
-                              style={{ borderBottom: "1px solid var(--color-merch-border)" }}
-                            >
-                              <button
-                                type="button"
-                                onClick={() => handleMenuItemSelect(subSlug)}
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                  width: "100%",
-                                  height: "48px",
-                                  padding: "0 20px 0 32px",
-                                  background: "none",
-                                  border: "none",
-                                  cursor: "pointer",
-                                  fontSize: "16px",
-                                  fontWeight: 600,
-                                  letterSpacing: "0.03em",
-                                  textTransform: "uppercase",
-                                  color: "var(--color-merch-ink)",
-                                  textAlign: "left",
-                                }}
-                              >
-                                {subLabel}
-                                <svg
-                                  aria-hidden="true"
-                                  width="6"
-                                  height="10"
-                                  viewBox="0 0 6 10"
-                                  fill="var(--color-merch-muted)"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  style={{ flexShrink: 0 }}
-                                >
-                                  <path d="M0 0 L6 5 L0 10 Z" />
-                                </svg>
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
-          )}
+            {/* Group boundary hairline — only hairline between groups (no per-row dividers) */}
+            <div
+              aria-hidden="true"
+              style={{ height: "1px", backgroundColor: "var(--color-merch-border)" }}
+            />
+
+            {/* Group 2 — SHOP BY GAME / APPAREL / COLLECTIBLES / ART / ACCESSORIES */}
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {MOBILE_GROUP_2.map(({ slug, label }) => (
+                <li key={slug}>
+                  <button
+                    type="button"
+                    onClick={() => handleMenuItemSelect(slug)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      height: "56px",
+                      padding: "0 20px",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      fontFamily: "var(--font-merch-display)",
+                      textTransform: "uppercase",
+                      color: "var(--color-merch-ink)",
+                      textAlign: "left",
+                    }}
+                  >
+                    {label}
+                    <svg
+                      aria-hidden="true"
+                      width="8"
+                      height="13"
+                      viewBox="0 0 8 13"
+                      fill="var(--color-merch-ink)"
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ flexShrink: 0 }}
+                    >
+                      <path d="M0 0 L8 6.5 L0 13 Z" />
+                    </svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            {/* Sign In row — appears below group 2 on real site (delta #11) */}
+            <button
+              type="button"
+              onClick={handleSignIn}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                height: "56px",
+                padding: "0 20px",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: 600,
+                fontFamily: "var(--font-merch-display)",
+                textTransform: "uppercase",
+                color: "var(--color-merch-ink)",
+                textAlign: "left",
+              }}
+            >
+              Sign In
+            </button>
+          </nav>
+        )}
       </header>
 
       {/* ================================================================ */}
@@ -1037,13 +1075,17 @@ export function MerchHeader({
       {/* Rendered AFTER the sticky nav so the DOM/visual order matches    */}
       {/* merch.riotgames.com: nav at y=0 (h=80), band at y=80 (h=50).    */}
       {/*                                                                  */}
-      {/* Two-tone layout:                                                 */}
-      {/*   Left gutter: brighter EB0029 red dismiss block (50×52 flush)   */}
-      {/*   Pill: starts x=50 @390 / x=94 @1280; darker C60023 red pill   */}
-      {/*         running to right edge (no right spacer at 390).          */}
+      {/* Two-tone layout (issue #856 deltas #6–8):                       */}
+      {/*   Left gutter: brighter EB0029 red dismiss block                  */}
+      {/*     · ≥lg (1280): 94px wide (real measured; darker track at x=94) */}
+      {/*     · <lg (390):  50px wide (touch-target, matching real mobile)  */}
+      {/*   Pill (x=94 @1280 / x=50 @390): darker C60023 red              */}
+      {/*     · @1280: full-bleed to right edge — flat band                 */}
+      {/*     · @390:  inset rounded pill — border-radius 36px, padding    */}
+      {/*              8×24, 1px solid #EB0029 border, cap visible on left  */}
       {/*                                                                  */}
-      {/* At 1280: pill is x=94, w=1186. Dismiss ✕ sits at x=35/y=93.    */}
-      {/* At 390:  pill is x=50, w=340 (runs past right viewport edge).   */}
+      {/* Marquee text: Inter 14px/600 uppercase (real measured, #856 #7). */}
+      {/* minHeight: 50px (real measured nav+band = 80+50 = 130, #856 #2). */}
       {/* ================================================================ */}
       {announcement && (
         <>
@@ -1064,13 +1106,12 @@ export function MerchHeader({
             role="status"
             aria-live="polite"
             className="flex w-full items-stretch overflow-x-hidden"
-            style={{ minHeight: "52px" }}
+            style={{ minHeight: "50px" }}
           >
             {/*
-             * Dismiss block — brighter red (EB0029 / --color-merch-announcement-dismiss-bg),
-             * 50px wide, flush at x=0. 24×24 stroke SVG ✕ centered.
-             * At 1280: dismiss sits in the left gutter (x=35, outside the pill).
-             * At 390:  same block, full 50×52 touch target.
+             * Dismiss block — brighter red (EB0029 / --color-merch-announcement-dismiss-bg).
+             * Width: 50px @390 (<lg) → 94px @1280 (≥lg). Flush at x=0.
+             * 24×24 stroke SVG ✕ centered in the block.
              */}
             <button
               type="button"
@@ -1080,60 +1121,95 @@ export function MerchHeader({
               style={{
                 backgroundColor: "var(--color-merch-announcement-dismiss-bg)",
                 color: "var(--color-merch-on-dark)",
+                /* 50px on mobile, 94px at ≥lg via inline CSS variable pattern.
+                   Tailwind can't apply the 94px value with a clean class, so we
+                   duplicate via a data attribute approach — simplest: two spans. */
                 width: "50px",
-                minHeight: "52px",
+                minHeight: "50px",
                 border: "none",
                 cursor: "pointer",
               }}
+              /* lg:w-[94px] applied through the wrapper className trick below */
             >
               <DismissIcon />
             </button>
+            {/*
+             * Extra dismiss-block width for ≥lg — an invisible spacer that pushes
+             * the pill to x=94. This avoids needing inline-style media queries.
+             * Only visible at ≥lg; fills 44px (94-50) to reach the 94px total.
+             */}
+            <div
+              className="hidden lg:block shrink-0"
+              aria-hidden="true"
+              style={{
+                width: "44px",
+                minHeight: "50px",
+                backgroundColor: "var(--color-merch-announcement-dismiss-bg)",
+              }}
+            />
 
             {/*
-             * Pill — darker C60023 red (#c60023 / --color-merch-announcement-bg).
-             * flex-1: fills remaining width to right edge (no right spacer).
-             * overflow-hidden clips the marquee track inside the capsule shape.
-             * The pill starts at x=50 on mobile matching the dismiss block width.
+             * Outer track — fills remaining width. At ≥lg this is the flat C60023
+             * band (no rounded corners). At <lg we apply rounded-pill treatment.
              */}
             <div
               className="flex flex-1 items-center overflow-x-hidden"
               style={{
+                /* Flat band at desktop; pill treatment overridden below at mobile */
                 backgroundColor: "var(--color-merch-announcement-bg)",
                 padding: "0 20px",
               }}
             >
               {/*
-               * Marquee track — 20 copies side-by-side; animates translateX –50%
-               * (one full copy width) in a loop for a seamless repeat effect.
-               * 16px/700/uppercase matches the real site @390.
+               * @390 inner pill track — inset rounded capsule:
+               *   bg #C60023, 1px solid #EB0029 border, border-radius 36px, padding 8×24.
+               * At ≥lg the pill wrapper is transparent (not needed — band is already styled).
+               * We wrap the marquee in a pill div that's only styled at mobile widths.
                */}
               <div
-                className="merch-marquee-track"
-                aria-hidden="true"
+                className="flex w-full items-center overflow-x-hidden lg:contents"
                 style={{
-                  display: "flex",
-                  whiteSpace: "nowrap",
-                  width: "max-content",
-                  animation: "merch-marquee 28s linear infinite",
+                  /* Mobile: rounded pill shape */
+                  borderRadius: "36px",
+                  border: "1px solid var(--color-merch-announcement-dismiss-bg)",
+                  backgroundColor: "var(--color-merch-announcement-bg)",
+                  padding: "8px 24px",
                 }}
               >
-                {Array.from({ length: 20 }, (_, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      color: "var(--color-merch-on-dark)",
-                      paddingRight: "80px",
-                    }}
-                  >
-                    {announcement}
-                  </span>
-                ))}
+                {/*
+                 * Marquee track — 20 copies side-by-side; animates translateX –50%
+                 * (one full copy width) in a loop for a seamless repeat effect.
+                 * Typography: Inter 14px/600/uppercase (real measured, issue #856 delta #7).
+                 * Previous: 16px/700 — corrected.
+                 */}
+                <div
+                  className="merch-marquee-track"
+                  aria-hidden="true"
+                  style={{
+                    display: "flex",
+                    whiteSpace: "nowrap",
+                    width: "max-content",
+                    animation: "merch-marquee 28s linear infinite",
+                  }}
+                >
+                  {Array.from({ length: 20 }, (_, i) => (
+                    <span
+                      key={i}
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                        color: "var(--color-merch-on-dark)",
+                        paddingRight: "80px",
+                      }}
+                    >
+                      {announcement}
+                    </span>
+                  ))}
+                </div>
+                {/* Screen-reader-only single copy so SR doesn't read 20 repetitions */}
+                <span className="sr-only">{announcement}</span>
               </div>
-              {/* Screen-reader-only single copy so SR doesn't read 20 repetitions */}
-              <span className="sr-only">{announcement}</span>
             </div>
           </div>
         </>
