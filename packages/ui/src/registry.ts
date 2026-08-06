@@ -129,6 +129,7 @@ import { launcherSocialPanelShowcase } from "./launcher/launcher-social-panel.sh
 import { launcherTabBarShowcase } from "./launcher/launcher-tab-bar.showcase";
 import { launcherWindowBarShowcase } from "./launcher/launcher-window-bar.showcase";
 import { merchBreadcrumbBarShowcase } from "./merch/merch-breadcrumb-bar.showcase";
+import { merchCollabCarouselShowcase } from "./merch/merch-collab-carousel.showcase";
 import { merchCartDrawerShowcase } from "./merch/merch-cart-drawer.showcase";
 import { merchCartPageShowcase } from "./merch/merch-cart-page.showcase";
 import { merchCategoryStripShowcase } from "./merch/merch-category-strip.showcase";
@@ -298,13 +299,14 @@ export const registry: ShowcaseEntry[] = [
   launcherTabBarShowcase,
   launcherWindowBarShowcase,
   patchNoteCardShowcase,
-  // merch — alphabetical: MerchBreadcrumbBar < MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchShopCarousel < MerchSignInPanel < MerchSizeGuideModal < MerchStore < MerchSupportForm < MerchSupportHero < MerchSupportTabStrip
+  // merch — alphabetical: MerchBreadcrumbBar < MerchCartDrawer < MerchCartPage < MerchCategoryStrip < MerchCategoryTile < MerchCategoryTileGrid < MerchCollabCarousel < MerchCollectionHero < MerchCollectionList < MerchFilterSortBar < MerchFooter < MerchGiftCardBand < MerchHeader < MerchHeroBanner < MerchInfoPage < MerchProductCard < MerchProductGallery < MerchProductGrid < MerchProductInfoTabs < MerchPurchasePanel < MerchSearchBar < MerchShopCarousel < MerchSignInPanel < MerchSizeGuideModal < MerchStore < MerchSupportForm < MerchSupportHero < MerchSupportTabStrip
   merchBreadcrumbBarShowcase,
   merchCartDrawerShowcase,
   merchCartPageShowcase,
   merchCategoryStripShowcase,
   merchCategoryTileShowcase,
   merchCategoryTileGridShowcase,
+  merchCollabCarouselShowcase,
   merchCollectionHeroShowcase,
   merchCollectionListShowcase,
   merchFilterSortBarShowcase,
