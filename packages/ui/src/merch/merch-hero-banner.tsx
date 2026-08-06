@@ -40,13 +40,13 @@
  *   - Clip-path angle offset: 20px
  *   - First tile clip-path: polygon(0px 0px, 100% 0px, calc(100%-20px) 100%, 0px 100%) — square left edge
  *   - Other tiles:          polygon(20px 0px, 100% 0px, calc(100%-20px) 100%, 0px 100%) — parallelogram
- *   - Tile overlap (negative margin): -8px so parallelograms tessellate seamlessly
+ *   - Tile pitch: 170px edge-to-edge (no negative margin; parallelograms tessellate at their natural width)
  *   - Active tile: bottom white underline bar (3px), full opacity
  *   - Inactive tile: 0.6 opacity on hover
  *   - Progress bar: runs across top of active tile (white), auto-advances with slide
  */
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import React, { useEffect, useRef, useState, type ReactNode } from "react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -341,22 +341,32 @@ export function MerchHeroBanner({
 
       {/* ── Franchise Control Bar (replaces dot-nav when franchises provided) ── */}
       {hasFranchises ? (
+        /*
+         * Outer wrapper: positioned inside the hero, full width, clipped to
+         * viewport. overflow-hidden here prevents it from contributing to the
+         * document scroll-width at 390px; the inner track scrolls internally.
+         */
         <div
           aria-label="Shop by franchise"
           role="navigation"
-          className="absolute bottom-10 left-0 right-0 overflow-x-auto"
+          className="absolute bottom-10 left-0 right-0 overflow-hidden"
           style={{
             height: 64,
             /* Dark bg fills any gap behind tiles */
             backgroundColor: "var(--color-merch-hero-control-bar)",
-            /* Horizontal scroll on mobile — hide scrollbar */
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
           }}
         >
-          {/* Tile row — left-inset 24px mobile / 40px desktop, tiles overlap via negative margin */}
+          {/*
+           * Inner track: scrolls horizontally within the outer wrapper.
+           * overflow-x-auto keeps document width == viewport width at 390.
+           * scrollbar-none hides the scrollbar on all browsers.
+           */}
           <div
-            className="flex h-full items-stretch pl-6 md:pl-10"
+            className="flex h-full items-stretch pl-6 md:pl-10 overflow-x-auto"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            } as React.CSSProperties}
           >
             {franchises!.map((franchise, idx) => {
               const isFirst = idx === 0;
@@ -377,8 +387,6 @@ export function MerchHeroBanner({
                 <div
                   key={franchise.slug}
                   className="relative flex shrink-0 items-stretch"
-                  /* Negative margin makes parallelograms tessellate seamlessly */
-                  style={{ marginInlineEnd: -8 }}
                 >
                   <button
                     type="button"
@@ -390,7 +398,8 @@ export function MerchHeroBanner({
                       clipPath,
                       backgroundColor: `var(${franchise.colorVar})`,
                       color: `var(${logoColor})`,
-                      minWidth: 170,
+                      /* 147px on mobile (<md), 170px on md+ — matches real store measurements */
+                      minWidth: "clamp(147px, 38vw, 170px)",
                       paddingInline: 24,
                       borderRadius: 0,
                       opacity: isActive ? 1 : 0.75,
@@ -451,6 +460,44 @@ export function MerchHeroBanner({
               );
             })}
           </div>
+
+          {/* Slide arrows — 40×40, flanking the strip (franchise mode) */}
+          {slides.length > 1 && (
+            <>
+              <button
+                type="button"
+                aria-label="Previous slide"
+                onClick={goPrev}
+                className="absolute left-0 top-0 flex cursor-pointer items-center justify-center border-0 transition-opacity duration-150 hover:opacity-80"
+                style={{
+                  width: 40,
+                  height: 64,
+                  backgroundColor: "var(--color-merch-overlay-soft)",
+                  color: "var(--color-merch-on-dark)",
+                  fontSize: "20px",
+                  lineHeight: 1,
+                }}
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                aria-label="Next slide"
+                onClick={goNext}
+                className="absolute right-0 top-0 flex cursor-pointer items-center justify-center border-0 transition-opacity duration-150 hover:opacity-80"
+                style={{
+                  width: 40,
+                  height: 64,
+                  backgroundColor: "var(--color-merch-overlay-soft)",
+                  color: "var(--color-merch-on-dark)",
+                  fontSize: "20px",
+                  lineHeight: 1,
+                }}
+              >
+                ›
+              </button>
+            </>
+          )}
         </div>
       ) : (
         /* ── Legacy dot-nav (shown when no franchises prop) ── */
