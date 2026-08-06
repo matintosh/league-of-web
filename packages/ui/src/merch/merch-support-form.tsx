@@ -195,7 +195,7 @@ function SupportField({ field, value, onChange }: SupportFieldProps) {
         minWidth: 0,
       }}
     >
-      <span style={{ display: "block", marginBottom: "6px" }}>{field.label}</span>
+      <span style={{ display: "block", marginBottom: "5px" }}>{field.label}</span>
       <input
         id={field.id}
         name={field.id}
@@ -387,7 +387,7 @@ function LookupForm({ title, config, values, onFieldChange, uid }: LookupFormPro
                 cursor: "text",
               }}
             >
-              <span style={{ display: "block", marginBottom: "6px" }}>{field.label}</span>
+              <span style={{ display: "block", marginBottom: "5px" }}>{field.label}</span>
               <input
                 id={field.id}
                 name={field.id}
