@@ -91,6 +91,19 @@ export interface MerchProductGridProps {
    * Useful for presentational showcase demos.
    */
   showRefine?: boolean;
+  /**
+   * Called when the "LOAD MORE" button is clicked.
+   * When provided (or `showLoadMore` is true), the LOAD MORE button renders below the grid.
+   * Measured from real merch.riotgames.com: 239×50 centered at desktop; full-width 50px at mobile.
+   * riotSans 16/600 uppercase, ls 0.32px, bg --color-merch-red.
+   */
+  onLoadMore?: () => void;
+  /**
+   * Force-render the LOAD MORE button even without an onLoadMore handler.
+   * Useful for presentational showcase demos.
+   * @default false
+   */
+  showLoadMore?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -181,6 +194,8 @@ export function MerchProductGrid({
   resultCount,
   onRefineClick,
   showRefine,
+  onLoadMore,
+  showLoadMore = false,
 }: MerchProductGridProps) {
   const refineIconId = useId();
 
@@ -194,6 +209,7 @@ export function MerchProductGrid({
   const hasLegacyHeader = Boolean(heading || onShopAll);
   const showRefineButton = Boolean(onRefineClick) || Boolean(showRefine);
   const showResultCount = resultCount !== undefined && resultCount > 0;
+  const showLoadMoreButton = Boolean(onLoadMore) || Boolean(showLoadMore);
 
   // ── 2-col flush listing layout ────────────────────────────────────────────
   if (columns === 2) {
@@ -273,6 +289,48 @@ export function MerchProductGrid({
             style={{ borderTop: "1px solid var(--color-merch-on-dark)" }}
           >
             {children}
+          </div>
+        )}
+
+        {/* LOAD MORE — centered 239×50 at desktop; full-width 50px at mobile.
+             Measured from merch.riotgames.com: riotSans 16/600 uppercase, ls 0.32px.
+             Presentational — fires onLoadMore callback; visible when provided or showLoadMore. */}
+        {showLoadMoreButton && (
+          <div
+            className="flex justify-center px-0 py-8 md:py-10"
+          >
+            <button
+              type="button"
+              onClick={onLoadMore}
+              className="w-full md:w-auto"
+              style={{
+                height: 50,
+                minWidth: 239,
+                paddingLeft: 32,
+                paddingRight: 32,
+                backgroundColor: "var(--color-merch-red)",
+                color: "var(--color-merch-on-dark)",
+                border: "none",
+                borderRadius: 0,
+                cursor: "pointer",
+                fontSize: 16,
+                fontWeight: 600,
+                fontFamily: "riotSans, Arial, sans-serif",
+                textTransform: "uppercase",
+                letterSpacing: "0.32px",
+                transition: "background-color 150ms ease",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                  "var(--color-merch-red-dark)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                  "var(--color-merch-red)";
+              }}
+            >
+              Load More
+            </button>
           </div>
         )}
       </section>

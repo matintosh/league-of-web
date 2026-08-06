@@ -56,6 +56,18 @@ export interface MerchFilterSortBarProps {
   onFilterChange?: (filter: string) => void;
   /** Called when the sort option changes. */
   onSortChange?: (sort: MerchSortOption) => void;
+  /**
+   * When true, renders the "N Products" count text on the left.
+   * Real shop-all/category pages hide it (count lives in the breadcrumb bar).
+   * @default false
+   */
+  showCount?: boolean;
+  /**
+   * When true, renders the visible "Sort by" dropdown on the right.
+   * Real shop-all/category pages hide it (sorting lives in the REFINE flyout).
+   * @default false
+   */
+  showSort?: boolean;
 }
 
 /** Human-readable labels for each sort option. */
@@ -176,6 +188,8 @@ export function MerchFilterSortBar({
   activeSort = "featured",
   onFilterChange,
   onSortChange,
+  showCount = false,
+  showSort = false,
 }: MerchFilterSortBarProps) {
   const svgId = useId().replace(/:/g, "");
 
@@ -203,18 +217,20 @@ export function MerchFilterSortBar({
           gap: 16,
         }}
       >
-        {/* Result count */}
-        <span
-          style={{
-            fontSize: 13,
-            fontWeight: 400,
-            color: "var(--color-merch-muted)",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-          }}
-        >
-          {productCount} {productCount === 1 ? "Product" : "Products"}
-        </span>
+        {/* Result count — hidden by default; real count lives in the breadcrumb bar */}
+        {showCount && (
+          <span
+            style={{
+              fontSize: 13,
+              fontWeight: 400,
+              color: "var(--color-merch-muted)",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            {productCount} {productCount === 1 ? "Product" : "Products"}
+          </span>
+        )}
 
         {/* Filter chips */}
         {filterOptions && filterOptions.length > 0 && (
@@ -245,63 +261,65 @@ export function MerchFilterSortBar({
           <div style={{ flex: 1 }} />
         )}
 
-        {/* Sort dropdown */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            flexShrink: 0,
-          }}
-        >
-          <span
+        {/* Sort dropdown — hidden by default; sorting lives in the REFINE flyout on real site */}
+        {showSort && (
+          <div
             style={{
-              fontSize: 13,
-              fontWeight: 400,
-              color: "var(--color-merch-muted)",
-              whiteSpace: "nowrap",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              flexShrink: 0,
             }}
           >
-            Sort by
-          </span>
-          <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-            <select
-              aria-label="Sort products by"
-              value={activeSort}
-              onChange={(e) => onSortChange?.(e.target.value as MerchSortOption)}
-              style={{
-                appearance: "none",
-                WebkitAppearance: "none",
-                fontSize: 13,
-                fontWeight: 500,
-                color: "var(--color-merch-ink)",
-                backgroundColor: "transparent",
-                border: "none",
-                cursor: "pointer",
-                fontFamily: "inherit",
-                paddingRight: 20,
-                outline: "none",
-              }}
-            >
-              {SORT_OPTIONS.map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
             <span
               style={{
-                position: "absolute",
-                right: 0,
-                pointerEvents: "none",
-                display: "flex",
-                alignItems: "center",
+                fontSize: 13,
+                fontWeight: 400,
+                color: "var(--color-merch-muted)",
+                whiteSpace: "nowrap",
               }}
             >
-              <ChevronDown id={svgId} />
+              Sort by
             </span>
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <select
+                aria-label="Sort products by"
+                value={activeSort}
+                onChange={(e) => onSortChange?.(e.target.value as MerchSortOption)}
+                style={{
+                  appearance: "none",
+                  WebkitAppearance: "none",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: "var(--color-merch-ink)",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  paddingRight: 20,
+                  outline: "none",
+                }}
+              >
+                {SORT_OPTIONS.map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+              <span
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  pointerEvents: "none",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <ChevronDown id={svgId} />
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
