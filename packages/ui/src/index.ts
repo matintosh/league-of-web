@@ -324,6 +324,8 @@ export { MerchCategoryTile } from "./merch/merch-category-tile";
 export type { MerchCategoryTileProps } from "./merch/merch-category-tile";
 export { MerchCategoryTileGrid } from "./merch/merch-category-tile-grid";
 export type { MerchCategoryTileGridProps } from "./merch/merch-category-tile-grid";
+export { MerchCollabCarousel } from "./merch/merch-collab-carousel";
+export type { MerchCollabCarouselProps, MerchCollabEntry } from "./merch/merch-collab-carousel";
 export { MerchCollectionHero } from "./merch/merch-collection-hero";
 export type { MerchCollectionHeroProps, MerchBreadcrumb } from "./merch/merch-collection-hero";
 export { MerchCollectionList } from "./merch/merch-collection-list";
