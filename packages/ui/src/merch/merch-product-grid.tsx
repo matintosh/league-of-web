@@ -270,7 +270,7 @@ export function MerchProductGrid({
         ) : (
           <div
             className="grid grid-cols-2"
-            style={{ borderTop: "1px solid var(--color-merch-border)" }}
+            style={{ borderTop: "1px solid var(--color-merch-on-dark)" }}
           >
             {children}
           </div>
