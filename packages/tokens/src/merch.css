@@ -148,6 +148,15 @@
   --color-merch-input-border:   #d0d0d0; /* 1px solid border on email / authenticity-code inputs        */
   --color-merch-input-disabled: #d1d1d1; /* disabled submit button fill                                 */
 
+  /* ── Search hero background ─────────────────────────────────────────── */
+  /* Diagonal purple/crimson split measured from merch.riotgames.com/en-us/search
+     no-query hero. The real page uses an SVG with champion art; we approximate
+     the dark gradient stops here so components stay hex-free. */
+  --color-merch-search-hero-dark:   #1a0040; /* deep purple-black — gradient mid stop  */
+  --color-merch-search-hero-crimson: #2a0010; /* deep crimson-black — gradient end stop */
+  /* Decorative line tint for the art placeholder — very subtle white diagonal lines */
+  --color-merch-search-hero-lines: rgba(255, 255, 255, 0.03); /* near-invisible white tint */
+
   /* ── Shadows ─────────────────────────────────────────────────────────── */
   /* Raw rgba allowed here (tokens file); raw rgba NOT allowed in components */
   --shadow-merch-modal: 0 8px 32px rgba(0, 0, 0, 0.18); /* centered dialog elevation */

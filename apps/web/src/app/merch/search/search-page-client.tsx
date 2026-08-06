@@ -6,12 +6,13 @@
  * filtering. Receives allProducts and the server-resolved initial state.
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useMerchNav } from "@/lib/merch-nav";
 import {
   MerchHeader,
   MerchSearchBar,
+  MerchSearchHero,
   MerchFilterSortBar,
   MerchProductGrid,
   MerchProductCard,
@@ -95,11 +96,19 @@ export function SearchPageClient({
   const router = useRouter();
   const handleNavSelect = useMerchNav();
 
+  const searchBarRef = useRef<HTMLDivElement>(null);
+
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems] = useState<MerchCartItem[]>([]);
   const [query, setQuery] = useState(initialQuery);
   const [activeFilter, setActiveFilter] = useState<string>("All");
   const [activeSort, setActiveSort] = useState<MerchSortOption>("featured");
+  // searchActive: true once the user clicks "SEARCH PRODUCTS" from the hero.
+  // Reveals the search-bar + results pane without needing a URL query term yet.
+  const [searchActive, setSearchActive] = useState(false);
+
+  // Gate: show results UI when a query is present OR user clicked into search
+  const hasQuery = query.trim().length > 0 || searchActive;
 
   // Derive visible products from current query + filter + sort
   const queryFiltered = filterByQuery(allProducts, query);
@@ -138,81 +147,96 @@ export function SearchPageClient({
       />
 
       <main className="flex-1">
-        {/* ---------------------------------------------------------------- */}
-        {/* Search input band                                                 */}
-        {/* ---------------------------------------------------------------- */}
-        <MerchSearchBar
-          query={query}
-          resultCount={results.length}
-          onQueryChange={setQuery}
-          onSearch={handleSearch}
-        />
+        {hasQuery ? (
+          <>
+            {/* ---------------------------------------------------------------- */}
+            {/* Search input band — only shown when a query is active            */}
+            {/* ---------------------------------------------------------------- */}
+            <div ref={searchBarRef}>
+              <MerchSearchBar
+                query={query}
+                resultCount={results.length}
+                onQueryChange={setQuery}
+                onSearch={handleSearch}
+              />
+            </div>
 
-        {/* ---------------------------------------------------------------- */}
-        {/* Results header                                                    */}
-        {/* ---------------------------------------------------------------- */}
-        <div
-          style={{
-            maxWidth: "80rem",
-            margin: "0 auto",
-            padding: "16px 24px 0",
-          }}
-        >
-          <p
-            style={{
-              fontSize: "14px",
-              color: "var(--color-merch-muted)",
-              margin: 0,
+            {/* ---------------------------------------------------------------- */}
+            {/* Results header                                                    */}
+            {/* ---------------------------------------------------------------- */}
+            <div
+              style={{
+                maxWidth: "80rem",
+                margin: "0 auto",
+                padding: "16px 24px 0",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "var(--color-merch-muted)",
+                  margin: 0,
+                }}
+              >
+                {`${results.length} ${results.length === 1 ? "result" : "results"} for "${query}"`}
+              </p>
+            </div>
+
+            {/* ---------------------------------------------------------------- */}
+            {/* Filter/sort bar — hidden when there are no results               */}
+            {/* ---------------------------------------------------------------- */}
+            {hasResults && (
+              <MerchFilterSortBar
+                productCount={results.length}
+                filterOptions={[...FILTER_OPTIONS]}
+                activeFilter={activeFilter}
+                activeSort={activeSort}
+                onFilterChange={setActiveFilter}
+                onSortChange={setActiveSort}
+              />
+            )}
+
+            {/* ---------------------------------------------------------------- */}
+            {/* Product grid — empty state handled via emptyMessage prop         */}
+            {/* ---------------------------------------------------------------- */}
+            <MerchProductGrid
+              columns={2}
+              resultCount={results.length}
+              onRefineClick={() => {}}
+              emptyMessage={`No results for "${query}". Try a different search.`}
+            >
+              {results.map((product) => (
+                <MerchProductCard
+                  key={product.slug}
+                  slug={product.slug}
+                  title={product.title}
+                  imageUrl={product.imageUrl}
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                  badge={product.badge}
+                  badges={product.badges}
+                  franchiseLabel={product.franchiseLabel}
+                  onClick={() => router.push(`/merch/product/${product.slug}`)}
+                />
+              ))}
+            </MerchProductGrid>
+          </>
+        ) : (
+          /* ---------------------------------------------------------------- */
+          /* No-query hero — "NO SEARCH TERM PROVIDED" + purple CTA           */
+          /* Shown when the URL has no ?q= (or ?q= is empty/whitespace).      */
+          /* ---------------------------------------------------------------- */
+          <MerchSearchHero
+            onSearchClick={() => {
+              // Reveal the search bar and scroll to it so the user can type
+              setSearchActive(true);
+              // Scroll the newly-mounted search bar into view on the next tick
+              setTimeout(() => {
+                searchBarRef.current?.scrollIntoView({ behavior: "smooth" });
+              }, 50);
             }}
-          >
-            {query.trim()
-              ? `${results.length} ${results.length === 1 ? "result" : "results"} for "${query}"`
-              : `${results.length} ${results.length === 1 ? "result" : "results"}`}
-          </p>
-        </div>
-
-        {/* ---------------------------------------------------------------- */}
-        {/* Filter/sort bar — hidden when there are no results               */}
-        {/* ---------------------------------------------------------------- */}
-        {hasResults && (
-          <MerchFilterSortBar
-            productCount={results.length}
-            filterOptions={[...FILTER_OPTIONS]}
-            activeFilter={activeFilter}
-            activeSort={activeSort}
-            onFilterChange={setActiveFilter}
-            onSortChange={setActiveSort}
           />
         )}
-
-        {/* ---------------------------------------------------------------- */}
-        {/* Product grid — empty state handled via emptyMessage prop         */}
-        {/* ---------------------------------------------------------------- */}
-        <MerchProductGrid
-          columns={2}
-          resultCount={results.length}
-          onRefineClick={() => {}}
-          emptyMessage={
-            query.trim()
-              ? `No results for "${query}". Try a different search.`
-              : "Enter a search term to find products."
-          }
-        >
-          {results.map((product) => (
-            <MerchProductCard
-              key={product.slug}
-              slug={product.slug}
-              title={product.title}
-              imageUrl={product.imageUrl}
-              price={product.price}
-              originalPrice={product.originalPrice}
-              badge={product.badge}
-              badges={product.badges}
-              franchiseLabel={product.franchiseLabel}
-              onClick={() => router.push(`/merch/product/${product.slug}`)}
-            />
-          ))}
-        </MerchProductGrid>
       </main>
 
       <MerchFooter copyrightText="Copyright Riot Games 2025" />
