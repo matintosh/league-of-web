@@ -93,8 +93,11 @@
   --color-merch-signin-bg: rgba(128, 128, 128, 0.2);
   /* SIGN IN button border — translucent white hairline on dark nav bar */
   --color-merch-signin-border: rgba(255, 255, 255, 0.15);
-  /* Fist emblem on the black header bar — near-black circle, measured from real */
-  --color-merch-emblem-bg: #1a1a1a;
+  /* Fist emblem on the black header bar — WHITE circle with BLACK fist (measured live 2026-08-06) */
+  --color-merch-emblem-bg:   #ffffff; /* circle fill — white (real: white circle on dark header) */
+  --color-merch-emblem-fist: #000000; /* fist silhouette — black on white circle */
+  /* Announcement dismiss button block — brighter EB0029 red (two-tone: dark pill #c60023 + bright dismiss block #eb0029) */
+  --color-merch-announcement-dismiss-bg: #eb0029; /* dismiss block on mobile — measured from real site */
   /* Announcement band background — deeper crimson matching merch.riotgames.com */
   --color-merch-announcement-bg: #c60023; /* rgb(198,0,35) measured live 2026-08-06 */
   /* Announcement pill border — same red as the band; gives a subtle raised outline */

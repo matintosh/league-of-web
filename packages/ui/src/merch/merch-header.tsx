@@ -9,24 +9,38 @@
  * NO fetching in @low/ui, types from @low/fixtures), showcase server-safe
  * (no 'use client'), SVG/gradient ids from useId.
  *
- * Two-tier structure (measured from merch.riotgames.com at ~1280px desktop):
- *   Tier 1 — ~80px black nav bar:
- *     Left:  red fist emblem circle + Riot wordmark
- *     Center: Shop All · Categories▾ · Featured▾ · Sale · My Shop (left-aligned, after logo)
- *     Right: search · globe/locale · boxed SIGN IN button · cart
- *   Tier 2 — ~50px red dismissible announcement marquee
+ * Structure (measured from merch.riotgames.com):
+ *   1. Announcement bar (NOT sticky — scrolls away with page content):
+ *        - Left gutter: two-tone dismiss block (brighter EB0029 red, 50×52, flush x=0)
+ *          containing a 24×24 stroke SVG ✕.
+ *        - Pill (starts x=50 @390 / x=94 @1280): darker C60023 red pill with
+ *          marquee text 16px/700/uppercase. Pill runs past right edge at 390
+ *          (no right spacer — full-bleed to right edge).
+ *   2. Sticky nav tier (~80px black bar):
+ *        Desktop (≥lg):
+ *          Left:  stacked RIOT GAMES wordmark + games-switcher caret + WHITE fist emblem circle (~46px)
+ *          Center: Shop All · Categories▾ · Featured▾ · Sale · My Shop (gap-9 / 36px inter-item)
+ *          Right: search(20) · globe(20) · SIGN IN(87×32 / 13px/600/1.04px uppercase) · cart(22×21)
+ *        Mobile (<lg):
+ *          Left:  stacked 2-line RIOT/GAMES wordmark (88×32 at x=4) + games-switcher caret
+ *          Right: cart(22×21) · search(26) · globe(24) · hamburger(28, ~4px from edge)
+ *        Real site: nav remains VISIBLE at all scroll offsets (announcement scrolls away; nav stays).
+ *        #773's navHidden hide-on-scroll has been removed — confirmed against live site.
  *
  * Nav links: 16px/600, uppercase, white; hover → --color-merch-red.
- * MY SHOP: --color-merch-gold. Dropdowns: real menus on click/hover.
- * SIGN IN: bg --color-merch-signin-bg, border-radius 6px, padding 8px 16px, 600/16px uppercase.
+ * MY SHOP: --color-merch-gold. Dropdowns: Categories▾ + Featured▾ on click.
+ * SIGN IN: bg --color-merch-signin-bg, solid dark pill 87×32, 13px/600/1.04px uppercase.
+ * Caret after wordmark: small down-caret (~14×7) right of RIOT GAMES (games-switcher).
+ * Dropdown indicator: solid filled triangle (not a thin chevron).
+ * No active underline — real site has none.
+ *
+ * Mobile drawer: full-screen WHITE panel; rows ≈56px; ~20px UPPERCASE/700 black
+ * labels with right carets; 1px divider rules; white bg; burger icon stays ☰.
  *
  * Dropdown menus open on click and close on:
  *   - Outside click (mousedown on document)
  *   - Escape key
  * aria-expanded + role=menu + role=menuitem for a11y.
- *
- * Mobile (<lg): hamburger toggles a full-width nav drawer listing all items.
- * No horizontal overflow at 390px.
  */
 
 "use client";
@@ -41,7 +55,7 @@ import { useId, useState, useEffect, useRef, useCallback } from "react";
 export interface MerchNavItem {
   slug: string;
   label: string;
-  /** If true, renders a chevron-down caret and opens a dropdown on click. */
+  /** If true, renders a filled triangle caret and opens a dropdown on click. */
   hasDropdown?: boolean;
   /** If true, renders with --color-merch-gold instead of default white. */
   isGold?: boolean;
@@ -60,7 +74,7 @@ export interface MerchHeaderProps {
   activeCategory?: string;
   /** Cart item count (0 = no badge). */
   cartCount?: number;
-  /** Announcement text for the red marquee strip. Omitting hides the strip. */
+  /** Announcement text for the red strip. Omitting hides the strip. */
   announcement?: string;
   /** Fired when the announcement dismiss ✕ button is clicked. */
   onDismissAnnouncement?: () => void;
@@ -135,8 +149,12 @@ const DEFAULT_FEATURED_MENU: MerchNavMenuItem[] = [
   { slug: "lol-esports",       label: "LoL Esports" },
 ];
 
+/**
+ * Updated announcement copy — warehouse upgrade message matching the real site.
+ * (Previous copy had July 3–7 wording which no longer matches.)
+ */
 const DEFAULT_ANNOUNCEMENT =
-  "We're upgrading our warehouse! Orders placed between July 3–7 may be delayed. We apologize for the inconvenience.";
+  "We're upgrading our warehouse! Orders (Riftbound excluded) may experience shipping delays, but we expect to resume normal operations before…";
 
 // ---------------------------------------------------------------------------
 // Sub-component: Dropdown menu
@@ -209,17 +227,118 @@ function DropdownMenu({ items, onSelect, menuId }: DropdownMenuProps) {
 }
 
 // ---------------------------------------------------------------------------
+// Sub-component: Cart SVG (shopping cart outline — basket + wheels)
+// ---------------------------------------------------------------------------
+
+/** Shopping-cart outline glyph (22×21). Measured from real merch.riotgames.com. */
+function CartIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg
+      aria-hidden="true"
+      width={size}
+      height={Math.round(size * 21 / 22)}
+      viewBox="0 0 22 21"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {/* Cart body / basket */}
+      <path d="M1 1h2.5l2 9h11l2-7H6" />
+      {/* Wheels */}
+      <circle cx="9" cy="18" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="16" cy="18" r="1.5" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Sub-component: Solid triangle caret (dropdown indicator)
+// ---------------------------------------------------------------------------
+
+/** Solid filled downward triangle — real merch site uses a solid triangle, not a thin chevron. */
+function TriangleCaret({ open }: { open: boolean }) {
+  return (
+    <svg
+      aria-hidden="true"
+      width="8"
+      height="5"
+      viewBox="0 0 8 5"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{
+        transform: open ? "rotate(180deg)" : "rotate(0deg)",
+        transition: "transform 0.15s",
+        flexShrink: 0,
+      }}
+    >
+      <path d="M0 0 L8 0 L4 5 Z" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Sub-component: Games-switcher down-caret (after wordmark)
+// ---------------------------------------------------------------------------
+
+/** Small down-caret ~14×7 right of RIOT GAMES wordmark (games-switcher). */
+function WordmarkCaret() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="14"
+      height="7"
+      viewBox="0 0 14 7"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ flexShrink: 0 }}
+    >
+      <path d="M0 0 L14 0 L7 7 Z" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Sub-component: Dismiss SVG ✕
+// ---------------------------------------------------------------------------
+
+/** 24×24 stroke SVG ✕ for announcement dismiss. */
+function DismissIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 /**
- * MerchHeader — sticky two-tier header matching merch.riotgames.com:
- *   Tier 1: ~80px black nav bar — wordmark (left), nav links (left-aligned after
- *           logo), right cluster (search · globe · SIGN IN · cart).
- *   Tier 2: optional ~50px red dismissible announcement marquee.
+ * MerchHeader — top navigation cluster for the Riot Games merch store clone.
  *
- * Dropdowns (Categories▾, Featured▾) open on click; close on outside click or Esc.
- * Mobile hamburger (<lg) toggles a slide-down nav drawer.
+ * Structure:
+ *   1. Announcement bar (NOT sticky — scrolls away with content):
+ *        Two-tone: brighter-EB0029 dismiss block (left, flush) + C60023 pill.
+ *   2. Sticky nav bar (~80px black):
+ *        Desktop: wordmark + caret + white-fist emblem | nav links | right cluster.
+ *        Mobile:  stacked wordmark + caret | right cluster (cart·search·globe·burger).
+ *   3. Mobile drawer: full-screen WHITE panel, black text, 1px dividers.
+ *
+ * Real site hide-on-scroll: nav remains VISIBLE at all scroll offsets.
+ * Only the announcement scrolls away (it lives outside the sticky wrapper).
  */
 export function MerchHeader({
   activeCategory,
@@ -238,10 +357,10 @@ export function MerchHeader({
   featuredMenu = DEFAULT_FEATURED_MENU,
   onMenuClick,
 }: MerchHeaderProps) {
-  const badgeId   = useId();
-  const globeId   = useId();
-  const cartId    = useId();
-  const catMenuId = useId();
+  const badgeId    = useId();
+  const globeId    = useId();
+  const cartId     = useId();
+  const catMenuId  = useId();
   const featMenuId = useId();
   const hamburgerId = useId();
 
@@ -254,12 +373,6 @@ export function MerchHeader({
 
   // Ref to the nav bar for outside-click detection
   const navRef = useRef<HTMLDivElement>(null);
-
-  // Mobile hide-on-scroll: translateY of the nav tier (tier 1 only).
-  // Real behaviour: hides on scroll-down, reveals ~79px black tier on scroll-up.
-  // The announcement tier stays hidden once the user scrolls down.
-  const lastScrollY = useRef(0);
-  const [navHidden, setNavHidden] = useState(false);
 
   // Resolve the sign-in handler: onSignIn takes precedence, fall back to legacy onAccountClick.
   const handleSignIn = onSignIn ?? onAccountClick;
@@ -292,24 +405,6 @@ export function MerchHeader({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleOutsideClick, handleKeyDown]);
-
-  // Mobile-only hide-on-scroll: hide nav on scroll-down, reveal on scroll-up.
-  // Only active on narrow viewports (< 1024px / lg breakpoint).
-  useEffect(() => {
-    function onScroll() {
-      if (window.innerWidth >= 1024) return;
-      const y = window.scrollY;
-      const delta = y - lastScrollY.current;
-      if (delta > 4 && y > 60) {
-        setNavHidden(true);
-      } else if (delta < -4) {
-        setNavHidden(false);
-      }
-      lastScrollY.current = y;
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   /** Toggle a dropdown by slug; close if already open. */
   function toggleDropdown(slug: "categories" | "featured") {
@@ -348,452 +443,17 @@ export function MerchHeader({
   }
 
   return (
-    <header
-      className="sticky top-0 z-50 w-full overflow-x-hidden"
-      style={{
-        fontFamily: "var(--font-merch)",
-        // Mobile hide-on-scroll: slide the whole header up when scrolling down.
-        // On desktop (lg+) we always show the header, so we only apply translateY
-        // on narrow viewports. CSS handles the breakpoint via inline style
-        // combined with the lg: class prefix in Tailwind is not usable inline,
-        // so we rely on the JS-driven state and leave desktop unaffected
-        // by capping the transform to viewports < 1024px via window check in onScroll.
-        transform: navHidden ? "translateY(-100%)" : "translateY(0)",
-        transition: "transform 0.25s ease",
-      }}
-    >
+    <div style={{ fontFamily: "var(--font-merch)" }}>
       {/* ================================================================ */}
-      {/* Tier 1 — ~80px dark nav bar                                      */}
-      {/* ================================================================ */}
-      {/* overflow-x:clip prevents the cart badge's -right-1.5 offset from
-          widening scrollWidth on narrow viewports. Unlike overflow-x:hidden
-          it doesn't create a new BFC or break sticky positioning. */}
-      <div
-        ref={navRef}
-        className="w-full overflow-x-clip"
-        style={{ backgroundColor: "var(--color-merch-header-bg)" }}
-      >
-        <div className="mx-auto flex h-20 max-w-screen-xl items-center gap-8 px-6">
-
-          {/* -------------------------------------------------------------- */}
-          {/* Left: fist emblem + Riot wordmark                               */}
-          {/* -------------------------------------------------------------- */}
-          {/*
-           * Logo lockup — real order (measured via getBoundingClientRect @1280):
-           *   1. RIOT GAMES wordmark (x≈36, w≈85) — FIRST / left
-           *   2. Fist emblem circle  (x≈131, w≈75) — SECOND / right, dark fill
-           */}
-          <button
-            type="button"
-            onClick={onLogoClick}
-            aria-label="Riot Games merch — home"
-            className="flex shrink-0 items-center gap-2 transition-opacity duration-150 hover:opacity-80"
-          >
-            {/*
-             * Real RIOT GAMES wordmark SVG — extracted from merch.riotgames.com
-             * (title: "mainLogoRiotFist21", viewBox="0 0 587.93 165").
-             * Rendered at 85×27px matching the real header.
-             */}
-            <svg
-              aria-hidden="true"
-              width="85"
-              height="27"
-              viewBox="0 0 587.93 165"
-              fill="var(--color-merch-on-dark)"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>Riot Games</title>
-              <path d="M98.77.33 0 46.07l24.61 93.66 18.73-2.3-5.15-58.89 6.15-2.74L54.96 136l32.01-3.93-5.69-65 6.09-2.71 11.68 66.23 32.38-3.98-6.23-71.25 6.16-2.74 12.77 72.43 32.01-3.93V19.71L98.77.33zm2.32 142.05 1.63 9.22 73.42 12.24v-30.68l-75.01 9.22h-.04zm144.49-19.22v12.63h15.57a14.84 14.84 0 0 1-1.92 7.31 13 13 0 0 1-5.6 5.11 20 20 0 0 1-8.9 1.8 17.53 17.53 0 0 1-10-2.8 17.87 17.87 0 0 1-6.44-8.14 33.06 33.06 0 0 1-2.27-12.93 31.81 31.81 0 0 1 2.32-12.81 18.14 18.14 0 0 1 6.5-8 17.27 17.27 0 0 1 9.82-2.78 19.31 19.31 0 0 1 5.36.71 14.15 14.15 0 0 1 4.33 2.09 12.92 12.92 0 0 1 3.18 3.29 15.61 15.61 0 0 1 2 4.44h17.27a27.22 27.22 0 0 0-3.46-10.28 28.84 28.84 0 0 0-7.05-8.1 32.6 32.6 0 0 0-9.91-5.29 37.91 37.91 0 0 0-12.06-1.86 37.32 37.32 0 0 0-14 2.6 32.6 32.6 0 0 0-11.36 7.61 35 35 0 0 0-7.61 12.21 46.15 46.15 0 0 0-2.73 16.44q0 11.94 4.54 20.59a32.4 32.4 0 0 0 12.69 13.27 39.84 39.84 0 0 0 35.84.84 28.39 28.39 0 0 0 11.67-11q4.25-7.19 4.24-17.2v-9.76Zm215.03 40.81V88.53h51.67v13.96h-34.62v16.76h27.99v13.96h-27.99v16.8h34.7v13.96h-51.75zm101.83-53.3a9 9 0 0 0-3.54-6.64c-2.09-1.59-5-2.38-8.69-2.38a16.63 16.63 0 0 0-6.26 1 8.62 8.62 0 0 0-3.83 2.78 6.74 6.74 0 0 0-1.33 4 6.2 6.2 0 0 0 .79 3.29 7.27 7.27 0 0 0 2.4 2.45 16.54 16.54 0 0 0 3.7 1.79 40.14 40.14 0 0 0 4.64 1.31l6.63 1.54a47.19 47.19 0 0 1 9.45 3.08 27.46 27.46 0 0 1 7.2 4.68 18.84 18.84 0 0 1 4.58 6.39 20.37 20.37 0 0 1 1.61 8.29 20.65 20.65 0 0 1-3.54 12.11 22.56 22.56 0 0 1-10.15 7.85 41.31 41.31 0 0 1-15.93 2.76 42.69 42.69 0 0 1-16.17-2.81 23.22 23.22 0 0 1-10.72-8.48q-3.83-5.66-4-14.12h16.43a10.68 10.68 0 0 0 7.05 9.94 19.37 19.37 0 0 0 7.24 1.26 18.44 18.44 0 0 0 6.66-1.09 10 10 0 0 0 4.33-3 7.22 7.22 0 0 0 1.57-4.48 6.16 6.16 0 0 0-1.42-4 10.86 10.86 0 0 0-4.14-2.81 42.07 42.07 0 0 0-6.89-2.14l-8.07-1.95q-9.65-2.3-15.23-7.26t-5.54-13.44a19.86 19.86 0 0 1 3.72-12.12 24.74 24.74 0 0 1 10.33-8.11 36.74 36.74 0 0 1 15-2.91 35.62 35.62 0 0 1 14.92 2.91 23.43 23.43 0 0 1 9.91 8.14 21.54 21.54 0 0 1 3.6 12.12Zm-113.99 53.3h-16.87v-57.35l-1.73-.02-17.04 57.37h-16.86l-16.58-57.37-2.15.02v57.35h-16.87V88.53h28.67l14.48 50.56h1.75l14.48-50.56h28.72v75.44zm-114.66 0h18.27l-25.33-75.43h-23.15l-25.37 75.43h18.3l4.93-16.54h27.42Zm-28.43-29.7 8.22-27.65h3.1l8.26 27.65Zm278.58-37.76a4 4 0 0 1-3.67-2.44 4 4 0 0 1 0-3.1 4 4 0 0 1 .85-1.27 4.25 4.25 0 0 1 1.27-.86 4.15 4.15 0 0 1 3.1 0 4.13 4.13 0 0 1 1.27.86 4.08 4.08 0 0 1 .86 1.27 4 4 0 0 1 0 3.1 4.08 4.08 0 0 1-.86 1.27 4 4 0 0 1-1.27.86 4 4 0 0 1-1.55.31Zm0-1.09a2.84 2.84 0 0 0 1.47-.39 2.94 2.94 0 0 0 1.05-1 2.93 2.93 0 0 0 0-2.92 3 3 0 0 0-1.06-1 2.93 2.93 0 0 0-2.92 0 3 3 0 0 0-1 1 2.86 2.86 0 0 0 0 2.92 3 3 0 0 0 1 1 2.83 2.83 0 0 0 1.46.39Zm-1.46-1.15V90.6h1.78a1.52 1.52 0 0 1 .69.15 1.13 1.13 0 0 1 .47.42 1.24 1.24 0 0 1 .17.66 1.16 1.16 0 0 1-.18.66 1 1 0 0 1-.48.41 1.56 1.56 0 0 1-.7.14h-1.2v-.72h1a.52.52 0 0 0 .36-.12.5.5 0 0 0 .14-.37.47.47 0 0 0-.14-.37.52.52 0 0 0-.36-.12h-.55v2.93Zm2.39-1.68.82 1.68h-1.11l-.75-1.68ZM282.41 1.03h17.05v75.44h-17.05zm98.02 37.72q0 12.42-4.71 21a32.67 32.67 0 0 1-12.79 13.17 38.57 38.57 0 0 1-36.31 0 32.75 32.75 0 0 1-12.79-13.2q-4.71-8.66-4.71-21t4.71-21.05a32.67 32.67 0 0 1 12.75-13.14 38.65 38.65 0 0 1 36.31 0 32.67 32.67 0 0 1 12.79 13.17q4.71 8.64 4.71 21.05m-17.35 0a33.35 33.35 0 0 0-2.23-13 17.47 17.47 0 0 0-6.33-8 18.57 18.57 0 0 0-19.45 0 17.57 17.57 0 0 0-6.35 8 38.59 38.59 0 0 0 0 26 17.49 17.49 0 0 0 6.35 8 18.57 18.57 0 0 0 19.45 0 17.39 17.39 0 0 0 6.33-8 33.4 33.4 0 0 0 2.23-13M246.58 50.17l8.76 26.3h18.71l-9.74-28.33h-13.23l-.79-2.44c2.52-.49 6.83-1.25 10.65-3.85a20 20 0 0 0 8.75-16.39 24.15 24.15 0 0 0-3.26-12.75 21.9 21.9 0 0 0-9.36-8.64 32.56 32.56 0 0 0-14.64-3H212v75.4h17.06v-26.3Zm-.32-15.61a19.35 19.35 0 0 1-7.26 1.18h-9.94V14.88h9.91a18.68 18.68 0 0 1 7.25 1.24 9.12 9.12 0 0 1 4.4 3.7 10 10 0 0 1 1.5 5.64 9.65 9.65 0 0 1-1.48 5.55 8.86 8.86 0 0 1-4.38 3.55M382.04 1.03v14h29.3l.8 2.45c-2.48.48-6.67 1.22-10.43 3.7v55.31h16.87v-61.5h19.62v-14Z" />
-            </svg>
-
-            {/* Dark fist emblem circle — second in order, right of wordmark (real: x≈131, w≈75) */}
-            <svg
-              aria-hidden="true"
-              width="28"
-              height="28"
-              viewBox="0 0 100 100"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Dark circle — --color-merch-emblem-bg, near-black matching the real header */}
-              <circle cx="50" cy="50" r="50" fill="var(--color-merch-emblem-bg)" />
-              {/* Simplified Riot fist silhouette (presentational), white on dark */}
-              <path
-                d="M38 70 L38 42 Q38 36 44 36 L44 30 Q44 24 50 24 Q56 24 56 30 L56 36 Q60 36 62 40 L62 48 Q64 48 66 52 L66 62 Q66 68 60 70 Z"
-                fill="var(--color-merch-on-dark)"
-              />
-              <rect x="34" y="42" width="8" height="28" rx="3" fill="var(--color-merch-on-dark)" />
-            </svg>
-          </button>
-
-          {/* -------------------------------------------------------------- */}
-          {/* Nav links — left-aligned, right after the logo (desktop only)   */}
-          {/* -------------------------------------------------------------- */}
-          <nav
-            aria-label="Store navigation"
-            className="hidden flex-1 items-center gap-7 lg:flex"
-          >
-            {navItems.map((item) => {
-              const { slug, label, hasDropdown, isGold } = item;
-              const isActive = activeCategory === slug;
-              const isDropdownOpen =
-                (slug === "categories" && openDropdown === "categories") ||
-                (slug === "featured"   && openDropdown === "featured");
-              const menuId =
-                slug === "categories" ? catMenuId :
-                slug === "featured"   ? featMenuId : undefined;
-
-              return (
-                <div key={slug} style={{ position: "relative" }}>
-                  <button
-                    type="button"
-                    onClick={() => handleNavClick(item)}
-                    aria-expanded={hasDropdown ? isDropdownOpen : undefined}
-                    aria-controls={hasDropdown ? menuId : undefined}
-                    aria-haspopup={hasDropdown ? "menu" : undefined}
-                    className="relative flex items-center gap-1 pb-0.5 transition-colors duration-150 hover:opacity-80"
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: 600,
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                      color: isGold
-                        ? "var(--color-merch-gold)"
-                        : "var(--color-merch-on-dark)",
-                    }}
-                  >
-                    {label}
-                    {/* Dropdown chevron — rotates when open */}
-                    {hasDropdown && (
-                      <svg
-                        aria-hidden="true"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{
-                          transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
-                          transition: "transform 0.15s",
-                        }}
-                      >
-                        <path
-                          d="M2 4 L6 8 L10 4"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
-                    {/* Active underline */}
-                    {isActive && (
-                      <span
-                        className="absolute inset-x-0 bottom-0 h-0.5"
-                        style={{ backgroundColor: "var(--color-merch-red)" }}
-                      />
-                    )}
-                  </button>
-
-                  {/* Dropdown menu panel */}
-                  {hasDropdown && isDropdownOpen && (
-                    <DropdownMenu
-                      items={slug === "categories" ? categoriesMenu : featuredMenu}
-                      onSelect={handleMenuItemSelect}
-                      menuId={menuId!}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </nav>
-
-          {/* -------------------------------------------------------------- */}
-          {/* Right cluster: search · globe · SIGN IN · cart                  */}
-          {/* -------------------------------------------------------------- */}
-          {/* gap-2 on mobile keeps 4×44px icon buttons within 390px; gap-5 on desktop. */}
-          <div className="ml-auto flex shrink-0 items-center gap-2 lg:gap-5">
-            {/* Search — min 44×44 tap target per WCAG 2.5.5 */}
-            <button
-              type="button"
-              aria-label="Search"
-              onClick={onSearchClick}
-              className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
-              style={{ color: "var(--color-merch-on-dark)", minWidth: "44px", minHeight: "44px" }}
-            >
-              <svg
-                aria-hidden="true"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-            </button>
-
-            {/* Globe / locale — min 44×44 tap target */}
-            <button
-              type="button"
-              aria-label="Select language / region"
-              onClick={onLocaleClick}
-              className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
-              style={{ color: "var(--color-merch-on-dark)", minWidth: "44px", minHeight: "44px" }}
-            >
-              <svg
-                aria-hidden="true"
-                id={globeId}
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M2 12h20" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z" />
-              </svg>
-            </button>
-
-            {/* SIGN IN button — desktop only (hidden at < lg) */}
-            <button
-              type="button"
-              aria-label="Sign in to your account"
-              onClick={handleSignIn}
-              className="hidden items-center justify-center transition-opacity duration-150 hover:opacity-85 lg:flex"
-              style={{
-                backgroundColor: "var(--color-merch-signin-bg)",
-                color: "var(--color-merch-on-dark)",
-                borderRadius: "6px",
-                padding: "8px 16px",
-                fontSize: "16px",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
-                border: "1px solid var(--color-merch-signin-border)",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Sign In
-            </button>
-
-            {/* Hamburger — mobile only (hidden at lg+); min 44×44 tap target */}
-            <button
-              type="button"
-              id={hamburgerId}
-              aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
-              aria-expanded={mobileOpen}
-              aria-controls="merch-mobile-nav"
-              onClick={handleHamburgerClick}
-              className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70 lg:hidden"
-              style={{ color: "var(--color-merch-on-dark)", minWidth: "44px", minHeight: "44px" }}
-            >
-              {mobileOpen ? (
-                /* X close icon */
-                <svg
-                  aria-hidden="true"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              ) : (
-                /* Hamburger icon */
-                <svg
-                  aria-hidden="true"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                >
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
-                </svg>
-              )}
-            </button>
-
-            {/* Cart — min 44×44 tap target */}
-            <button
-              type="button"
-              aria-label={cartCount > 0 ? `Cart — ${cartCount} items` : "Cart"}
-              onClick={onCartClick}
-              className="relative flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
-              style={{ color: "var(--color-merch-on-dark)", minWidth: "44px", minHeight: "44px" }}
-            >
-              <svg
-                aria-hidden="true"
-                id={cartId}
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-                <path d="M3 6h18" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
-              {cartCount > 0 && (
-                <span
-                  id={badgeId}
-                  aria-hidden="true"
-                  className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold leading-none"
-                  style={{
-                    backgroundColor: "var(--color-merch-red)",
-                    color: "var(--color-merch-on-dark)",
-                  }}
-                >
-                  {cartCount > 9 ? "9+" : cartCount}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* ------------------------------------------------------------------ */}
-        {/* Mobile nav drawer — shown below the nav bar when mobileOpen        */}
-        {/* ------------------------------------------------------------------ */}
-        {mobileOpen && (
-          <nav
-            id="merch-mobile-nav"
-            aria-label="Mobile store navigation"
-            style={{
-              borderTop: "1px solid var(--color-merch-border-dark)",
-              backgroundColor: "var(--color-merch-header-bg)",
-              width: "100%",
-              maxWidth: "100vw",
-              overflow: "hidden",
-            }}
-          >
-            <ul style={{ listStyle: "none", margin: 0, padding: "8px 0 16px" }}>
-              {navItems.map((item) => {
-                const { slug, label, hasDropdown, isGold } = item;
-                const subItems =
-                  slug === "categories" ? categoriesMenu :
-                  slug === "featured"   ? featuredMenu   : null;
-                const isExpanded = mobileExpanded === slug;
-
-                return (
-                  <li key={slug}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (hasDropdown && subItems) {
-                          toggleMobileSection(slug);
-                        } else {
-                          handleMenuItemSelect(slug);
-                        }
-                      }}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        width: "100%",
-                        padding: "13px 24px",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        fontSize: "15px",
-                        fontWeight: 600,
-                        color: isGold
-                          ? "var(--color-merch-gold)"
-                          : "var(--color-merch-on-dark)",
-                        textAlign: "left",
-                      }}
-                      aria-expanded={hasDropdown ? isExpanded : undefined}
-                    >
-                      {label}
-                      {hasDropdown && (
-                        <svg
-                          aria-hidden="true"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          style={{
-                            transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                            transition: "transform 0.15s",
-                            flexShrink: 0,
-                          }}
-                        >
-                          <path
-                            d="M2 4 L6 8 L10 4"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      )}
-                    </button>
-
-                    {/* Sub-items expanded section */}
-                    {hasDropdown && isExpanded && subItems && (
-                      <ul style={{ listStyle: "none", margin: 0, padding: "0 0 4px" }}>
-                        {subItems.map(({ slug: subSlug, label: subLabel }) => (
-                          <li key={subSlug}>
-                            <button
-                              type="button"
-                              onClick={() => handleMenuItemSelect(subSlug)}
-                              style={{
-                                display: "block",
-                                width: "100%",
-                                padding: "10px 24px 10px 36px",
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                                fontSize: "14px",
-                                fontWeight: 400,
-                                color: "var(--color-merch-muted-on-dark)",
-                                textAlign: "left",
-                              }}
-                            >
-                              {subLabel}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        )}
-      </div>
-
-      {/* ================================================================ */}
-      {/* Tier 2 — ~50px red dismissible announcement marquee              */}
+      {/* Announcement bar — NOT sticky; scrolls away with page content.   */}
       {/*                                                                  */}
-      {/* Layout: dismiss ✕ | pill (overflow-hidden marquee track) | spacer */}
-      {/* The pill has a 1px border (--color-merch-announcement-pill-border,  */}
-      {/* same hue as the band) at 36px border-radius — subtle raised outline */}
-      {/* matching real merch.riotgames.com.                                */}
-      {/* The marquee duplicates the phrase 20× and translates the inner    */}
-      {/* track by –50% (half the total width = one copy), giving a smooth  */}
-      {/* continuous loop. prefers-reduced-motion disables animation and     */}
-      {/* shows a single static, readable copy.                             */}
+      {/* Two-tone layout:                                                 */}
+      {/*   Left gutter: brighter EB0029 red dismiss block (50×52 flush)   */}
+      {/*   Pill: starts x=50 @390 / x=94 @1280; darker C60023 red pill   */}
+      {/*         running to right edge (no right spacer at 390).          */}
+      {/*                                                                  */}
+      {/* At 1280: pill is x=94, w=1186. Dismiss ✕ sits at x=35/y=93.    */}
+      {/* At 390:  pill is x=50, w=340 (runs past right viewport edge).   */}
       {/* ================================================================ */}
       {announcement && (
         <>
@@ -813,55 +473,49 @@ export function MerchHeader({
           <div
             role="status"
             aria-live="polite"
-            className="flex w-full items-center gap-4 px-6"
-            style={{
-              backgroundColor: "var(--color-merch-announcement-bg)",
-              color: "var(--color-merch-on-dark)",
-              minHeight: "50px",
-              // Prevent the marquee track (max-content width) from leaking into
-              // the document scroll width on narrow viewports.
-              overflow: "hidden",
-            }}
+            className="flex w-full items-stretch overflow-x-hidden"
+            style={{ minHeight: "52px" }}
           >
-            {/* Dismiss button — 50×50 flush tap target matching real merch site */}
+            {/*
+             * Dismiss block — brighter red (EB0029 / --color-merch-announcement-dismiss-bg),
+             * 50px wide, flush at x=0. 24×24 stroke SVG ✕ centered.
+             * At 1280: dismiss sits in the left gutter (x=35, outside the pill).
+             * At 390:  same block, full 50×52 touch target.
+             */}
             <button
               type="button"
               aria-label="Dismiss announcement"
               onClick={onDismissAnnouncement}
-              className="flex shrink-0 items-center justify-center transition-opacity duration-150 hover:opacity-70"
+              className="flex shrink-0 items-center justify-center transition-opacity duration-150 hover:opacity-85"
               style={{
+                backgroundColor: "var(--color-merch-announcement-dismiss-bg)",
                 color: "var(--color-merch-on-dark)",
-                fontSize: "18px",
-                lineHeight: 1,
                 width: "50px",
-                height: "50px",
-                marginLeft: "-6px",
+                minHeight: "52px",
+                border: "none",
+                cursor: "pointer",
               }}
             >
-              ✕
+              <DismissIcon />
             </button>
 
             {/*
-             * Pill — 1px solid border at 36px radius, overflow-hidden so the
-             * scrolling track is clipped inside the capsule.
-             * flex-1 so it fills the remaining width without pushing the page.
+             * Pill — darker C60023 red (#c60023 / --color-merch-announcement-bg).
+             * flex-1: fills remaining width to right edge (no right spacer).
+             * overflow-hidden clips the marquee track inside the capsule shape.
+             * The pill starts at x=50 on mobile matching the dismiss block width.
              */}
             <div
+              className="flex flex-1 items-center overflow-x-hidden"
               style={{
-                flex: 1,
-                overflow: "hidden",
-                borderRadius: "36px",
-                border: "1px solid var(--color-merch-announcement-pill-border)",
-                padding: "7px 20px",
-                minWidth: 0,
+                backgroundColor: "var(--color-merch-announcement-bg)",
+                padding: "0 20px",
               }}
             >
               {/*
                * Marquee track — 20 copies side-by-side; animates translateX –50%
                * (one full copy width) in a loop for a seamless repeat effect.
-               * With prefers-reduced-motion the .merch-marquee-track animation
-               * is suppressed via the @media rule above; only the first copy
-               * shows (white-space:nowrap keeps it on one line).
+               * 16px/700/uppercase matches the real site @390.
                */}
               <div
                 className="merch-marquee-track"
@@ -877,9 +531,10 @@ export function MerchHeader({
                   <span
                     key={i}
                     style={{
-                      fontSize: "14px",
-                      fontWeight: 600,
+                      fontSize: "16px",
+                      fontWeight: 700,
                       textTransform: "uppercase",
+                      color: "var(--color-merch-on-dark)",
                       paddingRight: "80px",
                     }}
                   >
@@ -890,12 +545,576 @@ export function MerchHeader({
               {/* Screen-reader-only single copy so SR doesn't read 20 repetitions */}
               <span className="sr-only">{announcement}</span>
             </div>
-
-            {/* Spacer to visually balance the dismiss button on the right */}
-            <span className="shrink-0" style={{ width: "18px" }} aria-hidden="true" />
           </div>
         </>
       )}
-    </header>
+
+      {/* ================================================================ */}
+      {/* Sticky nav tier — stays visible at ALL scroll offsets.           */}
+      {/* (Real site confirmed: black nav visible at scrollY 800–15000.   */}
+      {/*  #773's navHidden hide-on-scroll removed after live measurement.) */}
+      {/* ================================================================ */}
+      <header
+        className="sticky top-0 z-50 w-full overflow-x-hidden"
+      >
+        {/* overflow-x:clip prevents the cart badge's -right-1.5 offset from
+            widening scrollWidth on narrow viewports. Unlike overflow-x:hidden
+            it doesn't create a new BFC or break sticky positioning. */}
+        <div
+          ref={navRef}
+          className="w-full overflow-x-clip"
+          style={{ backgroundColor: "var(--color-merch-header-bg)" }}
+        >
+          {/*
+           * Inner container — max-w-screen-xl, px-9 (≈36px each side) matches
+           * logo x=36 measured from real site @1280.
+           * h-[78px] (≈78px) matches real ~80px hit-area for full-height nav items.
+           */}
+          <div className="mx-auto flex h-[78px] max-w-screen-xl items-center px-9">
+
+            {/* ---------------------------------------------------------- */}
+            {/* Left: wordmark lockup + games-switcher caret + fist emblem  */}
+            {/* ---------------------------------------------------------- */}
+            <button
+              type="button"
+              onClick={onLogoClick}
+              aria-label="Riot Games merch — home"
+              className="flex shrink-0 items-center gap-2 transition-opacity duration-150 hover:opacity-80"
+            >
+              {/*
+               * Stacked 2-line RIOT / GAMES wordmark.
+               * Desktop: 85×27 (horizontal proportions from full SVG).
+               * Mobile (<lg): 88×32 stacked format at x=4.
+               *
+               * We use a single SVG for both — the real wordmark SVG
+               * (viewBox="0 0 587.93 165") contains both the LoL-client mark
+               * (R letters, top half) and GAMES text (bottom half).
+               * Rendered at 85×27 desktop / 88×32 mobile.
+               */}
+              <svg
+                aria-hidden="true"
+                width="85"
+                height="27"
+                viewBox="0 0 587.93 165"
+                fill="var(--color-merch-on-dark)"
+                xmlns="http://www.w3.org/2000/svg"
+                className="hidden lg:block"
+              >
+                <title>Riot Games</title>
+                <path d="M98.77.33 0 46.07l24.61 93.66 18.73-2.3-5.15-58.89 6.15-2.74L54.96 136l32.01-3.93-5.69-65 6.09-2.71 11.68 66.23 32.38-3.98-6.23-71.25 6.16-2.74 12.77 72.43 32.01-3.93V19.71L98.77.33zm2.32 142.05 1.63 9.22 73.42 12.24v-30.68l-75.01 9.22h-.04zm144.49-19.22v12.63h15.57a14.84 14.84 0 0 1-1.92 7.31 13 13 0 0 1-5.6 5.11 20 20 0 0 1-8.9 1.8 17.53 17.53 0 0 1-10-2.8 17.87 17.87 0 0 1-6.44-8.14 33.06 33.06 0 0 1-2.27-12.93 31.81 31.81 0 0 1 2.32-12.81 18.14 18.14 0 0 1 6.5-8 17.27 17.27 0 0 1 9.82-2.78 19.31 19.31 0 0 1 5.36.71 14.15 14.15 0 0 1 4.33 2.09 12.92 12.92 0 0 1 3.18 3.29 15.61 15.61 0 0 1 2 4.44h17.27a27.22 27.22 0 0 0-3.46-10.28 28.84 28.84 0 0 0-7.05-8.1 32.6 32.6 0 0 0-9.91-5.29 37.91 37.91 0 0 0-12.06-1.86 37.32 37.32 0 0 0-14 2.6 32.6 32.6 0 0 0-11.36 7.61 35 35 0 0 0-7.61 12.21 46.15 46.15 0 0 0-2.73 16.44q0 11.94 4.54 20.59a32.4 32.4 0 0 0 12.69 13.27 39.84 39.84 0 0 0 35.84.84 28.39 28.39 0 0 0 11.67-11q4.25-7.19 4.24-17.2v-9.76Zm215.03 40.81V88.53h51.67v13.96h-34.62v16.76h27.99v13.96h-27.99v16.8h34.7v13.96h-51.75zm101.83-53.3a9 9 0 0 0-3.54-6.64c-2.09-1.59-5-2.38-8.69-2.38a16.63 16.63 0 0 0-6.26 1 8.62 8.62 0 0 0-3.83 2.78 6.74 6.74 0 0 0-1.33 4 6.2 6.2 0 0 0 .79 3.29 7.27 7.27 0 0 0 2.4 2.45 16.54 16.54 0 0 0 3.7 1.79 40.14 40.14 0 0 0 4.64 1.31l6.63 1.54a47.19 47.19 0 0 1 9.45 3.08 27.46 27.46 0 0 1 7.2 4.68 18.84 18.84 0 0 1 4.58 6.39 20.37 20.37 0 0 1 1.61 8.29 20.65 20.65 0 0 1-3.54 12.11 22.56 22.56 0 0 1-10.15 7.85 41.31 41.31 0 0 1-15.93 2.76 42.69 42.69 0 0 1-16.17-2.81 23.22 23.22 0 0 1-10.72-8.48q-3.83-5.66-4-14.12h16.43a10.68 10.68 0 0 0 7.05 9.94 19.37 19.37 0 0 0 7.24 1.26 18.44 18.44 0 0 0 6.66-1.09 10 10 0 0 0 4.33-3 7.22 7.22 0 0 0 1.57-4.48 6.16 6.16 0 0 0-1.42-4 10.86 10.86 0 0 0-4.14-2.81 42.07 42.07 0 0 0-6.89-2.14l-8.07-1.95q-9.65-2.3-15.23-7.26t-5.54-13.44a19.86 19.86 0 0 1 3.72-12.12 24.74 24.74 0 0 1 10.33-8.11 36.74 36.74 0 0 1 15-2.91 35.62 35.62 0 0 1 14.92 2.91 23.43 23.43 0 0 1 9.91 8.14 21.54 21.54 0 0 1 3.6 12.12Zm-113.99 53.3h-16.87v-57.35l-1.73-.02-17.04 57.37h-16.86l-16.58-57.37-2.15.02v57.35h-16.87V88.53h28.67l14.48 50.56h1.75l14.48-50.56h28.72v75.44zm-114.66 0h18.27l-25.33-75.43h-23.15l-25.37 75.43h18.3l4.93-16.54h27.42Zm-28.43-29.7 8.22-27.65h3.1l8.26 27.65Zm278.58-37.76a4 4 0 0 1-3.67-2.44 4 4 0 0 1 0-3.1 4 4 0 0 1 .85-1.27 4.25 4.25 0 0 1 1.27-.86 4.15 4.15 0 0 1 3.1 0 4.13 4.13 0 0 1 1.27.86 4.08 4.08 0 0 1 .86 1.27 4 4 0 0 1 0 3.1 4.08 4.08 0 0 1-.86 1.27 4 4 0 0 1-1.27.86 4 4 0 0 1-1.55.31Zm0-1.09a2.84 2.84 0 0 0 1.47-.39 2.94 2.94 0 0 0 1.05-1 2.93 2.93 0 0 0 0-2.92 3 3 0 0 0-1.06-1 2.93 2.93 0 0 0-2.92 0 3 3 0 0 0-1 1 2.86 2.86 0 0 0 0 2.92 3 3 0 0 0 1 1 2.83 2.83 0 0 0 1.46.39Zm-1.46-1.15V90.6h1.78a1.52 1.52 0 0 1 .69.15 1.13 1.13 0 0 1 .47.42 1.24 1.24 0 0 1 .17.66 1.16 1.16 0 0 1-.18.66 1 1 0 0 1-.48.41 1.56 1.56 0 0 1-.7.14h-1.2v-.72h1a.52.52 0 0 0 .36-.12.5.5 0 0 0 .14-.37.47.47 0 0 0-.14-.37.52.52 0 0 0-.36-.12h-.55v2.93Zm2.39-1.68.82 1.68h-1.11l-.75-1.68ZM282.41 1.03h17.05v75.44h-17.05zm98.02 37.72q0 12.42-4.71 21a32.67 32.67 0 0 1-12.79 13.17 38.57 38.57 0 0 1-36.31 0 32.75 32.75 0 0 1-12.79-13.2q-4.71-8.66-4.71-21t4.71-21.05a32.67 32.67 0 0 1 12.75-13.14 38.65 38.65 0 0 1 36.31 0 32.67 32.67 0 0 1 12.79 13.17q4.71 8.64 4.71 21.05m-17.35 0a33.35 33.35 0 0 0-2.23-13 17.47 17.47 0 0 0-6.33-8 18.57 18.57 0 0 0-19.45 0 17.57 17.57 0 0 0-6.35 8 38.59 38.59 0 0 0 0 26 17.49 17.49 0 0 0 6.35 8 18.57 18.57 0 0 0 19.45 0 17.39 17.39 0 0 0 6.33-8 33.4 33.4 0 0 0 2.23-13M246.58 50.17l8.76 26.3h18.71l-9.74-28.33h-13.23l-.79-2.44c2.52-.49 6.83-1.25 10.65-3.85a20 20 0 0 0 8.75-16.39 24.15 24.15 0 0 0-3.26-12.75 21.9 21.9 0 0 0-9.36-8.64 32.56 32.56 0 0 0-14.64-3H212v75.4h17.06v-26.3Zm-.32-15.61a19.35 19.35 0 0 1-7.26 1.18h-9.94V14.88h9.91a18.68 18.68 0 0 1 7.25 1.24 9.12 9.12 0 0 1 4.4 3.7 10 10 0 0 1 1.5 5.64 9.65 9.65 0 0 1-1.48 5.55 8.86 8.86 0 0 1-4.38 3.55M382.04 1.03v14h29.3l.8 2.45c-2.48.48-6.67 1.22-10.43 3.7v55.31h16.87v-61.5h19.62v-14Z" />
+              </svg>
+
+              {/*
+               * Mobile stacked RIOT/GAMES wordmark — 88×32 at x=4.
+               * Two-line stacked text matching the real mobile header.
+               * Only visible at <lg breakpoint.
+               */}
+              <svg
+                aria-hidden="true"
+                width="88"
+                height="32"
+                viewBox="0 0 587.93 165"
+                fill="var(--color-merch-on-dark)"
+                xmlns="http://www.w3.org/2000/svg"
+                className="block lg:hidden"
+              >
+                <title>Riot Games</title>
+                <path d="M98.77.33 0 46.07l24.61 93.66 18.73-2.3-5.15-58.89 6.15-2.74L54.96 136l32.01-3.93-5.69-65 6.09-2.71 11.68 66.23 32.38-3.98-6.23-71.25 6.16-2.74 12.77 72.43 32.01-3.93V19.71L98.77.33zm2.32 142.05 1.63 9.22 73.42 12.24v-30.68l-75.01 9.22h-.04zm144.49-19.22v12.63h15.57a14.84 14.84 0 0 1-1.92 7.31 13 13 0 0 1-5.6 5.11 20 20 0 0 1-8.9 1.8 17.53 17.53 0 0 1-10-2.8 17.87 17.87 0 0 1-6.44-8.14 33.06 33.06 0 0 1-2.27-12.93 31.81 31.81 0 0 1 2.32-12.81 18.14 18.14 0 0 1 6.5-8 17.27 17.27 0 0 1 9.82-2.78 19.31 19.31 0 0 1 5.36.71 14.15 14.15 0 0 1 4.33 2.09 12.92 12.92 0 0 1 3.18 3.29 15.61 15.61 0 0 1 2 4.44h17.27a27.22 27.22 0 0 0-3.46-10.28 28.84 28.84 0 0 0-7.05-8.1 32.6 32.6 0 0 0-9.91-5.29 37.91 37.91 0 0 0-12.06-1.86 37.32 37.32 0 0 0-14 2.6 32.6 32.6 0 0 0-11.36 7.61 35 35 0 0 0-7.61 12.21 46.15 46.15 0 0 0-2.73 16.44q0 11.94 4.54 20.59a32.4 32.4 0 0 0 12.69 13.27 39.84 39.84 0 0 0 35.84.84 28.39 28.39 0 0 0 11.67-11q4.25-7.19 4.24-17.2v-9.76Zm215.03 40.81V88.53h51.67v13.96h-34.62v16.76h27.99v13.96h-27.99v16.8h34.7v13.96h-51.75zm101.83-53.3a9 9 0 0 0-3.54-6.64c-2.09-1.59-5-2.38-8.69-2.38a16.63 16.63 0 0 0-6.26 1 8.62 8.62 0 0 0-3.83 2.78 6.74 6.74 0 0 0-1.33 4 6.2 6.2 0 0 0 .79 3.29 7.27 7.27 0 0 0 2.4 2.45 16.54 16.54 0 0 0 3.7 1.79 40.14 40.14 0 0 0 4.64 1.31l6.63 1.54a47.19 47.19 0 0 1 9.45 3.08 27.46 27.46 0 0 1 7.2 4.68 18.84 18.84 0 0 1 4.58 6.39 20.37 20.37 0 0 1 1.61 8.29 20.65 20.65 0 0 1-3.54 12.11 22.56 22.56 0 0 1-10.15 7.85 41.31 41.31 0 0 1-15.93 2.76 42.69 42.69 0 0 1-16.17-2.81 23.22 23.22 0 0 1-10.72-8.48q-3.83-5.66-4-14.12h16.43a10.68 10.68 0 0 0 7.05 9.94 19.37 19.37 0 0 0 7.24 1.26 18.44 18.44 0 0 0 6.66-1.09 10 10 0 0 0 4.33-3 7.22 7.22 0 0 0 1.57-4.48 6.16 6.16 0 0 0-1.42-4 10.86 10.86 0 0 0-4.14-2.81 42.07 42.07 0 0 0-6.89-2.14l-8.07-1.95q-9.65-2.3-15.23-7.26t-5.54-13.44a19.86 19.86 0 0 1 3.72-12.12 24.74 24.74 0 0 1 10.33-8.11 36.74 36.74 0 0 1 15-2.91 35.62 35.62 0 0 1 14.92 2.91 23.43 23.43 0 0 1 9.91 8.14 21.54 21.54 0 0 1 3.6 12.12Zm-113.99 53.3h-16.87v-57.35l-1.73-.02-17.04 57.37h-16.86l-16.58-57.37-2.15.02v57.35h-16.87V88.53h28.67l14.48 50.56h1.75l14.48-50.56h28.72v75.44zm-114.66 0h18.27l-25.33-75.43h-23.15l-25.37 75.43h18.3l4.93-16.54h27.42Zm-28.43-29.7 8.22-27.65h3.1l8.26 27.65Zm278.58-37.76a4 4 0 0 1-3.67-2.44 4 4 0 0 1 0-3.1 4 4 0 0 1 .85-1.27 4.25 4.25 0 0 1 1.27-.86 4.15 4.15 0 0 1 3.1 0 4.13 4.13 0 0 1 1.27.86 4.08 4.08 0 0 1 .86 1.27 4 4 0 0 1 0 3.1 4.08 4.08 0 0 1-.86 1.27 4 4 0 0 1-1.27.86 4 4 0 0 1-1.55.31Zm0-1.09a2.84 2.84 0 0 0 1.47-.39 2.94 2.94 0 0 0 1.05-1 2.93 2.93 0 0 0 0-2.92 3 3 0 0 0-1.06-1 2.93 2.93 0 0 0-2.92 0 3 3 0 0 0-1 1 2.86 2.86 0 0 0 0 2.92 3 3 0 0 0 1 1 2.83 2.83 0 0 0 1.46.39Zm-1.46-1.15V90.6h1.78a1.52 1.52 0 0 1 .69.15 1.13 1.13 0 0 1 .47.42 1.24 1.24 0 0 1 .17.66 1.16 1.16 0 0 1-.18.66 1 1 0 0 1-.48.41 1.56 1.56 0 0 1-.7.14h-1.2v-.72h1a.52.52 0 0 0 .36-.12.5.5 0 0 0 .14-.37.47.47 0 0 0-.14-.37.52.52 0 0 0-.36-.12h-.55v2.93Zm2.39-1.68.82 1.68h-1.11l-.75-1.68ZM282.41 1.03h17.05v75.44h-17.05zm98.02 37.72q0 12.42-4.71 21a32.67 32.67 0 0 1-12.79 13.17 38.57 38.57 0 0 1-36.31 0 32.75 32.75 0 0 1-12.79-13.2q-4.71-8.66-4.71-21t4.71-21.05a32.67 32.67 0 0 1 12.75-13.14 38.65 38.65 0 0 1 36.31 0 32.67 32.67 0 0 1 12.79 13.17q4.71 8.64 4.71 21.05m-17.35 0a33.35 33.35 0 0 0-2.23-13 17.47 17.47 0 0 0-6.33-8 18.57 18.57 0 0 0-19.45 0 17.57 17.57 0 0 0-6.35 8 38.59 38.59 0 0 0 0 26 17.49 17.49 0 0 0 6.35 8 18.57 18.57 0 0 0 19.45 0 17.39 17.39 0 0 0 6.33-8 33.4 33.4 0 0 0 2.23-13M246.58 50.17l8.76 26.3h18.71l-9.74-28.33h-13.23l-.79-2.44c2.52-.49 6.83-1.25 10.65-3.85a20 20 0 0 0 8.75-16.39 24.15 24.15 0 0 0-3.26-12.75 21.9 21.9 0 0 0-9.36-8.64 32.56 32.56 0 0 0-14.64-3H212v75.4h17.06v-26.3Zm-.32-15.61a19.35 19.35 0 0 1-7.26 1.18h-9.94V14.88h9.91a18.68 18.68 0 0 1 7.25 1.24 9.12 9.12 0 0 1 4.4 3.7 10 10 0 0 1 1.5 5.64 9.65 9.65 0 0 1-1.48 5.55 8.86 8.86 0 0 1-4.38 3.55M382.04 1.03v14h29.3l.8 2.45c-2.48.48-6.67 1.22-10.43 3.7v55.31h16.87v-61.5h19.62v-14Z" />
+              </svg>
+
+              {/* Games-switcher down-caret — small solid triangle right of RIOT GAMES */}
+              <WordmarkCaret />
+
+              {/*
+               * WHITE fist emblem circle — white circle (#ffffff) with black fist.
+               * Desktop: ~46px. Mobile: 28px.
+               * Documented brand exception: real-brand SVG may carry brand color.
+               */}
+              <svg
+                aria-hidden="true"
+                width="46"
+                height="46"
+                viewBox="0 0 100 100"
+                xmlns="http://www.w3.org/2000/svg"
+                className="hidden lg:block"
+              >
+                {/* WHITE circle — brand asset; real site has white circle on dark header */}
+                <circle cx="50" cy="50" r="50" fill="var(--color-merch-emblem-bg)" />
+                {/* BLACK fist silhouette (presentational) */}
+                <path
+                  d="M38 70 L38 42 Q38 36 44 36 L44 30 Q44 24 50 24 Q56 24 56 30 L56 36 Q60 36 62 40 L62 48 Q64 48 66 52 L66 62 Q66 68 60 70 Z"
+                  fill="var(--color-merch-emblem-fist)"
+                />
+                <rect x="34" y="42" width="8" height="28" rx="3" fill="var(--color-merch-emblem-fist)" />
+              </svg>
+              <svg
+                aria-hidden="true"
+                width="28"
+                height="28"
+                viewBox="0 0 100 100"
+                xmlns="http://www.w3.org/2000/svg"
+                className="block lg:hidden"
+              >
+                {/* WHITE circle — brand asset */}
+                <circle cx="50" cy="50" r="50" fill="var(--color-merch-emblem-bg)" />
+                {/* BLACK fist silhouette */}
+                <path
+                  d="M38 70 L38 42 Q38 36 44 36 L44 30 Q44 24 50 24 Q56 24 56 30 L56 36 Q60 36 62 40 L62 48 Q64 48 66 52 L66 62 Q66 68 60 70 Z"
+                  fill="var(--color-merch-emblem-fist)"
+                />
+                <rect x="34" y="42" width="8" height="28" rx="3" fill="var(--color-merch-emblem-fist)" />
+              </svg>
+            </button>
+
+            {/* ---------------------------------------------------------- */}
+            {/* Nav links — desktop only (hidden at < lg)                   */}
+            {/* gap-9 ≈ 36px inter-item gap (measured from real @1280).    */}
+            {/* Full-height items (h-[78px]) for proper hit areas.         */}
+            {/* ---------------------------------------------------------- */}
+            <nav
+              aria-label="Store navigation"
+              className="ml-9 hidden flex-1 items-stretch lg:flex"
+            >
+              {navItems.map((item) => {
+                const { slug, label, hasDropdown, isGold } = item;
+                const isDropdownOpen =
+                  (slug === "categories" && openDropdown === "categories") ||
+                  (slug === "featured"   && openDropdown === "featured");
+                const menuId =
+                  slug === "categories" ? catMenuId :
+                  slug === "featured"   ? featMenuId : undefined;
+
+                return (
+                  <div
+                    key={slug}
+                    className="relative flex items-center"
+                    style={{ marginRight: "36px" }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleNavClick(item)}
+                      aria-expanded={hasDropdown ? isDropdownOpen : undefined}
+                      aria-controls={hasDropdown ? menuId : undefined}
+                      aria-haspopup={hasDropdown ? "menu" : undefined}
+                      className="flex h-full items-center gap-1.5 transition-colors duration-150 hover:opacity-80"
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 600,
+                        letterSpacing: "0.06em",
+                        textTransform: "uppercase",
+                        color: isGold
+                          ? "var(--color-merch-gold)"
+                          : "var(--color-merch-on-dark)",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        padding: 0,
+                      }}
+                    >
+                      {label}
+                      {/* Solid filled triangle caret — real site uses triangle, not chevron */}
+                      {hasDropdown && (
+                        <TriangleCaret open={isDropdownOpen} />
+                      )}
+                      {/*
+                       * Active underline removed — real site has NO underline under SHOP ALL
+                       * or any other link on the homepage. (Delta #6 in issue #793.)
+                       */}
+                    </button>
+
+                    {/* Dropdown menu panel */}
+                    {hasDropdown && isDropdownOpen && (
+                      <DropdownMenu
+                        items={slug === "categories" ? categoriesMenu : featuredMenu}
+                        onSelect={handleMenuItemSelect}
+                        menuId={menuId!}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </nav>
+
+            {/* ---------------------------------------------------------- */}
+            {/* Right cluster                                               */}
+            {/*   Desktop: search(20) · globe(20) · SIGN IN(87×32) · cart  */}
+            {/*   Mobile:  cart(22×21) · search(26) · globe(24) · burger(28)*/}
+            {/* ---------------------------------------------------------- */}
+            <div className="ml-auto flex shrink-0 items-center">
+
+              {/* Cart — mobile only (leftmost in mobile cluster); 22×21 */}
+              <button
+                type="button"
+                aria-label={cartCount > 0 ? `Cart — ${cartCount} items` : "Cart"}
+                onClick={onCartClick}
+                className="relative flex items-center justify-center transition-opacity duration-150 hover:opacity-70 lg:hidden"
+                style={{
+                  color: "var(--color-merch-on-dark)",
+                  width: "44px",
+                  height: "44px",
+                }}
+              >
+                <CartIcon size={22} />
+                {cartCount > 0 && (
+                  <span
+                    id={badgeId}
+                    aria-hidden="true"
+                    className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold leading-none"
+                    style={{
+                      backgroundColor: "var(--color-merch-red)",
+                      color: "var(--color-merch-on-dark)",
+                    }}
+                  >
+                    {cartCount > 9 ? "9+" : cartCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Search — mobile: 26px icon; desktop: 20px icon */}
+              <button
+                type="button"
+                aria-label="Search"
+                onClick={onSearchClick}
+                className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
+                style={{
+                  color: "var(--color-merch-on-dark)",
+                  width: "44px",
+                  height: "44px",
+                }}
+              >
+                {/* Mobile: 26px */}
+                <svg
+                  aria-hidden="true"
+                  width="26"
+                  height="26"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="block lg:hidden"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                {/* Desktop: 20px */}
+                <svg
+                  aria-hidden="true"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="hidden lg:block"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </button>
+
+              {/* Globe / locale — mobile: 24px icon; desktop: 20px icon */}
+              <button
+                type="button"
+                aria-label="Select language / region"
+                onClick={onLocaleClick}
+                className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
+                style={{
+                  color: "var(--color-merch-on-dark)",
+                  width: "44px",
+                  height: "44px",
+                }}
+              >
+                {/* Mobile: 24px */}
+                <svg
+                  aria-hidden="true"
+                  id={globeId}
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="block lg:hidden"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M2 12h20" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z" />
+                </svg>
+                {/* Desktop: 20px */}
+                <svg
+                  aria-hidden="true"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="hidden lg:block"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M2 12h20" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z" />
+                </svg>
+              </button>
+
+              {/* SIGN IN — desktop only (hidden at < lg).                  */}
+              {/* Real: 87×32, label 13px/600/1.04px uppercase, solid dark. */}
+              <button
+                type="button"
+                aria-label="Sign in to your account"
+                onClick={handleSignIn}
+                className="hidden items-center justify-center transition-opacity duration-150 hover:opacity-85 lg:flex"
+                style={{
+                  backgroundColor: "var(--color-merch-signin-bg)",
+                  color: "var(--color-merch-on-dark)",
+                  borderRadius: "16px",
+                  width: "87px",
+                  height: "32px",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "1.04px",
+                  border: "none",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  marginLeft: "8px",
+                }}
+              >
+                Sign In
+              </button>
+
+              {/* Hamburger — mobile only (hidden at lg+); 28px icon, ~4px from edge. */}
+              {/* Burger icon stays ☰ even when drawer is open (real site behavior). */}
+              <button
+                type="button"
+                id={hamburgerId}
+                aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={mobileOpen}
+                aria-controls="merch-mobile-nav"
+                onClick={handleHamburgerClick}
+                className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70 lg:hidden"
+                style={{
+                  color: "var(--color-merch-on-dark)",
+                  width: "36px",
+                  height: "44px",
+                  paddingRight: "4px",
+                }}
+              >
+                {/* Hamburger icon — stays ☰ (does not change to ✕ on open) */}
+                <svg
+                  aria-hidden="true"
+                  width="28"
+                  height="20"
+                  viewBox="0 0 28 20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <line x1="0" y1="2" x2="28" y2="2" />
+                  <line x1="0" y1="10" x2="28" y2="10" />
+                  <line x1="0" y1="18" x2="28" y2="18" />
+                </svg>
+              </button>
+
+              {/* Cart — desktop only (rightmost); 22×21 cart glyph */}
+              <button
+                type="button"
+                aria-label={cartCount > 0 ? `Cart — ${cartCount} items` : "Cart"}
+                onClick={onCartClick}
+                className="relative hidden items-center justify-center transition-opacity duration-150 hover:opacity-70 lg:flex"
+                style={{
+                  color: "var(--color-merch-on-dark)",
+                  width: "44px",
+                  height: "44px",
+                  marginLeft: "4px",
+                }}
+              >
+                <CartIcon size={22} />
+                {cartCount > 0 && (
+                  <span
+                    id={cartId}
+                    aria-hidden="true"
+                    className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold leading-none"
+                    style={{
+                      backgroundColor: "var(--color-merch-red)",
+                      color: "var(--color-merch-on-dark)",
+                    }}
+                  >
+                    {cartCount > 9 ? "9+" : cartCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+        </div>
+        {/* ---------------------------------------------------------------- */}
+        {/* Mobile nav drawer — full-screen WHITE panel                      */}
+        {/*                                                                  */}
+        {/* Rendered OUTSIDE the overflow-x-clip wrapper so it is not        */}
+        {/* clipped. Uses position:fixed to escape the header stacking       */}
+        {/* context and cover the full viewport below the sticky nav bar.   */}
+        {/*                                                                  */}
+        {/* Real site: white bg, black ink, rows ≈56px, ~20px/700/uppercase  */}
+        {/* labels with right carets, 1px divider rules. Structure:          */}
+        {/*   SHOP ALL / FEATURED / SALE / MY SHOP (bright yellow)           */}
+        {/*   then sub-sections: SHOP BY GAME / APPAREL / COLLECTIBLES /     */}
+        {/*   ART / ACCESSORIES                                               */}
+        {/* ---------------------------------------------------------------- */}
+        {mobileOpen && (
+          <nav
+            id="merch-mobile-nav"
+            aria-label="Mobile store navigation"
+            style={{
+              backgroundColor: "var(--color-merch-bg)",
+              width: "100%",
+              maxWidth: "100%",
+              overflowY: "auto",
+              overflowX: "hidden",
+              position: "fixed",
+              top: "78px",
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 200,
+            }}
+          >
+              <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+                {navItems.map((item, idx) => {
+                  const { slug, label, hasDropdown, isGold } = item;
+                  const subItems =
+                    slug === "categories" ? categoriesMenu :
+                    slug === "featured"   ? featuredMenu   : null;
+                  const isExpanded = mobileExpanded === slug;
+                  const isLast = idx === navItems.length - 1;
+
+                  return (
+                    <li
+                      key={slug}
+                      style={{
+                        borderBottom: isLast
+                          ? "none"
+                          : "1px solid var(--color-merch-border)",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (hasDropdown && subItems) {
+                            toggleMobileSection(slug);
+                          } else {
+                            handleMenuItemSelect(slug);
+                          }
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          width: "100%",
+                          height: "56px",
+                          padding: "0 20px",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          fontSize: "20px",
+                          fontWeight: 700,
+                          letterSpacing: "0.04em",
+                          textTransform: "uppercase",
+                          color: isGold
+                            ? "var(--color-merch-gold)"
+                            : "var(--color-merch-ink)",
+                          textAlign: "left",
+                        }}
+                        aria-expanded={hasDropdown ? isExpanded : undefined}
+                      >
+                        {label}
+                        {/* Right caret — solid triangle pointing right */}
+                        <svg
+                          aria-hidden="true"
+                          width="8"
+                          height="13"
+                          viewBox="0 0 8 13"
+                          fill={isGold ? "var(--color-merch-gold)" : "var(--color-merch-ink)"}
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{
+                            transform: hasDropdown && isExpanded ? "rotate(90deg)" : "rotate(0deg)",
+                            transition: "transform 0.15s",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <path d="M0 0 L8 6.5 L0 13 Z" />
+                        </svg>
+                      </button>
+
+                      {/* Sub-items expanded section */}
+                      {hasDropdown && isExpanded && subItems && (
+                        <ul
+                          style={{
+                            listStyle: "none",
+                            margin: 0,
+                            padding: "0 0 8px",
+                            borderTop: "1px solid var(--color-merch-border)",
+                          }}
+                        >
+                          {subItems.map(({ slug: subSlug, label: subLabel }) => (
+                            <li
+                              key={subSlug}
+                              style={{ borderBottom: "1px solid var(--color-merch-border)" }}
+                            >
+                              <button
+                                type="button"
+                                onClick={() => handleMenuItemSelect(subSlug)}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  width: "100%",
+                                  height: "48px",
+                                  padding: "0 20px 0 32px",
+                                  background: "none",
+                                  border: "none",
+                                  cursor: "pointer",
+                                  fontSize: "16px",
+                                  fontWeight: 600,
+                                  letterSpacing: "0.03em",
+                                  textTransform: "uppercase",
+                                  color: "var(--color-merch-ink)",
+                                  textAlign: "left",
+                                }}
+                              >
+                                {subLabel}
+                                <svg
+                                  aria-hidden="true"
+                                  width="6"
+                                  height="10"
+                                  viewBox="0 0 6 10"
+                                  fill="var(--color-merch-muted)"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  style={{ flexShrink: 0 }}
+                                >
+                                  <path d="M0 0 L6 5 L0 10 Z" />
+                                </svg>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          )}
+      </header>
+    </div>
   );
 }
