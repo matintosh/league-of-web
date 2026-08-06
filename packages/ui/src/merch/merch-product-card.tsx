@@ -74,6 +74,12 @@ export interface MerchProductCardProps {
    */
   imageFit?: "cover" | "contain";
   /**
+   * Override the image container height in px.
+   * Default is 225px (landscape strip cards); collection-index strips use 282px (portrait).
+   * @default 225
+   */
+  imageHeight?: number;
+  /**
    * CTA label for the in-card button. Defaults to "Add to Cart".
    * Pass "Login to purchase" or similar when user is not signed in.
    * @default "Add to Cart"
@@ -231,6 +237,7 @@ export function MerchProductCard({
   franchiseLabel,
   franchiseKey,
   imageFit = "contain",
+  imageHeight = 225,
   ctaLabel = "Add to Cart",
   onClick,
   onWishlist,
@@ -375,7 +382,7 @@ export function MerchProductCard({
       {/* ------------------------------------------------------------------ */}
       <div
         className="relative w-full overflow-hidden"
-        style={{ height: 225, backgroundColor: "transparent" }}
+        style={{ height: imageHeight, backgroundColor: "transparent" }}
       >
         {/* Product image — scale on hover */}
         {/* eslint-disable-next-line @next/next/no-img-element */}

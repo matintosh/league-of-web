@@ -1,4 +1,4 @@
-import { championSplashUrl, MERCH_PRODUCTS } from "@low/fixtures";
+import { championSplashUrl, MERCH_PRODUCTS, merchAssetUrl } from "@low/fixtures";
 import type { MerchProduct } from "@low/fixtures";
 import { MerchCollectionList, MerchFooter } from "@low/ui";
 import type { MerchCollectionEntry } from "@low/ui";
@@ -12,12 +12,15 @@ import { CollectionIndexHeader } from "./collection-index-client";
  *
  * Layout change (#637): replaced 3-col tile grid with stacked collection
  * strips (MerchCollectionList). Each strip: 4:1 banner + rotated name tab +
- * horizontal product-card row. MerchCategoryTileGrid is left intact and still
- * used by /merch/collection/[handle] (category pages).
+ * horizontal product-card row.
  *
- * Heading change (#638): "All Collections", 48px, font-weight 600, uppercase,
- * --color-merch-ink. (Previous heading was "Collections", 36px/800/tracking-0.04em
- * inside MerchCategoryTileGrid — that grid remains unchanged for category pages.)
+ * Delta #804:
+ *   - 282px portrait cards, 8px gaps
+ *   - Curated tab names ("LEAGUE CLASSIC", "RIFTBOUND VENDETTA", etc.) + Shop link
+ *   - 6+ strips (matches real page docHeight 4076)
+ *   - LOAD MORE pill below strips
+ *   - Heading rhythm: mt 60 / mb 40 (was py-10)
+ *   - 390 tab overlap fixed (mobile tab above banner)
  */
 
 // ---------------------------------------------------------------------------
@@ -32,36 +35,81 @@ function productsByFranchise(label: string): MerchProduct[] {
 /**
  * BANNER ASSET NOTE: Real merch.riotgames.com banners are Sanity-fingerprinted
  * CDN URLs (cdn.sanity.io/images/dsfx7636/…) that are not reproducible without
- * the exact asset id. We use champion splash art as representative stand-ins —
- * the same approach as existing hero/tile placeholders in this app.
- * A real integration would source the actual banner asset ids from the CMS.
+ * the exact asset id. We use champion splash art and existing Sanity assets as
+ * representative stand-ins. A real integration would source these from the CMS.
  */
 
 // ---------------------------------------------------------------------------
-// Collection fixture — grouping by franchiseLabel from MERCH_PRODUCTS
+// Collection fixture — 6 curated strips mirroring the real collection index
 // ---------------------------------------------------------------------------
 
 /**
- * Derive named collections from the live MERCH_PRODUCTS fixture.
- * Groups: "League of Legends" and "Riftbound" (the two franchises in fixture).
- * Banner: wide landscape splash per franchise (stand-in for unavailable Sanity banners).
+ * Six curated collection strips derived from MERCH_PRODUCTS.
+ * Tab labels match the real collection index naming conventions:
+ *   "LEAGUE CLASSIC" / "RIFTBOUND VENDETTA" / "MSI 2026" / "HOT CHONCC SUMMER" / etc.
+ *
+ * Banner URLs: wide Sanity CDN assets where available; champion splash art for others.
  */
 const COLLECTIONS: MerchCollectionEntry[] = [
   {
-    slug: "league-of-legends",
+    slug: "league-classic",
     name: "League of Legends",
-    // Stand-in banner: Ahri splash (wide landscape, representative LoL art)
-    bannerImageUrl: championSplashUrl("Ahri", 0),
+    tabLabel: "LEAGUE CLASSIC",
+    /* Sanity banner — wide 3296×1030 promotional art for League Classic campaign */
+    bannerImageUrl: merchAssetUrl("3dbbf5ce0d30940b0db3741cdb9d1bed12afce48-3296x1030.png", {
+      w: 1280,
+      dataset: "consumer_products_live",
+    }),
     products: productsByFranchise("League of Legends"),
     href: "/merch/collection/league-of-legends",
   },
   {
-    slug: "riftbound",
+    slug: "riftbound-vendetta",
     name: "Riftbound",
-    // Stand-in banner: Zed splash (thematically fits the Vendetta set)
-    bannerImageUrl: championSplashUrl("Zed", 0),
+    tabLabel: "RIFTBOUND VENDETTA",
+    /* Sanity banner — wide 3296×1030 Riftbound TCG campaign art */
+    bannerImageUrl: merchAssetUrl("a01262bae9dcf03621b7f850c89b86535b76638a-3296x1030.jpg", {
+      w: 1280,
+      dataset: "consumer_products_live",
+    }),
     products: productsByFranchise("Riftbound"),
     href: "/merch/collection/riftbound",
+  },
+  {
+    slug: "msi-2026",
+    name: "LoL Esports",
+    tabLabel: "MSI 2026",
+    /* Stand-in: Lux splash (wide, thematically esports) */
+    bannerImageUrl: championSplashUrl("Lux", 6),
+    products: productsByFranchise("LoL Esports"),
+    href: "/merch/collection/league-of-legends",
+  },
+  {
+    slug: "hot-choncc-summer",
+    name: "Teamfight Tactics",
+    tabLabel: "HOT CHONCC SUMMER",
+    /* Stand-in: Lulu splash (TFT whimsical theme) */
+    bannerImageUrl: championSplashUrl("Lulu", 0),
+    products: productsByFranchise("Teamfight Tactics"),
+    href: "/merch/collection/league-of-legends",
+  },
+  {
+    slug: "valorant-masters-london",
+    name: "VALORANT",
+    tabLabel: "MASTERS LONDON",
+    /* Stand-in: Vi splash (VALORANT energy) */
+    bannerImageUrl: championSplashUrl("Vi", 0),
+    products: productsByFranchise("VALORANT"),
+    href: "/merch/collection/league-of-legends",
+  },
+  {
+    slug: "arcane",
+    name: "Arcane",
+    tabLabel: "ARCANE",
+    /* Stand-in: Jinx splash (Arcane protagonist) */
+    bannerImageUrl: championSplashUrl("Jinx", 5),
+    products: productsByFranchise("Arcane"),
+    href: "/merch/collection/league-of-legends",
   },
 ];
 
@@ -83,22 +131,22 @@ export default function CollectionIndexPage() {
 
       <main className="flex-1">
         {/* ------------------------------------------------------------------ */}
-        {/* Page heading — #762: "All Collections", 48px/600/uppercase        */}
-        {/* Real site: pure black (ink-dark), ~52px line-height on 48px text, */}
-        {/* content left edge x=40 → px-10 at desktop (was px-6 / 24px).     */}
+        {/* Page heading — "All Collections", 48px/600/uppercase, mt 60 mb 40 */}
+        {/* Real site: ink-dark (pure black), x=40 → px-10.                  */}
         {/* ------------------------------------------------------------------ */}
-        <div className="mx-auto max-w-7xl px-6 py-10 md:px-10">
+        <div className="mx-auto max-w-7xl px-10">
           <h1
             style={{
               fontSize: 48,
               fontWeight: 600,
               textTransform: "uppercase",
-              /* ink-dark = pure black, matching real site (was --color-merch-ink = #1a1a1a) */
+              /* ink-dark = pure black, matching real site */
               color: "var(--color-merch-ink-dark)",
               margin: 0,
               letterSpacing: 0,
-              /* ~1.08 line-height matches the real site's ~52px / 48px ratio */
               lineHeight: 1.08,
+              marginTop: 60,
+              marginBottom: 40,
             }}
           >
             All Collections
@@ -106,11 +154,13 @@ export default function CollectionIndexPage() {
         </div>
 
         {/* ------------------------------------------------------------------ */}
-        {/* Collection strips — #637: stacked strips, one per franchise         */}
+        {/* Collection strips — #804: 6 curated strips                         */}
+        {/* px-10 keeps container x=40 at 1280 (matching card inset math).    */}
         {/* ------------------------------------------------------------------ */}
-        <div className="mx-auto max-w-7xl px-6 pb-16">
+        <div className="mx-auto max-w-7xl px-10 pb-0">
           <MerchCollectionList
             collections={COLLECTIONS}
+            showLoadMore
           />
         </div>
       </main>
