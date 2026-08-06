@@ -13,7 +13,7 @@
  *
  * Real card anatomy (measured from merch.riotgames.com shop-all at 1280px):
  *   - Card article: 640×375, background --color-merch-surface-alt (#f7f7f7)
- *   - Header row (~57px): franchise wordmark (top-left), badge chips (top-right),
+ *   - Header row (~49px): franchise wordmark (top-left), badge chips (top-right),
  *     heart/wishlist (top-right after badges) — ALL ABOVE the image, no overlays
  *   - Image box: 638×225, object-fit: contain, transparent bg (grey card shows through)
  *   - Info strip: ~20px inset; title black, line-height 18px; price 16px/400/black
@@ -158,7 +158,7 @@ function HeartIcon({ id }: { id: string }) {
  * MerchProductCard — 2-col flush listing card matching merch.riotgames.com real anatomy.
  *
  * Real card: 640×375 at 1280px, surface-alt (#f7f7f7) background.
- * - Header row (~57px): franchise wordmark left, badge chips + heart right (all ABOVE image)
+ * - Header row (~49px): franchise wordmark left, badge chips + heart right (all ABOVE image)
  * - Image box: 225px tall, object-contain, transparent bg (card grey shows through)
  * - Info strip: ~20px inset, title black 18px-lh, price 16px/400 pure black
  * - In-card CTA: uppercase 600, full width inside card padding
@@ -225,10 +225,11 @@ export function MerchProductCard({
     >
       {/* ------------------------------------------------------------------ */}
       {/* Header row — franchise label + badges + heart, ALL above the image  */}
+      {/* Real: 49px, padding 16px top / 20px sides / 0 bottom               */}
       {/* ------------------------------------------------------------------ */}
       <div
-        className="flex items-center justify-between px-5 py-3"
-        style={{ minHeight: 57 }}
+        className="flex items-center justify-between px-5 pt-4 pb-0"
+        style={{ minHeight: 49 }}
       >
         {/* Franchise wordmark — grey, title-case, ~16px/400, no scrim */}
         <span
@@ -319,7 +320,7 @@ export function MerchProductCard({
       {/* ------------------------------------------------------------------ */}
       {/* Info strip — title + price                                           */}
       {/* ------------------------------------------------------------------ */}
-      <div className="flex flex-col gap-1 px-5 pt-3 pb-2">
+      <div className="flex flex-col gap-1 px-5 pt-2 pb-0">
         {/* Title — black, line-height 18px, line-clamp 2 */}
         <p
           className="line-clamp-2 text-[14px] font-normal"
@@ -363,11 +364,12 @@ export function MerchProductCard({
 
       {/* ------------------------------------------------------------------ */}
       {/* In-card CTA — "Add to Cart" / "Login to purchase"                   */}
+      {/* Real: button 50px tall (py-[13px]), wrapper pt-[5px] pb-0           */}
       {/* ------------------------------------------------------------------ */}
-      <div className="px-5 pb-4 pt-1">
+      <div className="px-5 pt-[3px] pb-0">
         <button
           type="button"
-          className="w-full py-2.5 text-[16px] font-semibold uppercase tracking-wide"
+          className="w-full py-[13px] text-[16px] font-semibold uppercase tracking-wide"
           style={{
             backgroundColor: "var(--color-merch-ink-dark)",
             color: "var(--color-merch-on-dark)",
