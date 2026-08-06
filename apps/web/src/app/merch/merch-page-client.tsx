@@ -203,7 +203,7 @@ const LATEST_COLLABS: MerchCollabEntry[] = [
   {
     slug: "hp-omen",
     partnerName: "HP OMEN",
-    headline: "GAME ON",
+    headline: "HyperX OMEN 16 VALORANT Edition",
     copy: "HP OMEN x Riot Games. Built for champions — performance laptops and peripherals for the Rift and beyond.",
     imageUrl: championSplashUrl("Vi", 0),
     ctaLabel: "Shop HP OMEN",
@@ -211,7 +211,7 @@ const LATEST_COLLABS: MerchCollabEntry[] = [
   {
     slug: "secretlab",
     partnerName: "Secretlab",
-    headline: "PLAY IN COMFORT",
+    headline: "Secretlab TITAN Evo",
     copy: "Secretlab x Riot Games. Engineered for the long session — the official gaming chair of Riot esports.",
     imageUrl: championSplashUrl("Jinx", 0),
     ctaLabel: "Shop Secretlab",
