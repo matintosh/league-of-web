@@ -705,8 +705,13 @@ export function MerchHeroBanner({
                   height: 62,
                   backgroundColor: "var(--color-merch-on-dark)",
                   color: "var(--color-merch-ink)",
-                  /* Slight right margin so it overlaps the strip right edge */
-                  marginRight: -8,
+                  /*
+                   * No negative margin — the 62px circle sits flush with the
+                   * strip's right edge. A negative margin would push the button
+                   * outside the document width, causing scrollWidth > viewport
+                   * (8px overflow at 390). The right-0 position already gives
+                   * the intended "overlapping right edge" look.
+                   */
                   boxShadow: "0 2px 8px var(--color-merch-overlay-soft)",
                 }}
               >
