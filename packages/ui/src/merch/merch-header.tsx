@@ -255,6 +255,12 @@ export function MerchHeader({
   // Ref to the nav bar for outside-click detection
   const navRef = useRef<HTMLDivElement>(null);
 
+  // Mobile hide-on-scroll: translateY of the nav tier (tier 1 only).
+  // Real behaviour: hides on scroll-down, reveals ~79px black tier on scroll-up.
+  // The announcement tier stays hidden once the user scrolls down.
+  const lastScrollY = useRef(0);
+  const [navHidden, setNavHidden] = useState(false);
+
   // Resolve the sign-in handler: onSignIn takes precedence, fall back to legacy onAccountClick.
   const handleSignIn = onSignIn ?? onAccountClick;
 
@@ -286,6 +292,24 @@ export function MerchHeader({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleOutsideClick, handleKeyDown]);
+
+  // Mobile-only hide-on-scroll: hide nav on scroll-down, reveal on scroll-up.
+  // Only active on narrow viewports (< 1024px / lg breakpoint).
+  useEffect(() => {
+    function onScroll() {
+      if (window.innerWidth >= 1024) return;
+      const y = window.scrollY;
+      const delta = y - lastScrollY.current;
+      if (delta > 4 && y > 60) {
+        setNavHidden(true);
+      } else if (delta < -4) {
+        setNavHidden(false);
+      }
+      lastScrollY.current = y;
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   /** Toggle a dropdown by slug; close if already open. */
   function toggleDropdown(slug: "categories" | "featured") {
@@ -326,7 +350,17 @@ export function MerchHeader({
   return (
     <header
       className="sticky top-0 z-50 w-full overflow-x-hidden"
-      style={{ fontFamily: "var(--font-merch)" }}
+      style={{
+        fontFamily: "var(--font-merch)",
+        // Mobile hide-on-scroll: slide the whole header up when scrolling down.
+        // On desktop (lg+) we always show the header, so we only apply translateY
+        // on narrow viewports. CSS handles the breakpoint via inline style
+        // combined with the lg: class prefix in Tailwind is not usable inline,
+        // so we rely on the JS-driven state and leave desktop unaffected
+        // by capping the transform to viewports < 1024px via window check in onScroll.
+        transform: navHidden ? "translateY(-100%)" : "translateY(0)",
+        transition: "transform 0.25s ease",
+      }}
     >
       {/* ================================================================ */}
       {/* Tier 1 — ~80px dark nav bar                                      */}
@@ -476,14 +510,15 @@ export function MerchHeader({
           {/* -------------------------------------------------------------- */}
           {/* Right cluster: search · globe · SIGN IN · cart                  */}
           {/* -------------------------------------------------------------- */}
-          <div className="ml-auto flex shrink-0 items-center gap-5">
-            {/* Search */}
+          {/* gap-2 on mobile keeps 4×44px icon buttons within 390px; gap-5 on desktop. */}
+          <div className="ml-auto flex shrink-0 items-center gap-2 lg:gap-5">
+            {/* Search — min 44×44 tap target per WCAG 2.5.5 */}
             <button
               type="button"
               aria-label="Search"
               onClick={onSearchClick}
               className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
-              style={{ color: "var(--color-merch-on-dark)" }}
+              style={{ color: "var(--color-merch-on-dark)", minWidth: "44px", minHeight: "44px" }}
             >
               <svg
                 aria-hidden="true"
@@ -501,13 +536,13 @@ export function MerchHeader({
               </svg>
             </button>
 
-            {/* Globe / locale */}
+            {/* Globe / locale — min 44×44 tap target */}
             <button
               type="button"
               aria-label="Select language / region"
               onClick={onLocaleClick}
               className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
-              style={{ color: "var(--color-merch-on-dark)" }}
+              style={{ color: "var(--color-merch-on-dark)", minWidth: "44px", minHeight: "44px" }}
             >
               <svg
                 aria-hidden="true"
@@ -549,7 +584,7 @@ export function MerchHeader({
               Sign In
             </button>
 
-            {/* Hamburger — mobile only (hidden at lg+) */}
+            {/* Hamburger — mobile only (hidden at lg+); min 44×44 tap target */}
             <button
               type="button"
               id={hamburgerId}
@@ -558,7 +593,7 @@ export function MerchHeader({
               aria-controls="merch-mobile-nav"
               onClick={handleHamburgerClick}
               className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70 lg:hidden"
-              style={{ color: "var(--color-merch-on-dark)" }}
+              style={{ color: "var(--color-merch-on-dark)", minWidth: "44px", minHeight: "44px" }}
             >
               {mobileOpen ? (
                 /* X close icon */
@@ -594,13 +629,13 @@ export function MerchHeader({
               )}
             </button>
 
-            {/* Cart */}
+            {/* Cart — min 44×44 tap target */}
             <button
               type="button"
               aria-label={cartCount > 0 ? `Cart — ${cartCount} items` : "Cart"}
               onClick={onCartClick}
               className="relative flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
-              style={{ color: "var(--color-merch-on-dark)" }}
+              style={{ color: "var(--color-merch-on-dark)", minWidth: "44px", minHeight: "44px" }}
             >
               <svg
                 aria-hidden="true"
@@ -780,18 +815,28 @@ export function MerchHeader({
             aria-live="polite"
             className="flex w-full items-center gap-4 px-6"
             style={{
-              backgroundColor: "var(--color-merch-red)",
+              backgroundColor: "var(--color-merch-announcement-bg)",
               color: "var(--color-merch-on-dark)",
               minHeight: "50px",
+              // Prevent the marquee track (max-content width) from leaking into
+              // the document scroll width on narrow viewports.
+              overflow: "hidden",
             }}
           >
-            {/* Dismiss button — left of the pill */}
+            {/* Dismiss button — 50×50 flush tap target matching real merch site */}
             <button
               type="button"
               aria-label="Dismiss announcement"
               onClick={onDismissAnnouncement}
               className="flex shrink-0 items-center justify-center transition-opacity duration-150 hover:opacity-70"
-              style={{ color: "var(--color-merch-on-dark)", fontSize: "18px", lineHeight: 1 }}
+              style={{
+                color: "var(--color-merch-on-dark)",
+                fontSize: "18px",
+                lineHeight: 1,
+                width: "50px",
+                height: "50px",
+                marginLeft: "-6px",
+              }}
             >
               ✕
             </button>
@@ -832,8 +877,9 @@ export function MerchHeader({
                   <span
                     key={i}
                     style={{
-                      fontSize: "16px",
-                      fontWeight: 400,
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      textTransform: "uppercase",
                       paddingRight: "80px",
                     }}
                   >
