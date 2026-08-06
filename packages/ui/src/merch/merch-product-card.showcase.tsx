@@ -12,7 +12,7 @@ export const merchProductCardShowcase: ShowcaseEntry = {
   name: "Merch Product Card",
   area: "merch",
   description:
-    "Real 2-col listing card for the Riot merch store grid. Franchise label text overlay top-left (uppercase white on dark scrim), multi-badge chips stacked top-right, heart/wishlist icon bottom-right, 1px border frame (flush tessellation), image 1/1 aspect-ratio with hover scale. Sale items: green -NN% badge top-left of image (--color-merch-badge-sale #8CD50B, black text, 14px), current price in dark ink (not red), struck original in grey (#666) at 16px. Badge colors: New=green (#7ac043), Limited/Limited Edition=yellow (#e8c33c), Preorder/Restock=grey (#5a5a5a), Out of Stock=muted. Measured from merch.riotgames.com /category/sales/ (~640px wide, 2-col flush grid).",
+    "Real 640×375 listing card anatomy matching merch.riotgames.com shop-all (remeasured 2026-08-06). Header row (~57px) above the 225px contain image: franchise wordmark left (grey #666, 16px/400), badge chips + heart right. Badge chips: 14px mixed-case, black text; New=#8CD50B, Limited Edition=#FFD700, Preorder=#666666. Price: 16px/400 pure black. Sale: struck original grey + current dark ink + green -NN% bottom-left of image. In-card CTA button (onAddToCart). Card bg: --color-merch-surface-alt (#f7f7f7), 1px border frame (flush tessellation at 1280 and 390).",
   variants: [
     {
       name: "Default — in-stock, franchise label, no badge",
@@ -199,6 +199,24 @@ export const merchProductCardShowcase: ShowcaseEntry = {
             price="$74.99"
             badge="Limited"
             franchiseLabel="Riftbound"
+          />
+        </div>
+      ),
+    },
+    {
+      name: "In-card CTA — Login to purchase",
+      notes: "ctaLabel='Login to purchase' for unauthenticated users; onAddToCart callback wired.",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductCard
+            slug="arcane-jinx-statue"
+            title="Arcane Jinx Collector Resin Statue"
+            imageUrl={PLACEHOLDER_RED}
+            price="$89.99"
+            badges={["Limited Edition"]}
+            franchiseLabel="Arcane"
+            ctaLabel="Login to purchase"
           />
         </div>
       ),
