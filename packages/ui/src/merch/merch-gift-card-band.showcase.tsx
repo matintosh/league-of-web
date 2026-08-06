@@ -18,7 +18,7 @@ export const merchGiftCardBandShowcase: ShowcaseEntry = {
   name: "Merch Gift Card Band",
   area: "merch",
   description:
-    "\"Give a Gift Card\" promo band rendered above the footer on the /merch homepage. ~447px tall. Desktop: --color-merch-surface-alt (#f7f7f7) bg, 2-col grid: \"GIFT CARDS\" eyebrow + heading at x=137, riotSans 48/600, no subcopy, skewed 239×50 Buy It Now CTA + two overlapping near-square gift card visuals. Mobile: dark (#000) band, white heading, centered CTA. Measured from merch.riotgames.com.",
+    "\"GIVE A GIFT CARD\" promo band rendered above the footer on the /merch homepage. ~447px tall at 1280. Desktop: --color-merch-surface-alt (#f7f7f7) bg, 2-col grid: \"GIFT CARDS\" eyebrow (Inter 14/600 lh18 ls0.28px) + all-caps heading (riotSans 48/600 lh52, pure black, gap 16px below eyebrow) + arrow-notch Buy It Now CTA (239×50, ls0.32px lh18, gap 32px below heading) + two overlapping gift card visuals right. Mobile: 17px inset, full-width CTA below image. Measured from merch.riotgames.com.",
   variants: [
     {
       name: "Default — two card images",
