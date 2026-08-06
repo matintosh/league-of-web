@@ -39,27 +39,29 @@ body:has([data-merch-layout]) {
   font-family: var(--font-merch-display);
 }
 
-/* Homepage Load More — responsive variant:
-   @390: full-bleed, gold bg (#C49933 = --color-merch-gold-cta), black text,
-         1px white outline border (matches real merch.riotgames.com mobile).
-   @1280+: centered 239×50 red (handled via inline maxWidth + bg on the element).
+/* Homepage Load More — gold at ALL viewports (measured from real merch.riotgames.com):
+   Real: gold (#C4993B = --color-merch-gold-cta), BLACK riotSans 16/600 text,
+         thin white 1px offset outline frame at all sizes.
+   @390: full-bleed 390×50.
+   @1280: centered 239×50 (width constrained only, color stays gold).
    The [data-hp-load-more] attribute is set on the button in MerchPageClient. */
 [data-merch-layout] [data-hp-load-more] {
   /* Mobile-first: full-bleed gold */
   max-width: none;
   width: 100%;
   background-color: var(--color-merch-gold-cta);
-  color: var(--color-merch-ink);
+  color: var(--color-merch-ink-dark);
   outline: 1px solid var(--color-merch-on-dark);
-  outline-offset: -1px;
+  outline-offset: -3px;
 }
 
 @media (min-width: 768px) {
   [data-merch-layout] [data-hp-load-more] {
-    /* Desktop: centered 239px wide, red, no outline */
+    /* Desktop: centered 239px wide — still gold, still black text, still white outline */
     max-width: 239px;
-    background-color: var(--color-merch-red);
-    color: var(--color-merch-on-dark);
-    outline: none;
+    background-color: var(--color-merch-gold-cta);
+    color: var(--color-merch-ink-dark);
+    outline: 1px solid var(--color-merch-on-dark);
+    outline-offset: -3px;
   }
 }
