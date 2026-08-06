@@ -89,6 +89,9 @@
   /* MY SHOP gold link color — remeasured 2026-08-06 from live site: real is bright
      yellow-gold ~#F9C824 (rgb(249,200,36)). Previous #e0b43c was too muted/orange. */
   --color-merch-gold:      #f9c824;
+  /* Homepage Load More CTA — gold bg (#C49933) measured from merch.riotgames.com at 390px;
+     black text + thin white outline. Desktop variant: red (#eb0029) centered 239×50. */
+  --color-merch-gold-cta:  #c49933; /* rgb(196,153,51) — measured @390 real site */
   /* Purple CTA — search-hero CTA fill / empty-state accent. Measured from real site:
      ~#5c16c5 blue-purple (rgb(92,22,197)). No merch purple existed before this token. */
   --color-merch-purple:      #5c16c5;
