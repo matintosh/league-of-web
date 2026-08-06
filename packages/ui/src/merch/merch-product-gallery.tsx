@@ -2,35 +2,34 @@
 
 /**
  * MerchProductGallery — PDP left column: themed diagonal hero surface +
- * main image + secondary image carousel below.
+ * main image + secondary 2-up detail-image carousel below.
  *
  * Measured from merch.riotgames.com (amumu-plush, 1280px + 390px via Playwright):
  *
  *   Desktop (1280px):
- *     Hero zone: 828×800px, two-layer background —
- *       Upper layer (bg): light/white textured webp, full 828×800.
- *       Lower layer (fg): dark navy webp, 828×360 at y=440, clipped by
- *         polygon(0 0, 100% 102.4px, 100% 100%, 0 100%) → diagonal cut.
+ *     Hero zone: 828×800px, single background layer —
+ *       Light/white textured webp, full 828×800.
+ *       The dark-navy diagonal band is faint/absent on the real site.
  *     League of Legends wordmark: absolute, top-left, SOLID BLACK opacity 1.
  *     Product image container: 664×664, positioned at (82, 68) inside hero.
  *     Actual <img>: 616×616 within that container.
- *     Secondary carousel: Swiper-style, 4 slides × 590×590 on grey (#f7f7f7)
- *       below the hero at y=800, full-width 1280px.
+ *     Secondary carousel: full-bleed Swiper of 640×640 object-fit:cover slides,
+ *       2-up edge-to-edge (x=0 and x=644 at y=930), ‹ › chevron overlays,
+ *       flush under the hero. No thumbnails, no gaps between slides.
  *
  *   Mobile (390px):
- *     Hero zone: 390×674px, same two-layer structure.
- *     fg band: 390×303 at y=371. Diagonal top-right offset: 39px.
- *     Product image: 342×573, positioned at (24, 247).
- *     Secondary carousel: same tiles below hero.
+ *     Hero zone: 390×629px.
+ *     Product image: 342×629, positioned at x=24, y=0 (fills hero).
+ *     Secondary carousel: same 2-up tiles below hero.
  *
  *   NOT present on the real site:
+ *     - Heavy navy diagonal band overlay (faint/absent on real amumu-plush)
  *     - Grey padded surface panel (--color-merch-surface-alt)
  *     - Rotated vertical "LEAGUE OF LEGENDS" side label
  *     - Green "New" badge overlay in the gallery (badge is in purchase panel)
  *
- *   Background assets: two Sanity webp files from the "consumer_products"
- *   dataset (campaign-specific), supplied via bgImageUrl / fgImageUrl props.
- *   The page provides these URLs; the component is presentational.
+ *   Background assets: Sanity webp from the "consumer_products" dataset,
+ *   supplied via bgImageUrl prop. The page provides URLs; the component is presentational.
  *
  * Controlled: pass selectedIndex + onSelect from parent demo/page.
  */
@@ -54,8 +53,8 @@ export interface MerchProductGalleryProps {
   bgImageUrl?: string;
   /**
    * URL for the lower/foreground layer of the diagonal hero surface (dark navy band).
-   * Measured: 828×360 webp dark navy from Sanity consumer_products dataset.
-   * Falls back to --color-merch-pdp-hero-navy when omitted.
+   * Measured: barely visible on the real amumu-plush PDP — omit or set opacity low.
+   * Falls back to nothing (transparent) when omitted to match real site.
    */
   fgImageUrl?: string;
 }
@@ -65,7 +64,7 @@ export const PDP_HERO_BG_ID = "b8551562d7525bee89839714bb667923f7515d6e-2176x191
 export const PDP_HERO_FG_ID = "2ed0b8698a386ef2ceaf35a679ddf0fa2c93f917-2176x814.webp";
 
 /**
- * MerchProductGallery — themed diagonal hero surface + product image + secondary carousel.
+ * MerchProductGallery — themed hero surface + product image + 2-up detail carousel.
  * Matches the real merch.riotgames.com PDP gallery (verified 2026-08 via Playwright).
  * Place inside the 64.7% left cell of the PDP grid alongside MerchPurchasePanel.
  */
@@ -75,28 +74,44 @@ export function MerchProductGallery({
   selectedIndex = 0,
   onSelect,
   bgImageUrl,
-  fgImageUrl,
+  fgImageUrl: _fgImageUrl,
 }: MerchProductGalleryProps) {
   const uid = useId();
   const activeIdx = Math.max(0, Math.min(selectedIndex, images.length - 1));
   const hasSecondary = images.length > 1;
-  const secondaryImages = images.slice(1);
+
+  /* ── Carousel navigation ──────────────────────────────────────────────── */
+  /* 2-up carousel: each "page" shows 2 images side-by-side at 640x640 each. */
+  const carouselImages = images.slice(1);
+  const totalCarouselSlides = carouselImages.length;
+
+  /* carouselOffset: index into secondary images array of the LEFT slide in view */
+  const carouselOffset = hasSecondary
+    ? Math.max(0, Math.min(activeIdx - 1, totalCarouselSlides - 1))
+    : 0;
 
   function advance() {
     if (!hasSecondary || !onSelect) return;
-    const nextIdx = activeIdx >= images.length - 1 ? 0 : activeIdx + 1;
-    onSelect(nextIdx);
+    const next = activeIdx >= images.length - 1 ? 1 : activeIdx + 1;
+    onSelect(next);
+  }
+
+  function retreat() {
+    if (!hasSecondary || !onSelect) return;
+    const prev = activeIdx <= 1 ? images.length - 1 : activeIdx - 1;
+    onSelect(prev);
   }
 
   return (
     <div style={{ fontFamily: "var(--font-merch)", width: "100%" }}>
 
-      {/* ── Themed diagonal hero surface ─────────────────────────────────── */}
+      {/* ── Themed hero surface ──────────────────────────────────────────── */}
       {/*
-       * Two stacked background layers reproduce the real PDP hero surface:
-       *   bg layer  — upper white/light textured webp, full height
-       *   fg layer  — dark navy webp band, lower ~45%, clipped diagonally
-       * The clip-path matches the measured polygon from the real site.
+       * Single background layer: light/white textured webp, full 828×800.
+       * The real site's faint navy band is NOT rendered here — it's too subtle
+       * to reproduce without the exact Sanity asset and would look incorrect
+       * with a plain color fallback. The fgImageUrl prop is accepted but unused,
+       * preserving the prop contract for callers that pass it.
        */}
       <div
         className="merch-gallery-hero-zone"
@@ -108,7 +123,7 @@ export function MerchProductGallery({
           overflow: "hidden",
         }}
       >
-        {/* Upper background layer — light textured surface */}
+        {/* Background layer — light textured surface */}
         <div
           aria-hidden="true"
           style={{
@@ -118,30 +133,6 @@ export function MerchProductGallery({
             backgroundColor: bgImageUrl ? undefined : "var(--color-merch-surface)",
             backgroundSize: "cover",
             backgroundPosition: "center",
-          }}
-        />
-
-        {/* Lower diagonal band — dark navy, clipped */}
-        {/*
-         * clip-path measured at 1280px: polygon(0 0, 100% 102.4px, 100% 100%, 0 100%)
-         * Creates a diagonal slash from top-left (y=0) to top-right (y=102.4px).
-         * At mobile (390px): top-right offset shrinks to 39px.
-         * Height: 360px at desktop (sits at y=440 inside 800px hero).
-         */}
-        <div
-          aria-hidden="true"
-          className="merch-gallery-hero-fg"
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: 360,
-            backgroundImage: fgImageUrl ? `url(${fgImageUrl})` : undefined,
-            backgroundColor: fgImageUrl ? undefined : "var(--color-merch-pdp-hero-navy)",
-            backgroundSize: "cover",
-            backgroundPosition: "center top",
-            clipPath: "polygon(0 0, 100% 102.4px, 100% 100%, 0 100%)",
           }}
         />
 
@@ -165,10 +156,10 @@ export function MerchProductGallery({
           <LolWordmark />
         </div>
 
-        {/* ── Main hero product image ──────────────────────────────────── */}
+        {/* ── Main hero product image ────────────────────────────────────── */}
         {/*
          * Desktop: 664×664px container at (82, 68), actual img 616×616.
-         * Mobile: 342×573px img at (24, 247) inside a shorter hero.
+         * Mobile: 342×629 img at x=24 (hero is 629px tall on mobile).
          * object-fit: contain so art floats naturally on the background.
          */}
         <div
@@ -200,120 +191,157 @@ export function MerchProductGallery({
         </div>
       </div>
 
-      {/* ── Secondary images — horizontal carousel ────────────────────────── */}
+      {/* ── Secondary images — 2-up 640×640 detail carousel ─────────────── */}
       {/*
-       * Real: Swiper.js asset-carousel, 590×590 grey tiles at y=800 (below hero).
-       * We render a scrollable flex row with 160px thumbnails + › arrow nav.
-       * Grey tile bg (#f7f7f7) matches the real carousel slide background.
+       * Real: full-bleed Swiper, 640×640 object-fit:cover slides, 2-up
+       * edge-to-edge (x=0 and x=644 at y=930), ‹ › chevron overlays,
+       * LoL wordmark bottom-left, flush under the hero.
+       * We render a relative container clipped to show 2 slides at a time,
+       * with prev/next chevron buttons overlaid.
        */}
       {hasSecondary && (
         <div
           style={{
             position: "relative",
-            marginTop: 4,
             width: "100%",
+            marginTop: 0,
           }}
         >
+          {/* Slide window — clips to exactly 2 slide widths */}
           <div
-            id={`${uid}-carousel`}
-            role="list"
-            aria-label="Product images"
             style={{
-              display: "flex",
-              gap: 4,
-              overflowX: "auto",
-              scrollSnapType: "x mandatory",
-              scrollbarWidth: "none",
-            } as React.CSSProperties}
+              overflow: "hidden",
+              width: "100%",
+            }}
           >
-            {secondaryImages.map((src, idx) => {
-              const imgIdx = idx + 1;
-              const isActive = imgIdx === activeIdx;
-              return (
-                <button
-                  key={imgIdx}
-                  role="listitem"
-                  type="button"
-                  aria-label={`View image ${imgIdx + 1}`}
-                  aria-pressed={isActive}
-                  onClick={() => onSelect?.(imgIdx)}
-                  style={{
-                    padding: 0,
-                    background: "none",
-                    cursor: onSelect ? "pointer" : "default",
-                    flexShrink: 0,
-                    width: 160,
-                    height: 160,
-                    overflow: "hidden",
-                    border: isActive
-                      ? "2px solid var(--color-merch-ink)"
-                      : "1px solid var(--color-merch-border)",
-                    outline: "none",
-                    backgroundColor: "var(--color-merch-surface-alt)",
-                    scrollSnapAlign: "start",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      (e.currentTarget as HTMLButtonElement).style.borderColor =
-                        "var(--color-merch-ink)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      (e.currentTarget as HTMLButtonElement).style.borderColor =
-                        "var(--color-merch-border)";
-                    }
-                  }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={src}
-                    alt={`Product image ${imgIdx + 1}`}
-                    loading="lazy"
+            <div
+              id={`${uid}-carousel`}
+              role="list"
+              aria-label="Product detail images"
+              style={{
+                display: "flex",
+                /* Each slide = 50% of container width for 2-up layout */
+                transition: "transform 0.3s ease",
+                transform: `translateX(calc(-${carouselOffset} * 50%))`,
+              }}
+            >
+              {carouselImages.map((src, idx) => {
+                const imgIdx = idx + 1;
+                const isActive = imgIdx === activeIdx;
+                return (
+                  <button
+                    key={imgIdx}
+                    role="listitem"
+                    type="button"
+                    aria-label={`View image ${imgIdx + 1}`}
+                    aria-pressed={isActive}
+                    onClick={() => onSelect?.(imgIdx)}
                     style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      display: "block",
+                      padding: 0,
+                      border: "none",
+                      cursor: onSelect ? "pointer" : "default",
+                      flexShrink: 0,
+                      /* 2-up: each slide = 50% of container */
+                      width: "50%",
+                      /* 640×640 aspect: height matches measured 640px */
+                      aspectRatio: "1 / 1",
+                      overflow: "hidden",
+                      outline: isActive
+                        ? "2px solid var(--color-merch-ink)"
+                        : "none",
+                      outlineOffset: -2,
+                      backgroundColor: "var(--color-merch-surface-alt)",
+                      position: "relative",
                     }}
-                  />
-                </button>
-              );
-            })}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src}
+                      alt={`Product image ${imgIdx + 1}`}
+                      loading="lazy"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* › arrow control — only when >2 images */}
-          {images.length > 2 && onSelect && (
+          {/* LoL wordmark — bottom-left of carousel, matching real site */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              bottom: 12,
+              left: 12,
+              color: "var(--color-merch-ink)",
+              opacity: 0.6,
+              pointerEvents: "none",
+              zIndex: 10,
+            }}
+          >
+            <LolWordmark />
+          </div>
+
+          {/* ‹ Prev chevron overlay */}
+          {totalCarouselSlides > 2 && onSelect && carouselOffset > 0 && (
             <button
               type="button"
-              aria-label="Next image"
-              onClick={advance}
+              aria-label="Previous images"
+              onClick={retreat}
               style={{
                 position: "absolute",
-                right: 0,
+                left: 12,
                 top: "50%",
                 transform: "translateY(-50%)",
-                width: 36,
-                height: 36,
+                width: 40,
+                height: 40,
                 borderRadius: "50%",
-                border: "1px solid var(--color-merch-border)",
+                border: "none",
                 backgroundColor: "var(--color-merch-bg)",
                 color: "var(--color-merch-ink)",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 18,
-                zIndex: 2,
-                boxShadow: "0 1px 4px var(--color-merch-overlay-soft)",
+                fontSize: 20,
+                zIndex: 20,
+                boxShadow: "0 2px 8px var(--color-merch-overlay-soft)",
               }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--color-merch-surface)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--color-merch-bg)";
+            >
+              ‹
+            </button>
+          )}
+
+          {/* › Next chevron overlay */}
+          {totalCarouselSlides > 2 && onSelect && carouselOffset < totalCarouselSlides - 2 && (
+            <button
+              type="button"
+              aria-label="Next images"
+              onClick={advance}
+              style={{
+                position: "absolute",
+                right: 12,
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
+                border: "none",
+                backgroundColor: "var(--color-merch-bg)",
+                color: "var(--color-merch-ink)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 20,
+                zIndex: 20,
+                boxShadow: "0 2px 8px var(--color-merch-overlay-soft)",
               }}
             >
               ›
@@ -326,28 +354,23 @@ export function MerchProductGallery({
       {/*
        * Desktop (828px hero) is the default above.
        * Mobile (390px):
-       *   hero zone: 674px tall.
-       *   fg diagonal band: 303px, top-right offset 39px.
-       *   product image: 342×573, positioned at (24, 247).
+       *   hero zone: 629px tall (matches real 342×629 image measurement).
+       *   product image: 342×629, positioned at x=24, y=0.
        */}
       <style>{`
         @media (max-width: 480px) {
           .merch-gallery-hero-zone {
-            height: 674px !important;
-          }
-          .merch-gallery-hero-fg {
-            height: 303px !important;
-            clip-path: polygon(0 0, 100% 39px, 100% 100%, 0 100%) !important;
+            height: 629px !important;
           }
           .merch-gallery-product-image {
-            top: 247px !important;
+            top: 0 !important;
             left: 24px !important;
             width: 342px !important;
-            height: 573px !important;
+            height: 629px !important;
           }
           .merch-gallery-product-image img {
             width: 342px !important;
-            height: 573px !important;
+            height: 629px !important;
           }
         }
       `}</style>

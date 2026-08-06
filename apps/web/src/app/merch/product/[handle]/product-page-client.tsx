@@ -9,11 +9,13 @@
  * Layout (1280px desktop):
  *   Full-bleed 2-col grid: 64.7% (gallery) / 35.3% (panel), NO outer max-width cap.
  *   Gallery left edge at x=0; panel H1 lands ~x=867.
- *   Breadcrumb bar spans full width above the grid.
+ *   Breadcrumb bar is ABSOLUTE — overlays the top of the grid, takes no layout space.
+ *   Grid starts at header bottom (y≈130); breadcrumb at y≈130 h=60 overlays the hero.
  *
  * Layout (390px mobile):
- *   Order: breadcrumb → compact title + [LoL logo][heart][share][badge] row → gallery → price/CTA.
- *   The mobile header row sits ABOVE the gallery image (hoisted out of the panel).
+ *   Order: breadcrumb (absolute overlay) → gallery image → mobile header row → price/CTA.
+ *   Gallery image renders FIRST on mobile (image-first order).
+ *   Compact title + [LoL logo][heart][share][badge] row is BELOW the gallery.
  */
 
 import React, { useState } from "react";
@@ -73,6 +75,7 @@ export interface ProductPageClientProps {
   /**
    * URL for the lower/foreground diagonal navy band of the PDP hero surface.
    * Measured: 828×360 webp dark navy band (Sanity consumer_products dataset).
+   * Real amumu-plush: faint/absent — passed through to gallery which omits heavy overlay.
    */
   fgImageUrl?: string;
   /** Products for the "Shop More" franchise carousel below the product section. */
@@ -130,168 +133,58 @@ export function ProductPageClient({
 
       <main className="flex-1">
         {/*
-         * Breadcrumb bar — FULL WIDTH, above the 2-col gallery/panel row.
-         * Real site: ~1280×60 bar at y≈130, spanning the page container.
-         */}
-        {breadcrumb && breadcrumb.length > 0 && (
-          <MerchBreadcrumbBar
-            crumbs={breadcrumb.map((seg, idx) => ({
-              label: seg,
-              onClick: idx === 0 ? () => router.push("/merch") : undefined,
-            }))}
-          />
-        )}
-
-        {/*
-         * ── Mobile-only compact header row ────────────────────────────────
-         * Sits above the gallery on 390px viewports (real site measurement):
-         *   LEFT: compact title 16px/600
-         *   RIGHT: [LoL logo] [heart] [share] [badge chip]
-         * Hidden on desktop (>768px) — the full panel handles it there.
-         */}
-        <div
-          className="merch-pdp-mobile-header"
-          style={{
-            display: "none",
-            padding: "12px 16px 0",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          {/* Compact title — truncates with ellipsis if too long */}
-          <span
-            style={{
-              fontSize: 16,
-              fontWeight: 600,
-              color: "var(--color-merch-ink-dark)",
-              flex: "1 1 auto",
-              minWidth: 0,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {title}
-          </span>
-
-          {/* LoL logo — appears right of title on mobile */}
-          <span
-            aria-label="League of Legends"
-            style={{
-              color: "var(--color-merch-ink-dark)",
-              flexShrink: 0,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <LolWordmark />
-          </span>
-
-          {/* Heart icon — borderless, pure black */}
-          <button
-            type="button"
-            aria-label="Add to wishlist"
-            onClick={() => {}}
-            style={{
-              width: 40,
-              height: 40,
-              border: "none",
-              background: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "var(--color-merch-ink-dark)",
-              flexShrink: 0,
-              padding: 0,
-            }}
-          >
-            {/* Heart SVG — outline */}
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-          </button>
-
-          {/* Share icon — borderless, export box-with-up-arrow */}
-          <button
-            type="button"
-            aria-label="Share product"
-            onClick={() => {}}
-            style={{
-              width: 40,
-              height: 40,
-              border: "none",
-              background: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "var(--color-merch-ink-dark)",
-              flexShrink: 0,
-              padding: 0,
-            }}
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <polyline points="8 17 3 17 3 21 21 21 21 17 16 17" />
-              <line x1="12" y1="3" x2="12" y2="15" />
-              <polyline points="8 7 12 3 16 7" />
-            </svg>
-          </button>
-
-          {/* Badge chip — first badge only in mobile header */}
-          {badges[0] && (
-            <span
-              style={{
-                fontSize: 13,
-                fontWeight: 400,
-                padding: "3px 7px",
-                borderRadius: 2,
-                backgroundColor: "var(--color-merch-badge-new)",
-                color: "var(--color-merch-ink-dark)",
-                flexShrink: 0,
-              }}
-            >
-              {badges[0]}
-            </span>
-          )}
-        </div>
-
-        {/*
          * ── Full-bleed 2-col PDP grid ─────────────────────────────────────
-         * Desktop: 64.7% gallery / 35.3% panel, full viewport width, ~40px internal gutters.
-         * Mobile: single column stack.
+         * Desktop: 64.7% gallery / 35.3% panel, full viewport width.
+         * Mobile: single column stack (gallery first, then panel).
+         * position:relative so the absolute breadcrumb overlay anchors here.
          */}
         <div
           className="merch-pdp-grid"
           style={{
+            position: "relative",
             display: "grid",
             gridTemplateColumns: "64.7% 35.3%",
             width: "100%",
             alignItems: "start",
           }}
         >
-          {/* Left: gallery — full-bleed to left edge, 24px right padding on desktop */}
-          <div style={{ padding: "32px 24px 32px 40px", minWidth: 0 }}>
+          {/*
+           * Breadcrumb bar — ABSOLUTE overlay at top of grid, z=100.
+           * Real site: position:absolute; z-index:100 at y=130, h=60,
+           * overlaying the top of the 1280×800 hero — takes NO layout space.
+           * Transparent background so the hero bleeds through.
+           */}
+          {breadcrumb && breadcrumb.length > 0 && (
+            <div
+              className="merch-pdp-breadcrumb"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 100,
+                height: 60,
+                display: "flex",
+                alignItems: "center",
+                background: "transparent",
+              }}
+            >
+              <MerchBreadcrumbBar
+                crumbs={breadcrumb.map((seg, idx) => ({
+                  label: seg,
+                  onClick: idx === 0 ? () => router.push("/merch") : undefined,
+                }))}
+              />
+            </div>
+          )}
+
+          {/* Left: gallery — FULL-BLEED to left edge, no horizontal padding */}
+          {/*
+           * Real hero surface: x=0, w=828, h=800.
+           * Padding removed per issue measurement: 32/24/32/40 → pushes surface x=40.
+           * No padding here; the gallery component manages internal image positioning.
+           */}
+          <div style={{ minWidth: 0 }}>
             <MerchProductGallery
               images={images}
               alt={title}
@@ -302,8 +195,12 @@ export function ProductPageClient({
             />
           </div>
 
-          {/* Right: purchase panel — 40px left padding matches real site ~x=867 */}
-          <div style={{ padding: "32px 40px 32px 24px", minWidth: 0 }}>
+          {/* Right: purchase panel */}
+          {/*
+           * Real: panel left edge x=868 (828 col + 40 gutter), H1 w=372.
+           * padding-left:40px + grid split to 35.3% resolves to ~372px content width.
+           */}
+          <div style={{ padding: "32px 40px 32px 40px", minWidth: 0 }}>
             <MerchPurchasePanel
               title={title}
               price={price}
@@ -335,6 +232,147 @@ export function ProductPageClient({
                 ]}
               />
             </div>
+          </div>
+        </div>
+
+        {/*
+         * ── Mobile-only compact header row ────────────────────────────────
+         * Sits BELOW the gallery on 390px viewports (image-first order).
+         * Real site measurement:
+         *   breadcrumb (y=138) → hero image 342×629 at x=24 → this row → price/CTA
+         *   LEFT: title on its own line (16px/600)
+         *   Then a row: LoL lockup flush-left + heart/share/badge right
+         * Hidden on desktop (>768px) — the full panel handles it there.
+         */}
+        <div
+          className="merch-pdp-mobile-header"
+          style={{
+            display: "none",
+            flexDirection: "column",
+            padding: "12px 16px 0",
+            gap: 8,
+          }}
+        >
+          {/* Title — full-width own line */}
+          <span
+            style={{
+              fontSize: 16,
+              fontWeight: 600,
+              color: "var(--color-merch-ink-dark)",
+              display: "block",
+            }}
+          >
+            {title}
+          </span>
+
+          {/* Row: LoL lockup flush-left + heart/share/badge right */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            {/* LoL logo — flush left */}
+            <span
+              aria-label="League of Legends"
+              style={{
+                color: "var(--color-merch-ink-dark)",
+                flex: "1 1 auto",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <LolWordmark />
+            </span>
+
+            {/* Heart icon — borderless, pure black */}
+            <button
+              type="button"
+              aria-label="Add to wishlist"
+              onClick={() => {}}
+              style={{
+                width: 40,
+                height: 40,
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "var(--color-merch-ink-dark)",
+                flexShrink: 0,
+                padding: 0,
+              }}
+            >
+              {/* Heart SVG — outline */}
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </button>
+
+            {/* Share icon — borderless, export box-with-up-arrow */}
+            <button
+              type="button"
+              aria-label="Share product"
+              onClick={() => {}}
+              style={{
+                width: 40,
+                height: 40,
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "var(--color-merch-ink-dark)",
+                flexShrink: 0,
+                padding: 0,
+              }}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="8 17 3 17 3 21 21 21 21 17 16 17" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+                <polyline points="8 7 12 3 16 7" />
+              </svg>
+            </button>
+
+            {/* Badge chip — first badge only in mobile header */}
+            {badges[0] && (
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 400,
+                  padding: "3px 7px",
+                  borderRadius: 2,
+                  backgroundColor: "var(--color-merch-badge-new)",
+                  color: "var(--color-merch-ink-dark)",
+                  flexShrink: 0,
+                }}
+              >
+                {badges[0]}
+              </span>
+            )}
           </div>
         </div>
 
@@ -406,6 +444,12 @@ export function ProductPageClient({
           }
           .merch-pdp-grid {
             grid-template-columns: 1fr !important;
+          }
+          .merch-pdp-breadcrumb {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
           }
         }
       `}</style>
