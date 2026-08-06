@@ -129,14 +129,19 @@
   --color-merch-cat-arcane:   #f2eade; /* Arcane — cream/parchment, dark text         */
 
   /* ── Hero franchise control bar ─────────────────────────────────────── */
-  /* Measured from merch.riotgames.com: strip at bottom of hero, 64px tall,
-     tiles 170×64, 40px gutter from each edge, 20px clip-path angle offset. */
-  --color-merch-hero-control-bar: #000000; /* strip container bg behind tiles        */
-  /* Active tile indicator — bottom border underline on active tile */
-  --color-merch-hero-tile-active-border: #ffffff; /* white underline on active tile  */
+  /* Measured from merch.riotgames.com: strip sits ~83px BELOW hero, white bg,
+     tiles 170×64px, 2px radius, skewed parallelograms, white page background. */
+  --color-merch-hero-control-bar: #ffffff; /* strip container bg — white (not dark)  */
+  /* Active tile indicator — red underline at bottom edge of active tile */
+  --color-merch-hero-tile-active-border: #eb0029; /* red underline on active tile    */
   /* Progress indicator bar that runs across top of active tile */
   --color-merch-hero-progress-bar: rgba(255, 255, 255, 0.85); /* progress bar fill   */
   --color-merch-hero-progress-bg:  rgba(255, 255, 255, 0.25); /* progress bar track  */
+  /* Strip next-arrow circle border — rgb(208,208,208) measured at desktop */
+  --color-merch-strip-arrow-border: #d0d0d0; /* 1px border on 40×40 next-arrow circle */
+  /* Mobile franchise tab colors — remeasured 2026-08 from merch.riotgames.com @390 */
+  --color-merch-tab-lol:      #05567c; /* League of Legends tab — teal-blue (confirmed) */
+  --color-merch-tab-riftbound: #f7bd7f; /* Riftbound tab — tan/warm-orange (corrected)  */
 
   /* ── Card header row (2-col listing card design) ─────────────────────── */
   /* Franchise label in the header row above the image (no scrim) */
