@@ -11,17 +11,17 @@
  *
  * Measured from merch.riotgames.com (band above footer, ~1280px desktop):
  *   - Height: ~447px
- *   - Background: --color-merch-surface-alt (#f7f7f7) desktop /
- *                 --color-merch-ink-dark (#000000) mobile (dark artwork band)
+ *   - Background: --color-merch-surface-alt (#f7f7f7) at ALL viewports (light band)
  *   - Layout: 2-col grid — text left at x=137, two card visuals right
- *   - Eyebrow: "GIFT CARDS" 14px/600 uppercase, --color-merch-muted
- *   - Heading: riotSans 48px/600 uppercase, --color-merch-ink desktop /
- *              --color-merch-on-dark mobile, max ~2 lines
+ *   - Eyebrow: "GIFT CARDS" Inter (--font-merch) 14px/600, --color-merch-franchise-label (#666666)
+ *   - Heading: riotSans 48px/600, lh52, letter-spacing normal, text-transform none,
+ *              BLACK (--color-merch-ink), left-aligned at all viewports, x=137 @1280
  *   - No subcopy paragraph
  *   - CTA: "Buy It Now", --color-merch-red background, --color-merch-on-dark,
- *           riotSans 16px/600 uppercase, 239×50px, skewed left edge (parallelogram)
+ *           riotSans 16px/600 uppercase, 239×50px at md+, w-full at <md,
+ *           notched top-right + bottom-left (parallelogram)
  *   - Card visuals: near-square low-radius cards, faint faded-character backdrop
- *   - Mobile: dark band (#000), white heading, CTA centered
+ *   - Mobile element order: heading → cards image → full-width CTA below image
  */
 
 "use client";
@@ -41,7 +41,7 @@ export interface MerchGiftCard {
 }
 
 export interface MerchGiftCardBandProps {
-  /** Band heading — displayed uppercase. Defaults to "GIVE A GIFT CARD". */
+  /** Band heading — displayed as-is (no forced uppercase). Defaults to "Give a Gift Card". */
   heading?: string;
   /** CTA button label. Defaults to "Buy It Now". */
   ctaLabel?: string;
@@ -60,21 +60,20 @@ export interface MerchGiftCardBandProps {
 
 /**
  * MerchGiftCardBand — promo band rendered above the footer on the /merch
- * homepage. ~447px tall. Desktop: --color-merch-surface-alt bg, 2-col grid:
- * text left at x=137, two gift card visuals right. Mobile: dark artwork band,
- * white heading, centered CTA. Matches merch.riotgames.com gift-card section.
+ * homepage. ~447px tall. Light band (--color-merch-surface-alt) at ALL
+ * viewports. Desktop: 2-col grid, text left at x=137, two gift card visuals
+ * right. Mobile layout: heading → card image → full-width CTA.
+ * Matches merch.riotgames.com gift-card section at 1280 and 390.
  *
- * Delta from prior version:
- *  - Added "GIFT CARDS" eyebrow (14px/600 uppercase, --color-merch-muted)
- *  - Dropped subcopy paragraph (eyebrow → heading → button)
- *  - CTA: label "Buy It Now", 239×50, riotSans 16/600 uppercase, parallelogram
- *    skewed left edge via clip-path
- *  - Desktop content inset x=137 (pl-[137px]), heading riotSans 48/600
- *  - Card radius reduced to near-square (rounded-sm), faint backdrop layer added
- *  - Mobile: dark band (--color-merch-ink-dark), white heading, CTA centered
+ * Changes in this version:
+ *  - Band is LIGHT at all viewports — removed mobile dark override
+ *  - Heading: BLACK (--color-merch-ink), no uppercase, no letter-spacing, lh52, left-aligned
+ *  - Eyebrow: --font-merch (Inter) 14px/600, --color-merch-franchise-label (#666666)
+ *  - Mobile order: heading → image → full-width CTA (CSS order on flex children)
+ *  - CTA: w-full at <md via Tailwind, fixed 239×50px at md+; notched top-right + bottom-left
  */
 export function MerchGiftCardBand({
-  heading = "GIVE A GIFT CARD",
+  heading = "Give a Gift Card",
   ctaLabel = "Buy It Now",
   onCtaClick,
   cards,
@@ -86,24 +85,11 @@ export function MerchGiftCardBand({
       aria-label="Gift card promo"
       className="w-full relative overflow-hidden"
       style={{
-        /* Desktop bg — overridden to dark on mobile via inline media approach below */
+        /* Light band at ALL viewports — matches real merch.riotgames.com */
         backgroundColor: "var(--color-merch-surface-alt)",
-        fontFamily: "var(--font-merch-display)",
         minHeight: "447px",
       }}
     >
-      {/*
-       * Mobile dark-band override: we use a pseudo-element approach via a
-       * absolutely-positioned dark fill that's hidden above md breakpoint.
-       * Tailwind handles this cleanly with responsive bg utilities; we map to
-       * CSS variables via the style prop on a wrapper that changes per viewport.
-       */}
-      <div
-        className="absolute inset-0 md:hidden"
-        style={{ backgroundColor: "var(--color-merch-ink-dark)" }}
-        aria-hidden="true"
-      />
-
       {/*
        * Faint faded-character backdrop layer (desktop only) — very low opacity
        * gradient wash suggesting the faded artwork visible behind the cards on
@@ -118,59 +104,77 @@ export function MerchGiftCardBand({
         }}
       />
 
-      {/* Content wrapper — desktop: pl-[137px], mobile: px-6 centered */}
+      {/*
+       * Content wrapper.
+       *
+       * Mobile (column): three children stacked — text group (eyebrow+heading),
+       * image column, CTA — in that visual order via CSS order properties.
+       * Desktop (row): text group left, image column right; CTA lives inside the
+       * text group and flows naturally after heading.
+       *
+       * We achieve mobile order without DOM duplication by splitting the text
+       * group into two parts: (1) eyebrow+heading [order-1 mobile], (2) CTA [order-3 mobile],
+       * with the image column [order-2 mobile] between them.
+       */}
       <div
-        className="relative mx-auto flex max-w-screen-xl flex-col items-center gap-10 px-6 py-16
+        className="relative mx-auto flex max-w-screen-xl flex-col gap-8 px-6 py-12
                    md:flex-row md:gap-16 md:py-0 md:min-h-[447px] md:pl-[137px] md:pr-8 md:items-center"
       >
-        {/* ── Left column — eyebrow + heading + CTA ── */}
-        <div className="relative z-10 flex flex-1 flex-col gap-5 items-center text-center md:items-start md:text-left">
+        {/*
+         * ── Left / text area ──
+         * Desktop: flex-col with eyebrow → heading → CTA all in one column.
+         * Mobile: eyebrow+heading (order-1) plus CTA (order-3) are siblings of the
+         * image column (order-2). We achieve this by wrapping only the eyebrow and
+         * heading here, and placing the CTA as a separate top-level child.
+         */}
 
-          {/* Eyebrow — "GIFT CARDS", 14px/600 uppercase, muted on desktop / muted-on-dark on mobile */}
+        {/* Text group: eyebrow + heading (mobile order: 1 → top) */}
+        <div
+          className="relative z-10 flex flex-col gap-5 items-start text-left
+                     md:flex-1 md:flex-col"
+          style={{ order: 1 }}
+        >
+          {/*
+           * Eyebrow — "GIFT CARDS", Inter 14px/600, color #666666.
+           * --color-merch-franchise-label = #666666 = rgb(102,102,102) measured from real site.
+           * Uppercase per real site.
+           */}
           <span
-            className="text-sm font-semibold uppercase tracking-widest"
-            style={{ color: "var(--color-merch-muted)" /* muted grey on desktop */ }}
-          >
-            <span
-              className="md:hidden"
-              style={{ color: "var(--color-merch-muted-on-dark)" }}
-            >
-              GIFT CARDS
-            </span>
-            <span className="hidden md:inline">GIFT CARDS</span>
-          </span>
-
-          {/* Heading — riotSans 48/600 uppercase; white on mobile, ink on desktop */}
-          <h2
-            className="text-4xl font-semibold uppercase leading-tight tracking-wide md:text-5xl"
+            className="text-sm font-semibold uppercase"
             style={{
-              fontFamily: "var(--font-merch-display)",
-              /* desktop color set inline; mobile via wrapper sibling below */
+              fontFamily: "var(--font-merch)",
+              color: "var(--color-merch-franchise-label)",
             }}
           >
-            <span
-              className="md:hidden"
-              style={{ color: "var(--color-merch-on-dark)" }}
-            >
-              {heading}
-            </span>
-            <span
-              className="hidden md:inline"
-              style={{ color: "var(--color-merch-ink)" }}
-            >
-              {heading}
-            </span>
+            GIFT CARDS
+          </span>
+
+          {/*
+           * Heading — riotSans 48px/600, lh52, letter-spacing normal,
+           * text-transform none, BLACK (--color-merch-ink), left-aligned.
+           */}
+          <h2
+            style={{
+              fontFamily: "var(--font-merch-display)",
+              color: "var(--color-merch-ink)",
+              fontSize: "48px",
+              fontWeight: 600,
+              lineHeight: "52px",
+              letterSpacing: "normal",
+              textTransform: "none",
+            }}
+          >
+            {heading}
           </h2>
 
           {/*
-           * CTA — "Buy It Now", 239×50, riotSans 16/600 uppercase, --color-merch-red.
-           * Parallelogram skewed left edge: clip-path polygon with a ~12px left notch.
-           * Mobile: centered; desktop: left-aligned (natural flow).
+           * CTA — desktop only in this slot (natural flow after heading).
+           * Hidden on mobile; the CTA sibling below shows at mobile order-3.
            */}
           <button
             type="button"
             onClick={onCtaClick}
-            className="relative flex items-center justify-center font-semibold uppercase tracking-widest
+            className="hidden md:flex items-center justify-center font-semibold uppercase
                        transition-opacity duration-150 hover:opacity-85 active:opacity-70"
             style={{
               width: "239px",
@@ -180,17 +184,20 @@ export function MerchGiftCardBand({
               fontFamily: "var(--font-merch-display)",
               fontSize: "16px",
               fontWeight: 600,
-              /* Parallelogram: shear left edge ~12px inward, right edge straight */
-              clipPath: "polygon(12px 0%, 100% 0%, 100% 100%, 0% 100%)",
               letterSpacing: "0.08em",
+              /* Notched top-right + bottom-left: parallelogram */
+              clipPath: "polygon(0% 0%, calc(100% - 14px) 0%, 100% 100%, 14px 100%)",
             }}
           >
             {ctaLabel}
           </button>
         </div>
 
-        {/* ── Right column — gift card visuals ── */}
-        <div className="relative z-10 flex flex-1 items-center justify-center">
+        {/* ── Right column — gift card visuals (mobile order: 2 → middle) ── */}
+        <div
+          className="relative z-10 flex flex-1 items-center justify-center"
+          style={{ order: 2 }}
+        >
           {cards && cards.length > 0 ? (
             <div className="relative flex items-center justify-center w-full max-w-md">
               {/* Back card — rotated behind, slightly offset */}
@@ -209,7 +216,6 @@ export function MerchGiftCardBand({
                     alt={cards[1].label}
                     className="w-full object-cover shadow-lg"
                     style={{
-                      /* near-square low-radius matching real fist-logo cards */
                       aspectRatio: "85/54",
                       borderRadius: "4px",
                     }}
@@ -241,7 +247,7 @@ export function MerchGiftCardBand({
             </div>
           ) : (
             /* Placeholder SVG when no cards provided — near-square, low-radius */
-            <div className="flex w-full max-w-md items-center justify-center">
+            <div className="flex w-full max-w-md items-center justify-center" style={{ minHeight: "172px" }}>
               {/* Back placeholder card */}
               <div
                 className="absolute"
@@ -305,6 +311,32 @@ export function MerchGiftCardBand({
             </div>
           )}
         </div>
+
+        {/*
+         * CTA — mobile only (order-3, below image). Hidden on md+ where the
+         * desktop CTA inside the text group is shown instead.
+         * w-full at mobile (~356-358px viewport wide), notched top-right + bottom-left.
+         */}
+        <button
+          type="button"
+          onClick={onCtaClick}
+          className="md:hidden relative flex items-center justify-center w-full font-semibold uppercase
+                     transition-opacity duration-150 hover:opacity-85 active:opacity-70"
+          style={{
+            order: 3,
+            height: "50px",
+            backgroundColor: "var(--color-merch-red)",
+            color: "var(--color-merch-on-dark)",
+            fontFamily: "var(--font-merch-display)",
+            fontSize: "16px",
+            fontWeight: 600,
+            letterSpacing: "0.08em",
+            /* Notched top-right + bottom-left: parallelogram */
+            clipPath: "polygon(0% 0%, calc(100% - 14px) 0%, 100% 100%, 14px 100%)",
+          }}
+        >
+          {ctaLabel}
+        </button>
       </div>
     </section>
   );
