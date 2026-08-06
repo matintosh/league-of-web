@@ -12,30 +12,32 @@
  * Measured from merch.riotgames.com footer (re-verified 2026-08-06 via Playwright):
  *
  *   DESKTOP (1280)
- *   - Background: --color-merch-ink-dark (pure black #000)
+ *   - Background: --color-merch-ink-dark (pure black #000) + 48px diagonal-gradient band at top
  *   - Horizontal padding: 40px each side (logo x=40), max-w-screen-xl centered
- *   - Grid: logo col ~111px | Shop ~222px | Support ~222px | Contact form ~467px
+ *   - Grid: logo col ~111px | Shop ~222px | Support ~222px | Contact form 317px
  *     gap ~30px; headings land at x≈261 (Shop), x≈513 (Support), x≈835 (Contact)
- *   - Column headings: 16px / 600 / title-case / --color-merch-footer-heading (#888)
- *   - Nav links: 16px / 600 / UPPERCASE / --color-merch-on-dark; line-height 18px,
+ *   - Column headings: riotSans 16px / 600 / title-case / --color-merch-footer-heading (#888)
+ *     heading → first-link gap ~30px
+ *   - Nav links: riotSans 16px / 600 / UPPERCASE / --color-merch-on-dark; line-height 18px,
  *     row pitch ~34px → gap between items ~16px
  *   - Support links ("Gift Card Balance") wrap to 2 lines at column width
  *   - Form labels: 14px / 400 / title-case / white; tight asterisk ("Email Address*")
  *   - Form inputs: bg --color-merch-input-dark-bg (#1b1d1f), NO border, pl-4,
- *     NO placeholder text, height 40px
- *   - SEND button: 143×50, white bg / black text, notched top-right + bottom-left
- *     corners (clip-path ~20px diagonal), 16px/600/UPPERCASE/ls 0.02em
+ *     NO placeholder text, height 40px; textarea ~60px (2 rows)
+ *   - SEND button: 143×50, white bg / black text, top-right notch 12px + bottom-left 20px
+ *     (clip-path), riotSans 16px/600/UPPERCASE/ls 0.02em
+ *   - Riot logo: 75×29
  *
  *   BOTTOM BAR
- *   - Desktop: copyright left | legal links right (row) — no divider
- *   - Legal heading "Legal" 16px/600/UPPERCASE first, then links same style,
- *     ~34px row pitch
+ *   - Desktop: copyright LEFT (x=40), legal links RIGHT-aligned (row) — no divider
+ *   - Mobile: legal links LEFT-aligned (x≈16), copyright centered below
+ *   - Legal links riotSans UPPERCASE 16px/600; ~34px row pitch on mobile stack
  *
  *   MOBILE (390)
  *   - Horizontal padding: ~17px each side (px-[17px])
  *   - Form field pairs: Name + Email (row), Order# + Country (row), Tracking full-width,
  *     Subject full-width, Message full-width
- *   - SEND: full-width 356×50, same notch + white/black
+ *   - SEND: full-width, same white/black; notch top-right 12px / bottom-left 20px
  *   - Copyright: centered below legal links, no divider
  *   - No 390 overflow
  */
@@ -129,45 +131,35 @@ const DEFAULT_LEGAL_LINKS: MerchFooterLink[] = [
 ];
 
 /**
- * 29 countries from the real contact-us-country <select>
+ * 28 countries from the real contact-us-country <select>
  * (name="contact-us-country" on merch.riotgames.com/en-us/).
+ * Aligned to the real list — re-measured 2026-08-06.
  */
 const COUNTRY_OPTIONS = [
   "Australia",
   "Austria",
   "Belgium",
-  "Brazil",
   "Canada",
-  "Chile",
-  "Colombia",
   "Czech Republic",
   "Denmark",
   "Finland",
   "France",
   "Germany",
   "Greece",
-  "Hong Kong",
   "Hungary",
-  "Indonesia",
   "Ireland",
   "Italy",
-  "Japan",
-  "Malaysia",
-  "Mexico",
+  "Korea",
+  "Luxembourg",
   "Netherlands",
   "New Zealand",
   "Norway",
-  "Philippines",
   "Poland",
   "Portugal",
   "Romania",
-  "Singapore",
-  "South Korea",
   "Spain",
   "Sweden",
   "Switzerland",
-  "Taiwan",
-  "Thailand",
   "Turkey",
   "United Kingdom",
   "United States",
@@ -183,8 +175,8 @@ function RiotWordmark({ id }: { id: string }) {
     <svg
       aria-hidden="true"
       id={id}
-      width="120"
-      height="34"
+      width="75"
+      height="29"
       viewBox="0 0 587.93 165"
       fill="var(--color-merch-on-dark)"
       xmlns="http://www.w3.org/2000/svg"
@@ -202,21 +194,27 @@ function RiotWordmark({ id }: { id: string }) {
 function FooterLinkColumn({ heading, links }: MerchFooterLinkGroup) {
   return (
     <div className="flex flex-col">
-      {/* 16px / 600 / title-case / #888888 heading — measured 2026-08-06 */}
+      {/* 16px / 600 / title-case / #888888 heading; heading→first-link gap ~30px — measured 2026-08-06 */}
       <p
-        className="text-[16px] font-semibold leading-[22px] mb-[12px]"
-        style={{ color: "var(--color-merch-footer-heading)" }}
+        className="text-[16px] font-semibold leading-[22px] mb-[30px]"
+        style={{
+          color:      "var(--color-merch-footer-heading)",
+          fontFamily: "var(--font-merch-display)",
+        }}
       >
         {heading}
       </p>
       <ul className="flex flex-col">
         {links.map((link) => (
           <li key={link.href} className="mb-[16px] last:mb-0">
-            {/* 16px / 600 / UPPERCASE / white; lh 18px; row pitch ~34px = 18px lh + 16px gap — measured 2026-08-06 */}
+            {/* riotSans 16px / 600 / UPPERCASE / white; lh 18px; row pitch ~34px = 18px lh + 16px gap — measured 2026-08-06 */}
             <a
               href={link.href}
               className="text-[16px] font-semibold uppercase leading-[18px] underline-offset-2 transition-colors duration-150 hover:underline"
-              style={{ color: "var(--color-merch-on-dark)" }}
+              style={{
+                color:      "var(--color-merch-on-dark)",
+                fontFamily: "var(--font-merch-display)",
+              }}
             >
               {link.label}
             </a>
@@ -368,7 +366,7 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
           >
             Country
           </label>
-          {/* Native <select> with options matching contact-us-country on merch.riotgames.com */}
+          {/* Native <select> — real footer renders blank (no placeholder text visible) — measured 2026-08-06 */}
           <select
             id={ids.country}
             name="contact-us-country"
@@ -377,9 +375,8 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
             className="w-full pl-4 pr-3 text-[16px] outline-none border-0 appearance-none transition-colors duration-150 focus:ring-1 focus:ring-[color:var(--color-merch-muted-on-dark)]"
             style={selectStyle}
           >
-            <option value="" disabled style={{ backgroundColor: "var(--color-merch-input-dark-bg)" }}>
-              Select country
-            </option>
+            {/* empty initial option — renders blank (no "Select country" label, matches real site) */}
+            <option value="" style={{ backgroundColor: "var(--color-merch-input-dark-bg)" }} />
             {COUNTRY_OPTIONS.map((country) => (
               <option
                 key={country}
@@ -446,7 +443,7 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
           value={values.message ?? ""}
           onChange={(e) => onChange?.("message", e.target.value)}
           required
-          rows={5}
+          rows={2}
           className={
             "w-full pl-4 pr-3 py-2 text-[16px] outline-none border-0 resize-none " +
             "transition-colors duration-150 " +
@@ -461,8 +458,8 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
 
       {/* ── SEND button ── */}
       {/* Desktop: 143×50, right-aligned; Mobile: full-width 356×50 */}
-      {/* Notched corners: beveled top-right + bottom-left ~20px diagonal via clip-path */}
-      {/* 16px / 600 / UPPERCASE / ls 0.02em; white bg / black text at both viewports */}
+      {/* Notched corners: top-right 12px diagonal, bottom-left 20px diagonal — measured 2026-08-06 */}
+      {/* riotSans 16px / 600 / UPPERCASE / ls 0.02em; white bg / black text at BOTH viewports */}
       <div className="flex justify-end">
         <button
           type="submit"
@@ -470,9 +467,10 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
           style={{
             backgroundColor: "var(--color-merch-on-dark)",
             color:           "var(--color-merch-ink-dark)",
-            /* notched corners: top-right and bottom-left ~20px diagonal cut */
+            fontFamily:      "var(--font-merch-display)",
+            /* notched corners: top-right 12px, bottom-left 20px — measured 2026-08-06 */
             clipPath:
-              "polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))",
+              "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 20px 100%, 0 calc(100% - 20px))",
           }}
         >
           Send
@@ -520,19 +518,33 @@ export function MerchFooter({
       className="relative w-full overflow-hidden"
       style={{
         backgroundColor: "var(--color-merch-ink-dark)",
+        color:           "var(--color-merch-on-dark)",
         fontFamily:      "var(--font-merch)",
       }}
     >
+      {/* ── 48px white diagonal-gradient transition band at the footer top (desktop) ── */}
+      {/* @390: black diagonal-striped texture — reused via the same gradient band trick */}
+      {/* Measured from merch.riotgames.com footer — white linear-gradient diagonal at top */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[48px]"
+        style={{
+          background:
+            "linear-gradient(135deg, var(--color-merch-on-dark) 50%, transparent 50%)",
+          opacity: 0.08,
+        }}
+      />
+
       {/* ── Optional background artwork layer — faint character-art imagery ── */}
       {artworkSrc && (
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage:  `url(${artworkSrc})`,
-            backgroundSize:   "cover",
+            backgroundImage:    `url(${artworkSrc})`,
+            backgroundSize:     "cover",
             backgroundPosition: "center",
-            opacity:          0.08,
+            opacity:            0.08,
           }}
         />
       )}
@@ -544,10 +556,11 @@ export function MerchFooter({
         {/* ---------------------------------------------------------------- */}
         {/* Main 4-col grid: logo | Shop | Support | Contact Us             */}
         {/* Desktop: logo ~111px, gap ~30px → Shop x≈261, Support x≈513,   */}
-        {/* Contact x≈835. Cols sized: 111px 222px 222px 1fr with 30px gap. */}
+        {/* Contact x≈835, contact form ~317px wide (measured 2026-08-06).  */}
+        {/* Cols: 111px 222px 222px 317px with 30px gap.                    */}
         {/* Mobile: single column stacked.                                   */}
         {/* ---------------------------------------------------------------- */}
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[111px_222px_222px_1fr] lg:gap-[30px]">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[111px_222px_222px_317px] lg:gap-[30px]">
           {/* Col 1 — Riot wordmark */}
           <div className="flex items-start">
             <RiotWordmark id={logoId} />
@@ -559,12 +572,15 @@ export function MerchFooter({
           {/* Col 3 — Support */}
           <FooterLinkColumn heading="Support" links={supportLinks} />
 
-          {/* Col 4 — Contact Us form */}
+          {/* Col 4 — Contact Us form; 317px wide — measured 2026-08-06 */}
           <div>
-            {/* 16px / 600 / title-case / #888888 heading — same style as other col headings */}
+            {/* 16px / 600 / title-case / #888888 heading; same ~30px gap as other cols */}
             <p
-              className="mb-6 text-[16px] font-semibold leading-[22px]"
-              style={{ color: "var(--color-merch-footer-heading)" }}
+              className="mb-[30px] text-[16px] font-semibold leading-[22px]"
+              style={{
+                color:      "var(--color-merch-footer-heading)",
+                fontFamily: "var(--font-merch-display)",
+              }}
             >
               Contact Us
             </p>
@@ -574,33 +590,38 @@ export function MerchFooter({
 
         {/* ---------------------------------------------------------------- */}
         {/* Bottom bar: Legal links (UPPERCASE 16px/600) + copyright        */}
-        {/* REAL: NO divider; copyright centered below links at 390;         */}
-        {/* Desktop: links row left-to-right; copyright right-aligned or row */}
+        {/* REAL: NO divider.                                                */}
+        {/* Desktop: copyright LEFT (x=40), legal links RIGHT-aligned.       */}
+        {/* Mobile: legal links LEFT-aligned (x≈16), copyright centered.     */}
+        {/* Measured 2026-08-06 from merch.riotgames.com.                    */}
         {/* ---------------------------------------------------------------- */}
-        <div className="mt-16 flex flex-col items-center gap-4 lg:flex-row lg:items-center lg:justify-between">
-          {/* Legal links — UPPERCASE 16px/600 white, ~34px row pitch (stacked on mobile) */}
+        <div className="mt-16 flex flex-col-reverse gap-4 lg:flex-row lg:items-center lg:justify-between">
+          {/* Copyright — left on desktop (flex order 1), centered on mobile (below legal) */}
+          <p
+            className="text-center text-[16px] font-normal leading-[16px] lg:text-left"
+            style={{ color: "var(--color-merch-on-dark)" }}
+          >
+            {copyrightText}
+          </p>
+
+          {/* Legal links — riotSans UPPERCASE 16px/600 white; left-aligned on mobile (x≈16), right on desktop */}
           {legalLinks && legalLinks.length > 0 && (
-            <div className="flex flex-col items-center gap-[16px] lg:flex-row lg:gap-[34px] lg:items-center">
+            <div className="flex flex-col items-start gap-[16px] lg:flex-row lg:gap-[34px] lg:items-center">
               {legalLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
                   className="block text-[16px] font-semibold uppercase leading-[18px] underline-offset-2 transition-colors duration-150 hover:underline"
-                  style={{ color: "var(--color-merch-on-dark)" }}
+                  style={{
+                    color:      "var(--color-merch-on-dark)",
+                    fontFamily: "var(--font-merch-display)",
+                  }}
                 >
                   {link.label}
                 </a>
               ))}
             </div>
           )}
-
-          {/* Copyright — 16px / 400 / white; centered on mobile, right-aligned desktop */}
-          <p
-            className="text-center text-[16px] font-normal leading-[16px] lg:text-right"
-            style={{ color: "var(--color-merch-on-dark)" }}
-          >
-            {copyrightText}
-          </p>
         </div>
       </div>
     </footer>
