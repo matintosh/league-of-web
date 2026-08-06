@@ -6,6 +6,12 @@
  * and renders a listing matching the real /category/sales/ page:
  *   breadcrumb "Home / Sales (N)" + Refine button → product grid on white.
  * No dark hero band — the real sale page has none.
+ *
+ * imageHeight={225}: sale cards use the 225px image band (638×225 @1280),
+ * matching the real merch.riotgames.com/en-us/category/sales/ measured anatomy
+ * (card 375px total, image band 225px). The card default is already 225px as of
+ * the MerchProductCard rebuild; the explicit prop confirms intent and guards
+ * against any future default drift.
  */
 
 import { useState } from "react";
@@ -63,9 +69,7 @@ export function SalePageClient({ products }: SalePageClientProps) {
         />
 
         {products.length > 0 ? (
-          <MerchProductGrid
-            columns={2}
-          >
+          <MerchProductGrid columns={2}>
             {products.map((product) => (
               <MerchProductCard
                 key={product.slug}
@@ -77,6 +81,9 @@ export function SalePageClient({ products }: SalePageClientProps) {
                 badge={product.badge}
                 badges={product.badges}
                 franchiseLabel={product.franchiseLabel}
+                /* imageHeight={225}: 225px image band per real sale card anatomy
+                   (638×225 @1280). Explicit prop guards against default drift. */
+                imageHeight={225}
                 onClick={() => router.push(`/merch/product/${product.slug}`)}
               />
             ))}
