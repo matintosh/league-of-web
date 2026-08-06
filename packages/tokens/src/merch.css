@@ -48,9 +48,9 @@
   --color-merch-border:      #e5e5e5; /* dividers, card outlines                       */
 
   /* ── Header / Footer (dark bar sampled from merch.riotgames.com) ──── */
-  /* Header background — remeasured 2026-08-06: real site is rgb(17,17,17) #111111,
-     not pure black. Footer keeps ink-dark (#000000) — dedicated header token added. */
-  --color-merch-header-bg:      #111111; /* header bar background — #111111 measured live  */
+  /* Header background — remeasured per issue #856: real header is pure black rgb(0,0,0),
+     not #111111. Previous #111111 was a wrong sample. */
+  --color-merch-header-bg:      #000000; /* header bar background — pure black rgb(0,0,0) measured from real site */
   --color-merch-ink-dark:       #000000; /* footer background — pure black (footer only)    */
   --color-merch-border-dark:    #2a2a2a; /* dark section border separator               */
   --color-merch-on-dark:        #ffffff; /* white text/icons on dark backgrounds        */
@@ -182,6 +182,10 @@
      - Lower ~45%: dark navy band clipped by diagonal (clip-path polygon)
      The band color comes from the webp asset; this token provides a CSS fallback. */
   --color-merch-pdp-hero-navy: #1a2035; /* dark navy fallback for the lower diagonal band */
+
+  /* ── Mobile menu edge ───────────────────────────────────────────────── */
+  /* 1px vertical amber line along mobile menu panel's left edge (issue #856, delta #13) */
+  --color-merch-menu-edge: #e59700; /* rgb(229,151,0) measured from real mobile drawer */
 
   /* ── Shadows ─────────────────────────────────────────────────────────── */
   /* Raw rgba allowed here (tokens file); raw rgba NOT allowed in components */
