@@ -251,17 +251,15 @@ const LATEST_COLLABS: MerchCollabEntry[] = [
     slug: "hp-omen",
     partnerName: "HP OMEN",
     headline: "HyperX OMEN 16 VALORANT Edition",
-    copy: "HP OMEN x Riot Games. Built for champions — performance laptops and peripherals for the Rift and beyond.",
+    copy: "A unique VALORANT design built with every competitive advantage. Performance laptops and peripherals built for the competitive edge.",
     imageUrl: championSplashUrl("Vi", 0),
-    ctaLabel: "Shop HP OMEN",
   },
   {
     slug: "secretlab",
     partnerName: "Secretlab",
     headline: "Secretlab TITAN Evo",
-    copy: "Secretlab x Riot Games. Engineered for the long session — the official gaming chair of Riot esports.",
+    copy: "Engineered for the long session — the official gaming chair of Riot esports.",
     imageUrl: championSplashUrl("Jinx", 0),
-    ctaLabel: "Shop Secretlab",
   },
 ];
 
