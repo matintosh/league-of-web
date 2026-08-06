@@ -216,6 +216,10 @@ export function MerchProductCard({
         fontFamily: "var(--font-merch)",
         border: "1px solid var(--color-merch-border)",
         backgroundColor: "var(--color-merch-surface-alt)",
+        // Contain badge chips + heart that could overflow the narrow grid cell
+        // at 390px (two-column grid → ~195px per card). overflow-x-clip avoids
+        // creating a new BFC while still clipping horizontal excess.
+        overflowX: "clip",
       }}
       onClick={() => onClick?.(slug)}
     >
