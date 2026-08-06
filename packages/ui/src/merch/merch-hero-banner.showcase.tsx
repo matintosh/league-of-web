@@ -17,12 +17,12 @@ export const merchHeroBannerShowcase: ShowcaseEntry = {
   name: "Merch Hero Banner",
   area: "merch",
   description:
-    "Full-width homepage hero for the Riot merch store. Aspect ratio ~320:87 (1280×348 desktop); mobile 390×374. Art-forward: text overlay is optional so baked-in artwork carries the branding. CTA defaults to white pill + black text (radius 2px, sentence-case); red variant available. Two modes: (1) legacy dot-nav + arrow controls; (2) franchise control bar — 64px-tall clip-path parallelogram tiles on white, ~83px below the hero, with red active underline + progress bar.",
+    "Full-width homepage hero for the Riot merch store. Desktop: 1280×388 (aspect-[1280/388]), inset on purple campaign bg (#1e0a3c side margins); CTA 239×50 'Shop Now' red at (981,467) bottom=0, lh 18px. Mobile: 390×316 campaign crop (same art, mobileImageUrl). Franchise control strip on white bg ~83px below hero. Art-forward: text overlay optional. Two modes: (1) legacy dot-nav + arrows; (2) franchise control bar — 64px clip-path parallelogram tiles, red active underline + progress bar.",
   variants: [
     {
       name: "With franchise control bar (1:1 real site)",
       notes:
-        "Franchise strip sits ~83px below hero on white page bg. 64px tiles, 2px radius, skewed parallelograms. Active tile has red bottom-edge underline. Desktop: single 40×40 circle next-arrow (1px grey border). Mobile: white 62px circle prev/next, red SHOP NOW with clip-path corner notches. 5s auto-advance.",
+        "Franchise strip sits ~83px below hero on white page bg. 64px tiles, 2px radius, skewed parallelograms. Active tile has red bottom-edge underline. Desktop: 1280×388 hero inset on purple campaign bg, 239×50 'Shop Now' at bottom-right (981,467), 40×40 circle next-arrow. Mobile: 390×316 campaign crop, white 62px circle prev/next, 'Shop Now' with clip-path corner notches. 5s auto-advance.",
       backgrounds: ["dark"],
       render: () => <MerchHeroBannerWithFranchisesDemo />,
     },

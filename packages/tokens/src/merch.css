@@ -133,6 +133,13 @@
   --color-merch-cat-2xko:     #cdf564; /* 2XKO — lime green, dark text                */
   --color-merch-cat-arcane:   #f2eade; /* Arcane — cream/parchment, dark text         */
 
+  /* ── Hero campaign page background ─────────────────────────────────── */
+  /* Real merch.riotgames.com homepage (2026-08): the hero area sits on a
+     purple/dark checkered campaign page background that shows as side margins
+     on desktop at 1280px — the hero image is inset, not full-bleed edge-to-edge.
+     Sampled from the League Classic campaign: #1e0a3c (deep purple). */
+  --color-merch-hero-campaign-bg: #1e0a3c; /* deep purple campaign page bg — hero inset frame */
+
   /* ── Hero franchise control bar ─────────────────────────────────────── */
   /* Measured from merch.riotgames.com: strip sits ~83px BELOW hero, white bg,
      tiles 170×64px, 2px radius, skewed parallelograms, white page background. */

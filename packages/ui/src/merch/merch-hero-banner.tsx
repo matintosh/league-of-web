@@ -15,21 +15,23 @@
  *
  * Measured from merch.riotgames.com (Playwright, 2026-08):
  *   Desktop (1280px):
- *     - Hero: 1280×348px  → aspect-[320/87]  (~3.68:1)
+ *     - Hero: 1280×388px → aspect-[1280/388]; inset on campaign purple page bg
+ *     - Hero + franchise zone: y=130→665 = 535px total
  *     - Franchise strip: sits ~83px BELOW the hero on the white page (white bg)
  *     - Franchise tiles: 64px tall, skewed parallelograms (skewX(-10deg))
  *     - Franchise tile radius: 2px (outer corners only)
  *     - "Shop All" end tile: 112×40 white, black Inter 16, pad 8px 8px 8px 16px
  *     - Franchise next-arrow: 40×40 circle, 1px --color-merch-strip-arrow-border
  *       transparent bg, at right of tile track
- *     - CTA: 239×50, riotSans 16px/600, 0.32px ls, #eb0029 bg, at (981,467)
+ *     - CTA: 239×50, riotSans 16/600, lh 18px, 0.32px ls, #eb0029 bg, at (981,467)
+ *       label: "Shop Now" (sentence-case); bottom=0 flush with hero bottom
  *     - Active tile: red underline at bottom edge
  *   Mobile (390px):
- *     - Hero image band: 390×374px (grew from 315; no caption panel below)
+ *     - Hero image band: 390×316px (campaign crop, same art as desktop)
  *     - Franchise strip: white band, 24px inset, slanted parallelogram edges,
  *       white 62px circle '>' button overlapping right edge
  *     - Active tile: red underline segment
- *     - SHOP NOW CTA: 342×50 at x=24, clip-path corner notches top-right + bottom-left
+ *     - Shop Now CTA: 342×50 at x=24, lh 18px, clip-path corner notches top-right + bottom-left
  */
 
 import React, { useEffect, useRef, useState, useId, type ReactNode } from "react";
@@ -42,8 +44,15 @@ import React, { useEffect, useRef, useState, useId, type ReactNode } from "react
 export interface MerchHeroSlide {
   /** Unique key for the slide. */
   id: string;
-  /** Full-bleed background image URL. */
+  /** Full-bleed background image URL (desktop). */
   imageUrl: string;
+  /**
+   * Optional mobile-specific crop URL. When provided, renders on viewports
+   * below md (≤ 768px) instead of `imageUrl`.
+   * Real site: mobile hero uses a tighter portrait crop of the campaign art
+   * (390×316px band) while desktop shows the wide 1280×388 version.
+   */
+  mobileImageUrl?: string;
   /** Alt text for the background image. */
   imageAlt: string;
   /** Optional eyebrow line above the headline. */
@@ -163,12 +172,12 @@ function ChevronRight() {
  *
  * Desktop (1280px): hero 1280×348 (aspect-[320/87]); franchise strip sits ~83px
  * below hero on white page (64px-tall parallelogram tiles); single 40×40 circle
- * next-arrow at right of tile track; 239×50 red CTA at hero bottom-right (981,467);
- * red underline on active tile.
+ * next-arrow at right of tile track; 239×50 red "Shop Now" CTA at (981,467) bottom=0;
+ * red underline on active tile. Hero inset on purple campaign bg (side margins).
  *
- * Mobile (390px): 390×374 bg image band (no caption panel below); white franchise
- * band with 24px inset, slanted parallelogram tiles, white 62px circle '>' button;
- * 342×50 SHOP NOW with corner notches (clip-path).
+ * Mobile (390px): 390×316 campaign-crop band (same art as desktop via mobileImageUrl);
+ * white franchise band with 24px inset, slanted parallelogram tiles, white 62px circle
+ * '>' button; 342×50 "Shop Now" with corner notches (clip-path), lh 18px.
  */
 export function MerchHeroBanner({
   slides,
@@ -272,36 +281,60 @@ export function MerchHeroBanner({
   // ── Franchise-mode active detection ──────────────────────────────────────
   const hasSlideMapping = hasFranchises && franchises!.some((f) => !!f.slideId);
 
-  // ── Red CTA label (franchise mode always uses slide ctaLabel or "SHOP NOW") ──
-  const mobileCTALabel = currentSlide.ctaLabel ?? "SHOP NOW";
+  // ── CTA label (franchise mode: use slide ctaLabel; fallback "Shop Now") ──
+  const mobileCTALabel = currentSlide.ctaLabel ?? "Shop Now";
 
   return (
     /*
      * Outer wrapper groups hero + franchise strip so the strip sits BELOW
      * the hero image on the white page (not overlaid).
+     *
+     * Desktop: the hero sits on the campaign's purple page background
+     * (--color-merch-hero-campaign-bg) which shows as inset side margins,
+     * matching the real site's "purple checkered set" frame at 1280px.
+     * Mobile: purple bg is below the 316px image band — not visible.
      */
     <div style={{ fontFamily: "var(--font-merch)" }}>
       {/* ================================================================== */}
       {/* Hero image section                                                  */}
       {/* ================================================================== */}
+      {/*
+       * Campaign frame — purple bg shows as side margin frame on desktop.
+       * On mobile the image fills the full width so the bg isn't visible.
+       */}
+      <div style={{ backgroundColor: "var(--color-merch-hero-campaign-bg)" }}>
       <section
         aria-label={ariaLabel}
         className={[
           "relative w-full overflow-hidden",
           /*
-           * Mobile (< md): 374px height — full photo band, no caption below.
-           * Desktop (≥ md): aspect-[320/87] → 1280×348.
+           * Mobile (< md): 316px — campaign crop (390×316, aspect ~1.234:1).
+           * Desktop (≥ md): aspect-[1280/388] → 1280×388px.
+           *   388px gives CTA top at y≈468 from page top (hero top at y=130,
+           *   CTA 50px, bottom=0 → CTA top = 130 + 388 - 50 = 468 ≈ 467 spec).
            */
-          "h-[374px] md:h-auto md:aspect-[320/87]",
+          "h-[316px] md:h-auto md:aspect-[1280/388]",
         ].join(" ")}
       >
 
-        {/* Background image — always full-bleed, no gutter */}
+        {/*
+         * Background image.
+         * Mobile: use mobileImageUrl (portrait/square campaign crop) when supplied.
+         * Desktop: always imageUrl (wide landscape banner).
+         */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={currentSlide.imageUrl}
           alt={currentSlide.imageAlt}
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          className="absolute inset-0 hidden h-full w-full object-cover object-center md:block"
+          loading="eager"
+          draggable={false}
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={currentSlide.mobileImageUrl ?? currentSlide.imageUrl}
+          alt={currentSlide.imageAlt}
+          className="absolute inset-0 block h-full w-full object-cover object-center md:hidden"
           loading="eager"
           draggable={false}
         />
@@ -383,20 +416,23 @@ export function MerchHeroBanner({
 
         {/*
          * ── Franchise mode: desktop CTA (239×50 red) ──
-         * Real site: 239×50 at (981,467) on a 1280px-wide, 348px-tall hero.
-         * x=981 → right = 1280-981-239 = 60px from right edge → right-[60px].
-         * y=467 from page top; hero bottom ~478 → 11px from hero bottom → bottom-[11px].
+         * Real site: 239×50 at x=981, y=467 on a 1280px-wide hero.
+         * x=981 → right = 1280-981-239 = 60px → right-[60px].
+         * y=467, hero height=388, hero top=130 →
+         *   bottom = hero_h - (y - hero_top) - cta_h = 388 - (467-130) - 50 = 1px.
+         * Use bottom=0 so the CTA box bottom sits flush with the hero bottom
+         * (CTA top at hero_h-50=338px from hero top → page y=130+338=468 ≈ 467).
          * Hidden on mobile — mobile CTA renders below the franchise strip.
          */}
         {hasFranchises && currentSlide.ctaLabel && (
           <div
             className="absolute hidden md:block"
-            style={{ bottom: 11, right: 60 }}
+            style={{ bottom: 0, right: 60 }}
           >
             <button
               type="button"
               onClick={handleCtaClick}
-              className="cursor-pointer border-0 uppercase transition-colors duration-150"
+              className="cursor-pointer border-0 transition-colors duration-150"
               style={{
                 backgroundColor: "var(--color-merch-red)",
                 color: "var(--color-merch-on-dark)",
@@ -404,6 +440,7 @@ export function MerchHeroBanner({
                 height: 50,
                 fontSize: "16px",
                 fontWeight: 600,
+                lineHeight: "18px",
                 letterSpacing: "0.32px",
                 padding: "0 16px",
               }}
@@ -498,6 +535,7 @@ export function MerchHeroBanner({
           </>
         )}
       </section>
+      </div>{/* /campaign frame */}
 
       {/* ================================================================== */}
       {/* Franchise strip — sits ~83px BELOW the hero on the white page       */}
@@ -753,17 +791,18 @@ export function MerchHeroBanner({
           <button
             type="button"
             onClick={handleCtaClick}
-            className="w-full cursor-pointer border-0 uppercase transition-colors duration-150"
+            className="w-full cursor-pointer border-0 transition-colors duration-150"
             style={{
               backgroundColor: "var(--color-merch-red)",
               color: "var(--color-merch-on-dark)",
               height: 50,
               fontSize: "16px",
               fontWeight: 600,
+              lineHeight: "18px",
               letterSpacing: "0.32px",
               /*
                * Corner notches: top-right + bottom-left (~20px diagonal cut).
-               * Real site uses an angled clip-path on mobile SHOP NOW button.
+               * Real site uses an angled clip-path on mobile Shop Now button.
                */
               clipPath:
                 "polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))",
