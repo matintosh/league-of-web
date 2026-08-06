@@ -31,6 +31,12 @@ export interface LauncherRailItem {
   icon: ReactNode;
   /** Position in the rail. "top" items stack from top; "bottom" items pin to bottom. */
   position?: "top" | "bottom";
+  /**
+   * Override slot height in px. Defaults to 56 for standard items.
+   * Use for the "riot" brand fist slot which is ~130px tall in the ref
+   * (ref image ÷1.2: icon in upper portion, large dark gap before Home).
+   */
+  height?: number;
 }
 
 export interface LauncherRailProps {
@@ -228,6 +234,13 @@ function RailSlot({
     return <NeutralActiveSlot item={item} onSelect={onSelect} />;
   }
 
+  // Slot height: respect item.height override, else standard 56px.
+  // The "riot" brand fist uses ~130px (ref: large dark gap between fist and Home).
+  const slotHeight = item.height ?? 56;
+  // Tall slots (riot fist) keep the icon near the top (~40px from top) rather than centered.
+  const iconAlign = slotHeight > 56 ? "flex-start" : "center";
+  const iconPaddingTop = slotHeight > 56 ? 16 : 0;
+
   return (
     <button
       type="button"
@@ -237,14 +250,15 @@ function RailSlot({
       style={{
         position: "relative",
         width: "100%",
-        height: 56,
+        height: slotHeight,
         display: "flex",
-        alignItems: "center",
+        alignItems: iconAlign,
         justifyContent: "center",
         flexShrink: 0,
         background: "transparent",
         border: "none",
         padding: 0,
+        paddingTop: iconPaddingTop,
         cursor: "pointer",
       }}
       className="launcher-rail-slot group"

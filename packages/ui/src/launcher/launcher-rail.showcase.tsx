@@ -11,14 +11,14 @@ export const launcherRailShowcase: ShowcaseEntry = {
   name: "LauncherRail",
   area: "launcher",
   referenceImage: "launcher-rail-crop.png",
-  referenceNote: "Real launcher — left icon rail (cropped from Overview): Riot fist, Home, All-games grid, then game emblems top-stacked (LoL, Valorant, Wild Rift, 2XKO, TFT), Riot R shield bottom-pinned. Active LoL slot: ornate full-width gold banner tile. Rail 64px wide.",
+  referenceNote: "Real launcher — left icon rail (cropped from Overview): Riot fist (130px slot, icon top-aligned), Home, All-games grid, LoL, LoL Classic, Valorant, Wild Rift, 2XKO, TFT, then Riot R shield — all top-stacked, none bottom-pinned. Active LoL slot: ornate full-width gold banner tile. Rail 64px wide.",
   description:
-    "64px-wide vertical icon rail for the launcher. 9-item full Riot roster: Riot fist + Home + All-games grid + LoL + Valorant + Wild Rift + 2XKO + TFT top-stacked; Riot R shield bottom-pinned. Active slot: ornate parchment-gold banner tile (full-width, gold bg + top/bottom border lines + left accent bar). Inactive: 60% opacity. Hover: panel-bg tint, full opacity. Props: items[], activeId, onSelect.",
+    "64px-wide vertical icon rail for the launcher. 10-item full Riot roster: Riot fist (130px tall slot per ref, height prop) + Home + All-games grid + LoL + LoL Classic + Valorant + Wild Rift + 2XKO + TFT + Riot R shield — all top-stacked (position='top'). Active slot: ornate parchment-gold banner tile (full-width, gold bg + top/bottom border lines + left accent bar). Inactive: 60% opacity. Hover: panel-bg tint, full opacity. Optional height?: number field on LauncherRailItem for tall slots. Props: items[], activeId, onSelect.",
   variants: [
     {
       name: "LoL active (default active state)",
       notes:
-        'activeId="lol" → LoL slot shows ornate gold banner tile (full-width, parchment-gold bg). All others at 60% opacity. Riot R shield pinned to bottom.',
+        'activeId="lol" → LoL slot shows ornate gold banner tile (full-width, parchment-gold bg). All others at 60% opacity. Riot R shield is last top-stacked item (no bottom-pin).',
       render: () => <RailLolActiveDemo />,
     },
     {

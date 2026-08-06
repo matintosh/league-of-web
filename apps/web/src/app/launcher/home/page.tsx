@@ -218,15 +218,20 @@ const PATCH_NOTES: PatchNoteData[] = [
 // ---------------------------------------------------------------------------
 
 /**
- * Full Riot roster — 9 items matching the ref (image.png left rail).
- * Top: Riot fist, Home (active), All-games grid, LoL, Valorant, Wild Rift, 2XKO, TFT.
- * Bottom pinned: Riot R shield.
+ * Full Riot roster — 10 items matching the ref (image.png left rail).
+ * Top: Riot fist (130px slot), Home (active), All-games grid, LoL, LoL Classic,
+ *   Valorant, Wild Rift, 2XKO, TFT, Riot R shield.
+ * All top-stacked — no bottom-pinned items. Riot R shield is the last top item
+ * (ref: flows directly after TFT, empty rail below it — no flex-push gap).
+ *
+ * Fixes #756 (Riot R top-stacked), #757 (Riot fist 130px slot), #758 (LoL Classic).
  */
 const RAIL_ITEMS = [
   {
     id: "riot",
     label: "Riot Games",
     position: "top" as const,
+    height: 130,
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M7 4h10v2H7V4zm-1 3h12v1.5l1 2v4.5H5v-4.5l1-2V7zm2 6.5h8V11H8v2.5zm-2 2h12v1H6v-1zm1 2h10v1H7v-1z" />
@@ -264,6 +269,12 @@ const RAIL_ITEMS = [
     icon: <GameLolLogo size={28} variant="emblem" />,
   },
   {
+    id: "lol-classic",
+    label: "LoL Classic",
+    position: "top" as const,
+    icon: <GameLolLogo size={28} variant="emblem" />,
+  },
+  {
     id: "valorant",
     label: "VALORANT",
     position: "top" as const,
@@ -290,7 +301,7 @@ const RAIL_ITEMS = [
   {
     id: "riot-shield",
     label: "Riot",
-    position: "bottom" as const,
+    position: "top" as const,
     icon: <GameRiotShieldLogo size={28} />,
   },
 ];

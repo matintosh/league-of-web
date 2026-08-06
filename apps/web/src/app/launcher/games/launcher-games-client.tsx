@@ -62,20 +62,25 @@ function GamesGridIcon() {
 }
 
 /**
- * Full Riot roster — 9 items matching the ref (image.png left rail).
- * Top: Riot fist, Home, All-games grid (active), LoL, Valorant, Wild Rift, 2XKO, TFT.
- * Bottom pinned: Riot R shield.
+ * Full Riot roster — 10 items matching the ref (image.png left rail).
+ * Top: Riot fist (130px slot), Home, All-games grid (active), LoL, LoL Classic,
+ *   Valorant, Wild Rift, 2XKO, TFT, Riot R shield.
+ * All top-stacked — no bottom-pinned items. Riot R shield is the last top item
+ * (ref: flows directly after TFT, empty rail below it — no flex-push gap).
+ *
+ * Fixes #756 (Riot R top-stacked), #757 (Riot fist 130px slot), #758 (LoL Classic).
  */
 const RAIL_ITEMS: LauncherRailItem[] = [
-  { id: "riot",        label: "Riot Games",         icon: <RiotFistIcon />,                            position: "top"    },
+  { id: "riot",        label: "Riot Games",         icon: <RiotFistIcon />,                            position: "top", height: 130 },
   { id: "home",        label: "Home",               icon: <HomeIcon />,                                position: "top"    },
   { id: "games",       label: "All Games",          icon: <GamesGridIcon />,                           position: "top"    },
   { id: "lol",         label: "League of Legends",  icon: <GameLolLogo size={28} variant="emblem" />,  position: "top"    },
+  { id: "lol-classic", label: "LoL Classic",        icon: <GameLolLogo size={28} variant="emblem" />,  position: "top"    },
   { id: "valorant",    label: "VALORANT",           icon: <GameValorantLogo size={28} variant="emblem" />, position: "top" },
   { id: "wildrift",    label: "Wild Rift",          icon: <GameWildRiftLogo size={28} variant="emblem" />, position: "top" },
   { id: "2xko",        label: "2XKO",               icon: <GameTwoXkoLogo size={28} variant="emblem" />,  position: "top"  },
   { id: "tft",         label: "Teamfight Tactics",  icon: <GameTftLogo size={28} variant="emblem" />,  position: "top"    },
-  { id: "riot-shield", label: "Riot",               icon: <GameRiotShieldLogo size={28} />,            position: "bottom" },
+  { id: "riot-shield", label: "Riot",               icon: <GameRiotShieldLogo size={28} />,            position: "top"    },
 ];
 
 // ---------------------------------------------------------------------------
