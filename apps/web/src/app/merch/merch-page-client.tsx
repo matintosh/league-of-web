@@ -122,7 +122,11 @@ const INITIAL_GROUP_COUNT = 4;
 // Real hero banners — full-art campaign banners sourced from cdn.sanity.io (hotlinkable).
 // Slide A: League of Legends Classic campaign (consumer_products_live, 3296x1030).
 //   → This is the FIRST slide matching the real site's initial active hero.
-// Slide B: Riftbound Vendetta Akali (consumer_products_live, 3296x1030).
+// Slide B: Riftbound Vendetta (consumer_products_live, 3296x1030).
+//
+// mobileImageUrl: same Sanity asset at w=390 gives the campaign art mobile crop
+// (purple checkered set + PC box, 390×316) — matching the real site which shows
+// the SAME campaign art on mobile (not a different champion splash).
 const HERO_SLIDES: MerchHeroSlide[] = [
   {
     id: "slide-classic",
@@ -130,9 +134,13 @@ const HERO_SLIDES: MerchHeroSlide[] = [
       w: 1920,
       dataset: "consumer_products_live",
     }),
+    mobileImageUrl: merchAssetUrl("3dbbf5ce0d30940b0db3741cdb9d1bed12afce48-3296x1030.png", {
+      w: 390,
+      dataset: "consumer_products_live",
+    }),
     imageAlt: "League of Legends Classic — Shop the Collection",
-    ctaLabel: "Shop All",
-    ctaVariant: "light",
+    ctaLabel: "Shop Now",
+    ctaVariant: "red",
     ctaCorner: "bottom-right",
     align: "left",
   },
@@ -140,6 +148,10 @@ const HERO_SLIDES: MerchHeroSlide[] = [
     id: "slide-vendetta",
     imageUrl: merchAssetUrl("a01262bae9dcf03621b7f850c89b86535b76638a-3296x1030.jpg", {
       w: 1920,
+      dataset: "consumer_products_live",
+    }),
+    mobileImageUrl: merchAssetUrl("a01262bae9dcf03621b7f850c89b86535b76638a-3296x1030.jpg", {
+      w: 390,
       dataset: "consumer_products_live",
     }),
     imageAlt: "Riftbound Vendetta — New TCG Products",
