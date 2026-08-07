@@ -31,7 +31,6 @@ import {
   MerchProductInfoTabs,
   MerchPurchasePanel,
   MerchCartDrawer,
-  MerchCollectionHero,
   MerchShopCarousel,
   MerchSizeGuideModal,
 } from "@low/ui";
@@ -81,10 +80,18 @@ export interface ProductPageClientProps {
   fgImageUrl?: string;
   /** Products for the "Shop More" franchise carousel below the product section. */
   carouselProducts?: MerchProduct[];
-  /** Banner image URL for the franchise carousel (e.g. a wide splash from Data Dragon). */
+  /**
+   * Banner image URL for the franchise band (wide campaign art, e.g. 3296×1030 LoL Classic).
+   * Rendered in the 320px franchise band above the light-surface related carousel.
+   */
   carouselBannerImageUrl?: string;
   /** Collection hero background image URL (used for the SHOP NOW band). */
   collectionBannerImageUrl?: string;
+  /**
+   * Franchise logo image URL for the carousel band (e.g. the LoL wordmark image).
+   * Left-aligned in the 320px band per issue #895 measurement.
+   */
+  carouselFranchiseLogoUrl?: string;
 }
 
 /** /merch/product/[handle] interactive page shell. */
@@ -103,6 +110,7 @@ export function ProductPageClient({
   fgImageUrl,
   carouselProducts,
   carouselBannerImageUrl,
+  carouselFranchiseLogoUrl,
   // collectionBannerImageUrl consumed by page.tsx for the pdp-band (CSS gradient, not an image)
 }: ProductPageClientProps) {
   const router = useRouter();
@@ -251,47 +259,35 @@ export function ProductPageClient({
         </div>
 
         {/*
-         * ── PDP franchise band: single blue band + dark-surface related carousel ──
+         * ── PDP related-products band (issue #895) ────────────────────────
          *
          * Real site structure below the gallery+panel:
-         *   1. Single ~300px blue-gradient band (sampled #0A4266, radial/streaks,
-         *      NO product/champion photo). Contains:
-         *        - LoL logo lockup (~230×87) centered or left-indented at ~x=176
-         *        - Gold 239×50 "SHOP NOW" CTA (16px/600, black text)
-         *      NO paragraph copy.
-         *   2. Related-products carousel ON that blue band (dark surface):
-         *      transparent card bg, white title, "LEAGUE OF LEGENDS" label + heart per card,
-         *      optional teal "Special Edition" badge, 353×225 images,
-         *      red 313×50 per-card Add to Cart, pagination dots (white on dark).
+         *   1. 320px franchise band — BLACK bg with blue splash art, LoL logo
+         *      IMAGE left-aligned (~40px inset), WHITE "Shop Now" button with
+         *      black riotSans 16/600 label ls 0.32px, LEFT-aligned under logo.
+         *   2. Related-products carousel on a WHITE page-background section:
+         *      305×375 ARTICLE cards, bg surface-alt (#f7f7f7), 1px white border,
+         *      name riotSans 16/700 black, price Inter 16, icon-only cart button.
+         *      Curated ~12 items (not all 47 products).
          *
-         * Both sections share the same blue band surface rendered by MerchCollectionHero
-         * (variant="pdp-band") + MerchShopCarousel (darkSurface=true) nested inside it.
-         * Ours previously had: MerchCollectionHero (red CTA, Jinx splash, description)
-         * + duplicate plush-image band + separate white carousel — now collapsed.
+         * The 320px franchise band IS the MerchShopCarousel banner (light mode).
+         * No MerchCollectionHero wrapping band — the carousel owns the full section.
          */}
         {carouselProducts && carouselProducts.length > 0 && (
           <div
             style={{
               marginTop: 0,
-              /* Blue band background — matches pdp-band gradient in MerchCollectionHero */
-              background: `radial-gradient(ellipse 80% 80% at 50% 110%, var(--color-merch-pdp-band-bg-light) 0%, var(--color-merch-pdp-band-bg) 100%)`,
+              backgroundColor: "var(--color-merch-bg)",
               width: "100%",
             }}
           >
-            {/* SHOP NOW lockup band — LoL logo + gold 239×50 CTA */}
-            <MerchCollectionHero
-              variant="pdp-band"
-              heading="League of Legends"
-              ctaLabel="SHOP NOW"
-              onCtaClick={() => router.push("/merch/shop-all")}
-            />
-
-            {/* Dark-surface related carousel — cards sit on the blue band */}
+            {/* Light-surface related carousel — 320px franchise band above 305×375 cards */}
             <MerchShopCarousel
               franchiseName="League of Legends"
               bannerImageUrl={carouselBannerImageUrl ?? ""}
+              franchiseLogoUrl={carouselFranchiseLogoUrl}
               products={carouselProducts}
-              darkSurface={true}
+              darkSurface={false}
               onProductClick={(slug) => router.push(`/merch/product/${slug}`)}
               onShopNowClick={() => router.push("/merch/shop-all")}
             />

@@ -79,8 +79,11 @@ export interface MerchShopCarouselProps {
 // Constants (measured from merch.riotgames.com)
 // ---------------------------------------------------------------------------
 
-/** Card width in px — light mode: 343px step (first x=197, second x=560, card=343, gap=20). */
-const CARD_W_LIGHT = 343;
+/**
+ * Card width in px — light mode: 305px per issue #895 measurement.
+ * Real: "cards ARTICLE 305×375" from merch.riotgames.com related strip.
+ */
+const CARD_W_LIGHT = 305;
 
 /**
  * Card width in px — dark-surface mode.
@@ -445,6 +448,7 @@ export function MerchShopCarousel({
   const nextClipId = `${uid}-next-clip`;
 
   const CARD_W = darkSurface ? CARD_W_DARK : CARD_W_LIGHT;
+  // Light-surface card: 305×375 per issue #895 measurement.
   // Dark-surface card total height: header(40) + image(225) + info(~60) + ATC(62) ≈ 387px
   const CARD_H = darkSurface ? 387 : 375;
 
@@ -498,42 +502,79 @@ export function MerchShopCarousel({
         overflowX: "hidden",
       }}
     >
-      {/* ── Light mode only: banner area ─────────────────────────────────── */}
+      {/* Mobile overrides — real @media queries per constraint rules */}
+      {!darkSurface && (
+        <style>{`
+          @media (max-width: 600px) {
+            .merch-carousel-light-track {
+              padding-inline: 12px !important;
+            }
+            .merch-carousel-light-banner {
+              height: 200px !important;
+            }
+            .merch-carousel-light-banner-content {
+              padding-inline: 16px !important;
+              gap: 12px !important;
+            }
+          }
+        `}</style>
+      )}
+      {/* ── Light mode only: franchise banner — 1280×320, black bg, blue splash art ─ */}
+      {/*
+       * Issue #895 franchise band (1280×320 at y=1520, real site):
+       *   - Black bg with blue splash art behind
+       *   - LEAGUE OF LEGENDS logo IMAGE left-aligned (~x=40 inset)
+       *   - Shop Now = WHITE button, black riotSans 16/600 label, ls 0.32px,
+       *     LEFT-aligned under the logo (span x=250)
+       *   NOT the red CTA that was here before.
+       */}
       {!darkSurface && (
         <div
+          className="merch-carousel-light-banner"
           style={{
             width: "100%",
             height: 320,
             position: "relative",
             overflow: "hidden",
-            backgroundColor: "var(--color-merch-surface)",
+            backgroundColor: "var(--color-merch-ink-dark)",
           }}
         >
-          {/* Background image */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={bannerImageUrl}
-            alt={`${franchiseName} collection banner`}
-            className="absolute inset-0 h-full w-full object-cover object-center"
-            loading="lazy"
-            draggable={false}
-          />
+          {/* Background image (blue splash art from page) */}
+          {bannerImageUrl && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={bannerImageUrl}
+              alt={`${franchiseName} collection banner`}
+              className="absolute inset-0 h-full w-full object-cover object-center"
+              loading="lazy"
+              draggable={false}
+            />
+          )}
 
-          {/* Left-to-center scrim */}
+          {/* Subtle left-edge scrim so logo reads over the art */}
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to right, var(--color-merch-scrim-strong) 0%, var(--color-merch-scrim-soft) 55%, transparent 100%)",
+                "linear-gradient(to right, var(--color-merch-scrim-strong) 0%, transparent 55%)",
             }}
             aria-hidden
           />
 
-          {/* Banner content — logo + CTA, left-anchored */}
+          {/* Banner content — logo left-aligned, Shop Now below it */}
           <div
-            className="absolute inset-0 flex items-center"
-            style={{ paddingInline: 40 }}
+            className="merch-carousel-light-banner-content"
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              paddingInline: 40,
+              gap: 20,
+            }}
           >
+            {/* Franchise logo — left-aligned, ~200px wide */}
             {franchiseLogoUrl && (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
@@ -542,32 +583,37 @@ export function MerchShopCarousel({
                 style={{
                   width: 200,
                   objectFit: "contain",
-                  objectPosition: "center left",
+                  objectPosition: "left center",
                   flexShrink: 0,
+                  display: "block",
                 }}
                 loading="lazy"
                 draggable={false}
               />
             )}
 
+            {/* White "Shop Now" button — real: white bg, black riotSans 16/600, ls 0.32px, left-aligned */}
             <button
               type="button"
               onClick={onShopNowClick}
-              className="cursor-pointer border-0 text-[13px] font-bold uppercase tracking-[0.1em] transition-colors duration-150"
               style={{
-                marginLeft: franchiseLogoUrl ? 24 : 0,
-                backgroundColor: "var(--color-merch-red)",
-                color: "var(--color-merch-on-dark)",
-                padding: "10px 28px",
-                borderRadius: 2,
+                alignSelf: "flex-start",
+                backgroundColor: "var(--color-merch-on-dark)",
+                color: "var(--color-merch-ink-dark)",
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "var(--font-merch-display)",
+                fontSize: 16,
+                fontWeight: 600,
+                letterSpacing: "0.32px",
+                padding: "12px 28px",
+                flexShrink: 0,
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--color-merch-red-dark)";
+                (e.currentTarget as HTMLButtonElement).style.opacity = "0.88";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--color-merch-red)";
+                (e.currentTarget as HTMLButtonElement).style.opacity = "1";
               }}
             >
               Shop Now
@@ -642,6 +688,7 @@ export function MerchShopCarousel({
           {/* Scrollable card track */}
           <div
             ref={trackRef}
+            className={darkSurface ? undefined : "merch-carousel-light-track"}
             style={{
               display: "flex",
               gap: CARD_GAP,
@@ -678,6 +725,7 @@ export function MerchShopCarousel({
                   cardW={CARD_W}
                   cardH={CARD_H}
                   onProductClick={onProductClick}
+                  onAddToCart={() => {}}
                 />
               ),
             )}
@@ -757,24 +805,52 @@ export function MerchShopCarousel({
 }
 
 // ---------------------------------------------------------------------------
+// CartIcon — icon-only cart button (light-surface cards)
+// ---------------------------------------------------------------------------
+
+function CartIcon() {
+  return (
+    <svg
+      aria-hidden
+      focusable="false"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ width: 18, height: 18, display: "block" }}
+    >
+      <circle cx="9" cy="21" r="1" />
+      <circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // LightCard — inline card for light-surface mode (avoids circular import)
 // ---------------------------------------------------------------------------
 
 /**
- * Inline simplified card for the light-surface carousel.
- * Keeps the product title + price + navigation intent — no ATC (hasAddToCart=false
- * intent from the original design). Uses --color-merch-ink-dark for text.
+ * Light-surface card — issue #895 spec:
+ *   - ARTICLE 305×375, bg rgb(247,247,247) = --color-merch-surface-alt, 1px white border
+ *   - Name: riotSans 16/700, rgb(0,0,0) = --color-merch-ink-dark
+ *   - Price: Inter 16, --color-merch-ink-dark
+ *   - Icon-only cart button (no full-width ATC)
  */
 function LightCard({
   product,
   cardW,
   cardH,
   onProductClick,
+  onAddToCart,
 }: {
   product: MerchProduct;
   cardW: number;
   cardH: number;
   onProductClick?: (slug: string) => void;
+  onAddToCart?: (slug: string) => void;
 }) {
   return (
     <a
@@ -789,8 +865,9 @@ function LightCard({
         flexDirection: "column",
         textDecoration: "none",
         color: "inherit",
+        /* issue #895: 1px white border, surface-alt bg */
         border: "1px solid var(--color-merch-on-dark)",
-        backgroundColor: "transparent",
+        backgroundColor: "var(--color-merch-surface-alt)",
         fontFamily: "var(--font-merch)",
         cursor: "pointer",
         overflow: "hidden",
@@ -801,13 +878,14 @@ function LightCard({
         if (onProductClick) e.preventDefault();
       }}
     >
-      {/* Image */}
+      {/* Product image — fills upper portion, object-cover */}
       <div
         style={{
           width: "100%",
           flex: "1 1 auto",
           overflow: "hidden",
-          backgroundColor: "var(--color-merch-surface)",
+          backgroundColor: "var(--color-merch-surface-alt)",
+          minHeight: 0,
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -818,42 +896,100 @@ function LightCard({
           style={{
             width: "100%",
             height: "100%",
-            objectFit: "contain",
+            objectFit: "cover",
+            objectPosition: "center top",
             display: "block",
           }}
           draggable={false}
         />
       </div>
 
-      {/* Info */}
+      {/* Info + icon-only cart button */}
       <div
         style={{
-          padding: "12px 16px 16px",
+          padding: "12px 12px 12px",
           flexShrink: 0,
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          gap: 8,
         }}
       >
-        <div
+        <div style={{ minWidth: 0 }}>
+          {/* Title: riotSans 16/700, black */}
+          <div
+            style={{
+              fontFamily: "var(--font-merch-display)",
+              fontSize: 16,
+              fontWeight: 700,
+              lineHeight: "1.2",
+              color: "var(--color-merch-ink-dark)",
+              marginBottom: 4,
+              /* clamp to 2 lines */
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {product.title}
+          </div>
+
+          {/* Price: Inter 16 */}
+          <div
+            style={{
+              fontFamily: "var(--font-merch)",
+              fontSize: 16,
+              fontWeight: 400,
+              lineHeight: "1.25",
+              color: "var(--color-merch-ink-dark)",
+            }}
+          >
+            {product.originalPrice && product.originalPrice !== product.price ? (
+              <>
+                <span
+                  style={{
+                    textDecoration: "line-through",
+                    color: "var(--color-merch-muted)",
+                    marginRight: 6,
+                    fontSize: 14,
+                  }}
+                >
+                  {product.originalPrice}
+                </span>
+                {product.price}
+              </>
+            ) : (
+              product.price
+            )}
+          </div>
+        </div>
+
+        {/* Icon-only cart button — real: small icon, no label */}
+        <button
+          type="button"
+          aria-label={`Add ${product.title} to cart`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onAddToCart?.(product.slug);
+          }}
           style={{
-            fontFamily: "var(--font-merch-display)",
-            fontSize: 16,
-            fontWeight: 700,
-            lineHeight: "18px",
-            color: "var(--color-merch-ink-dark)",
-            marginBottom: 4,
+            flexShrink: 0,
+            width: 36,
+            height: 36,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "var(--color-merch-ink-dark)",
+            color: "var(--color-merch-on-dark)",
+            border: "none",
+            cursor: "pointer",
+            borderRadius: 0,
           }}
         >
-          {product.title}
-        </div>
-        <div
-          style={{
-            fontSize: 16,
-            fontWeight: 400,
-            lineHeight: "20px",
-            color: "var(--color-merch-ink-dark)",
-          }}
-        >
-          {product.price}
-        </div>
+          <CartIcon />
+        </button>
       </div>
     </a>
   );

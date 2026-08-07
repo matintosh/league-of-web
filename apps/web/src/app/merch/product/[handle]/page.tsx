@@ -10,7 +10,12 @@
  */
 import React from "react";
 import { notFound } from "next/navigation";
-import { MERCH_PRODUCTS, AMUMU_PLUSH_DESCRIPTION, merchAssetUrl } from "@low/fixtures";
+import {
+  MERCH_PRODUCTS,
+  AMUMU_PLUSH_RELATED_PRODUCTS,
+  AMUMU_PLUSH_DESCRIPTION,
+  merchAssetUrl,
+} from "@low/fixtures";
 import type { MerchProduct } from "@low/fixtures";
 import { ProductPageClient } from "./product-page-client";
 
@@ -260,9 +265,20 @@ const PDP_EXTRAS: Record<string, PdpExtra> = {
   },
 };
 
-/** Carousel uses the real products excluding the current PDP product. */
+/**
+ * Curated related-products for the PDP carousel (issue #895).
+ * LoL PDPs: use AMUMU_PLUSH_RELATED_PRODUCTS (~12 curated LoL items),
+ * filtered to exclude the current product.  All other PDPs fall back to
+ * the first 12 items from MERCH_PRODUCTS that aren't the current product.
+ */
 function carouselFor(slug: string): MerchProduct[] {
-  return MERCH_PRODUCTS.filter((p) => p.slug !== slug);
+  const isLolProduct = MERCH_PRODUCTS.find(
+    (p) => p.slug === slug && p.franchiseLabel === "League of Legends",
+  );
+  if (isLolProduct) {
+    return AMUMU_PLUSH_RELATED_PRODUCTS.filter((p) => p.slug !== slug);
+  }
+  return MERCH_PRODUCTS.filter((p) => p.slug !== slug).slice(0, 12);
 }
 
 interface Props {
@@ -288,18 +304,33 @@ export default async function MerchProductPage({ params }: Props) {
   };
 
   const carouselProducts = carouselFor(handle);
-  // Use the product's primary image as the carousel banner.
-  const carouselBannerImageUrl = extra.images[0];
+
   /**
-   * Collection band franchise banner — wide 3296×1030 LoL Classic campaign art.
-   * Real merch.riotgames.com PDP band shows a branded League of Legends
-   * franchise banner (dark blue / LoL lockup), not the product square.
-   * Uses the real Sanity CDN LoL Classic wide banner (sourced 2026-08).
+   * Franchise band background art — wide 3296×1030 LoL Classic campaign image
+   * (black bg with blue splash art) that fills the 320px band behind the logo.
+   * Issue #895: real band has a black bg with blue splash art, not the product
+   * packshot.
    */
-  const collectionBannerImageUrl = merchAssetUrl(
+  const carouselBannerImageUrl = merchAssetUrl(
     "3dbbf5ce0d30940b0db3741cdb9d1bed12afce48-3296x1030.png",
     { w: 1280 },
   );
+
+  /**
+   * League of Legends logo for the franchise band.
+   * Real site: LoL wordmark image left-aligned at ~40px inset in the 320px band.
+   * Using the LoL Classic campaign logo (same Sanity CDN, cropped transparent PNG).
+   * NOTE: The Sanity asset is a wide art piece without an isolated logo.
+   * We use undefined here to fall back gracefully to the heading text until a
+   * dedicated logo asset is sourced — the band still renders correctly with
+   * only the Shop Now button.
+   */
+  const carouselFranchiseLogoUrl: string | undefined = undefined;
+
+  /**
+   * Collection band franchise banner (legacy prop — not consumed by the new light carousel).
+   */
+  const collectionBannerImageUrl = carouselBannerImageUrl;
 
   return (
     <ProductPageClient
@@ -317,6 +348,7 @@ export default async function MerchProductPage({ params }: Props) {
       fgImageUrl={extra.fgImageUrl}
       carouselProducts={carouselProducts}
       carouselBannerImageUrl={carouselBannerImageUrl}
+      carouselFranchiseLogoUrl={carouselFranchiseLogoUrl}
       collectionBannerImageUrl={collectionBannerImageUrl}
     />
   );

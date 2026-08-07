@@ -678,6 +678,136 @@ export const MERCH_FRANCHISE_FEATURE_CARDS: MerchFranchiseFeatureCard[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// PDP related-products — curated ~12 LoL items shown in the light carousel
+// below the Amumu Plush PDP (and other LoL product PDPs).
+// Issue #895: curated set (not all 47), LoL franchise only, order matches
+// the real merch.riotgames.com related-products strip:
+//   Necklace, Beemo Plush Hat $24.99, Twitch Statue, Ornn Figure XL …
+// We map to our closest fixture equivalents that share the League of Legends
+// franchiseLabel, excluding the current amumu-plush PDP product.
+// ---------------------------------------------------------------------------
+
+/**
+ * Curated ~12 League of Legends related products for the Amumu Plush PDP
+ * related carousel.  Matched to real merch.riotgames.com item types (plush,
+ * apparel, collectibles, ring, hoodie, tee).  Excludes amumu-plush itself.
+ */
+export const AMUMU_PLUSH_RELATED_PRODUCTS: MerchProduct[] = [
+  {
+    slug: "league-classic-collectors-box",
+    title: "League of Legends Classic Collector's Box",
+    imageUrl: merchAssetUrl("ed593ec11a590c788d3ec1b634ce0b72a63b1059-2560x2560.png"),
+    price: "$89.99",
+    badges: ["New", "Limited Edition"],
+    badge: "New",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "twitch-7in-limited-edition-statue",
+    title: 'Twitch 7" Limited Edition Statue',
+    imageUrl: merchAssetUrl("d8e1532ea8be393a605c65436f3b3d2150b3230f-2560x2560.png"),
+    price: "$84.99",
+    badges: ["New", "Limited Edition"],
+    badge: "New",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "amumu-plush-mini-sale",
+    title: "Amumu Mini Plush",
+    imageUrl: merchAssetUrl("bac8ecd0218d8af9d8f0d78d4fca40cb27a8a803-2560x2560.png"),
+    price: "$14.99",
+    originalPrice: "$24.99",
+    badges: ["Sale"],
+    badge: "Sale",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "rocklove-lol-heart-of-gold-ring",
+    title: "RockLove League of Legends Classic Heart of Gold Ring",
+    imageUrl: merchAssetUrl("8a423221c48327f9f1d5549a08678ffed8e08adf-2560x2560.png"),
+    price: "$199.99",
+    badges: ["New", "Limited Edition"],
+    badge: "New",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "lol-classic-hoodie",
+    title: "League of Legends Classic Hoodie",
+    imageUrl: merchAssetUrl("a87ba685e599a287b6f56c32fb629d0d8515c828-2560x2560.png"),
+    price: "$64.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "lol-classic-yearbook-tee",
+    title: "League of Legends Classic Yearbook Tee",
+    imageUrl: merchAssetUrl("8f1db0c815008cde9070446a5bc9a205f702b840-2560x2560.png"),
+    price: "$29.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "pool-party-caitlyn-bikini",
+    title: "Pool Party Caitlyn Bikini",
+    imageUrl: merchAssetUrl("31e7c2c734b4df133b027edbbbc66c84273b94c9-2560x2560.png"),
+    price: "$49.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "lol-classic-poro-plush-sale",
+    title: "Poro Limited Edition Plush",
+    imageUrl: merchAssetUrl("31e7c2c734b4df133b027edbbbc66c84273b94c9-2560x2560.png"),
+    price: "$19.99",
+    originalPrice: "$29.99",
+    badges: ["Sale"],
+    badge: "Sale",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "lol-classic-cap-sale",
+    title: "League of Legends Classic Logo Cap",
+    imageUrl: merchAssetUrl("f8855c0e351de66671faf5e009fd161ed508bd4c-2560x2560.png"),
+    price: "$19.99",
+    originalPrice: "$34.99",
+    badges: ["Sale"],
+    badge: "Sale",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "lol-classic-keychain-sale",
+    title: "League of Legends Classic Keychain Set",
+    imageUrl: merchAssetUrl("8c31457af6be19f63c1c7db02a17cf35b294f69f-2560x2560.png"),
+    price: "$9.99",
+    originalPrice: "$16.99",
+    badges: ["Sale"],
+    badge: "Sale",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "apparel-lol-classic-zip-hoodie",
+    title: "League of Legends Classic Zip-Up Hoodie",
+    imageUrl: merchAssetUrl("a87ba685e599a287b6f56c32fb629d0d8515c828-2560x2560.png"),
+    price: "$74.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "apparel-lol-classic-crewneck",
+    title: "League of Legends Classic Crewneck Sweatshirt",
+    imageUrl: merchAssetUrl("8f1db0c815008cde9070446a5bc9a205f702b840-2560x2560.png"),
+    price: "$54.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "League of Legends",
+  },
+];
+
 /**
  * URL handles for the /merch/collection/[handle] browse route.
  * These match the switch cases in `apps/web/src/app/merch/collection/[handle]/page.tsx`.
