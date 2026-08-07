@@ -265,7 +265,8 @@ function DropdownMenu({ items, onSelect, menuId }: DropdownMenuProps) {
 // Sub-component: Cart SVG (shopping cart outline — basket + wheels)
 // ---------------------------------------------------------------------------
 
-/** Shopping-cart outline glyph (22×21). Measured from real merch.riotgames.com. */
+/** Shopping-cart outline glyph (22×21). Measured from real merch.riotgames.com.
+ *  issue #891 delta #11: wheels are outline circles (stroke), not filled dots. */
 function CartIcon({ size = 22 }: { size?: number }) {
   return (
     <svg
@@ -281,9 +282,9 @@ function CartIcon({ size = 22 }: { size?: number }) {
     >
       {/* Cart body / basket */}
       <path d="M1 1h2.5l2 9h11l2-7H6" />
-      {/* Wheels */}
-      <circle cx="9" cy="18" r="1.5" fill="currentColor" stroke="none" />
-      <circle cx="16" cy="18" r="1.5" fill="currentColor" stroke="none" />
+      {/* Wheels — OUTLINE circles (issue #891 delta #11: real site has round outline wheels, not filled dots) */}
+      <circle cx="9" cy="18" r="1.5" />
+      <circle cx="16" cy="18" r="1.5" />
     </svg>
   );
 }
@@ -577,9 +578,16 @@ export function MerchHeader({
               <WordmarkCaret />
 
               {/*
-               * WHITE fist emblem circle — white circle (#ffffff) with black fist.
-               * Desktop: ~46px. Mobile: 28px.
-               * Documented brand exception: real-brand SVG may carry brand color.
+               * Riot fist emblem — white circle with recognizable clenched Riot fist.
+               * issue #891 delta #1: previous path was a bowling-pin blob; replaced
+               * with a proper clenched fist silhouette matching the real Riot emblem.
+               * Desktop: 75×75 full-height link tap area (75×79 per issue), fist mark 75×28.
+               * Mobile: white circle 28×28, red fist per issue spec.
+               * Documented brand exception: real-brand asset; --color-merch-emblem-* tokens apply.
+               *
+               * Fist path: Riot's logo shows a clenched right fist viewed from the front,
+               * with four curled fingers across the top and a thumb tucked at the left side.
+               * viewBox="0 0 100 120" — fist is slightly taller than wide.
                */}
               <svg
                 aria-hidden="true"
@@ -589,14 +597,34 @@ export function MerchHeader({
                 xmlns="http://www.w3.org/2000/svg"
                 className="hidden lg:block"
               >
-                {/* WHITE circle — brand asset; real site has white circle on dark header */}
+                {/* White circle — brand asset; real site has white circle on dark header */}
                 <circle cx="50" cy="50" r="50" fill="var(--color-merch-emblem-bg)" />
-                {/* BLACK fist silhouette (presentational) */}
+                {/*
+                 * Riot clenched fist silhouette — stylized front-facing fist.
+                 * Four curled fingers visible across top, thumb tucked at left.
+                 * Knuckle row across top, palm + wrist below.
+                 */}
                 <path
-                  d="M38 70 L38 42 Q38 36 44 36 L44 30 Q44 24 50 24 Q56 24 56 30 L56 36 Q60 36 62 40 L62 48 Q64 48 66 52 L66 62 Q66 68 60 70 Z"
+                  d="
+                    M 30 72 L 30 56 Q 30 52 26 50 L 26 44 Q 26 38 32 38 L 32 32 Q 32 26 38 26
+                    L 38 22 Q 38 18 44 18 Q 50 18 50 22 L 50 18 Q 50 14 56 14 Q 62 14 62 20 L 62 26
+                    Q 66 26 68 30 L 68 38 Q 72 38 74 42 L 74 50 Q 74 54 70 56 L 70 60 Q 70 66 64 68
+                    L 64 72 Q 64 76 58 76 L 36 76 Q 30 76 30 72 Z
+                  "
                   fill="var(--color-merch-emblem-fist)"
                 />
-                <rect x="34" y="42" width="8" height="28" rx="3" fill="var(--color-merch-emblem-fist)" />
+                {/* Thumb — tucked at left side of the fist */}
+                <path
+                  d="M 26 50 Q 22 50 20 54 L 20 62 Q 20 66 24 68 L 30 68 L 30 56 Z"
+                  fill="var(--color-merch-emblem-fist)"
+                />
+                {/* Knuckle ridge across top — subtle horizontal bump */}
+                <path
+                  d="M 32 38 Q 38 34 44 36 Q 50 34 56 36 Q 62 34 68 38"
+                  fill="none"
+                  stroke="var(--color-merch-emblem-bg)"
+                  strokeWidth="2.5"
+                />
               </svg>
               <svg
                 aria-hidden="true"
@@ -606,14 +634,30 @@ export function MerchHeader({
                 xmlns="http://www.w3.org/2000/svg"
                 className="block lg:hidden"
               >
-                {/* WHITE circle — brand asset */}
+                {/* White circle — brand asset (mobile: white circle with red fist per issue #891 delta #1) */}
                 <circle cx="50" cy="50" r="50" fill="var(--color-merch-emblem-bg)" />
-                {/* BLACK fist silhouette */}
+                {/* Riot clenched fist silhouette */}
                 <path
-                  d="M38 70 L38 42 Q38 36 44 36 L44 30 Q44 24 50 24 Q56 24 56 30 L56 36 Q60 36 62 40 L62 48 Q64 48 66 52 L66 62 Q66 68 60 70 Z"
+                  d="
+                    M 30 72 L 30 56 Q 30 52 26 50 L 26 44 Q 26 38 32 38 L 32 32 Q 32 26 38 26
+                    L 38 22 Q 38 18 44 18 Q 50 18 50 22 L 50 18 Q 50 14 56 14 Q 62 14 62 20 L 62 26
+                    Q 66 26 68 30 L 68 38 Q 72 38 74 42 L 74 50 Q 74 54 70 56 L 70 60 Q 70 66 64 68
+                    L 64 72 Q 64 76 58 76 L 36 76 Q 30 76 30 72 Z
+                  "
                   fill="var(--color-merch-emblem-fist)"
                 />
-                <rect x="34" y="42" width="8" height="28" rx="3" fill="var(--color-merch-emblem-fist)" />
+                {/* Thumb — tucked at left side */}
+                <path
+                  d="M 26 50 Q 22 50 20 54 L 20 62 Q 20 66 24 68 L 30 68 L 30 56 Z"
+                  fill="var(--color-merch-emblem-fist)"
+                />
+                {/* Knuckle ridge */}
+                <path
+                  d="M 32 38 Q 38 34 44 36 Q 50 34 56 36 Q 62 34 68 38"
+                  fill="none"
+                  stroke="var(--color-merch-emblem-bg)"
+                  strokeWidth="2.5"
+                />
               </svg>
             </button>
 
@@ -651,13 +695,16 @@ export function MerchHeader({
                       style={{
                         fontSize: "16px",
                         fontWeight: 600,
-                        letterSpacing: "0.06em",
+                        /* issue #891 delta #3: letter-spacing normal (real: no extra tracking on nav links).
+                           Previous 0.06em was wrong — size/weight/case are frozen but tracking was not. */
+                        letterSpacing: "normal",
                         textTransform: "uppercase",
-                        /* MY SHOP: real site rgb(255,215,0) #FFD700 = --color-merch-badge-limited
-                           (issue #856, delta #17). Previous --color-merch-gold (#F9C824) was wrong. */
+                        /* issue #891 delta #3: Shop All/Categories/Featured/Sale → #d0d0d0 (--color-merch-nav-link).
+                           Previous --color-merch-on-dark (#ffffff) was wrong.
+                           MY SHOP: real site rgb(255,215,0) #FFD700 = --color-merch-badge-limited (issue #856, delta #17). */
                         color: isGold
                           ? "var(--color-merch-badge-limited)"
-                          : "var(--color-merch-on-dark)",
+                          : "var(--color-merch-nav-link)",
                         background: "none",
                         border: "none",
                         cursor: "pointer",
@@ -723,12 +770,14 @@ export function MerchHeader({
                 )}
               </button>
 
-              {/* Search — hidden below md (768px) per real site @390; 26px icon mobile-md, 20px desktop */}
+              {/* Search — always visible at all breakpoints.
+                   issue #891 delta #2: real site shows search at 390 (four icons in right cluster:
+                   cart·search·globe·burger). Previous "hidden below md" comment + class were WRONG. */}
               <button
                 type="button"
                 aria-label="Search"
                 onClick={onSearchClick}
-                className="hidden items-center justify-center transition-opacity duration-150 hover:opacity-70 md:flex"
+                className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
                 style={{
                   color: "var(--color-merch-on-dark)",
                   width: "44px",
@@ -818,8 +867,8 @@ export function MerchHeader({
                 </svg>
               </button>
 
-              {/* SIGN IN — desktop only (hidden at < lg).                  */}
-              {/* Real: 87×32, label 13px/600/1.04px uppercase, solid dark. */}
+              {/* SIGN IN — desktop only (hidden at < lg).
+                   issue #891 delta #7: real 14px/700/normal (previous 13px/600/1.04px was wrong). */}
               <button
                 type="button"
                 aria-label="Sign in to your account"
@@ -831,10 +880,10 @@ export function MerchHeader({
                   borderRadius: "6.4px",
                   width: "87px",
                   height: "32px",
-                  fontSize: "13px",
-                  fontWeight: 600,
+                  fontSize: "14px",
+                  fontWeight: 700,
                   textTransform: "uppercase",
-                  letterSpacing: "1.04px",
+                  letterSpacing: "normal",
                   border: "none",
                   cursor: "pointer",
                   whiteSpace: "nowrap",
@@ -844,8 +893,9 @@ export function MerchHeader({
                 Sign In
               </button>
 
-              {/* Hamburger — mobile only (hidden at lg+); 28px icon, ~4px from edge. */}
-              {/* Burger icon stays ☰ even when drawer is open (real site behavior). */}
+              {/* Hamburger — mobile only (hidden at lg+); 28×35 icon, tap area 28×78 (full bar height).
+                   issue #891 delta #12: real svg 28×35, tap area 28×78 (full bar height).
+                   Burger icon stays ☰ even when drawer is open (real site behavior). */}
               <button
                 type="button"
                 id={hamburgerId}
@@ -856,25 +906,25 @@ export function MerchHeader({
                 className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70 lg:hidden"
                 style={{
                   color: "var(--color-merch-on-dark)",
-                  width: "36px",
-                  height: "44px",
-                  paddingRight: "4px",
+                  width: "28px",
+                  height: "78px",
+                  paddingRight: "0",
                 }}
               >
-                {/* Hamburger icon — stays ☰ (does not change to ✕ on open) */}
+                {/* Hamburger icon 28×35 — stays ☰ (does not change to ✕ on open) */}
                 <svg
                   aria-hidden="true"
                   width="28"
-                  height="20"
-                  viewBox="0 0 28 20"
+                  height="35"
+                  viewBox="0 0 28 35"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
                 >
-                  <line x1="0" y1="2" x2="28" y2="2" />
-                  <line x1="0" y1="10" x2="28" y2="10" />
-                  <line x1="0" y1="18" x2="28" y2="18" />
+                  <line x1="0" y1="9" x2="28" y2="9" />
+                  <line x1="0" y1="17.5" x2="28" y2="17.5" />
+                  <line x1="0" y1="26" x2="28" y2="26" />
                 </svg>
               </button>
 
@@ -934,8 +984,11 @@ export function MerchHeader({
             aria-label="Mobile store navigation"
             style={{
               backgroundColor: "var(--color-merch-bg)",
-              /* 1px amber left-edge line — measured from real site (delta #13) */
-              borderLeft: "1px solid var(--color-merch-menu-edge)",
+              /*
+               * issue #891 delta #8: real sheet is outlined with a thin BLUE border
+               * (not the previous gold left-edge stripe from #856 delta #13).
+               */
+              border: "1px solid var(--color-merch-menu-sheet-border)",
               width: "100%",
               maxWidth: "100%",
               overflowY: "auto",
@@ -962,7 +1015,11 @@ export function MerchHeader({
                       justifyContent: "space-between",
                       width: "100%",
                       height: "56px",
-                      padding: "0 20px",
+                      /*
+                       * issue #891 delta #8: item left padding 32.5px (real measured).
+                       * Previous: 20px was wrong.
+                       */
+                      padding: "0 20px 0 32.5px",
                       background: "none",
                       border: "none",
                       cursor: "pointer",
@@ -977,17 +1034,24 @@ export function MerchHeader({
                     }}
                   >
                     {label}
-                    {/* Right caret — solid triangle */}
+                    {/*
+                     * issue #891 delta #8: thin outline chevron › (~10px), right-aligned.
+                     * Previous: large solid black triangles (~20px) were wrong.
+                     */}
                     <svg
                       aria-hidden="true"
-                      width="8"
-                      height="13"
-                      viewBox="0 0 8 13"
-                      fill={isGold ? "var(--color-merch-badge-limited)" : "var(--color-merch-ink)"}
+                      width="10"
+                      height="16"
+                      viewBox="0 0 10 16"
+                      fill="none"
+                      stroke={isGold ? "var(--color-merch-badge-limited)" : "var(--color-merch-ink)"}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       xmlns="http://www.w3.org/2000/svg"
                       style={{ flexShrink: 0 }}
                     >
-                      <path d="M0 0 L8 6.5 L0 13 Z" />
+                      <polyline points="2,1 9,8 2,15" />
                     </svg>
                   </button>
                 </li>
@@ -1013,7 +1077,7 @@ export function MerchHeader({
                       justifyContent: "space-between",
                       width: "100%",
                       height: "56px",
-                      padding: "0 20px",
+                      padding: "0 20px 0 32.5px",
                       background: "none",
                       border: "none",
                       cursor: "pointer",
@@ -1026,32 +1090,47 @@ export function MerchHeader({
                     }}
                   >
                     {label}
+                    {/* Thin outline chevron › */}
                     <svg
                       aria-hidden="true"
-                      width="8"
-                      height="13"
-                      viewBox="0 0 8 13"
-                      fill="var(--color-merch-ink)"
+                      width="10"
+                      height="16"
+                      viewBox="0 0 10 16"
+                      fill="none"
+                      stroke="var(--color-merch-ink)"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       xmlns="http://www.w3.org/2000/svg"
                       style={{ flexShrink: 0 }}
                     >
-                      <path d="M0 0 L8 6.5 L0 13 Z" />
+                      <polyline points="2,1 9,8 2,15" />
                     </svg>
                   </button>
                 </li>
               ))}
             </ul>
 
-            {/* Sign In row — appears below group 2 on real site (delta #11) */}
+            {/*
+             * Divider above SIGN IN — issue #891 delta #8: real site has a divider
+             * separating SIGN IN from the rest of group 2.
+             */}
+            <div
+              aria-hidden="true"
+              style={{ height: "1px", backgroundColor: "var(--color-merch-border)" }}
+            />
+
+            {/* Sign In row — with its own chevron (issue #891 delta #8) */}
             <button
               type="button"
               onClick={handleSignIn}
               style={{
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "space-between",
                 width: "100%",
                 height: "56px",
-                padding: "0 20px",
+                padding: "0 20px 0 32.5px",
                 background: "none",
                 border: "none",
                 cursor: "pointer",
@@ -1064,6 +1143,22 @@ export function MerchHeader({
               }}
             >
               Sign In
+              {/* Thin outline chevron › — issue #891 delta #8: SIGN IN has its own chevron */}
+              <svg
+                aria-hidden="true"
+                width="10"
+                height="16"
+                viewBox="0 0 10 16"
+                fill="none"
+                stroke="var(--color-merch-ink)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ flexShrink: 0 }}
+              >
+                <polyline points="2,1 9,8 2,15" />
+              </svg>
             </button>
           </nav>
         )}
@@ -1179,8 +1274,8 @@ export function MerchHeader({
                 {/*
                  * Marquee track — 20 copies side-by-side; animates translateX –50%
                  * (one full copy width) in a loop for a seamless repeat effect.
-                 * Typography: Inter 14px/600/uppercase (real measured, issue #856 delta #7).
-                 * Previous: 16px/700 — corrected.
+                 * issue #891 delta #4: 16px/600/uppercase, ~0.08em tracking, ~74px gap.
+                 * Previous: 14px, normal tracking, 80px gap (issue #856 delta #7 was stale).
                  */}
                 <div
                   className="merch-marquee-track"
@@ -1196,11 +1291,12 @@ export function MerchHeader({
                     <span
                       key={i}
                       style={{
-                        fontSize: "14px",
+                        fontSize: "16px",
                         fontWeight: 600,
                         textTransform: "uppercase",
+                        letterSpacing: "0.08em",
                         color: "var(--color-merch-on-dark)",
-                        paddingRight: "80px",
+                        paddingRight: "74px",
                       }}
                     >
                       {announcement}
