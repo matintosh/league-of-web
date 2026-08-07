@@ -11,12 +11,17 @@
  *   Container: full-width flex items-center justify-between (no max-w cap — fixed side padding only)
  *   Horizontal padding: left 40px desktop / 24px mobile; right 24px desktop / 8px mobile
  *   Parent crumbs: 16px/400 black — var(--color-merch-ink-dark), lh 20px
- *   Separator "/": var(--color-merch-ink-dark)
- *   Current crumb (last): var(--color-merch-ink-dark), font-weight 600, line-height 20px
- *   Count: rendered as <sup> at 12px, vertical-align super, lh 15px, no leading space
+ *   Separator: NONE — real DOM has no "/" node; crumbs separated by gap only
+ *   Current crumb (last): var(--color-merch-ink-dark), font-weight 400, line-height 20px
+ *   Count: rendered as <sup> at 12px, marginLeft 4px, position relative top -2px (no lh override)
  *   Mobile (< md): only last crumb visible, hidden rest; x-pad 24px left / 8px right
  *   REFINE button: bg var(--color-merch-refine) #eb0029; 113×40; radius 2; padding 8px 16px 8px 8px;
  *     button base 13.33px/400; LABEL is nested <span> riotSans 16px/700/lh18/uppercase; icon 24×24; gap 8px
+ *     Icon: 2 horizontal sliders with HOLLOW ring knobs (fill=none stroke=currentColor)
+ *
+ * Height: 40px mobile, 60px desktop.
+ * The desktop override is applied via the [data-merch-bb] data-attribute rule in
+ * merch-layout.css (avoids Tailwind JIT purge of md:h-[60px] arbitrary values).
  */
 
 // ---------------------------------------------------------------------------
@@ -49,7 +54,9 @@ export interface MerchBreadcrumbBarProps {
 }
 
 // ---------------------------------------------------------------------------
-// Sliders icon — 24×24, matching measured icon size on real merch.riotgames.com
+// Sliders icon — 24×24, 2 lines with HOLLOW ring knobs (fill=none stroke=currentColor)
+// Measured from merch.riotgames.com: sliders with 2 horizontal lines and hollow ring knobs.
+// Round-4 fix: was 3 lines with filled dots — corrected to 2 lines + hollow rings.
 // ---------------------------------------------------------------------------
 
 function SlidersIcon() {
@@ -64,12 +71,12 @@ function SlidersIcon() {
       strokeLinecap="round"
       style={{ width: 24, height: 24, display: "block" }}
     >
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <line x1="3" y1="12" x2="21" y2="12" />
-      <line x1="3" y1="18" x2="21" y2="18" />
-      <circle cx="7" cy="6" r="2.25" fill="currentColor" stroke="none" />
-      <circle cx="15" cy="12" r="2.25" fill="currentColor" stroke="none" />
-      <circle cx="9" cy="18" r="2.25" fill="currentColor" stroke="none" />
+      {/* 2 horizontal slider lines */}
+      <line x1="3" y1="8" x2="21" y2="8" />
+      <line x1="3" y1="16" x2="21" y2="16" />
+      {/* Hollow ring knobs — fill=none, stroke=currentColor */}
+      <circle cx="8" cy="8" r="2.25" fill="none" stroke="currentColor" />
+      <circle cx="16" cy="16" r="2.25" fill="none" stroke="currentColor" />
     </svg>
   );
 }
@@ -80,12 +87,14 @@ function SlidersIcon() {
 
 /**
  * Full-width breadcrumb bar with optional product count and inline REFINE button.
- * Height: 40px mobile / 60px desktop. Left padding: 24px mobile / 40px desktop.
- * Right padding: 8px mobile / 24px desktop (REFINE right edge 24px from viewport @ 1280, ~8px @ 390).
- * Background: solid white (--color-merch-bg). Current crumb: 16px/600/lh20.
+ * Height: 40px mobile / 60px desktop (desktop via [data-merch-bb] in merch-layout.css).
+ * Left padding: 24px mobile / 40px desktop.
+ * Right padding: 8px mobile / 24px desktop.
+ * Background: solid white (--color-merch-bg). Current crumb: 16px/400/lh20.
+ * No "/" separator — real DOM has only gap spacing between crumbs.
  *
- * Mobile: all non-last crumbs (and their separators) are hidden; only the current crumb
- * is shown, at 24px from the left edge, matching merch.riotgames.com at 390.
+ * Mobile: all non-last crumbs are hidden; only the current crumb is shown,
+ * at 24px from the left edge, matching merch.riotgames.com at 390.
  */
 export function MerchBreadcrumbBar({
   crumbs,
@@ -96,13 +105,17 @@ export function MerchBreadcrumbBar({
   return (
     /*
      * Outer bar: solid white bg, 40px mobile / 60px desktop.
-     * h-10 = 40px mobile; md:h-[60px] = 60px at md+.
+     * data-merch-bb: hooks the @media (min-width: 768px) rule in merch-layout.css
+     * that overrides height to 60px — avoids relying on Tailwind JIT for md:h-[60px].
      * Real: bar y=130-190 @ 1280, y=90-130 @ 390 — flush under header.
-     * NOTE: height set directly on this element; no inner wrapper needed.
      */
     <div
-      className="flex h-10 w-full items-center md:h-[60px]"
-      style={{ backgroundColor: "var(--color-merch-bg)" }}
+      data-merch-bb
+      className="flex w-full items-center"
+      style={{
+        height: 40,
+        backgroundColor: "var(--color-merch-bg)",
+      }}
     >
       {/* Inner container — full-width, asymmetric padding:
            left: pl-6 (24px) mobile / md:pl-10 (40px) desktop
@@ -110,12 +123,12 @@ export function MerchBreadcrumbBar({
            Matches real REFINE right edge: x=1256 @ 1280 (24px inset), x=382 @ 390 (~8px inset) */}
       <nav
         aria-label={ariaLabel}
-        className="flex w-full items-center justify-between pl-6 pr-2 md:pl-10 md:pr-6"
+        className="flex h-full w-full items-center justify-between pl-6 pr-2 md:pl-10 md:pr-6"
         style={{ color: "var(--color-merch-ink-dark)" }}
       >
-        {/* Left: crumb trail */}
+        {/* Left: crumb trail — gap-2 (8px) separates crumbs; no "/" node (real DOM has none) */}
         <ol
-          className="flex items-center gap-1"
+          className="flex items-center gap-2"
           style={{
             listStyle: "none",
             margin: 0,
@@ -130,36 +143,20 @@ export function MerchBreadcrumbBar({
               <li
                 key={idx}
                 /*
-                 * Mobile: hide all non-last crumbs (and their "/" separators).
-                 * Real at 390: only "Shop All (691)" is visible at x=24; "Home /" is display:none.
+                 * Mobile: hide all non-last crumbs.
+                 * Real at 390: only "Shop All (691)" is visible at x=24; "Home" is display:none.
                  */
-                className={
-                  isLast
-                    ? "flex items-center gap-1"
-                    : "hidden items-center gap-1 md:flex"
-                }
-                style={{ alignItems: "center", gap: 4 }}
+                className={isLast ? undefined : "hidden md:list-item"}
               >
-                {idx > 0 && (
-                  <span
-                    aria-hidden
-                    /*
-                     * Mobile: hide the separator alongside its preceding crumb.
-                     * Without this, the last li renders "/ Shop All" on 390 because
-                     * only the li itself is shown while this span has no visibility guard.
-                     */
-                    className={isLast ? "hidden md:inline" : undefined}
-                    style={{ color: "var(--color-merch-ink-dark)" }}
-                  >
-                    /
-                  </span>
-                )}
                 {isLast ? (
-                  /* Current crumb: 16px/600/lh20 — measured at both 1280 and 390 */
+                  /*
+                   * Current crumb: 16px/400/lh20 — measured at both 1280 and 390.
+                   * Round-4 spec: weight 400 (round-3 had 600 — reverted here).
+                   */
                   <span
                     style={{
                       color: "var(--color-merch-ink-dark)",
-                      fontWeight: 600,
+                      fontWeight: 400,
                       lineHeight: "20px",
                     }}
                   >
@@ -171,11 +168,16 @@ export function MerchBreadcrumbBar({
                           color: "var(--color-merch-ink-dark)",
                           fontWeight: 400,
                           /*
-                           * Real: <sup> has vertical-align: super (raised ~2px), lineHeight 15px.
-                           * No leading space before "(N)" — real renders "(691)" not " (691)".
+                           * Round-4 fix: ~4px gap after label + ~2px raise.
+                           * position:relative + top:-2px gives a controlled 2px raise without
+                           * escaping the line box (vs the ~5-6px jump from vertical-align:super).
+                           * marginLeft 4px matches the measured ~4px gap between "Sales" and "(7)".
+                           * verticalAlign:baseline cancels the browser's default <sup> offset.
                            */
-                          verticalAlign: "super",
-                          lineHeight: "15px",
+                          marginLeft: 4,
+                          position: "relative",
+                          top: -2,
+                          verticalAlign: "baseline",
                         }}
                       >
                         {`(${count})`}
@@ -211,6 +213,7 @@ export function MerchBreadcrumbBar({
         {/* Right: optional REFINE button — 113×40, bg var(--color-merch-refine), radius 2,
              button base 13.33px/400; LABEL is nested <span> riotSans 16px/700/lh18/uppercase;
              icon 24×24, gap 8px, padding 8px 16px 8px 8px.
+             Icon: 2 horizontal lines with HOLLOW ring knobs (fill=none stroke=currentColor).
              Measured from merch.riotgames.com 2026-08-06. */}
         {onRefineClick && (
           <button

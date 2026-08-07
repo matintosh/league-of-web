@@ -15,7 +15,7 @@ export const merchBreadcrumbBarShowcase: ShowcaseEntry = {
   name: "Merch Breadcrumb Bar",
   area: "merch",
   description:
-    "Full-width breadcrumb bar with optional product count and inline red REFINE button. Height 60px desktop / 40px mobile. Transparent background, 40px horizontal padding, 16px --color-merch-ink crumb text. Used on shop-all, sale, collection, and product pages.",
+    "Full-width breadcrumb bar with optional product count and inline red REFINE button. Height 60px desktop / 40px mobile. White bg (--color-merch-bg), 40px left padding desktop, crumbs separated by gap (no '/' node), current crumb 16px/400. REFINE icon: 2-line sliders with hollow ring knobs. Used on shop-all, sale, collection, and product pages.",
   variants: [
     {
       name: "Shop All — 2 crumbs, count + REFINE (interactive)",
