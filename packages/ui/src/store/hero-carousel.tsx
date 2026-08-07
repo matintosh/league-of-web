@@ -76,7 +76,7 @@ export function HeroCarousel({
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(to top, rgba(1,10,19,0.95) 0%, rgba(1,10,19,0.7) 35%, rgba(1,10,19,0.1) 75%, transparent 100%)",
+            "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 95%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 70%, transparent) 35%, color-mix(in srgb, var(--color-hextech-black) 10%, transparent) 75%, transparent 100%)",
         }}
         aria-hidden="true"
       />
@@ -86,7 +86,7 @@ export function HeroCarousel({
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(to right, rgba(1,10,19,0.7) 0%, transparent 50%)",
+            "linear-gradient(to right, color-mix(in srgb, var(--color-hextech-black) 70%, transparent) 0%, transparent 50%)",
         }}
         aria-hidden="true"
       />
