@@ -2,34 +2,28 @@
 
 /**
  * MerchProductGallery — PDP left column: themed diagonal hero surface +
- * main image + secondary 2-up detail-image carousel below.
+ * main image + secondary full-bleed 640px carousel below.
  *
  * Measured from merch.riotgames.com (amumu-plush, 1280px + 390px via Playwright):
  *
  *   Desktop (1280px):
- *     Hero zone: 828×800px, single background layer —
- *       Light/white textured webp, full 828×800.
- *       The dark-navy diagonal band is faint/absent on the real site.
+ *     Hero zone: 828×800px, two background layers:
+ *       1. Light/white textured webp, full 828×800 (bgImageUrl).
+ *       2. Dark navy diagonal band across the bottom-left third (fgImageUrl),
+ *          clip-path polygon: clear triangle top-right, navy bottom-left.
+ *          Both layers continue into the secondary carousel surface.
  *     League of Legends wordmark: absolute, top-left, SOLID BLACK opacity 1.
  *     Product image container: 664×664, positioned at (82, 68) inside hero.
  *     Actual <img>: 616×616 within that container.
- *     Secondary carousel: full-bleed Swiper of 640×640 object-fit:cover slides,
- *       2-up edge-to-edge (x=0 and x=644 at y=930), ‹ › chevron overlays,
- *       flush under the hero. No thumbnails, no gaps between slides.
+ *     Secondary carousel: full-bleed 100vw track, 2-up 640×640 slides at
+ *       x=0 and x=644 (measured: x=−594/0 when scrolled), horizontal carousel
+ *       with ‹ › chevron overlays, flush under the hero.
+ *       Slides sit on the SAME themed surface (light bg + navy band).
  *
  *   Mobile (390px):
- *     Hero zone: 390×629px.
- *     Product image: 342×629, positioned at x=24, y=0 (fills hero).
- *     Secondary carousel: same 2-up tiles below hero.
- *
- *   NOT present on the real site:
- *     - Heavy navy diagonal band overlay (faint/absent on real amumu-plush)
- *     - Grey padded surface panel (--color-merch-surface-alt)
- *     - Rotated vertical "LEAGUE OF LEGENDS" side label
- *     - Green "New" badge overlay in the gallery (badge is in purchase panel)
- *
- *   Background assets: Sanity webp from the "consumer_products" dataset,
- *   supplied via bgImageUrl prop. The page provides URLs; the component is presentational.
+ *     Hero zone: 390×573px (product image ~342×573, navy band at bottom).
+ *     Product image: 342×573, positioned at x=24, y=0 (fills hero height).
+ *     Secondary carousel: same full-bleed 2-up 640×640 tiles below hero.
  *
  * Controlled: pass selectedIndex + onSelect from parent demo/page.
  */
@@ -53,8 +47,9 @@ export interface MerchProductGalleryProps {
   bgImageUrl?: string;
   /**
    * URL for the lower/foreground layer of the diagonal hero surface (dark navy band).
-   * Measured: barely visible on the real amumu-plush PDP — omit or set opacity low.
-   * Falls back to nothing (transparent) when omitted to match real site.
+   * Measured: clear triangle top-right, dark navy bottom-left third of the hero.
+   * Falls back to --color-merch-pdp-hero-navy (solid navy) when omitted.
+   * Rendered on both desktop and mobile, continuing into the secondary carousel surface.
    */
   fgImageUrl?: string;
 }
@@ -64,7 +59,7 @@ export const PDP_HERO_BG_ID = "b8551562d7525bee89839714bb667923f7515d6e-2176x191
 export const PDP_HERO_FG_ID = "2ed0b8698a386ef2ceaf35a679ddf0fa2c93f917-2176x814.webp";
 
 /**
- * MerchProductGallery — themed hero surface + product image + 2-up detail carousel.
+ * MerchProductGallery — themed hero surface + product image + full-bleed 640px detail carousel.
  * Matches the real merch.riotgames.com PDP gallery (verified 2026-08 via Playwright).
  * Place inside the 64.7% left cell of the PDP grid alongside MerchPurchasePanel.
  */
@@ -74,7 +69,7 @@ export function MerchProductGallery({
   selectedIndex = 0,
   onSelect,
   bgImageUrl,
-  fgImageUrl: _fgImageUrl,
+  fgImageUrl,
 }: MerchProductGalleryProps) {
   const uid = useId();
   const activeIdx = Math.max(0, Math.min(selectedIndex, images.length - 1));
@@ -102,16 +97,29 @@ export function MerchProductGallery({
     onSelect(prev);
   }
 
+  /*
+   * Diagonal navy band clip-path.
+   * Real site: navy band occupies bottom-left third; diagonal cuts from
+   * roughly top-center to bottom-right of the band layer.
+   * polygon: top-left → diagonal cut from ~(55%,0%) down to (100%,45%) → bottom-right → bottom-left
+   * This clips the fgImage or fallback navy colour into a triangular wedge.
+   */
+  const diagonalClip = "polygon(0% 0%, 55% 0%, 100% 45%, 100% 100%, 0% 100%)";
+
   return (
-    <div style={{ fontFamily: "var(--font-merch)", width: "100%" }}>
+    <div
+      className="merch-gallery-root"
+      style={{ fontFamily: "var(--font-merch)", width: "100%" }}
+    >
 
       {/* ── Themed hero surface ──────────────────────────────────────────── */}
       {/*
-       * Single background layer: light/white textured webp, full 828×800.
-       * The real site's faint navy band is NOT rendered here — it's too subtle
-       * to reproduce without the exact Sanity asset and would look incorrect
-       * with a plain color fallback. The fgImageUrl prop is accepted but unused,
-       * preserving the prop contract for callers that pass it.
+       * Two absolute background layers:
+       *   1. Light textured surface (bgImageUrl or --color-merch-surface).
+       *   2. Navy diagonal band (fgImageUrl or --color-merch-pdp-hero-navy),
+       *      clipped by diagonalClip to the bottom-left triangle.
+       * Both layers apply on desktop AND mobile; real site confirms the navy
+       * band is present on both viewports.
        */}
       <div
         className="merch-gallery-hero-zone"
@@ -123,7 +131,7 @@ export function MerchProductGallery({
           overflow: "hidden",
         }}
       >
-        {/* Background layer — light textured surface */}
+        {/* Layer 1: upper light textured surface */}
         <div
           aria-hidden="true"
           style={{
@@ -133,6 +141,20 @@ export function MerchProductGallery({
             backgroundColor: bgImageUrl ? undefined : "var(--color-merch-surface)",
             backgroundSize: "cover",
             backgroundPosition: "center",
+          }}
+        />
+
+        {/* Layer 2: dark navy diagonal band — bottom-left triangle */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: fgImageUrl ? `url(${fgImageUrl})` : undefined,
+            backgroundColor: fgImageUrl ? undefined : "var(--color-merch-pdp-hero-navy)",
+            backgroundSize: "cover",
+            backgroundPosition: "center bottom",
+            clipPath: diagonalClip,
           }}
         />
 
@@ -159,7 +181,7 @@ export function MerchProductGallery({
         {/* ── Main hero product image ────────────────────────────────────── */}
         {/*
          * Desktop: 664×664px container at (82, 68), actual img 616×616.
-         * Mobile: 342×629 img at x=24 (hero is 629px tall on mobile).
+         * Mobile: 342×573 img at x=24 (hero is 573px tall on mobile).
          * object-fit: contain so art floats naturally on the background.
          */}
         <div
@@ -191,85 +213,122 @@ export function MerchProductGallery({
         </div>
       </div>
 
-      {/* ── Secondary images — 2-up 640×640 detail carousel ─────────────── */}
+      {/* ── Secondary images — full-bleed 2-up 640×640 detail carousel ───── */}
       {/*
-       * Real: full-bleed Swiper, 640×640 object-fit:cover slides, 2-up
-       * edge-to-edge (x=0 and x=644 at y=930), ‹ › chevron overlays,
+       * Real: full-bleed 100vw Swiper track, 640×640 object-fit:cover slides
+       * at x=0 and x=644 (4px gap) at y=930, ‹ › chevron overlays,
        * LoL wordmark bottom-left, flush under the hero.
-       * We render a relative container clipped to show 2 slides at a time,
-       * with prev/next chevron buttons overlaid.
+       * The slide surface continues the themed bg (light + navy band).
+       *
+       * Implementation:
+       *   - position:relative wrapper with left:50%; transform:translateX(-50%)
+       *     to break out of the 64.7% grid column and stretch 100vw.
+       *   - Each slide is 640px wide with 4px gap, 640px tall.
+       *   - translateX shift = -carouselOffset * 644px (slide width + gap).
+       *
+       * IMPORTANT: We use a real @media query (not Tailwind arbitrary breakpoints)
+       * to swap to 100% width on mobile where 100vw === container width.
        */}
       {hasSecondary && (
         <div
+          className="merch-gallery-carousel-outer"
           style={{
             position: "relative",
-            width: "100%",
+            /* Full-bleed: break out of 64.7% column */
+            width: "100vw",
+            left: "50%",
+            transform: "translateX(-50%)",
             marginTop: 0,
+            overflow: "hidden",
           }}
         >
-          {/* Slide window — clips to exactly 2 slide widths */}
+          {/* Themed slide surface — mirrors the hero background layers */}
+          {/* Layer 1: light background */}
           <div
+            aria-hidden="true"
             style={{
-              overflow: "hidden",
-              width: "100%",
+              position: "absolute",
+              inset: 0,
+              backgroundImage: bgImageUrl ? `url(${bgImageUrl})` : undefined,
+              backgroundColor: bgImageUrl ? undefined : "var(--color-merch-surface)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              zIndex: 0,
+            }}
+          />
+          {/* Layer 2: navy diagonal band on slide surface */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: fgImageUrl ? `url(${fgImageUrl})` : undefined,
+              backgroundColor: fgImageUrl ? undefined : "var(--color-merch-pdp-hero-navy)",
+              backgroundSize: "cover",
+              backgroundPosition: "center bottom",
+              clipPath: diagonalClip,
+              zIndex: 0,
+            }}
+          />
+
+          {/* Slide track */}
+          <div
+            id={`${uid}-carousel`}
+            role="list"
+            aria-label="Product detail images"
+            style={{
+              display: "flex",
+              gap: 4,
+              transition: "transform 0.3s ease",
+              transform: `translateX(calc(-${carouselOffset} * 644px))`,
+              position: "relative",
+              zIndex: 1,
             }}
           >
-            <div
-              id={`${uid}-carousel`}
-              role="list"
-              aria-label="Product detail images"
-              style={{
-                display: "flex",
-                /* Each slide = 50% of container width for 2-up layout */
-                transition: "transform 0.3s ease",
-                transform: `translateX(calc(-${carouselOffset} * 50%))`,
-              }}
-            >
-              {carouselImages.map((src, idx) => {
-                const imgIdx = idx + 1;
-                const isActive = imgIdx === activeIdx;
-                return (
-                  <button
-                    key={imgIdx}
-                    role="listitem"
-                    type="button"
-                    aria-label={`View image ${imgIdx + 1}`}
-                    aria-pressed={isActive}
-                    onClick={() => onSelect?.(imgIdx)}
+            {carouselImages.map((src, idx) => {
+              const imgIdx = idx + 1;
+              const isActive = imgIdx === activeIdx;
+              return (
+                <button
+                  key={imgIdx}
+                  role="listitem"
+                  type="button"
+                  aria-label={`View image ${imgIdx + 1}`}
+                  aria-pressed={isActive}
+                  onClick={() => onSelect?.(imgIdx)}
+                  style={{
+                    padding: 0,
+                    border: "none",
+                    cursor: onSelect ? "pointer" : "default",
+                    flexShrink: 0,
+                    /* Real: 640×640 slides measured at x=0 and x=644 */
+                    width: 640,
+                    height: 640,
+                    overflow: "hidden",
+                    outline: isActive
+                      ? "2px solid var(--color-merch-ink)"
+                      : "none",
+                    outlineOffset: -2,
+                    /* Transparent — slide surface shows through from the outer layers */
+                    backgroundColor: "transparent",
+                    position: "relative",
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt={`Product image ${imgIdx + 1}`}
+                    loading="lazy"
                     style={{
-                      padding: 0,
-                      border: "none",
-                      cursor: onSelect ? "pointer" : "default",
-                      flexShrink: 0,
-                      /* 2-up: each slide = 50% of container */
-                      width: "50%",
-                      /* 640×640 aspect: height matches measured 640px */
-                      aspectRatio: "1 / 1",
-                      overflow: "hidden",
-                      outline: isActive
-                        ? "2px solid var(--color-merch-ink)"
-                        : "none",
-                      outlineOffset: -2,
-                      backgroundColor: "var(--color-merch-surface-alt)",
-                      position: "relative",
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
                     }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={src}
-                      alt={`Product image ${imgIdx + 1}`}
-                      loading="lazy"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        display: "block",
-                      }}
-                    />
-                  </button>
-                );
-              })}
-            </div>
+                  />
+                </button>
+              );
+            })}
           </div>
 
           {/* LoL wordmark — bottom-left of carousel, matching real site */}
@@ -354,23 +413,35 @@ export function MerchProductGallery({
       {/*
        * Desktop (828px hero) is the default above.
        * Mobile (390px):
-       *   hero zone: 629px tall (matches real 342×629 image measurement).
-       *   product image: 342×629, positioned at x=24, y=0.
+       *   hero zone: 573px tall (product image ~342×573, navy band at bottom).
+       *   product image: 342×573, positioned at x=24, y=0 (fills hero height).
+       *   carousel: width:100% (100vw === container on single-column mobile),
+       *     slides remain 640px but viewport clips at 390px — no horizontal overflow.
+       *
+       * NOTE: Real @media queries used here (not Tailwind arbitrary breakpoints
+       * like max-[639px]: — those may not emit, causing double-render issues).
        */}
       <style>{`
         @media (max-width: 480px) {
           .merch-gallery-hero-zone {
-            height: 629px !important;
+            height: 573px !important;
           }
           .merch-gallery-product-image {
             top: 0 !important;
             left: 24px !important;
             width: 342px !important;
-            height: 629px !important;
+            height: 573px !important;
           }
           .merch-gallery-product-image img {
             width: 342px !important;
-            height: 629px !important;
+            height: 573px !important;
+          }
+          .merch-gallery-carousel-outer {
+            /* On mobile the page is single-column so 100vw === container width.
+               Override the break-out technique to avoid double-render / scrollWidth mismatch. */
+            width: 100% !important;
+            left: 0 !important;
+            transform: none !important;
           }
         }
       `}</style>
