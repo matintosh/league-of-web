@@ -47,6 +47,7 @@
   --color-merch-surface:     #f5f5f5; /* card / panel / footer background              */
   --color-merch-surface-alt: #f7f7f7; /* gift-card band / alternate section bg          */
   --color-merch-border:      #e5e5e5; /* dividers, card outlines                       */
+  --color-merch-divider:     #e5e5e5; /* full-width section divider (PDP description top) — same as border */
   --color-merch-border-light: #d0d0d0; /* lighter divider — FAQs h2 bottom rule, strip arrow borders */
 
   /* ── Header / Footer (dark bar sampled from merch.riotgames.com) ──── */
@@ -70,7 +71,11 @@
   /* ── Price treatment ────────────────────────────────────────────────── */
   --color-merch-price-struck:   #666666; /* struck-through original price (sale items)    */
 
-  /* ── Category trail separator ───────────────────────────────────────── */
+  /* ── Category trail ─────────────────────────────────────────────────── */
+  /* Real PDP: trail text rgb(102,102,102) #666 — measured above H1 at y=170.
+     Pipe is rendered via ::after pseudo-element in the SAME #666 (not lighter grey).
+     No trailing pipe on the last term. */
+  --color-merch-trail-text:     #666666; /* category trail text + pipe — rgb(102,102,102) */
   /* Real PDP: '|' pipe glyph rgb(208,208,208) — lighter than the #666 text */
   --color-merch-trail-sep:      #d0d0d0; /* pipe separator between category trail terms   */
 
