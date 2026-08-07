@@ -210,8 +210,10 @@
   /* Content area */
   --color-launcher-content-bg:          #181818; /* center content area dark base — was #11131a, de-blued */
   /* Dark content surface — Riot Home + Games main area (image-5/image-7 refs are DARK) */
-  --color-launcher-home-content-bg:     #0f0f10; /* near-black, sampled ~rgb(14,13,11) from image-5/image-7 */
+  --color-launcher-home-content-bg:     #0f0f10; /* near-black, sampled ~rgb(14,13,11) from image-5/image-7; confirmed #726 */
   --color-launcher-home-content-ink:    #f0efec; /* near-white heading/body text, sampled rgb(223,222,220) */
+  /* Patch-notes strip bg — sampled rgb(31,31,31) from image-5.png patch-notes row (#926) */
+  --color-launcher-patch-notes-bg:      #1f1f1f;
 
   /* Dividers / borders */
   --color-launcher-border:       #2a2c35; /* subtle 1px panel borders */
@@ -516,8 +518,10 @@
     --color-launcher-panel-header: #242424; /* de-blued — was #1e2028 */
     --color-launcher-content-bg:          #181818; /* de-blued — was #11131a */
     /* Dark content surface — Riot Home + Games main area (image-5/image-7 refs are DARK) */
-    --color-launcher-home-content-bg:     #0f0f10;
+    --color-launcher-home-content-bg:     #0f0f10; /* confirmed #726 */
     --color-launcher-home-content-ink:    #f0efec;
+    /* Patch-notes strip bg — sampled rgb(31,31,31) from image-5.png patch-notes row (#926) */
+    --color-launcher-patch-notes-bg:      #1f1f1f;
     --color-launcher-border:       #2a2c35;
     --color-launcher-divider:      #22242c;
     --color-launcher-text-primary: #e8e6e1;
