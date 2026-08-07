@@ -180,7 +180,7 @@ function SubItemColumn({
       style={{ top: hasQuantity ? 22 : 6 }}
     >
       {/* Gold "+" affordance */}
-      <span className="font-display text-[13px] font-bold leading-none text-gold-2 [text-shadow:0_1px_2px_rgba(1,10,19,0.9)]">
+      <span className="font-display text-[13px] font-bold leading-none text-gold-2 [text-shadow:0_1px_2px_color-mix(in_srgb,var(--color-hextech-black)_90%,transparent)]">
         +
       </span>
       {/* Thin gold divider under the "+" */}
@@ -248,7 +248,7 @@ function GridTile({
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(to top, rgba(1,10,19,0.92) 0%, rgba(1,10,19,0.4) 60%, rgba(1,10,19,0.15) 100%)",
+            "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 92%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 40%, transparent) 60%, color-mix(in srgb, var(--color-hextech-black) 15%, transparent) 100%)",
         }}
         aria-hidden="true"
       />
@@ -259,7 +259,7 @@ function GridTile({
       {/* Top-right: quantity badge (plain gold text — no pill) */}
       {item.quantity !== undefined && (
         <div className="absolute top-1 right-2 z-10">
-          <span className="font-display text-[13px] font-bold leading-none text-gold-1 tracking-tight [text-shadow:0_1px_2px_rgba(1,10,19,0.9)]">
+          <span className="font-display text-[13px] font-bold leading-none text-gold-1 tracking-tight [text-shadow:0_1px_2px_color-mix(in_srgb,var(--color-hextech-black)_90%,transparent)]">
             {item.quantity}
             <span className="text-[10px] text-gold-2">x</span>
           </span>
@@ -373,7 +373,7 @@ function StripTile({
       {/* Price pill at bottom */}
       <div
         className="flex items-center justify-center gap-1 px-1 py-1 shrink-0"
-        style={{ background: "rgba(1,10,19,0.88)" }}
+        style={{ background: "color-mix(in srgb, var(--color-hextech-black) 88%, transparent)" }}
       >
         {rpIconSrc && (
           <img src={rpIconSrc} alt="RP" width={10} height={10} aria-hidden="true" />
