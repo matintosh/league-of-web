@@ -136,22 +136,15 @@ export const AMUMU_PLUSH_DESCRIPTION: MerchProductDescription = {
  * sourced from merch.riotgames.com (Playwright, 2026-08). No splash art.
  */
 export const MERCH_PRODUCTS: MerchProduct[] = [
-  // ── League of Legends Classic ────────────────────────────────────────────
+  // ── League of Legends Classic ─────────────────────────────────────────────
+  // Real homepage order (7 items): Collector's Box → Twitch Statue → Yearbook Tee
+  // → Gold Ring → Hoodie → Amumu → Pool Party Caitlyn (measured 2026-08).
   {
     slug: "league-classic-collectors-box",
     title: "League of Legends Classic Collector's Box",
     imageUrl: merchAssetUrl("ed593ec11a590c788d3ec1b634ce0b72a63b1059-2560x2560.png"),
     price: "$89.99",
     badges: ["New", "Limited Edition", "Preorder"],
-    badge: "New",
-    franchiseLabel: "League of Legends",
-  },
-  {
-    slug: "rocklove-lol-heart-of-gold-ring",
-    title: "RockLove League of Legends Classic Heart of Gold Ring",
-    imageUrl: merchAssetUrl("8a423221c48327f9f1d5549a08678ffed8e08adf-2560x2560.png"),
-    price: "$199.99",
-    badges: ["New", "Preorder", "Limited Edition"],
     badge: "New",
     franchiseLabel: "League of Legends",
   },
@@ -165,11 +158,20 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
     franchiseLabel: "League of Legends",
   },
   {
-    slug: "amumu-plush",
-    title: "Amumu Plush",
-    imageUrl: merchAssetUrl("bac8ecd0218d8af9d8f0d78d4fca40cb27a8a803-2560x2560.png"),
+    slug: "lol-classic-yearbook-tee",
+    title: "League of Legends Classic Yearbook Tee",
+    imageUrl: merchAssetUrl("8f1db0c815008cde9070446a5bc9a205f702b840-2560x2560.png"),
     price: "$29.99",
     badges: ["New"],
+    badge: "New",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "rocklove-lol-heart-of-gold-ring",
+    title: "RockLove League of Legends Classic Heart of Gold Ring",
+    imageUrl: merchAssetUrl("8a423221c48327f9f1d5549a08678ffed8e08adf-2560x2560.png"),
+    price: "$199.99",
+    badges: ["New", "Preorder", "Limited Edition"],
     badge: "New",
     franchiseLabel: "League of Legends",
   },
@@ -183,39 +185,31 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
     franchiseLabel: "League of Legends",
   },
   {
-    slug: "lol-classic-yearbook-tee",
-    title: "League of Legends Classic Yearbook Tee",
-    imageUrl: merchAssetUrl("8f1db0c815008cde9070446a5bc9a205f702b840-2560x2560.png"),
+    slug: "amumu-plush",
+    title: "Amumu Plush",
+    imageUrl: merchAssetUrl("bac8ecd0218d8af9d8f0d78d4fca40cb27a8a803-2560x2560.png"),
     price: "$29.99",
     badges: ["New"],
     badge: "New",
     franchiseLabel: "League of Legends",
   },
   {
-    slug: "lol-classic-logo-cap",
-    title: "League of Legends Classic Logo Cap",
-    imageUrl: merchAssetUrl("f8855c0e351de66671faf5e009fd161ed508bd4c-2560x2560.png"),
-    price: "$34.99",
-    badges: ["New"],
-    badge: "New",
-    franchiseLabel: "League of Legends",
-  },
-  {
-    slug: "lol-classic-poro-plush",
-    title: "Poro Limited Edition Plush",
+    slug: "pool-party-caitlyn-bikini",
+    title: "Pool Party Caitlyn Bikini",
     imageUrl: merchAssetUrl("31e7c2c734b4df133b027edbbbc66c84273b94c9-2560x2560.png"),
-    price: "$29.99",
-    badges: ["New", "Limited Edition"],
+    price: "$49.99",
+    badges: ["New"],
     badge: "New",
     franchiseLabel: "League of Legends",
   },
 
   // ── MSI 2026 ─────────────────────────────────────────────────────────────
+  // Real prices (2026-08): Jacket $74.99 / Jersey $64.99 / Long Sleeve Tee $69.99 / Tee $34.99.
   {
     slug: "msi-2026-jacket",
-    title: "MSI 2026 Track Jacket",
+    title: "MSI 2026 Jacket",
     imageUrl: merchAssetUrl("9304d3ab3b0d8d0aa985e99627828a9f8f7a2502-2560x2560.png"),
-    price: "$84.99",
+    price: "$74.99",
     badges: ["New"],
     badge: "New",
     franchiseLabel: "LoL Esports",
@@ -224,7 +218,16 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
     slug: "msi-2026-jersey",
     title: "MSI 2026 Jersey",
     imageUrl: merchAssetUrl("5a1126c290b43c946f25ffc7b1b3096e9f0837d0-2560x2560.png"),
-    price: "$54.99",
+    price: "$64.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "LoL Esports",
+  },
+  {
+    slug: "msi-2026-long-sleeve-tee",
+    title: "MSI 2026 Long Sleeve Tee",
+    imageUrl: merchAssetUrl("cbf765370a7166e0586050862a57f9b69040b654-2560x2560.png"),
+    price: "$69.99",
     badges: ["New"],
     badge: "New",
     franchiseLabel: "LoL Esports",
@@ -233,16 +236,7 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
     slug: "msi-2026-tee",
     title: "MSI 2026 Tee",
     imageUrl: merchAssetUrl("f7782d9ffd1177af0bb59798540ffece932b6124-2560x2560.png"),
-    price: "$29.99",
-    badges: ["New"],
-    badge: "New",
-    franchiseLabel: "LoL Esports",
-  },
-  {
-    slug: "msi-2026-hat",
-    title: "MSI 2026 Snapback Hat",
-    imageUrl: merchAssetUrl("cbf765370a7166e0586050862a57f9b69040b654-2560x2560.png"),
-    price: "$39.99",
+    price: "$34.99",
     badges: ["New"],
     badge: "New",
     franchiseLabel: "LoL Esports",
@@ -277,30 +271,42 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
     franchiseLabel: "Teamfight Tactics",
   },
 
-  // ── VALORANT Masters London ────────────────────────────────────────────
+  // ── VCT Masters London ────────────────────────────────────────────────────
+  // Real line: "VALORANT Masters London 26 //" at $59.99 / $44.99 / $39.99 (2026-08).
+  {
+    slug: "vct-masters-london-jersey",
+    title: "VALORANT Masters London 26 // Jersey",
+    imageUrl: merchAssetUrl("5c091e4fdde681d4149ae8c426f1a1851f446f9e-2560x2560.png"),
+    price: "$59.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "VCT",
+  },
+  {
+    slug: "vct-masters-london-hoodie",
+    title: "VALORANT Masters London 26 // Pullover Hoodie",
+    imageUrl: merchAssetUrl("d81d93d506631a487defed36a75d99cb2d52af13-2560x2560.png"),
+    price: "$44.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "VCT",
+  },
+  {
+    slug: "vct-masters-london-tee",
+    title: "VALORANT Masters London 26 // Tee",
+    imageUrl: merchAssetUrl("4b7290d0746f9e40ac250bfe25aa184ac6a0bd8a-2560x2560.jpg"),
+    price: "$39.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "VCT",
+  },
+
+  // ── VALORANT ──────────────────────────────────────────────────────────────
   {
     slug: "valorant-masters-london-jersey",
     title: "VALORANT Masters London 2026 Jersey",
-    imageUrl: merchAssetUrl("5c091e4fdde681d4149ae8c426f1a1851f446f9e-2560x2560.png"),
+    imageUrl: merchAssetUrl("550d5115df74771d4aef0d92cecbe4f4cdd3712c-2560x2560.png"),
     price: "$64.99",
-    badges: ["New"],
-    badge: "New",
-    franchiseLabel: "VALORANT",
-  },
-  {
-    slug: "valorant-masters-london-hoodie",
-    title: "VALORANT Masters London Pullover Hoodie",
-    imageUrl: merchAssetUrl("d81d93d506631a487defed36a75d99cb2d52af13-2560x2560.png"),
-    price: "$79.99",
-    badges: ["New"],
-    badge: "New",
-    franchiseLabel: "VALORANT",
-  },
-  {
-    slug: "valorant-masters-london-tee",
-    title: "VALORANT Masters London Event Tee",
-    imageUrl: merchAssetUrl("4b7290d0746f9e40ac250bfe25aa184ac6a0bd8a-2560x2560.jpg"),
-    price: "$34.99",
     badges: ["New"],
     badge: "New",
     franchiseLabel: "VALORANT",
@@ -314,53 +320,75 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
     badge: "New",
     franchiseLabel: "VALORANT",
   },
-
-  // ── VCT ───────────────────────────────────────────────────────────────
   {
-    slug: "vct-2026-championship-hoodie",
-    title: "VCT 2026 Championship Pullover Hoodie",
-    imageUrl: merchAssetUrl("550d5115df74771d4aef0d92cecbe4f4cdd3712c-2560x2560.png"),
-    price: "$74.99",
+    slug: "valorant-logo-tee",
+    title: "VALORANT Logo Tee",
+    imageUrl: merchAssetUrl("2482e51bfb07ecd0cc0ed90998bce58bfe1f6699-2560x2560.png"),
+    price: "$34.99",
     badges: ["New"],
     badge: "New",
-    franchiseLabel: "VCT",
-  },
-  {
-    slug: "vct-2026-championship-jersey",
-    title: "VCT 2026 Championship Jersey",
-    imageUrl: merchAssetUrl("0798a315abc7945e2e23107a533a0b09f69bf1af-2560x2560.png"),
-    price: "$59.99",
-    badges: ["New"],
-    badge: "New",
-    franchiseLabel: "VCT",
-  },
-  {
-    slug: "vct-2026-snapback-cap",
-    title: "VCT 2026 Event Snapback Cap",
-    imageUrl: merchAssetUrl("fe2c947d0053041cca174e40b76bc324cdf1c624-2560x2560.png"),
-    price: "$39.99",
-    badges: ["New"],
-    badge: "New",
-    franchiseLabel: "VCT",
+    franchiseLabel: "VALORANT",
   },
 
-  // ── 2XKO ──────────────────────────────────────────────────────────────
+  // ── Riftbound TCG ─────────────────────────────────────────────────────────
+  // Real shop-all page 1 ends with Riftbound items carrying "Out of Stock" badges.
   {
-    slug: "2xko-launch-tee",
-    title: "2XKO Launch Event Tee",
+    slug: "riftbound-vendetta-zed-shen-showdown-deck",
+    title: "Riftbound: LoL TCG Vendetta Zed vs Shen Showdown Deck",
+    imageUrl: merchAssetUrl("e8238ddeff8f44a3164a3155712307fad4d9f7fb-2560x2560.png"),
+    price: "$34.99",
+    badges: ["New", "Out of Stock"],
+    badge: "Out of Stock",
+    franchiseLabel: "Riftbound",
+  },
+  {
+    slug: "riftbound-vendetta-booster-display",
+    title: "Riftbound: LoL TCG Vendetta Booster Display",
+    imageUrl: merchAssetUrl("3102667c372acb3a074f2ca9c2fdbc1caeaef923-2560x2560.png"),
+    price: "$119.99",
+    badges: ["New", "Out of Stock"],
+    badge: "Out of Stock",
+    franchiseLabel: "Riftbound",
+  },
+  {
+    slug: "riftbound-origins-starter-deck",
+    title: "Riftbound: Origins Starter Deck — Jinx",
+    imageUrl: merchAssetUrl("7f07ffee92dabe0e6b2dac03d219e574eebdb870-2560x2560.png"),
+    price: "$19.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "Riftbound",
+  },
+  {
+    slug: "riftbound-vendetta-booster-pack",
+    title: "Riftbound: Vendetta Booster Pack (10-card)",
+    imageUrl: merchAssetUrl("e0a08c2f8d9e931a799617aaf74cb1f89a71e148-2560x2560.png"),
+    price: "$4.99",
+    badges: ["New"],
+    badge: "New",
+    franchiseLabel: "Riftbound",
+  },
+
+  // ── 2XKO ──────────────────────────────────────────────────────────────────
+  // Real: posters at $28 (whole-dollar, no cents) with "Special Edition" (purple)
+  // + "Made to Order" (green) badges (measured merch.riotgames.com 2026-08).
+  // `badge` uses "Limited" (valid enum value); `badges` carries the display labels.
+  {
+    slug: "2xko-poster-special-edition",
+    title: "2XKO Special Edition Poster",
     imageUrl: merchAssetUrl("39ef595b21b59cc4fb45ef5af962454cb72c6a95-2560x2560.png"),
-    price: "$29.99",
-    badges: ["New"],
-    badge: "New",
+    price: "$28",
+    badges: ["Special Edition", "Made to Order"],
+    badge: "Limited",
     franchiseLabel: "2XKO",
   },
   {
-    slug: "2xko-duelists-hoodie",
-    title: "2XKO Duelists Pullover Hoodie",
+    slug: "2xko-duelists-poster",
+    title: "2XKO Duelists Poster",
     imageUrl: merchAssetUrl("b6755dec3164466c86fac5b695df9f1cbb704a14-2560x2560.png"),
-    price: "$64.99",
-    badges: ["New", "Limited Edition"],
-    badge: "New",
+    price: "$28",
+    badges: ["Special Edition", "Made to Order"],
+    badge: "Limited",
     franchiseLabel: "2XKO",
   },
 
@@ -525,11 +553,12 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
     franchiseLabel: "Arcane",
   },
 
-  // ── Sale items ────────────────────────────────────────────────────────
+  // ── Sale items (7 items — matches real "Sales (7)" count) ───────────────────
   {
     slug: "lol-classic-cap-sale",
-    title: "League of Legends Classic Cap",
-    imageUrl: merchAssetUrl("a87ba685e599a287b6f56c32fb629d0d8515c828-2560x2560.png"),
+    // Fixed: title "Classic Cap" now matches the cap packshot (f8855c0e…), not a hoodie.
+    title: "League of Legends Classic Logo Cap",
+    imageUrl: merchAssetUrl("f8855c0e351de66671faf5e009fd161ed508bd4c-2560x2560.png"),
     price: "$19.99",
     originalPrice: "$34.99",
     badges: ["Sale"],
@@ -552,6 +581,16 @@ export const MERCH_PRODUCTS: MerchProduct[] = [
     imageUrl: merchAssetUrl("8c31457af6be19f63c1c7db02a17cf35b294f69f-2560x2560.png"),
     price: "$9.99",
     originalPrice: "$16.99",
+    badges: ["Sale"],
+    badge: "Sale",
+    franchiseLabel: "League of Legends",
+  },
+  {
+    slug: "lol-classic-poro-plush-sale",
+    title: "Poro Limited Edition Plush",
+    imageUrl: merchAssetUrl("31e7c2c734b4df133b027edbbbc66c84273b94c9-2560x2560.png"),
+    price: "$19.99",
+    originalPrice: "$29.99",
     badges: ["Sale"],
     badge: "Sale",
     franchiseLabel: "League of Legends",

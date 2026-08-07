@@ -16,14 +16,16 @@
  *     calls onSelectFranchise → router.push('/merch/collection/<slug>'), matching
  *     real behavior where extra tiles route to their collection page.
  *
- * Homepage feed (matching real merch.riotgames.com ~9286px at 1280px):
+ * Homepage feed (matching real merch.riotgames.com ~9286px docHeight at 1280px):
  *   - Hero banner + franchise strip
- *   - Full franchise groups, each starting with a full-width featured first card
- *     (featuredFirst=true on MerchProductGrid), then regular 2-col tiles at 225px
- *     image height (375px row rhythm = 57px header + 225px image + ~93px info strip)
- *   - Groups in order: LoL, MSI/LoL Esports, TFT, VCT, Riftbound, VALORANT, 2XKO
+ *   - ONE full-width feature card (1280×750) — the very first product in the feed
+ *     (League Classic Collector's Box, $89.99). Title + price span w=1178.
+ *   - Remaining products in uniform 2-col grid, grouped by franchise.
+ *   - Groups in order: LoL, MSI/LoL Esports, TFT, VCT Masters London, VALORANT,
+ *     Riftbound, 2XKO — NO section heading text (real site has none).
+ *   - NO sale/struck prices in the homepage feed (sale items only on /merch/sale).
  *   - LOAD MORE button — gold (#C4993B) at ALL viewports; centered 239×50 at 1280,
- *     full-bleed 390×50 at 390; black text + 1px white offset frame
+ *     full-bleed 390×50 at 390; black text + 1px white offset frame.
  *   - Gift card promo band
  *   - LATEST COLLABORATIONS section (MerchCollabCarousel — HP/OMEN + Secretlab)
  *   - Footer
@@ -52,9 +54,7 @@ import {
   ArcaneLogo,
 } from "@low/ui";
 import {
-  championSplashUrl,
   MERCH_PRODUCTS,
-  MERCH_FRANCHISE_FEATURE_CARDS,
   merchAssetUrl,
 } from "@low/fixtures";
 import type { MerchCartItem } from "@low/fixtures";
@@ -64,22 +64,26 @@ import { useMerchNav } from "@/lib/merch-nav";
 
 // ---------------------------------------------------------------------------
 // Franchise groups — products organised by brand for the homepage feed.
-// Real homepage order: LoL → MSI/LoL Esports → TFT → VCT → Riftbound → VALORANT → 2XKO.
-// Each group opens with a full-width featured card then regular 2-col cards.
+// Real homepage order: LoL → MSI/LoL Esports → TFT → VCT → VALORANT → Riftbound → 2XKO.
+// ONE full-width feature card (Collector's Box) opens the feed; all others in 2-col grid.
 // ---------------------------------------------------------------------------
 
 /** Image height (px) for regular homepage cards — drives 375px row rhythm.
  *  Real: 57px header + 225px image + ~93px info strip ≈ 375px per row. */
 const HP_IMAGE_HEIGHT = 225;
 
-/** Ordered franchise group keys for the homepage feed. */
+/**
+ * Ordered franchise group keys for the homepage feed.
+ * Real section order (measured merch.riotgames.com 2026-08):
+ * League → MSI/LoL Esports → TFT → VCT Masters London → VALORANT → Riftbound → 2XKO.
+ */
 const FRANCHISE_ORDER = [
   "League of Legends",
   "LoL Esports",
   "Teamfight Tactics",
   "VCT",
-  "Riftbound",
   "VALORANT",
+  "Riftbound",
   "2XKO",
 ];
 
@@ -109,8 +113,14 @@ function groupProductsByFranchise(
   return result;
 }
 
-/** All products excluding sale items — sale items appear in their own trailing block. */
-const ALL_PRODUCTS = MERCH_PRODUCTS;
+/**
+ * Homepage feed products — excludes sale items and apparel-only extras.
+ * Real homepage shows no struck/sale prices; sale items live on /merch/sale.
+ * Apparel-slug extras are collection-page filler, not homepage items.
+ */
+const HOME_PRODUCTS = MERCH_PRODUCTS.filter(
+  (p) => p.badge !== "Sale" && !p.slug.startsWith("apparel-"),
+);
 
 /** Initial number of franchise groups visible before Load More. */
 const INITIAL_GROUP_COUNT = 4;
@@ -168,11 +178,12 @@ const HERO_SLIDES: MerchHeroSlide[] = [
 
 const GIFT_CARDS: [MerchGiftCard, MerchGiftCard] = [
   {
-    imageUrl: championSplashUrl("Jinx", 0),
+    // Real gift card packshots sourced from merch.riotgames.com Sanity CDN.
+    imageUrl: merchAssetUrl("ed593ec11a590c788d3ec1b634ce0b72a63b1059-2560x2560.png", { w: 800 }),
     label: "Riot merch gift card — OMEN 16 Edition",
   },
   {
-    imageUrl: championSplashUrl("Vi", 0),
+    imageUrl: merchAssetUrl("2482e51bfb07ecd0cc0ed90998bce58bfe1f6699-2560x2560.png", { w: 800 }),
     label: "Riot merch gift card — VALORANT Edition",
   },
 ];
@@ -264,14 +275,16 @@ const LATEST_COLLABS: MerchCollabEntry[] = [
     partnerName: "HP OMEN",
     headline: "HyperX OMEN 16 VALORANT Edition",
     copy: "A unique VALORANT design built with every competitive advantage. Performance laptops and peripherals built for the competitive edge.",
-    imageUrl: championSplashUrl("Vi", 0),
+    // Reuses a VALORANT-branded Sanity asset as lifestyle shot placeholder.
+    imageUrl: merchAssetUrl("5c091e4fdde681d4149ae8c426f1a1851f446f9e-2560x2560.png", { w: 800 }),
   },
   {
     slug: "secretlab",
     partnerName: "Secretlab",
     headline: "Secretlab TITAN Evo",
     copy: "Engineered for the long session — the official gaming chair of Riot esports.",
-    imageUrl: championSplashUrl("Jinx", 0),
+    // Reuses an LoL Classic Sanity asset as lifestyle shot placeholder.
+    imageUrl: merchAssetUrl("a87ba685e599a287b6f56c32fb629d0d8515c828-2560x2560.png", { w: 800 }),
   },
 ];
 
@@ -286,7 +299,10 @@ const ANNOUNCEMENT =
 // Footer artwork — faint character-art background wash (real site has this)
 // ---------------------------------------------------------------------------
 
-const FOOTER_ARTWORK_SRC = championSplashUrl("Jinx", 0);
+// Footer faint character-art wash — reuses an existing Sanity asset.
+const FOOTER_ARTWORK_SRC = merchAssetUrl("74c1cee04be48521280fd81d65a7ded689500c53-2560x2560.png", {
+  w: 1920,
+});
 
 // ---------------------------------------------------------------------------
 // Page component
@@ -306,9 +322,14 @@ export function MerchPageClient() {
     console.log("[MerchFooter] Contact form submitted:", values);
   }
 
-  const allGroups = groupProductsByFranchise(ALL_PRODUCTS);
+  const allGroups = groupProductsByFranchise(HOME_PRODUCTS);
   const visibleGroups = allGroups.slice(0, visibleGroupCount);
   const hasMore = visibleGroupCount < allGroups.length;
+
+  // The very first product in the very first group is the ONE full-width feature
+  // card (1280×750, title + price span w=1178). All others go in the 2-col grid.
+  const firstGroup = allGroups[0];
+  const featuredProduct = firstGroup?.products[0];
 
   return (
     <div
@@ -340,65 +361,56 @@ export function MerchPageClient() {
           onSelectFranchise={(slug) => router.push(`/merch/collection/${slug}`)}
         />
 
-        {/* ── Franchise group sections ───────────────────────────────────────
-            Real homepage: each brand opens with a full-width featured card
-            (featuredFirst=true) then standard 2-col tiles at HP_IMAGE_HEIGHT (225px).
+        {/* ── ONE full-width feature card (1280×750) ─────────────────────────
+            Real homepage: the very first item in the feed is the Collector's Box,
+            rendered full-width at 1280×750 with title + price ($89.99) underneath.
+            No invented section heading. No per-franchise feature cards. */}
+        {featuredProduct && (
+          <MerchProductGrid columns={2} featuredFirst={true}>
+            <MerchProductCard
+              key={featuredProduct.slug}
+              slug={featuredProduct.slug}
+              title={featuredProduct.title}
+              imageUrl={featuredProduct.imageUrl}
+              price={featuredProduct.price}
+              badges={featuredProduct.badges ?? []}
+              franchiseLabel={featuredProduct.franchiseLabel}
+              imageFit="contain"
+              imageHeight={750}
+              hasAddToCart={true}
+              onClick={() => router.push(`/merch/product/${featuredProduct.slug}`)}
+            />
+          </MerchProductGrid>
+        )}
+
+        {/* ── Franchise group sections — uniform 2-col grid ──────────────────
+            All products (including remaining LoL items after the feature card)
+            appear in a single continuous 2-col grid with no section headings.
             Row rhythm: 57px header + 225px image + ~93px info strip ≈ 375px.
-            Groups are shown in FRANCHISE_ORDER; Load More reveals additional groups. */}
-        {visibleGroups.map(({ label, products }) => {
-          // Look up a feature card for this franchise group (LoL and Riftbound have real assets)
-          const featureCard = MERCH_FRANCHISE_FEATURE_CARDS.find(
-            (fc) => fc.franchiseLabel === label,
-          );
-
-          // Guard: groups always have at least one product (ensured by groupProductsByFranchise)
-          const firstProduct = products[0];
-          if (!firstProduct) return null;
-          const collectionSlug = label.toLowerCase().replace(/\s+/g, "-");
-
-          return (
-            <MerchProductGrid
-              key={label}
-              columns={2}
-              featuredFirst={true}
-            >
-              {/* Featured first card — full-width, 600px image, object-contain.
-                  Uses the franchise feature card asset if available; otherwise the
-                  first product image serves as the featured card artwork. */}
+            Groups are shown in FRANCHISE_ORDER; Load More reveals more groups.
+            NO sale/struck prices: sale items are filtered from HOME_PRODUCTS. */}
+        <MerchProductGrid columns={2} featuredFirst={false}>
+          {visibleGroups.flatMap(({ label, products }) => {
+            // The featured product (first item of first group) is already rendered above.
+            const isFirstGroup = label === (firstGroup?.label ?? "");
+            const gridProducts = isFirstGroup ? products.slice(1) : products;
+            return gridProducts.map((product) => (
               <MerchProductCard
-                key={`${label}-featured`}
-                slug={featureCard ? `collection-${collectionSlug}` : firstProduct.slug}
-                title={featureCard ? featureCard.headline : firstProduct.title}
-                imageUrl={featureCard ? featureCard.imageUrl : firstProduct.imageUrl}
-                price={featureCard ? "" : firstProduct.price}
-                badges={featureCard ? [] : (firstProduct.badges ?? [])}
-                franchiseLabel={label}
+                key={product.slug}
+                slug={product.slug}
+                title={product.title}
+                imageUrl={product.imageUrl}
+                price={product.price}
+                badge={product.badge}
+                badges={product.badges}
+                franchiseLabel={product.franchiseLabel}
                 imageFit="contain"
-                imageHeight={600}
-                hasAddToCart={!featureCard}
-                onClick={() => router.push(`/merch/collection/${collectionSlug}`)}
+                imageHeight={HP_IMAGE_HEIGHT}
+                onClick={() => router.push(`/merch/product/${product.slug}`)}
               />
-
-              {/* Regular grid cards — 225px image height for 375px row rhythm */}
-              {(featureCard ? products : products.slice(1)).map((product) => (
-                <MerchProductCard
-                  key={product.slug}
-                  slug={product.slug}
-                  title={product.title}
-                  imageUrl={product.imageUrl}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                  badge={product.badge}
-                  badges={product.badges}
-                  franchiseLabel={product.franchiseLabel}
-                  imageFit="contain"
-                  imageHeight={HP_IMAGE_HEIGHT}
-                  onClick={() => router.push(`/merch/product/${product.slug}`)}
-                />
-              ))}
-            </MerchProductGrid>
-          );
-        })}
+            ));
+          })}
+        </MerchProductGrid>
 
         {/* ── Load More — gold at ALL viewports (measured from real merch.riotgames.com).
             Centered 239×50 at 1280; full-bleed 390×50 at 390. Gold (#C4993B) bg,
@@ -417,6 +429,8 @@ export function MerchPageClient() {
               data-hp-load-more
               onClick={() => setVisibleGroupCount((n) => n + INITIAL_GROUP_COUNT)}
               style={{
+                /* Base geometry only — bg/color/outline handled by [data-hp-load-more]
+                   in merch-layout.css to keep the gold-CTA rule in one place. */
                 height: 50,
                 fontSize: 16,
                 fontWeight: 600,
