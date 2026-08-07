@@ -88,6 +88,19 @@ body:has([data-merch-layout]) {
   clip-path: polygon(14px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 14px);
 }
 
+/* Breadcrumb bar desktop height — 60px at md+ (768px+).
+   Applied via [data-merch-bb] to avoid Tailwind JIT purge of md:h-[60px] arbitrary values.
+   Real merch.riotgames.com: bar y=130-190 @ 1280 (60px). Mobile baseline: 40px (inline style). */
+[data-merch-layout] [data-merch-bb] {
+  height: 40px;
+}
+
+@media (min-width: 768px) {
+  [data-merch-layout] [data-merch-bb] {
+    height: 60px;
+  }
+}
+
 @media (min-width: 768px) {
   [data-merch-layout] [data-hp-load-more] {
     /* Desktop: 239px wide — gold fill, black text, corner notch */
