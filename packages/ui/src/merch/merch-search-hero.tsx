@@ -145,17 +145,21 @@ export function MerchSearchHero({
           background-color: var(--color-merch-purple-dark);
         }
         /* H1 typography — desktop fixed at 48px/-1.44px (one line at ~650px).
+           white-space:nowrap at ≥640px ensures H1 stays on ONE line at 1280px
+           regardless of the container's 714px max-width constraint.
            Mobile (<640px breakpoint): 38px/-0.76px, matches real @390 measurement. */
         .merch-search-hero-h1 {
           font-size: 48px;
           letter-spacing: -1.44px;
           line-height: 1.1;
+          white-space: nowrap;
         }
         @media (max-width: 639px) {
           .merch-search-hero-h1 {
             font-size: 38px;
             letter-spacing: -0.76px;
             line-height: 1.1;
+            white-space: normal;
           }
         }
         /* Content top padding — high-anchored, not centred.
@@ -169,11 +173,57 @@ export function MerchSearchHero({
             padding-top: 240px;
           }
         }
+        /* Ziggs layer — desktop: left=704px top=208px (band-relative, 320×288).
+           Mobile (<640px): repositioned to left=38px top=25px h=150px so the
+           character is visible within the 390px viewport riding the bolt.
+           Desktop rect.y = band-top 130 + top 208 = 338 (measured from real site). */
+        .merch-search-hero-ziggs {
+          left: 704px;
+          top: 208px;
+          width: 320px;
+          height: 288px;
+        }
+        @media (max-width: 639px) {
+          .merch-search-hero-ziggs {
+            left: 38px;
+            top: 25px;
+            width: 320px;
+            height: 150px;
+          }
+        }
+        /* Pattern bolt strip — desktop: full band height (contain at top-right).
+           Mobile (<640px): cap to 200px tall, position 100% 0 (top-right anchor),
+           matching real site rect y=130 h=200 at 390px. */
+        .merch-search-hero-pattern {
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+        }
+        @media (max-width: 639px) {
+          .merch-search-hero-pattern {
+            bottom: auto;
+            height: 200px;
+          }
+        }
+        /* Transition band — 48px diagonal fade from transparent to --color-merch-surface-alt.
+           Sits at the bottom of the 800px band, matching the real site's
+           linear-gradient(to left top, transparent 49%, #f7f7f7 …) layer at y=930. */
+        .merch-search-hero-transition {
+          height: 48px;
+          background: linear-gradient(
+            to left top,
+            transparent 49%,
+            var(--color-merch-surface-alt) 51%
+          );
+        }
       `}</style>
 
       {/* ---------------------------------------------------------------- */}
       {/* Layer 1: arcade_riven_ahri.svg — full-bleed cover.               */}
       {/* Intrinsically faint/light-grayscale; no extra opacity needed.    */}
+      {/* objectPosition "0 0" anchors the crop at top-left (matching real */}
+      {/* CSS background-position: 0 0 on the real merch site).            */}
       {/* When absent a subtle diagonal placeholder renders at 0.08 opacity */}
       {/* (--color-merch-search-hero-art-opacity token).                   */}
       {/* ---------------------------------------------------------------- */}
@@ -191,7 +241,7 @@ export function MerchSearchHero({
           <img
             src={resolvedArcadeSrc}
             alt={resolvedArcadeAlt}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-left-top"
             draggable={false}
           />
         ) : (
@@ -209,12 +259,15 @@ export function MerchSearchHero({
 
       {/* ---------------------------------------------------------------- */}
       {/* Layer 2: pattern-404.svg — contained at top-right of band.       */}
+      {/* Desktop: fills full band height (contain, top-right anchor).      */}
+      {/* Mobile (<640px): capped to 200px tall via .merch-search-hero-    */}
+      {/* pattern class — matches real site rect y=130 h=200 at 390px.     */}
       {/* Only rendered when patternSrc is supplied by the page.           */}
       {/* ---------------------------------------------------------------- */}
       {patternSrc && (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0"
+          className="merch-search-hero-pattern pointer-events-none absolute"
           style={{
             backgroundImage: `url(${patternSrc})`,
             backgroundRepeat: "no-repeat",
@@ -226,21 +279,18 @@ export function MerchSearchHero({
 
       {/* ---------------------------------------------------------------- */}
       {/* Layer 3: ziggs.png — character art, right side of band.          */}
-      {/* Measured from real site: position absolute within the hero band.  */}
-      {/*   left: 704px, top: 208px, width: 320px, height: 288px           */}
-      {/*   (band-relative: rect.y 338 = band-top 130 + top 208)           */}
-      {/* background-size: contain, background-position: 100% 0            */}
+      {/* Desktop: left=704px top=208px 320×288 (band-relative:            */}
+      {/*   rect.y 338 = band-top 130 + top 208 — measured from real site). */}
+      {/* Mobile (<640px): left=38px top=25px height=150px — repositioned  */}
+      {/*   so Ziggs is VISIBLE within the 390px viewport (riding the bolt). */}
+      {/* Uses .merch-search-hero-ziggs class for responsive overrides.     */}
       {/* Only rendered when ziggsSrc is supplied by the page.             */}
       {/* ---------------------------------------------------------------- */}
       {ziggsSrc && (
         <div
           aria-hidden
-          className="pointer-events-none absolute"
+          className="merch-search-hero-ziggs pointer-events-none absolute"
           style={{
-            left: "704px",
-            top: "208px",
-            width: "320px",
-            height: "288px",
             backgroundImage: `url(${ziggsSrc})`,
             backgroundSize: "contain",
             backgroundPosition: "100% 0",
@@ -264,8 +314,8 @@ export function MerchSearchHero({
         }}
       >
         {/* H1: "NO SEARCH TERM PROVIDED"
-            Desktop: 48px / -1.44px / lh 52.8px — one line at ~650px text width.
-            Mobile (390): 38px / -0.76px / lh 41.8px — no overflow.
+            Desktop: 48px / -1.44px / lh 52.8px — ONE line via white-space:nowrap.
+            Mobile (390): 38px / -0.76px / lh 41.8px — normal wrap, no overflow.
             Color: BLACK (rgb(0,0,0) via --color-merch-ink-dark = #000000).
             Typography via .merch-search-hero-h1 class + media query in style block. */}
         <h1
@@ -305,6 +355,17 @@ export function MerchSearchHero({
           SEARCH PRODUCTS
         </button>
       </div>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Transition band — 48px diagonal fade into --color-merch-surface-alt. */}
+      {/* Measured from real site: layer at y=930 below the hero band with   */}
+      {/* linear-gradient(to left top, transparent 49%, #f7f7f7 …).          */}
+      {/* Sits at the absolute bottom of the 800px band. Token: surface-alt. */}
+      {/* ---------------------------------------------------------------- */}
+      <div
+        aria-hidden
+        className="merch-search-hero-transition pointer-events-none absolute bottom-0 left-0 right-0 z-20"
+      />
     </div>
   );
 }
