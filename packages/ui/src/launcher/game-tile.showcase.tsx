@@ -61,7 +61,7 @@ export const gameTileShowcase: ShowcaseEntry = {
     {
       name: "lg + labelStatus — Update (2XKO)",
       notes:
-        'size="lg" statusLayout="labelStatus". Update shows as lime-colored text beside the name in the label row.',
+        'size="lg" statusLayout="labelStatus". Update shows gray oval+chevron icon left, lime "Update" text, and game-name sub-text below (issue #928).',
       render: () => (
         <div style={DARK_BG}>
           <GameTileDemo

@@ -338,22 +338,77 @@ export function GameTile({
           {gameName}
         </span>
 
-        {/* labelStatus layout — Update/Install colored text in label row (My Games) */}
+        {/* labelStatus layout — Update status: chevron-oval icon + stacked text (My Games) */}
         {statusLayout === "labelStatus" && status === "update" && (
           <span
             aria-label="Update available"
             style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
               flexShrink: 0,
-              fontSize: dims.fontSize - 1,
-              fontFamily: "var(--font-launcher)",
-              fontWeight: 700,
-              /* lime Update text — matches ref rgb(195,233,96) via launcher token */
-              color: "var(--color-launcher-badge-installed)",
-              letterSpacing: "0.02em",
-              whiteSpace: "nowrap",
             }}
           >
-            Update
+            {/* Download chevron inside a gray oval pill — ref image-7.png ~12×14px, rgb(156,156,156) */}
+            <span
+              aria-hidden="true"
+              style={{
+                width: 22,
+                height: 18,
+                borderRadius: 9,
+                backgroundColor: "var(--color-launcher-surface-alt)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              {/* Downward chevron ~10×7px, color --color-launcher-ink-muted */}
+              <svg width={10} height={7} viewBox="0 0 10 7" fill="none">
+                <path
+                  d="M1 1l4 4 4-4"
+                  stroke="var(--color-launcher-ink-muted)"
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+            {/* Update text + game-name sub-text column */}
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: dims.fontSize - 1,
+                  fontFamily: "var(--font-launcher)",
+                  fontWeight: 700,
+                  /* lime Update text — ref rgb(205,245,100) → --color-launcher-update-text (issue #928) */
+                  color: "var(--color-launcher-update-text)",
+                  letterSpacing: "0.02em",
+                  whiteSpace: "nowrap",
+                  lineHeight: 1,
+                }}
+              >
+                Update
+              </span>
+              {/* Game name sub-text ~9px muted, below "Update" (ref image-7.png) */}
+              <span
+                style={{
+                  fontSize: 9,
+                  fontFamily: "var(--font-launcher)",
+                  color: "var(--color-launcher-text-muted)",
+                  whiteSpace: "nowrap",
+                  lineHeight: 1,
+                }}
+              >
+                {gameName}
+              </span>
+            </span>
           </span>
         )}
         {statusLayout === "labelStatus" && (status === "install" || status === "coming-soon") && (
