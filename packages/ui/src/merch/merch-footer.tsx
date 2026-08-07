@@ -13,24 +13,28 @@
  *
  *   DESKTOP (1280)
  *   - Background: --color-merch-ink-dark (pure black #000) + 48px diagonal-gradient band at top
- *   - Horizontal padding: 84px each side (84px gutter), ~1112px content area
+ *     + optional faint character-art layer (real mean luminance 26.9 — opacity 0.18)
+ *   - Horizontal padding: outer px-[40px]; grid gets lg:px-[44px] extra so column x-positions
+ *     remain at 84px total: Shop x≈261, Support x≈513, Contact x≈835. Copyright at x=40.
  *   - Grid: logo col 147px | Shop 222px | Support 292px | Contact form 1fr;
  *     gap 30px; headings land at x≈261 (Shop), x≈513 (Support), x≈835 (Contact)
  *   - Column headings: Inter 16px / 600 / title-case / --color-merch-footer-heading (#888)
- *     heading → first-link gap ~30px
+ *     heading → first-link gap ~30px; heading row 105px below footer top (#899 delta 3)
  *   - Nav links: riotSans 16px / 600 / UPPERCASE / --color-merch-on-dark; line-height 18px,
  *     row pitch ~34px → gap between items ~16px; max-width 137px so long links wrap
  *   - Support links ("Gift Card Balance" ≈86×38 two-line, "Cookie Preferences" ≈132×36) wrap
  *   - Form labels: 14px / 400 / title-case / white; tight asterisk; margin-bottom 5px
- *   - Form inputs: bg --color-merch-input-dark-bg (#1b1d1f), NO border, px-4 (16px both sides),
- *     NO placeholder text, height 40px; @390 padding 16px all around; textarea ~60px (2 rows)
+ *   - Form inputs: bg --color-merch-input-dark-bg (#1b1d1f), NO border, p-4 (16px all sides),
+ *     NO placeholder text, height 40px; wide inputs (Tracking/Subject/Message) max-w-[317px];
+ *     form lg:max-w-[317px] → SEND right edge 835+317=1152 ✓; footer h≈784px (#899 delta 2-3)
  *   - Paired inputs: 143px wide with 31px gap (x=835/1009 from page left)
  *   - SEND button: 143×50, white bg / black text, top-right notch 12px + bottom-left 20px
- *     (clip-path), riotSans 16px/600/UPPERCASE/ls 0.02em
+ *     (clip-path), riotSans 16px/600/UPPERCASE/ls 0.02em; right edge x=1152
  *   - Riot logo: 75×29
  *
- *   BOTTOM BAR
- *   - Desktop: copyright LEFT (x=84), legal links RIGHT-aligned (row) — no divider
+ *   BOTTOM BAR (#899 delta 4)
+ *   - Desktop: copyright LEFT (x=40), legal links RIGHT-aligned (row) — no divider
+ *     LEGAL x=640; gap-[76px] + max-w-[107px] (wraps to 2 lines) → COOKIE≈767, TERMS≈950, PRIVACY≈1133
  *   - Mobile: legal links LEFT-aligned (x≈16), copyright centered below with ~24px bottom padding
  *   - Legal links Inter UPPERCASE 16px/600; ~34px row pitch on mobile stack
  *
@@ -261,7 +265,7 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
     message:        useId(),
   };
 
-  /* Dark-filled input: bg #1b1d1f, NO border, px-4 (16px both sides), h-10 (40px) — measured 2026-08-06 */
+  /* Dark-filled input: bg #1b1d1f, NO border, p-4 (16px all sides), h-10 (40px) — #899 delta 2 */
   const inputStyle = {
     backgroundColor: "var(--color-merch-input-dark-bg)",
     color:           "var(--color-merch-on-dark)",
@@ -275,9 +279,17 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
   } as React.CSSProperties;
 
   /* NO placeholder — real footer inputs show empty filled fields */
-  /* px-4 (16px both sides) at desktop; @390 real padding 16px all around — measured 2026-08-06 */
+  /* p-4 (16px ALL sides) — #899 delta 2: real padding 16 16 16 16 (was 0px top/bottom) */
   const inputClass =
-    "w-full px-4 text-[16px] outline-none border-0 " +
+    "w-full p-4 text-[16px] outline-none border-0 " +
+    "transition-colors duration-150 " +
+    "focus:ring-1 focus:ring-[color:var(--color-merch-muted-on-dark)]";
+
+  /* Wide single-col inputs (Tracking / Subject / Message) — 317px on desktop (#899 delta 2).
+     Real site: wide inputs 317px wide (ours were 361px at 1fr). form max-w-[317px] ensures
+     SEND right edge = contact col start (835) + 317 = 1152. Full-width on mobile. */
+  const wideInputClass =
+    "w-full p-4 text-[16px] outline-none border-0 " +
     "transition-colors duration-150 " +
     "focus:ring-1 focus:ring-[color:var(--color-merch-muted-on-dark)]";
 
@@ -298,7 +310,8 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
   }
 
   return (
-    <form onSubmit={handleSubmit} aria-label="Contact Us" className="flex flex-col gap-4">
+    /* #899 delta 2-3: lg:max-w-[317px] → wide inputs fill 317px, SEND right edge = 835+317=1152 */
+    <form onSubmit={handleSubmit} aria-label="Contact Us" className="flex flex-col gap-4 lg:max-w-[317px]">
       {/* ── Row 1: Name | Email — paired at ALL viewports (390 included) ── */}
       {/* Per issue: mobile pairs are Name|Email, Order|Country — re-paired 2026-08-06 */}
       {/* Desktop: 143px cols / 31px gap (x=835 / x=1009 from page left) — measured 2026-08-06 */}
@@ -395,7 +408,7 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
         </div>
       </div>
 
-      {/* ── Row 3: Tracking Number — full width ── */}
+      {/* ── Row 3: Tracking Number — full-width within form (317px on desktop via form max-w) ── */}
       <div>
         <label
           htmlFor={ids.trackingNumber}
@@ -409,12 +422,12 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
           type="text"
           value={values.trackingNumber ?? ""}
           onChange={(e) => onChange?.("trackingNumber", e.target.value)}
-          className={inputClass}
+          className={wideInputClass}
           style={inputStyle}
         />
       </div>
 
-      {/* ── Subject — full width ── */}
+      {/* ── Subject — full-width within form (317px on desktop via form max-w) ── */}
       <div>
         <label
           htmlFor={ids.subject}
@@ -429,12 +442,12 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
           value={values.subject ?? ""}
           onChange={(e) => onChange?.("subject", e.target.value)}
           required
-          className={inputClass}
+          className={wideInputClass}
           style={inputStyle}
         />
       </div>
 
-      {/* ── How can we help — full width ── */}
+      {/* ── How can we help — full-width within form; p-4 all sides (#899 delta 2) ── */}
       <div>
         <label
           htmlFor={ids.message}
@@ -450,7 +463,7 @@ function ContactForm({ values = {}, onChange, onSubmit }: MerchContactFormProps)
           required
           rows={2}
           className={
-            "w-full pl-4 pr-3 py-2 text-[16px] outline-none border-0 resize-none " +
+            "w-full p-4 text-[16px] outline-none border-0 resize-none " +
             "transition-colors duration-150 " +
             "focus:ring-1 focus:ring-[color:var(--color-merch-muted-on-dark)]"
           }
@@ -541,6 +554,9 @@ export function MerchFooter({
       />
 
       {/* ── Optional background artwork layer — faint character-art imagery ── */}
+      {/* Real footer mean luminance 26.9 / stdev 54.7 on black (#899 delta 1 HIGH).  */}
+      {/* opacity 0.18 produces the visible wash. Position center-right so art is      */}
+      {/* visible in the right half where the contact form is (darker on real site).   */}
       {artworkSrc && (
         <div
           aria-hidden="true"
@@ -548,25 +564,27 @@ export function MerchFooter({
           style={{
             backgroundImage:    `url(${artworkSrc})`,
             backgroundSize:     "cover",
-            backgroundPosition: "center",
-            opacity:            0.08,
+            backgroundPosition: "center right",
+            opacity:            0.18,
           }}
         />
       )}
 
       {/* ── Inner content ── */}
-      {/* Desktop: px-[84px] (84px gutters) → ~1112px content area; Mobile: px-[17px] for 17px gutters */}
-      {/* At 1280: logo col 147px + gap 30px → Shop@x=261, Support@x=513, Contact@x=835 — measured 2026-08-06 */}
-      <div className="relative mx-auto max-w-screen-xl px-[17px] py-16 lg:px-[84px]">
+      {/* Outer px-[40px] on desktop → copyright/legal bar left edge at x=40 (#899 delta 3).          */}
+      {/* Grid gets lg:px-[44px] extra so total side padding = 84px, keeping column x-positions.      */}
+      {/* pt-[105px]: heading row 105px below footer top (was py-16=64px; delta 3 adds ~41px top).    */}
+      {/* pb-[42px]: pt(105)+grid(537)+mt-16(64)+legalBar(36)+pb(42) ≈ 784px target height.          */}
+      <div className="relative mx-auto max-w-screen-xl px-[17px] pt-[64px] pb-[42px] lg:px-[40px] lg:pt-[105px] lg:pb-[42px]">
 
         {/* ---------------------------------------------------------------- */}
         {/* Main 4-col grid: logo | Shop | Support | Contact Us             */}
-        {/* Desktop: logo 147px, gap 30px → Shop x≈261, Support x≈513,     */}
-        {/* Contact x≈835; Shop 222px, Support 292px, Contact 1fr.          */}
-        {/* Columns verified: 84+147+30=261, 261+222+30=513, 513+292+30=835 */}
+        {/* Outer wrapper px-[40px]; grid lg:px-[44px] extra → total 84px.  */}
+        {/* Columns: 40+44+147+30=261 (Shop), 261+222+30=513 (Support),     */}
+        {/* 513+292+30=835 (Contact). Same x-positions as before.            */}
         {/* Mobile: single column stacked.                                   */}
         {/* ---------------------------------------------------------------- */}
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[147px_222px_292px_1fr] lg:gap-[30px]">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[147px_222px_292px_1fr] lg:gap-[30px] lg:px-[44px]">
           {/* Col 1 — Riot wordmark */}
           <div className="flex items-start">
             <RiotWordmark id={logoId} />
@@ -597,7 +615,9 @@ export function MerchFooter({
         {/* ---------------------------------------------------------------- */}
         {/* Bottom bar: Legal links (UPPERCASE 16px/600) + copyright        */}
         {/* REAL: NO divider.                                                */}
-        {/* Desktop: copyright LEFT (x=84), legal links RIGHT-aligned.       */}
+        {/* Desktop: copyright LEFT (x=40), legal links RIGHT-aligned.       */}
+        {/*   LEGAL x=640; gap-[76px] + max-w-[107px] (2-line wrap) puts:   */}
+        {/*   COOKIE≈767, TERMS≈950, PRIVACY≈1133 (#899 delta 4 LOW).       */}
         {/* Mobile: legal links LEFT-aligned (x≈16), copyright centered,     */}
         {/*         ~24px bottom padding below copyright.                     */}
         {/* Legal links: Inter 600 UPPERCASE (not riotSans) — measured 2026-08-06 */}
@@ -612,13 +632,15 @@ export function MerchFooter({
           </p>
 
           {/* Legal links — Inter UPPERCASE 16px/600 white; left-aligned on mobile (x≈16), right on desktop */}
+          {/* gap-[76px] + max-w-[107px]: links wrap to 2 lines (matching real site); total container    */}
+          {/* width ≈ 51+107+107+107 + 3×76 = 600px → right-aligns with LEGAL starting at x=640 ✓.    */}
           {legalLinks && legalLinks.length > 0 && (
-            <div className="flex flex-col items-start gap-[16px] lg:flex-row lg:gap-[34px] lg:items-center">
+            <div className="flex flex-col items-start gap-[16px] lg:flex-row lg:gap-[76px] lg:items-center">
               {legalLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className="block text-[16px] font-semibold uppercase leading-[18px] underline-offset-2 transition-colors duration-150 hover:underline"
+                  className="block lg:max-w-[107px] text-[16px] font-semibold uppercase leading-[18px] underline-offset-2 transition-colors duration-150 hover:underline"
                   style={{
                     color:      "var(--color-merch-on-dark)",
                     fontFamily: "var(--font-merch)",
