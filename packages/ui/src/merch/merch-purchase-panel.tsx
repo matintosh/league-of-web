@@ -6,14 +6,16 @@
  * optional quantity stepper, Add to Cart + Buy It Now CTAs.
  *
  * Measured from merch.riotgames.com (amumu-plush, 1280px desktop):
- *   Category trail: 14px / 600 / uppercase / 0.02em ls / pure black (#000000 = --color-merch-ink-dark)
- *     Separator: '|' pipe glyph colored #d0d0d0 (--color-merch-trail-sep)
+ *   Category trail: 14px / 600 / uppercase / 0.02em ls / lh 1.25
+ *     Color: rgb(102,102,102) #666 = --color-merch-trail-text
+ *     Separator: '|' pipe rendered via li::after pseudo-element in SAME #666 — NO trailing pipe on last term
  *     Trail terms: "COLLECTIBLES | PLUSH | LEAGUE OF LEGENDS" (3 terms for plush)
+ *     margin-bottom: 16px (trail y=170, H1 y=204 on real PDP)
  *   Title H1: clamp(38px, 3.75vw, 48px) / 700 / lh 1.1 / --color-merch-ink-dark / uppercase / -0.03em tracking
  *   Heart/share row: 40×40 borderless icon buttons below H1; badge at row end
  *     Icons: border-width 0 (bare float), color pure black (#000000 = --color-merch-ink-dark)
- *     Share glyph: export box-with-up-arrow (not 3-node network glyph)
- *   Badge "New": 165×40 fixed, text CENTERED (4px 8px padding), lh 20px; stacks vertically when multiple
+ *     Share glyph: external-link (arrow exiting top-right of square frame, viewBox 0 0 39 40)
+ *   Badge "New": 165×40 fixed, text CENTERED (4px 8px padding), lh 20px, 14px/400; stacks vertically when multiple
  *   Price: 28px / 400 / lh 35px / --color-merch-ink-dark; 24px top/bottom padding
  *   Notices: TWO BLACK notices (rgb(0,0,0) = --color-merch-ink-dark); 16px between notices; ~24–32px below price
  *     1. "This product is not intended as a toy or children's product."
@@ -21,7 +23,8 @@
  *   Variant chips: 8px 16px / 13px / flex-wrap / 8px gap
  *   Add to Cart: 50px tall / 239px wide / merch-red bg / riotSans 16/600 / 0.02em ls
  *   Buy It Now: 50×50 ICON BUTTON (lightning bolt SVG) — no visible text / same disabled state as ATC
- *   CTA row: ATC (239px) + 8px gap + BIN (50×50) = ~297px inner wrapper, NOT full column width
+ *   CTA row: ATC (239px) + 24px gap + BIN (50×50) = ~313px inner wrapper at desktop
+ *     Mobile: ATC full-width + BIN full-width stacked (column, ~24px gap, parent h=90)
  *   No qty stepper on PDP (showQuantity=false default)
  *   No dividers between badge/price/notices sections
  *
@@ -70,28 +73,29 @@ function HeartIcon() {
 }
 
 /**
- * Share icon — export box-with-up-arrow (matches real merch.riotgames.com PDP).
- * Distinct from the 3-node network/graph glyph that was previously used.
+ * Share icon — external-link glyph: arrow exiting the top-RIGHT corner of a square frame.
+ * viewBox 0 0 39 40 matches the real merch.riotgames.com PDP share icon measurement.
+ * Distinct from the upload-tray glyph (arrow straight up through tray) previously used.
  */
 function ShareIcon() {
   return (
     <svg
       width="20"
       height="20"
-      viewBox="0 0 24 24"
+      viewBox="0 0 39 40"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      {/* Box outline — bottom + sides */}
-      <polyline points="8 17 3 17 3 21 21 21 21 17 16 17" />
-      {/* Up arrow shaft */}
-      <line x1="12" y1="3" x2="12" y2="15" />
-      {/* Up arrow head */}
-      <polyline points="8 7 12 3 16 7" />
+      {/* Square frame — left + bottom + right sides */}
+      <path d="M16 8H7a3 3 0 0 0-3 3v18a3 3 0 0 0 3 3h18a3 3 0 0 0 3-3v-9" />
+      {/* Arrow shaft — diagonal from bottom-left to top-right */}
+      <line x1="14" y1="26" x2="32" y2="8" />
+      {/* Arrow head — at top-right */}
+      <polyline points="22 8 32 8 32 18" />
     </svg>
   );
 }
@@ -191,6 +195,12 @@ export function MerchPurchasePanel({
       }}
     >
       {/* ── Category trail ──────────────────────────────────────────────── */}
+      {/*
+       * Real PDP: rgb(102,102,102) #666 = --color-merch-trail-text.
+       * Pipe rendered AFTER each term (li::after) in the same #666 — no trailing pipe on last.
+       * trail y=170, H1 y=204 → margin-bottom 16px. lh 1.25 = 17.5px on 14px text.
+       * ul margin: 0 16px → but here we match the 0 0 16px pattern (left margin handled by parent padding).
+       */}
       {categoryTrail && categoryTrail.length > 0 && (
         <ul
           aria-label="Category trail"
@@ -199,7 +209,7 @@ export function MerchPurchasePanel({
             flexWrap: "wrap",
             alignItems: "center",
             gap: "4px",
-            margin: "0 0 8px",
+            margin: "0 0 16px",
             padding: 0,
             listStyle: "none",
           }}
@@ -212,22 +222,24 @@ export function MerchPurchasePanel({
                 fontWeight: 600,
                 textTransform: "uppercase",
                 letterSpacing: "0.02em",
-                /* Real PDP: category trail text is pure black rgb(0,0,0) */
-                color: "var(--color-merch-ink-dark)",
+                /* Real PDP: trail text is #666 rgb(102,102,102) = --color-merch-trail-text */
+                color: "var(--color-merch-trail-text)",
+                lineHeight: 1.25,
                 display: "flex",
                 alignItems: "center",
                 gap: "4px",
               }}
             >
-              {idx > 0 && (
+              {seg}
+              {/* Pipe AFTER each term except the last — same #666 as text (not lighter grey) */}
+              {idx < categoryTrail.length - 1 && (
                 <span
                   aria-hidden="true"
-                  style={{ color: "var(--color-merch-trail-sep)" }}
+                  style={{ color: "var(--color-merch-trail-text)" }}
                 >
                   |
                 </span>
               )}
-              {seg}
             </li>
           ))}
         </ul>
@@ -311,7 +323,8 @@ export function MerchPurchasePanel({
                 style={{
                   width: 165,
                   height: 40,
-                  fontSize: 16,
+                  /* Real PDP: 14px/400 measured (was incorrectly 16px) */
+                  fontSize: 14,
                   fontWeight: 400,
                   letterSpacing: "0",
                   /* Real PDP: 4px top/bottom, 8px left/right — label CENTERED */
@@ -575,25 +588,27 @@ export function MerchPurchasePanel({
 
       {/* ── CTA row: Add to Cart + Buy It Now ────────────────────────────── */}
       {/*
-       * Real PDP: ATC is 239px wide; BIN is 50×50 icon button (lightning bolt).
-       * Total CTA group: ~297px inner wrapper (239 ATC + 8 gap + 50 BIN).
-       * NOT full column width — constrained to 297px at desktop.
-       * Mobile: ATC fills width minus 50px BIN (flex row, still constrained to parent width).
+       * Real PDP @1280: ATC 239px wide + 24px gap + BIN 50×50 = 313px wrapper.
+       * Real PDP @390: ATC ~292px (near full column) + BIN full-width stacked in column,
+       *   parent h=90, ~24px gap between the two rows.
        * Disabled state: both follow outOfStock (logged user decision #5, do not change).
+       * merch-pdp-cta class + media query in product-page-client.tsx handles mobile stacking.
        */}
       <div
+        className="merch-pdp-cta"
         style={{
           marginTop: 20,
           display: "flex",
-          gap: 8,
-          /* Constrain CTA group: 239px ATC + 8px gap + 50px BIN = 297px */
-          width: 297,
+          gap: 24,
+          /* Desktop: 239px ATC + 24px gap + 50px BIN = 313px */
+          width: 313,
           maxWidth: "100%",
         }}
       >
-        {/* Add to Cart — 239px wide per real PDP measurement */}
+        {/* Add to Cart — 239px wide at desktop; full-width at mobile */}
         <button
           type="button"
+          className="merch-pdp-cta-atc"
           disabled={outOfStock}
           onClick={() => !outOfStock && onAddToCart?.()}
           style={{
@@ -629,9 +644,10 @@ export function MerchPurchasePanel({
           {outOfStock ? "Out of Stock" : "Add to Cart"}
         </button>
 
-        {/* Buy It Now — 50×50 ICON button (lightning bolt SVG), no visible text */}
+        {/* Buy It Now — 50×50 ICON button at desktop; full-width at mobile */}
         <button
           type="button"
+          className="merch-pdp-cta-bin"
           aria-label="Buy It Now"
           disabled={outOfStock}
           onClick={() => !outOfStock && onBuyNow?.()}

@@ -6,6 +6,7 @@
  * Supports two variants:
  *   - "accordion" (default): collapsible rows with chevron, top/bottom borders.
  *     Default state: COLLAPSED (closed). All rows closed unless selectedTab passed.
+ *     Description header: 18px / 400 / --color-merch-ink-dark (real PDP measurement).
  *   - "static": static always-visible sections — no chevron, no toggle, no borders.
  *     Heading: 16px / 600 / --color-merch-ink-dark.
  *     Body padding: 0 0 32px (matches real merch PDP Description block).
@@ -19,10 +20,10 @@
  *
  * Measured from merch.riotgames.com PDP (~1280px desktop):
  *   Right column width: 372px
- *   Accordion header: 372px × 39px, font 16px / 600 / --color-merch-ink-dark
+ *   Accordion header: 372px × 39px, font 18px / 400 / --color-merch-ink-dark (re-measured round 4)
  *   Chevron: 16px SVG, right-aligned, rotates 180° when open
- *   Divider: 1px solid --color-merch-border above each row
- *   Panel: 16px / line-height normal / --color-merch-body / padding 0 0 16px
+ *   Divider: 1px solid --color-merch-border above each row (full panel width)
+ *   Panel body: 16px / line-height normal / --color-merch-ink-dark (#000) / padding 0 0 16px, clamped 3 lines
  *   Static Description heading: 16px / 600 / --color-merch-ink-dark, NO borders, NO chevron
  *   Static Description body: padding 0 0 32px
  */
@@ -49,9 +50,10 @@ export interface MerchProductInfoTabsProps {
    * Rendering variant.
    *
    * - "accordion" (default): collapsible rows with chevron + borders. All collapsed by default.
+   *   Header: 18px / 400 / --color-merch-ink-dark (real PDP round-4 measurement).
+   *   Body: 16px / --color-merch-ink-dark (#000).
    * - "static": static always-open sections — no chevron, no toggle, no top/bottom borders.
    *   Heading is a visible h3 (16px/600); body padding 0 0 32px.
-   *   Matches the real merch.riotgames.com PDP Description block (always visible, never collapsed).
    */
   variant?: "accordion" | "static";
   /**
@@ -214,7 +216,7 @@ export function MerchProductInfoTabs({
             key={tab.id}
             style={{ borderBottom: "1px solid var(--color-merch-border)" }}
           >
-            {/* Accordion header button — 39px tall, 16px/600 */}
+            {/* Accordion header button — 39px tall, 18px/400 (re-measured round 4 from real PDP) */}
             <button
               type="button"
               id={headerId}
@@ -228,8 +230,10 @@ export function MerchProductInfoTabs({
                 width: "100%",
                 minHeight: 39,
                 padding: "8px 0",
-                fontSize: 16,
-                fontWeight: 600,
+                /* Real PDP round-4 measurement: Description header 18px / 400 / lh 22.5 */
+                fontSize: 18,
+                fontWeight: 400,
+                lineHeight: "22.5px",
                 fontFamily: "inherit",
                 color: "var(--color-merch-ink-dark)",
                 background: "none",
@@ -251,7 +255,7 @@ export function MerchProductInfoTabs({
               <Chevron open={isOpen} />
             </button>
 
-            {/* Accordion panel — hidden when collapsed */}
+            {/* Accordion panel — hidden when collapsed; body #000 per real PDP */}
             <div
               role="region"
               id={panelId}
@@ -261,7 +265,8 @@ export function MerchProductInfoTabs({
                 paddingBottom: 16,
                 fontSize: 16,
                 lineHeight: "normal",
-                color: "var(--color-merch-body)",
+                /* Real PDP: body color rgb(0,0,0) = --color-merch-ink-dark (not #333 body) */
+                color: "var(--color-merch-ink-dark)",
               }}
             >
               {tab.content}

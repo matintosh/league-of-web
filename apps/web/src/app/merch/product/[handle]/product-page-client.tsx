@@ -13,9 +13,11 @@
  *   Grid starts at header bottom (y≈130); breadcrumb at y≈130 h=60 overlays the hero.
  *
  * Layout (390px mobile):
- *   Order: breadcrumb (absolute overlay) → gallery image → mobile header row → price/CTA.
- *   Gallery image renders FIRST on mobile (image-first order).
- *   Compact title + [LoL logo][heart][share][badge] row is BELOW the gallery.
+ *   Single column stack — gallery first, then purchase panel below.
+ *   Real site has NO separate compact mobile header row above the gallery;
+ *   breadcrumb → gallery → grey category trail → big H1 → price → CTAs.
+ *   The "merch-pdp-mobile-header" div (round-3 #857) has been removed (round-4 #893).
+ *   Mobile CTAs: ATC full-width + BIN full-width, stacked column (~24px gap, h≈90).
  */
 
 import React, { useState } from "react";
@@ -32,7 +34,6 @@ import {
   MerchCollectionHero,
   MerchShopCarousel,
   MerchSizeGuideModal,
-  LolWordmark,
 } from "@low/ui";
 import type { MerchCartItem, MerchProduct } from "@low/fixtures";
 
@@ -220,14 +221,23 @@ export function ProductPageClient({
               onAddToCart={() => {}}
               onBuyNow={() => {}}
             />
-            <div style={{ marginTop: 32 }}>
+            {/*
+             * Thin full-panel divider between notices/CTAs and Description accordion.
+             * Real PDP: 1px grey rule spans the full panel width above the Description row.
+             */}
+            <div
+              style={{
+                marginTop: 32,
+                borderTop: "1px solid var(--color-merch-divider)",
+              }}
+            >
               {/*
-               * Description: static always-open section (no chevron, no toggle, no borders).
-               * Real PDP: heading "Description" visible, body always shown, padding 0 0 32px.
-               * Uses variant="static" (issue #858 — was collapsed accordion, now static).
+               * Description: accordion row — 18px/400 header, collapsed by default.
+               * Body clamped to 3 lines (expand on toggle), color #000.
+               * Real PDP round-4: accordion at y=662, body P clamped h=60.
+               * NOTE: round-3 #858 used variant="static" but round-4 #893 reverts to accordion.
                */}
               <MerchProductInfoTabs
-                variant="static"
                 tabs={[
                   {
                     id: "description",
@@ -237,147 +247,6 @@ export function ProductPageClient({
                 ]}
               />
             </div>
-          </div>
-        </div>
-
-        {/*
-         * ── Mobile-only compact header row ────────────────────────────────
-         * Sits BELOW the gallery on 390px viewports (image-first order).
-         * Real site measurement:
-         *   breadcrumb (y=138) → hero image 342×629 at x=24 → this row → price/CTA
-         *   LEFT: title on its own line (16px/600)
-         *   Then a row: LoL lockup flush-left + heart/share/badge right
-         * Hidden on desktop (>768px) — the full panel handles it there.
-         */}
-        <div
-          className="merch-pdp-mobile-header"
-          style={{
-            display: "none",
-            flexDirection: "column",
-            padding: "12px 16px 0",
-            gap: 8,
-          }}
-        >
-          {/* Title — full-width own line */}
-          <span
-            style={{
-              fontSize: 16,
-              fontWeight: 600,
-              color: "var(--color-merch-ink-dark)",
-              display: "block",
-            }}
-          >
-            {title}
-          </span>
-
-          {/* Row: LoL lockup flush-left + heart/share/badge right */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            {/* LoL logo — flush left */}
-            <span
-              aria-label="League of Legends"
-              style={{
-                color: "var(--color-merch-ink-dark)",
-                flex: "1 1 auto",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <LolWordmark />
-            </span>
-
-            {/* Heart icon — borderless, pure black */}
-            <button
-              type="button"
-              aria-label="Add to wishlist"
-              onClick={() => {}}
-              style={{
-                width: 40,
-                height: 40,
-                border: "none",
-                background: "none",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "var(--color-merch-ink-dark)",
-                flexShrink: 0,
-                padding: 0,
-              }}
-            >
-              {/* Heart SVG — outline */}
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
-            </button>
-
-            {/* Share icon — borderless, export box-with-up-arrow */}
-            <button
-              type="button"
-              aria-label="Share product"
-              onClick={() => {}}
-              style={{
-                width: 40,
-                height: 40,
-                border: "none",
-                background: "none",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "var(--color-merch-ink-dark)",
-                flexShrink: 0,
-                padding: 0,
-              }}
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <polyline points="8 17 3 17 3 21 21 21 21 17 16 17" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-                <polyline points="8 7 12 3 16 7" />
-              </svg>
-            </button>
-
-            {/* Badge chip — first badge only in mobile header */}
-            {badges[0] && (
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 400,
-                  padding: "3px 7px",
-                  borderRadius: 2,
-                  backgroundColor: "var(--color-merch-badge-new)",
-                  color: "var(--color-merch-ink-dark)",
-                  flexShrink: 0,
-                }}
-              >
-                {badges[0]}
-              </span>
-            )}
           </div>
         </div>
 
@@ -458,9 +327,6 @@ export function ProductPageClient({
       {/* Responsive styles — mobile layout overrides */}
       <style>{`
         @media (max-width: 768px) {
-          .merch-pdp-mobile-header {
-            display: flex !important;
-          }
           .merch-pdp-grid {
             grid-template-columns: 1fr !important;
           }
@@ -469,6 +335,19 @@ export function ProductPageClient({
             top: 0 !important;
             left: 0 !important;
             right: 0 !important;
+          }
+          /* Mobile CTA: column stack, full-width buttons, ~24px gap, parent h≈90 */
+          .merch-pdp-cta {
+            flex-direction: column !important;
+            width: 100% !important;
+            gap: 12px !important;
+          }
+          .merch-pdp-cta-atc {
+            width: 100% !important;
+          }
+          .merch-pdp-cta-bin {
+            width: 100% !important;
+            height: 50px !important;
           }
         }
       `}</style>
