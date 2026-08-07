@@ -37,9 +37,10 @@
   --color-merch-red-dark: #c60023; /* hover / pressed state (matches announcement band) */
 
   /* ── Ink / text ─────────────────────────────────────────────────────── */
-  --color-merch-ink:     #1a1a1a; /* heading-level text                            */
-  --color-merch-body:    #333333; /* body / paragraph text                         */
-  --color-merch-muted:   #737373; /* secondary, captions, footer copy              */
+  --color-merch-ink:           #1a1a1a; /* heading-level text                            */
+  --color-merch-collab-ink:    #1b1d1f; /* collab carousel heading — rgb(27,29,31) measured from real merch.riotgames.com */
+  --color-merch-body:          #333333; /* body / paragraph text                         */
+  --color-merch-muted:         #737373; /* secondary, captions, footer copy              */
 
   /* ── Surfaces ───────────────────────────────────────────────────────── */
   --color-merch-bg:          #ffffff; /* page background                               */

@@ -12,29 +12,37 @@
  * out, NO fetching in @low/ui, types from @low/fixtures), showcase server-safe
  * (no 'use client'; stateful demos in *.demo.tsx), SVG ids from useId.
  *
- * Reworked (issue #855) to match the real merch.riotgames.com "Latest Collaborations" swiper:
+ * Reworked (issue #890) to fix double-render at 390 + desktop 506px panel:
  *
  * @1280px:
- *   - Section:   full-width #f7f7f7 band (--color-merch-surface-alt)
- *   - Eyebrow:   short rule + "Latest Collaborations" 18px/600, lh 22px,
- *                ls normal, --color-merch-ink-dark (#000000), x=32
- *   - Slide:     full-width single-slide snap; text zone LEFT (~435px),
- *                landscape image RIGHT; next slide peeking ~56px at right edge
- *   - Index:     plain "01"…"06" — 14px/600, --color-merch-franchise-label
- *   - Headline:  riotSans 48px/600, lh 52px, NO text-transform (mixed-case)
+ *   - Section:   full-width #f7f7f7 band (--color-merch-surface-alt), padding 80px 0
+ *   - Eyebrow:   short rule + "LATEST COLLABORATIONS" 18px/600, lh 22px,
+ *                uppercase, --color-merch-ink-dark (#000000), dash from left edge
+ *   - Panel:     506px tall side-by-side; text column LEFT (w~435px), image RIGHT
+ *   - Headline:  riotSans 48px/600, lh 52px, --color-merch-collab-ink (#1b1d1f)
  *   - Body:      Inter 16px/400, lh 22px, --color-merch-franchise-label
- *   - Arrows:    48px circles below text zone, NO CTA anywhere
+ *   - Arrows:    40×40 transparent circles below text, 1px border --color-merch-border-light
  *
  * @390px:
- *   - Same #f7f7f7 band, same eyebrow
- *   - Slide: full-bleed image on top (100vw), text block below
- *   - 48px circular arrow buttons beneath text, centered, NO CTA
+ *   - One section (NOT two) — the dual-layout bug is fixed by using a single
+ *     flex container with CSS media queries rather than two sibling divs
+ *   - Same #f7f7f7 band, same eyebrow; label dash from left edge (x=0, no inset)
+ *   - Slide: full-bleed image on top, text block below (32px side margins)
+ *   - NO numeric index ("01") — dropped at mobile
+ *   - 40×40 transparent arrow buttons beneath text, centered, 1px border rgb(208,208,208)
  *   - NO horizontal overflow (scrollWidth = viewport width)
  *
  * NO-OVERFLOW GUARANTEE:
  *   overflowX:clip on the section prevents the peeking next-slide from
  *   pushing scrollWidth beyond the viewport. clip does not create a scroll
  *   container (unlike hidden) so sticky ancestors remain unaffected.
+ *
+ * DOUBLE-RENDER FIX (issue #890):
+ *   The previous implementation used two sibling divs (desktop + mobile) with
+ *   Tailwind max-[639px]:hidden / min-[640px]:hidden. These Tailwind arbitrary
+ *   breakpoint classes were not being emitted by the scanner, causing BOTH
+ *   layout variants to render at 390. The fix uses a SINGLE flex container with
+ *   a scoped <style> block and @media queries — same approach as merch-search-hero.tsx.
  */
 
 import { useCallback, useId, useRef, useState } from "react";
@@ -51,14 +59,14 @@ export interface MerchCollabEntry {
   partnerName: string;
   /**
    * Large product-name headline shown on the text zone.
-   * Mixed case — e.g. "HyperX OMEN 16 VALORANT Edition". NO text-transform applied.
+   * e.g. "HyperX OMEN 16 VALORANT Edition". Rendered at 48px/600.
    */
   headline: string;
   /** Body copy beneath the headline (1–2 short sentences). */
   copy?: string;
   /**
    * Landscape product/campaign image URL (supplied by the page).
-   * Ideal size: ~648×324 (2:1 ratio). Rendered object-cover on the right half.
+   * Ideal size: ~648×506 (desktop). Rendered object-cover on the right half.
    */
   imageUrl: string;
   /** Optional partner logo URL overlaid on the image. */
@@ -97,7 +105,7 @@ function ChevronLeftIcon() {
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      style={{ width: 18, height: 18 }}
+      style={{ width: 16, height: 16 }}
     >
       <polyline points="15 18 9 12 15 6" />
     </svg>
@@ -114,7 +122,7 @@ function ChevronRightIcon() {
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      style={{ width: 18, height: 18 }}
+      style={{ width: 16, height: 16 }}
     >
       <polyline points="9 18 15 12 9 6" />
     </svg>
@@ -122,7 +130,7 @@ function ChevronRightIcon() {
 }
 
 // ---------------------------------------------------------------------------
-// Arrow button — 48px circle, white bg, bordered
+// Arrow button — 40×40 transparent, 1px border-light, centered
 // ---------------------------------------------------------------------------
 
 interface ArrowButtonProps {
@@ -140,11 +148,11 @@ function ArrowButton({ label, onClick, disabled, children }: ArrowButtonProps) {
       disabled={disabled}
       onClick={onClick}
       style={{
-        width: 48,
-        height: 48,
+        width: 40,
+        height: 40,
         borderRadius: "50%",
-        border: "1.5px solid var(--color-merch-border)",
-        backgroundColor: "var(--color-merch-bg)",
+        border: "1px solid var(--color-merch-border-light)",
+        backgroundColor: "transparent",
         color: "var(--color-merch-ink)",
         display: "flex",
         alignItems: "center",
@@ -160,8 +168,7 @@ function ArrowButton({ label, onClick, disabled, children }: ArrowButtonProps) {
             "var(--color-merch-surface)";
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-          "var(--color-merch-bg)";
+        (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
       }}
     >
       {children}
@@ -188,103 +195,12 @@ function EyebrowRule({ id }: { id: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// TextBlock — shared text content for desktop and mobile slides
-// ---------------------------------------------------------------------------
-
-interface TextBlockProps {
-  collab: MerchCollabEntry;
-  index: number;
-  onPrev: () => void;
-  onNext: () => void;
-  hasPrev: boolean;
-  hasNext: boolean;
-  /** Center the arrow buttons (mobile). Desktop keeps them left-aligned. */
-  centerArrows?: boolean;
-}
-
-function TextBlock({ collab, index, onPrev, onNext, hasPrev, hasNext, centerArrows }: TextBlockProps) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      {/* Plain slide index: "01" */}
-      <span
-        style={{
-          fontFamily: "var(--font-merch-display)",
-          fontSize: 14,
-          fontWeight: 600,
-          color: "var(--color-merch-franchise-label)",
-          lineHeight: 1,
-          marginBottom: 12,
-        }}
-      >
-        {padIndex(index)}
-      </span>
-
-      {/* Headline: 48px/600, mixed-case (NO text-transform), lh 52px */}
-      <h3
-        style={{
-          margin: 0,
-          fontFamily: "var(--font-merch-display)",
-          fontSize: 48,
-          fontWeight: 600,
-          lineHeight: "52px",
-          color: "var(--color-merch-ink)",
-          letterSpacing: 0,
-          textTransform: "none",
-          marginBottom: 16,
-        }}
-      >
-        {collab.headline}
-      </h3>
-
-      {/* Body: Inter 16px/400, lh 22px */}
-      {collab.copy && (
-        <p
-          style={{
-            margin: 0,
-            fontFamily: "var(--font-merch)",
-            fontSize: 16,
-            fontWeight: 400,
-            lineHeight: "22px",
-            color: "var(--color-merch-franchise-label)",
-            marginBottom: 0,
-          }}
-        >
-          {collab.copy}
-        </p>
-      )}
-
-      {/* 48px arrow buttons — no CTA */}
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          marginTop: 32,
-          justifyContent: centerArrows ? "center" : "flex-start",
-        }}
-      >
-        <ArrowButton label="Previous collaboration" onClick={onPrev} disabled={!hasPrev}>
-          <ChevronLeftIcon />
-        </ArrowButton>
-        <ArrowButton label="Next collaboration" onClick={onNext} disabled={!hasNext}>
-          <ChevronRightIcon />
-        </ArrowButton>
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
 // MerchCollabCarousel
 // ---------------------------------------------------------------------------
 
 export function MerchCollabCarousel({ collabs, onPrev, onNext }: MerchCollabCarouselProps) {
-  const ruleId = useId();
+  const uid = useId();
+  const ruleId = `${uid}-rule`;
   const slideRefs = useRef<(HTMLElement | null)[]>([]);
   const [index, setIndex] = useState(0);
 
@@ -315,13 +231,23 @@ export function MerchCollabCarousel({ collabs, onPrev, onNext }: MerchCollabCaro
 
   if (collabs.length === 0) return null;
 
+  /*
+   * Scoped styles: use a <style> block with a data-attribute selector so
+   * responsive layout switches are handled by real @media queries rather than
+   * Tailwind arbitrary breakpoint classes (which were not being emitted by the
+   * scanner and caused both layout variants to render at 390 — issue #890).
+   *
+   * data-collab-carousel scopes all rules to this component instance.
+   */
+  const scopeAttr = "data-collab-carousel";
+
   return (
     <section
       aria-label="Latest Collaborations"
+      {...{ [scopeAttr]: "" }}
       style={{
         fontFamily: "var(--font-merch)",
         backgroundColor: "var(--color-merch-surface-alt)",
-        paddingBottom: 48,
         /*
          * overflow-x:clip contains the peeking next slide at desktop without
          * creating a scroll container. scrollWidth stays = viewport width at
@@ -330,51 +256,142 @@ export function MerchCollabCarousel({ collabs, onPrev, onNext }: MerchCollabCaro
         overflowX: "clip",
       }}
     >
+      {/* Scoped responsive styles — avoids Tailwind arbitrary-breakpoint scan issues */}
+      <style>{`
+        [${scopeAttr}] .collab-eyebrow {
+          padding-inline: 0;
+          padding-top: 40px;
+          padding-bottom: 24px;
+        }
+        [${scopeAttr}] .collab-eyebrow-inner {
+          padding-inline: 32px;
+          max-width: 1280px;
+          margin-inline: auto;
+        }
+        [${scopeAttr}] .collab-slide {
+          /* Mobile default: full-width slide, column layout */
+          display: flex;
+          flex-direction: column;
+          scroll-snap-align: start;
+          flex-shrink: 0;
+          width: 100%;
+          background-color: var(--color-merch-surface-alt);
+        }
+        [${scopeAttr}] .collab-image {
+          /* Mobile: full-bleed image on top, 2:1 aspect */
+          position: relative;
+          width: 100%;
+          aspect-ratio: 2 / 1;
+          order: 0;
+          overflow: hidden;
+        }
+        [${scopeAttr}] .collab-text {
+          /* Mobile: text below image, 32px side margins */
+          order: 1;
+          padding: 20px 32px 24px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        [${scopeAttr}] .collab-index {
+          /* Mobile: hide the numeric index per real mobile layout */
+          display: none;
+        }
+        [${scopeAttr}] .collab-arrows {
+          display: flex;
+          gap: 12px;
+          margin-top: 32px;
+          justify-content: center; /* centered on mobile */
+        }
+        [${scopeAttr}] .collab-track-spacer {
+          /* Mobile: no trailing spacer needed */
+          display: none;
+        }
+
+        /* ── Desktop (≥640px) ─────────────────────────────────────── */
+        @media (min-width: 640px) {
+          [${scopeAttr}] .collab-slide {
+            /* Desktop: calc(100% - 64px) wide with 32px left indent; image peeks at right */
+            flex-direction: row;
+            width: calc(100% - 64px);
+            margin-left: 32px;
+            height: 506px;
+          }
+          [${scopeAttr}] .collab-image {
+            /* Desktop: image RIGHT, flex fills remaining width */
+            order: 1;
+            width: auto;
+            aspect-ratio: unset;
+            flex: 1;
+            height: 100%;
+          }
+          [${scopeAttr}] .collab-text {
+            /* Desktop: text LEFT, fixed width ~435px, no top/bottom inset — section padding handles it */
+            order: 0;
+            padding: 0 40px 0 0;
+            flex: 0 0 435px;
+          }
+          [${scopeAttr}] .collab-index {
+            /* Desktop: show the numeric index */
+            display: block;
+          }
+          [${scopeAttr}] .collab-arrows {
+            justify-content: flex-start; /* left-aligned on desktop */
+          }
+          [${scopeAttr}] .collab-track-spacer {
+            display: block;
+          }
+        }
+      `}</style>
+
       {/* ── Eyebrow heading ── */}
-      <div
-        style={{
-          paddingInline: 32,
-          paddingTop: 40,
-          paddingBottom: 24,
-          maxWidth: 1280,
-          marginInline: "auto",
-        }}
-      >
-        <h2
-          style={{
-            margin: 0,
-            fontFamily: "var(--font-merch-display)",
-            fontSize: 18,
-            fontWeight: 600,
-            lineHeight: "22px",
-            letterSpacing: "normal",
-            color: "var(--color-merch-ink-dark)",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <EyebrowRule id={`${ruleId}-rule`} />
-          Latest Collaborations
-        </h2>
+      {/*
+       * At mobile (390): dash runs flush from left edge (x=0), NO padding-inline on outer wrapper.
+       * At desktop: inner div provides 32px inline padding + max-width centering.
+       * Real mobile: label at x=0 with the dash touching the viewport edge.
+       */}
+      <div className="collab-eyebrow">
+        <div className="collab-eyebrow-inner">
+          <p
+            style={{
+              margin: 0,
+              fontFamily: "var(--font-merch-display)",
+              fontSize: 18,
+              fontWeight: 600,
+              lineHeight: "22px",
+              letterSpacing: "normal",
+              color: "var(--color-merch-ink-dark)",
+              display: "flex",
+              alignItems: "center",
+              textTransform: "uppercase",
+            }}
+          >
+            <EyebrowRule id={ruleId} />
+            Latest Collaborations
+          </p>
+        </div>
       </div>
 
       {/*
        * ── Scroll track ──
-       * A single horizontal scroll container for both viewports.
+       * A single horizontal scroll container.
        * Desktop: slides are calc(100% - 64px) wide with 32px left margin,
        *          leaving ~64px of the next slide peeking at the right edge.
        * Mobile:  slides are 100% wide (no peek, full-bleed).
        *
        * scrollIntoView(inline:"start") snaps each slide to its natural start.
-       * overflowX:clip on the section clips the peek without scroll.
+       * overflowX:clip on the section clips the peek without scroll container.
+       *
+       * Section padds 80px top/bottom on desktop to achieve the 506px panel within
+       * the full-width band.
        */}
       <div
-        className="[&::-webkit-scrollbar]:hidden"
         style={{
           display: "flex",
           overflowX: "scroll",
           scrollSnapType: "x mandatory",
           scrollbarWidth: "none",
+          paddingBottom: 48,
         }}
       >
         {collabs.map((collab, i) => (
@@ -382,130 +399,104 @@ export function MerchCollabCarousel({ collabs, onPrev, onNext }: MerchCollabCaro
             key={collab.slug}
             aria-label={collab.partnerName}
             ref={(el) => { slideRefs.current[i] = el; }}
-            style={{
-              scrollSnapAlign: "start",
-              flexShrink: 0,
-              backgroundColor: "var(--color-merch-surface-alt)",
-            }}
-            // Desktop: calc(100% - 64px) wide with left indent; Mobile: 100%
-            className="
-              w-[calc(100%-64px)] ml-8
-              max-[639px]:w-full max-[639px]:ml-0
-            "
+            className="collab-slide"
           >
-            {/* Desktop layout (≥640px): text LEFT + image RIGHT */}
-            <div
-              className="max-[639px]:hidden"
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                minHeight: 324,
-              }}
-            >
-              {/* Text zone — LEFT, 435px */}
-              <div
+            {/* Product/campaign image */}
+            <div className="collab-image">
+              <img
+                src={collab.imageUrl}
+                alt={collab.partnerName}
+                draggable={false}
                 style={{
-                  flex: "0 0 435px",
-                  paddingRight: 40,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center top",
+                  display: "block",
                 }}
-              >
-                <TextBlock
-                  collab={collab}
-                  index={i + 1}
-                  onPrev={goPrev}
-                  onNext={goNext}
-                  hasPrev={hasPrev}
-                  hasNext={hasNext}
-                />
-              </div>
-
-              {/* Image — RIGHT, landscape 2:1 object-cover */}
-              <div
-                style={{
-                  flex: 1,
-                  position: "relative",
-                  overflow: "hidden",
-                  minHeight: 324,
-                }}
-              >
+              />
+              {collab.logoUrl && (
                 <img
-                  src={collab.imageUrl}
+                  src={collab.logoUrl}
                   alt={collab.partnerName}
-                  draggable={false}
                   style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    objectPosition: "center top",
-                    display: "block",
+                    position: "absolute",
+                    top: 16,
+                    right: 16,
+                    height: 28,
+                    width: "auto",
+                    objectFit: "contain",
+                    filter: "brightness(0) invert(1)",
                   }}
+                  draggable={false}
                 />
-                {collab.logoUrl && (
-                  <img
-                    src={collab.logoUrl}
-                    alt={collab.partnerName}
-                    style={{
-                      position: "absolute",
-                      top: 16,
-                      right: 16,
-                      height: 28,
-                      width: "auto",
-                      objectFit: "contain",
-                      filter: "brightness(0) invert(1)",
-                    }}
-                    draggable={false}
-                  />
-                )}
-              </div>
+              )}
             </div>
 
-            {/* Mobile layout (<640px): image TOP + text BOTTOM */}
-            <div
-              className="min-[640px]:hidden"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              {/* Full-bleed image */}
-              <div style={{ position: "relative", width: "100%", aspectRatio: "2 / 1" }}>
-                <img
-                  src={collab.imageUrl}
-                  alt={collab.partnerName}
-                  draggable={false}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    objectPosition: "center top",
-                    display: "block",
-                  }}
-                />
-              </div>
-
-              {/* Text block below image */}
-              <div
+            {/* Text zone */}
+            <div className="collab-text">
+              {/* Numeric index — desktop only ("01"…"06") */}
+              <span
+                className="collab-index"
                 style={{
-                  padding: "20px 20px 24px",
-                  backgroundColor: "var(--color-merch-surface-alt)",
+                  fontFamily: "var(--font-merch-display)",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "var(--color-merch-franchise-label)",
+                  lineHeight: 1,
+                  marginBottom: 12,
                 }}
               >
-                <TextBlock
-                  collab={collab}
-                  index={i + 1}
-                  onPrev={goPrev}
-                  onNext={goNext}
-                  hasPrev={hasPrev}
-                  hasNext={hasNext}
-                  centerArrows
-                />
+                {padIndex(i + 1)}
+              </span>
+
+              {/* Headline: 48px/600, lh 52px, collab-ink #1b1d1f */}
+              <h3
+                style={{
+                  margin: 0,
+                  fontFamily: "var(--font-merch-display)",
+                  fontSize: 48,
+                  fontWeight: 600,
+                  lineHeight: "52px",
+                  color: "var(--color-merch-collab-ink)",
+                  letterSpacing: 0,
+                  marginBottom: 16,
+                }}
+              >
+                {collab.headline}
+              </h3>
+
+              {/* Body: Inter 16px/400, lh 22px */}
+              {collab.copy && (
+                <p
+                  style={{
+                    margin: 0,
+                    fontFamily: "var(--font-merch)",
+                    fontSize: 16,
+                    fontWeight: 400,
+                    lineHeight: "22px",
+                    color: "var(--color-merch-franchise-label)",
+                  }}
+                >
+                  {collab.copy}
+                </p>
+              )}
+
+              {/* 40×40 arrow buttons — transparent bg, 1px border-light, no CTA */}
+              <div className="collab-arrows">
+                <ArrowButton label="Previous collaboration" onClick={goPrev} disabled={!hasPrev}>
+                  <ChevronLeftIcon />
+                </ArrowButton>
+                <ArrowButton label="Next collaboration" onClick={goNext} disabled={!hasNext}>
+                  <ChevronRightIcon />
+                </ArrowButton>
               </div>
             </div>
           </article>
         ))}
 
-        {/* Trailing spacer (desktop only) so the last slide's text zone isn't clipped */}
-        <div aria-hidden className="max-[639px]:hidden" style={{ flex: "0 0 32px" }} />
+        {/* Trailing spacer (desktop only) — last slide's text zone is not clipped */}
+        <div aria-hidden className="collab-track-spacer" style={{ flex: "0 0 32px" }} />
       </div>
     </section>
   );
