@@ -153,6 +153,10 @@
   --color-merch-hero-progress-bg:  rgba(255, 255, 255, 0.25); /* progress bar track  */
   /* Strip next-arrow circle border — rgb(208,208,208) measured at desktop */
   --color-merch-strip-arrow-border: #d0d0d0; /* 1px border on 40×40 next-arrow circle */
+  /* Inactive franchise tile washout — semi-transparent white scrim over non-active tiles.
+     Real site: inactive tiles desaturated/washed (Riftbound tan with grey-tan logo, etc).
+     rgba(255,255,255,0.3) overlay approximates the real muted look. */
+  --color-merch-tile-inactive-wash: rgba(255, 255, 255, 0.3); /* white-wash scrim on inactive franchise tiles */
   /* Mobile franchise tab colors — remeasured 2026-08 from merch.riotgames.com @390 */
   --color-merch-tab-lol:      #05567c; /* League of Legends tab — teal-blue (confirmed) */
   --color-merch-tab-riftbound: #f7bd7f; /* Riftbound tab — tan/warm-orange (corrected)  */
