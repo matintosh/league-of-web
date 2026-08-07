@@ -44,10 +44,10 @@ export interface LauncherRiotHomePageProps {
  * Full Riot Home surface: rail + content area.
  *
  * Layout per image-5.png:
- *   - Left rail: 56 px fixed, full-height, `--color-launcher-rail-bg`
- *   - Content area: flex-1, dark bg, scrollable, padded
- *     - "Home" heading, ~22 px, top-left
- *     - FeaturedGamePromoHero fills content width
+ *   - Left rail: 64 px fixed, full-height, `--color-launcher-rail-bg`
+ *   - Content area: flex-1, dark bg, scrollable
+ *     - "Home" heading overlaid on hero scrim at top≈26px, left≈85px
+ *     - FeaturedGamePromoHero fills content width (flex:1)
  *     - "Latest Patch Notes" heading below hero
  *     - Horizontal scrolling row of PatchNoteCards
  */
@@ -70,10 +70,10 @@ export function LauncherRiotHomePage({
         overflow: "hidden",
       }}
     >
-      {/* Left icon rail — 56 px fixed */}
+      {/* Left icon rail — 64 px fixed (matches LauncherShell and ref x≈64@1280) */}
       <aside
         style={{
-          width: 56,
+          width: 64,
           flexShrink: 0,
           height: "100%",
           backgroundColor: "var(--color-launcher-rail-bg)",
@@ -97,31 +97,37 @@ export function LauncherRiotHomePage({
           gap: 0,
         }}
       >
-        {/* "Home" page heading — 26px top gutter, 91px left gutter per ref (x≈147 − 56px rail) */}
-        <div style={{ padding: "26px 24px 16px 91px" }}>
-          <h1
-            style={{
-              fontFamily: "var(--font-display, var(--font-launcher))",
-              fontSize: 22,
-              fontWeight: 700,
-              lineHeight: 1,
-              color: "var(--color-launcher-home-content-ink)",
-              margin: 0,
-            }}
-          >
-            Home
-          </h1>
-        </div>
-
-        {/* Featured promo hero — full-bleed: no horizontal padding */}
+        {/* Featured promo hero — full-bleed, flex:1 to fill available height.
+            "Home" heading overlaid on hero scrim at top:26px left:85px
+            (64px rail + 85px gutter = x≈149@1280, matching image-5.png ref). */}
         <FeaturedGamePromoHero
           {...featuredPromo}
           logoNode={featuredPromoLogoNode}
           onCta={onPromoCtaClick}
+          headingNode={
+            <h1
+              style={{
+                fontFamily: "var(--font-display, var(--font-launcher))",
+                fontSize: 22,
+                fontWeight: 700,
+                lineHeight: 1,
+                color: "var(--color-launcher-home-content-ink)",
+                margin: 0,
+              }}
+            >
+              Home
+            </h1>
+          }
         />
 
-        {/* Latest Patch Notes section — left gutter 91px to match Home title x≈147 */}
-        <section aria-label="Latest Patch Notes" style={{ padding: "20px 24px 32px 91px" }}>
+        {/* Latest Patch Notes section — left gutter 85px to match Home title x≈149@1280 (64px rail + 85px) */}
+        <section
+          aria-label="Latest Patch Notes"
+          style={{
+            padding: "20px 24px 32px 85px",
+            backgroundColor: "var(--color-launcher-patch-notes-bg)",
+          }}
+        >
           <h2
             style={{
               fontFamily: "var(--font-display, var(--font-launcher))",

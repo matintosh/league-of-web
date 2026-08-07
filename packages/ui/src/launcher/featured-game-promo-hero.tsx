@@ -26,6 +26,13 @@ export interface FeaturedGamePromoHeroProps extends FeaturedPromoData {
    * compatibility when `logoNode` is omitted.
    */
   logoNode?: ReactNode;
+  /**
+   * Optional page heading node overlaid on the hero's dark scrim at
+   * top:26px, left:85px — used by LauncherRiotHomePage to position
+   * the "Home" h1 inside the hero rather than in a separate strip above it,
+   * matching image-5.png ref (x≈149@1280, y≈30@720).
+   */
+  headingNode?: ReactNode;
   /** Optional click handler for the CTA button. */
   onCta?: () => void;
   className?: string;
@@ -35,8 +42,10 @@ export interface FeaturedGamePromoHeroProps extends FeaturedPromoData {
  * Full-bleed hero banner: splash art background, left-half dark gradient
  * overlay, game logo + tagline + description + CTA button in overlay column.
  *
- * ~510 px tall, 100% wide, full-bleed (no border-radius, no side gutters)
- * per image-5.png ref. Classic logo rendered unclipped at auto height.
+ * flex:1 tall (fills available content height), 100% wide, full-bleed.
+ * Optionally renders a `headingNode` (e.g. "Home" h1) at top-left of the
+ * scrim at top:26px left:85px — matching image-5.png ref (x≈149@1280).
+ * Classic logo rendered unclipped at auto height.
  */
 /** Strip non-alphanumeric characters so useId values are valid CSS class suffixes. */
 function safeCssId(id: string) {
@@ -47,6 +56,7 @@ export function FeaturedGamePromoHero({
   gameKey,
   gameLogo,
   logoNode,
+  headingNode,
   tagline,
   description,
   ctaLabel,
@@ -79,7 +89,8 @@ export function FeaturedGamePromoHero({
         style={{
           position: "relative",
           width: "100%",
-          height: 510,
+          flex: 1,
+          minHeight: 510,
           overflow: "hidden",
           flexShrink: 0,
         }}
@@ -112,6 +123,22 @@ export function FeaturedGamePromoHero({
           }}
         />
 
+        {/* Page heading overlay — e.g. "Home" h1 at top:26px left:85px
+            (64px rail + 85px gutter = x≈149@1280, matching image-5.png ref y≈30). */}
+        {headingNode != null && (
+          <div
+            aria-hidden="false"
+            style={{
+              position: "absolute",
+              top: 26,
+              left: 85,
+              zIndex: 2,
+            }}
+          >
+            {headingNode}
+          </div>
+        )}
+
         {/* Overlay content column — logo, tagline, description, CTA */}
         <div
           style={{
@@ -120,9 +147,9 @@ export function FeaturedGamePromoHero({
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-end",
-            /* 91px left aligns hero copy with the "Home" title and "Latest Patch Notes" heading
-             at x≈147 in the full-bleed content area (rail 56px is outside this main column) */
-          padding: "0 40px 40px 91px",
+            /* 85px left aligns hero copy with the "Home" heading and "Latest Patch Notes" heading
+             at x≈149@1280 in the full-bleed content area (rail 64px is outside this main column) */
+            padding: "0 40px 40px 85px",
             maxWidth: "55%",
           }}
         >
