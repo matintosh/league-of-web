@@ -306,6 +306,8 @@
   --color-launcher-surface-alt:          #2a2c35; /* muted badge fill (Install / Coming Soon) */
   --color-launcher-badge-installed:      #2ea44f; /* green Installed badge */
   --color-launcher-badge-update:         #d4a72c; /* amber Update badge */
+  /* labelStatus Update text — lime, pixel-sampled from ref image-7.png rgb(205,245,100) → #cdf564 (issue #928) */
+  --color-launcher-update-text:          #cdf564;
   /* Per-brand full-width Installed bar colors (issue #748, pixel-sampled from ref image-7.png ÷1.2) */
   --color-launcher-installed-bar-2xko:     #a0be4e; /* 2XKO lime — ref rgb(160,190,78) */
   --color-launcher-installed-bar-lol:      #cba046; /* LoL gold — ref rgb(203,160,70) */
@@ -596,6 +598,8 @@
     --color-launcher-surface-alt:          #2a2c35;
     --color-launcher-badge-installed:      #2ea44f;
     --color-launcher-badge-update:         #d4a72c;
+    /* labelStatus Update text — lime, pixel-sampled from ref image-7.png rgb(205,245,100) → #cdf564 (issue #928) */
+    --color-launcher-update-text:          #cdf564;
     /* Per-brand full-width Installed bar colors (issue #748) */
     --color-launcher-installed-bar-2xko:     #a0be4e;
     --color-launcher-installed-bar-lol:      #cba046;
