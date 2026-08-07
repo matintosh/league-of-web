@@ -133,7 +133,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
       },
       {
         id: "ch2-r2",
-        artSrc: loadingArtUrl("LeBlanc", 0),
+        artSrc: loadingArtUrl("Leblanc", 0),
         label: "LeBlanc Emote",
         isOwned: true,
         isCurrent: false,
@@ -262,7 +262,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
     rewards: [
       {
         id: "ch5-r1",
-        artSrc: loadingArtUrl("Darius", 5),
+        artSrc: loadingArtUrl("Darius", 8),
         label: "Final Boss Skin",
         isOwned: false,
         isCurrent: false,
@@ -271,7 +271,7 @@ export const demoBattlePassChapters: BattlePassChapter[] = [
       },
       {
         id: "ch5-r2",
-        artSrc: loadingArtUrl("LeBlanc", 3),
+        artSrc: loadingArtUrl("Leblanc", 3),
         label: "Noxian Icon",
         isOwned: false,
         isCurrent: false,
@@ -310,7 +310,7 @@ export const demoBattlePassLevelRewards: BattlePassLevelReward[] = [
   { level: 31, artSrc: loadingArtUrl("Draven", 0),      label: "Hextech Chest & Key",  lane: "free",    isUnlocked: false },
   { level: 32, artSrc: loadingArtUrl("Cassiopeia", 0),  label: "2000 Tokens",          lane: "premium", isUnlocked: false },
   { level: 33, artSrc: loadingArtUrl("Swain", 0),       label: "Emote",                lane: "free",    isUnlocked: false },
-  { level: 34, artSrc: loadingArtUrl("LeBlanc", 0),     label: "Ward Skin",            lane: "premium", isUnlocked: false },
+  { level: 34, artSrc: loadingArtUrl("Leblanc", 0),     label: "Ward Skin",            lane: "premium", isUnlocked: false },
   { level: 35, artSrc: loadingArtUrl("Vladimir", 0),    label: "Icon Shard",           lane: "free",    isUnlocked: false },
   { level: 36, artSrc: loadingArtUrl("Urgot", 0),       label: "Spray",                lane: "premium", isUnlocked: false },
 ];
