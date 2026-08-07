@@ -412,10 +412,13 @@ export function MerchPageClient() {
           })}
         </MerchProductGrid>
 
-        {/* ── Load More — gold at ALL viewports (measured from real merch.riotgames.com).
-            Centered 239×50 at 1280; full-bleed 390×50 at 390. Gold (#C4993B) bg,
-            black riotSans 16/600 text, 1px white offset outline frame.
-            data-hp-load-more: picked up by merch-layout.css for responsive sizing. */}
+        {/* ── Load More — homepage gold treatment (measured from real merch.riotgames.com).
+            Centered 239×50 at 1280; full-bleed 390×50 at 390. Gold (#C4993B) fill,
+            black riotSans 16/600 text, OUTER offset 1px light frame ~6px outside
+            the fill, corner notch top-left.
+            data-hp-load-more: button gold fill + corner notch (merch-layout.css).
+            data-hp-load-more-wrap: wrapper carries the outer offset frame (::before),
+            kept separate so clip-path on the button does not clip the frame. */}
         {hasMore && (
           <div
             style={{
@@ -424,26 +427,37 @@ export function MerchPageClient() {
               padding: "32px 0 40px",
             }}
           >
-            <button
-              type="button"
-              data-hp-load-more
-              onClick={() => setVisibleGroupCount((n) => n + INITIAL_GROUP_COUNT)}
+            <div
+              data-hp-load-more-wrap
               style={{
-                /* Base geometry only — bg/color/outline handled by [data-hp-load-more]
-                   in merch-layout.css to keep the gold-CTA rule in one place. */
-                height: 50,
-                fontSize: 16,
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.32px",
-                border: "none",
-                cursor: "pointer",
-                transition: "opacity 150ms",
-                fontFamily: "var(--font-merch-display)",
+                /* Wrapper: relative so ::before frame (merch-layout.css) is positioned
+                   6px outside the button. width/max-width set by merch-layout.css. */
+                position: "relative",
+                width: "100%",
               }}
             >
-              Load more
-            </button>
+              <button
+                type="button"
+                data-hp-load-more
+                onClick={() => setVisibleGroupCount((n) => n + INITIAL_GROUP_COUNT)}
+                style={{
+                  /* Base geometry — bg/color/clip handled by [data-hp-load-more]
+                     in merch-layout.css to keep the gold-CTA rule in one place. */
+                  height: 50,
+                  width: "100%",
+                  fontSize: 16,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.32px",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "opacity 150ms",
+                  fontFamily: "var(--font-merch-display)",
+                }}
+              >
+                Load more
+              </button>
+            </div>
           </div>
         )}
 

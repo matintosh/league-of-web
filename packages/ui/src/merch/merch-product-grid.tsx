@@ -95,7 +95,7 @@ export interface MerchProductGridProps {
    * Called when the "LOAD MORE" button is clicked.
    * When provided (or `showLoadMore` is true), the LOAD MORE button renders below the grid.
    * Measured from real merch.riotgames.com: 239×50 centered at desktop; full-width 50px at mobile.
-   * riotSans 16/600 uppercase, ls 0.32px, bg --color-merch-gold-cta, black text.
+   * riotSans 16/600 uppercase, ls 0.32px.
    */
   onLoadMore?: () => void;
   /**
@@ -104,6 +104,21 @@ export interface MerchProductGridProps {
    * @default false
    */
   showLoadMore?: boolean;
+  /**
+   * Visual treatment for the LOAD MORE button in the 2-col listing layout.
+   *
+   * - `"red"` (default for columns=2): solid red fill (--color-merch-refine) +
+   *   white text (--color-merch-on-dark). Used on shop-all, category, and sale pages.
+   *   Measured from real merch.riotgames.com: 239×50 centered @1280, full-width @390;
+   *   riotSans 16/600, ls 0.32px, no border/outline.
+   * - `"gold-framed"`: gold fill (--color-merch-gold-cta) + black text
+   *   (--color-merch-ink-dark) with an OUTER offset 1px light outline ~6px outside
+   *   the fill and a corner notch top-left. Used on the homepage.
+   *
+   * Only has effect when `columns === 2`.
+   * @default "red"
+   */
+  loadMoreVariant?: "red" | "gold-framed";
   /**
    * When true, the first child spans both columns (grid-column: 1 / -1),
    * creating the "featured first card" layout seen at the top of each
@@ -206,6 +221,7 @@ export function MerchProductGrid({
   onLoadMore,
   showLoadMore = false,
   featuredFirst = false,
+  loadMoreVariant = "red",
 }: MerchProductGridProps) {
   const refineIconId = useId();
 
@@ -322,46 +338,86 @@ export function MerchProductGrid({
         )}
 
         {/* LOAD MORE — centered 239×50 at desktop; full-width 50px at mobile.
-            Measured from merch.riotgames.com: gold (#C4993B), black riotSans 16/600,
-            ls 0.32px, 1px white offset outline. Handled by [data-hp-load-more] in
-            merch-layout.css; this button provides fallback inline styles only. */}
+            Per-page treatment controlled by loadMoreVariant prop:
+            - "red" (default, shop-all/category/sale): solid red fill
+              (--color-merch-refine = #eb0029), white riotSans 16/600 text,
+              ls 0.32px, no border/outline. 239×50 @1280; full-width 50px @390.
+            - "gold-framed" (homepage): gold fill (--color-merch-gold-cta),
+              black text, outer offset frame + corner notch (see merch-layout.css). */}
         {showLoadMoreButton && (
           <div
             className="flex justify-center px-0 py-8 md:py-10"
           >
-            <button
-              type="button"
-              data-hp-load-more
-              onClick={onLoadMore}
-              className="w-full md:w-auto"
-              style={{
-                height: 50,
-                minWidth: 239,
-                paddingLeft: 32,
-                paddingRight: 32,
-                backgroundColor: "var(--color-merch-gold-cta)",
-                color: "var(--color-merch-ink-dark)",
-                border: "none",
-                borderRadius: 0,
-                cursor: "pointer",
-                fontSize: 16,
-                fontWeight: 600,
-                fontFamily: "riotSans, Arial, sans-serif",
-                textTransform: "uppercase",
-                letterSpacing: "0.32px",
-                outline: "1px solid var(--color-merch-on-dark)",
-                outlineOffset: -3,
-                transition: "background-color 150ms ease",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.opacity = "0.88";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.opacity = "1";
-              }}
-            >
-              Load More
-            </button>
+            {loadMoreVariant === "gold-framed" ? (
+              /* Gold-framed variant: outer offset frame + corner notch.
+                 data-hp-load-more picked up by merch-layout.css for the frame. */
+              <button
+                type="button"
+                data-hp-load-more
+                onClick={onLoadMore}
+                className="w-full md:w-auto"
+                style={{
+                  height: 50,
+                  minWidth: 239,
+                  paddingLeft: 32,
+                  paddingRight: 32,
+                  backgroundColor: "var(--color-merch-gold-cta)",
+                  color: "var(--color-merch-ink-dark)",
+                  border: "none",
+                  borderRadius: 0,
+                  cursor: "pointer",
+                  fontSize: 16,
+                  fontWeight: 600,
+                  fontFamily: "var(--font-merch-display)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.32px",
+                  transition: "opacity 150ms ease",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.opacity = "0.88";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.opacity = "1";
+                }}
+              >
+                Load More
+              </button>
+            ) : (
+              /* Red variant (default) — shop-all, category, sale pages.
+                 Solid red fill, white text, no outline/frame. */
+              <button
+                type="button"
+                onClick={onLoadMore}
+                className="w-full md:w-auto"
+                style={{
+                  height: 50,
+                  minWidth: 239,
+                  paddingLeft: 32,
+                  paddingRight: 32,
+                  backgroundColor: "var(--color-merch-refine)",
+                  color: "var(--color-merch-on-dark)",
+                  border: "none",
+                  borderRadius: 0,
+                  cursor: "pointer",
+                  fontSize: 16,
+                  fontWeight: 600,
+                  fontFamily: "var(--font-merch-display)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.32px",
+                  transition: "background-color 150ms ease",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    "var(--color-merch-refine-dark)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    "var(--color-merch-refine)";
+                }}
+              >
+                Load More
+              </button>
+            )}
           </div>
         )}
       </section>
