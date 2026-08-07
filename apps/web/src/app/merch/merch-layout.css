@@ -39,29 +39,68 @@ body:has([data-merch-layout]) {
   font-family: var(--font-merch-display);
 }
 
-/* Homepage Load More — gold at ALL viewports (measured from real merch.riotgames.com):
-   Real: gold (#C4993B = --color-merch-gold-cta), BLACK riotSans 16/600 text,
-         thin white 1px offset outline frame at all sizes.
-   @390: full-bleed 390×50.
-   @1280: centered 239×50 (width constrained only, color stays gold).
-   The [data-hp-load-more] attribute is set on the button in MerchPageClient. */
+/* Homepage Load More — gold fill with OUTER offset frame + corner notch.
+   [data-hp-load-more] is set on the button in MerchPageClient (homepage only).
+   [data-hp-load-more-wrap] is set on its wrapper div, which carries the outer frame.
+   Listing-page grids (shop-all/category/sale) use loadMoreVariant="red" and do NOT
+   use these attributes — their LOAD MORE buttons are plain red with no frame.
+
+   Real merch.riotgames.com @390 (measured):
+     - Button fill: gold (#C4993B = --color-merch-gold-cta), 390×50.
+     - Outer frame: 1px light (white) outline ~6px OUTSIDE the fill.
+     - Corner notch: top-left diagonal cut on both fill and frame.
+
+   Architecture: the outer frame (::before on [data-hp-load-more-wrap]) is on the
+   WRAPPER div — kept separate so the button's clip-path (corner notch) does not
+   clip the frame. The button itself carries gold fill + corner notch clip-path.
+
+   @1280: same treatment, wrapper+button 239px wide centered. */
+
+/* Button: gold fill + corner notch + sizing */
 [data-merch-layout] [data-hp-load-more] {
-  /* Mobile-first: full-bleed gold */
-  max-width: none;
+  /* Mobile-first: full-bleed 390×50, gold bg, black text */
   width: 100%;
+  max-width: none;
   background-color: var(--color-merch-gold-cta);
   color: var(--color-merch-ink-dark);
-  outline: 1px solid var(--color-merch-on-dark);
-  outline-offset: -3px;
+  outline: none;
+  border: none;
+  /* Corner notch — top-left 8px diagonal cut (matches real site). */
+  clip-path: polygon(8px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 8px);
+}
+
+/* Wrapper: relative positioning so ::before frame can extend outside */
+[data-merch-layout] [data-hp-load-more-wrap] {
+  position: relative;
+  width: 100%;
+  max-width: none;
+}
+
+/* Outer offset frame — 1px white border 6px outside the button fill.
+   ::before on the wrapper is not clipped by the button's clip-path.
+   Notch corner: 8px button notch + 6px outset = 14px on the frame. */
+[data-merch-layout] [data-hp-load-more-wrap]::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1px solid var(--color-merch-on-dark);
+  pointer-events: none;
+  clip-path: polygon(14px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 14px);
 }
 
 @media (min-width: 768px) {
   [data-merch-layout] [data-hp-load-more] {
-    /* Desktop: centered 239px wide — still gold, still black text, still white outline */
+    /* Desktop: 239px wide — gold fill, black text, corner notch */
     max-width: 239px;
     background-color: var(--color-merch-gold-cta);
     color: var(--color-merch-ink-dark);
-    outline: 1px solid var(--color-merch-on-dark);
-    outline-offset: -3px;
+    clip-path: polygon(8px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 8px);
+    outline: none;
+  }
+
+  [data-merch-layout] [data-hp-load-more-wrap] {
+    /* Desktop: wrapper constrains to 239px so ::before frame matches */
+    max-width: 239px;
+    width: 239px;
   }
 }
