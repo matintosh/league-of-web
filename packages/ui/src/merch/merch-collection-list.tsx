@@ -9,7 +9,7 @@
  *   - Each strip: banner image ~1200×300 (4:1 aspect) with a rotated vertical
  *     collection-name tab at left (~91px; 60×185px, 12px/24px padding)
  *   - Name tab: WHITE bg + BLACK text. SHOP label Inter 14/600 gray (#888); NO
- *     separator between SHOP and name; collection name Inter 14/600 black uppercase.
+ *     separator between SHOP and name; collection name Inter 14/700 black uppercase.
  *     Tab visible at BOTH desktop and 390 (matrix(0,-1,1,0); x=91 @1280, x=40 @390).
  *   - Strip card: 355px wide × 225px portrait image area (packshot, no franchise label)
  *   - Card gap: 8px (pitch 363px from x=216,579,942,1305)
@@ -17,7 +17,10 @@
  *   - Strip pitch: 715px (strips at y=282/997/1712/2427 measured from real)
  *   - Strip separator: border-bottom in --color-merch-border
  *   - Container: max-w-7xl mx-auto, px-10 (x=40 at 1280)
- *   - Prev arrow: hidden at scrollLeft=0 / not scrollable
+ *   - Carousel arrows: centered prev+next pair BELOW the card row; 40×40,
+ *     transparent bg, BLACK chevrons (--color-merch-ink-dark).
+ *     Prev is in DOM but disabled at scrollLeft=0.
+ *   - NO banner scrim (real site has no overlay on the banner).
  *
  * Delta #860:
  *   1. Strip count: exactly 4 (League Classic, Riftbound Vendetta, MSI 2026,
@@ -32,8 +35,15 @@
  *   6. Mobile 390: keep rotated tab (same matrix(0,-1,1,0), x=40) — remove
  *      horizontal overlay.
  *   7. Strip pitch 715px: paddingBottom 106px per strip (was 48px).
- *   8. Prev arrow hidden at scrollLeft=0 / not scrollable.
+ *   8. Prev arrow disabled (not removed) at scrollLeft=0.
  *   9. 390 card cell: 363px wide, first card x=85.
+ *
+ * Delta #901:
+ *   - Arrows: centered prev+next BELOW card row; 40×40, transparent/black.
+ *   - No banner scrim.
+ *   - Name-tab collection name: fontWeight 700 (SHOP label stays 600).
+ *   - 390 rhythm: reduced mobile paddingBottom.
+ *   - Strip pitch: fixed 715px (paddingBottom 106px desktop, enforced via minHeight).
  *
  * Banner images: real banners are Sanity-fingerprinted (not reproducible via CDN
  * without the exact asset id). Pages supply `bannerImageUrl` per collection using
@@ -148,41 +158,41 @@ function StripProductCard({
 // ---------------------------------------------------------------------------
 
 /**
- * CarouselArrow — absolute-positioned next/prev scroll button.
- * Prev arrow is hidden when `visible` is false (at scrollLeft=0 per real site).
+ * CarouselArrow — inline prev/next scroll button rendered in a centered row BELOW
+ * the card row (x≈540 and x≈700 at 1280px per real site).
+ *
+ * Real site (measured #901): 40×40, transparent bg, BLACK chevrons rgb(0,0,0).
+ * Prev is in the DOM at scrollLeft=0 but `disabled` (opacity 0.3, not clickable).
  */
 function CarouselArrow({
   direction,
   onClick,
-  visible = true,
+  disabled = false,
 }: {
   direction: "prev" | "next";
   onClick: () => void;
-  visible?: boolean;
+  disabled?: boolean;
 }) {
-  if (!visible) return null;
-
   return (
     <button
       type="button"
       aria-label={direction === "prev" ? "Previous products" : "Next products"}
       onClick={onClick}
+      disabled={disabled}
       className="strip-carousel-arrow"
       style={{
-        position: "absolute",
-        top: "50%",
-        transform: "translateY(-50%)",
-        [direction === "prev" ? "left" : "right"]: 0,
         width: 40,
-        height: 60,
-        backgroundColor: "var(--color-merch-overlay-soft)",
+        height: 40,
+        backgroundColor: "transparent",
         border: "none",
-        cursor: "pointer",
-        color: "var(--color-merch-on-dark)",
+        cursor: disabled ? "default" : "pointer",
+        /* Black chevrons — --color-merch-ink-dark (#000) per real site */
+        color: "var(--color-merch-ink-dark)",
+        opacity: disabled ? 0.3 : 1,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 3,
+        flexShrink: 0,
       }}
     >
       <svg
@@ -221,21 +231,24 @@ function CarouselArrow({
 /**
  * CollectionStrip — one banner + rotated name tab + horizontal product card row.
  *
- * Key geometry (measured from merch.riotgames.com/en-us/collection/ at 1280px, delta #860):
- *   - Banner: 1200×300 at y=282 (bottom y=582)
- *   - Card row starts y=502 → cards overlap UP into the banner's lower ~80px
+ * Key geometry (measured from merch.riotgames.com/en-us/collection/ at 1280px):
+ *   - Banner: 1200×300 at y=282 (bottom y=582), NO scrim overlay (#901).
+ *   - Card row starts y=502 → cards overlap UP into the banner's lower ~80px.
  *   - Name-tab: 60×185px, WHITE bg; SHOP label Inter 14/600 gray (#888) at top,
- *     collection name Inter 14/600 black uppercase at bottom; NO separator between them.
+ *     collection name Inter 14/700 black uppercase at bottom (#901); NO separator.
  *     Positioned left=91px, bottom=-24px straddling banner bottom. Does NOT overlap
  *     first card. Rotated matrix(0,-1,1,0) — reads bottom-to-top.
  *     Tab visible at BOTH 1280 and 390 (x=91→40 via media query).
- *   - Card pitch: 363px (gap 8px); cards at x=216,579,942,1305 from container x=40
- *   - Left inset of card row: 176px from container edge
- *   - Strip pitch: 715px (paddingBottom 106px, borderBottom included)
- *   - Prev arrow: hidden when scrollLeft=0 (real site does not show prev arrow at rest)
+ *   - Card pitch: 363px (gap 8px); cards at x=216,579,942,1305 from container x=40.
+ *   - Left inset of card row: 176px from container edge.
+ *   - Carousel controls: centered prev+next pair in a flex row BELOW the card row,
+ *     at x≈540/700 (y=893 per real site). 40×40, transparent bg, black chevrons.
+ *     Prev is disabled (opacity 0.3) at scrollLeft=0 — stays in DOM (#901).
+ *   - Strip pitch: 715px (paddingBottom 106px desktop, borderBottom included).
  *
  * At ≤430px (mobile): banner stays ~1:1 portrait; rotated tab shifts to x=40;
- * card cells widen to 363px with left inset ~22px for centered single-card feel.
+ * card cells widen to 363px with left inset ~22px for centered single-card feel;
+ * arrows hidden (scroll-drag on mobile).
  */
 function CollectionStrip({
   entry,
@@ -270,8 +283,7 @@ function CollectionStrip({
         borderBottom: "1px solid var(--color-merch-border)",
         /*
          * paddingBottom 106px: real strips at y=282/997/1712/2427 → 715px pitch.
-         * banner ~300px + card row ~225px + padding ~190px = ~715px total.
-         * (Was 48px; +58px to reach 715px pitch.)
+         * banner ~300px + card row ~225px + arrows row ~40px + padding ≈ 715px total.
          */
         paddingBottom: 106,
         marginBottom: 0,
@@ -281,6 +293,7 @@ function CollectionStrip({
       {/* ------------------------------------------------------------------ */}
       {/* Banner area — 4:1 aspect at desktop, ~1:1 portrait at ≤430px.      */}
       {/* overflow: visible so the name-tab and cards can overlap at desktop. */}
+      {/* NO scrim overlay (#901 — real site has no overlay on the banner).   */}
       {/* ------------------------------------------------------------------ */}
       <div
         className="strip-banner-wrap"
@@ -294,7 +307,7 @@ function CollectionStrip({
           minHeight: 120,
         }}
       >
-        {/* Banner image — absolute inside the padded box */}
+        {/* Banner image — absolute inside the padded box; no scrim (#901) */}
         <div
           style={{
             position: "absolute",
@@ -316,24 +329,14 @@ function CollectionStrip({
             loading="lazy"
             draggable={false}
           />
-
-          {/* Subtle left scrim so the name tab reads clearly over any image */}
-          <div
-            aria-hidden
-            style={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "linear-gradient(to right, var(--color-merch-scrim-strong) 0%, transparent 40%)",
-            }}
-          />
+          {/* scrim removed (#901 — real site has no overlay on the banner) */}
         </div>
 
         {/* ---------------------------------------------------------------- */}
         {/* Rotated name tab — visible at BOTH desktop and mobile (#860).    */}
         {/* Measured: 60×185px at left=91px; WHITE bg; reads bottom-to-top. */}
         {/* SHOP label: Inter 14/600, ls 0.28, --color-merch-footer-heading. */}
-        {/* Collection name: Inter 14/600, black uppercase — NO separator.   */}
+        {/* Collection name: Inter 14/700, black uppercase (#901).           */}
         {/* bottom=-24px straddles the banner/card-row boundary.             */}
         {/* At ≤430px: left shifts to 40px via RESPONSIVE_STYLES.           */}
         {/* ---------------------------------------------------------------- */}
@@ -366,7 +369,7 @@ function CollectionStrip({
             lineHeight: "18px",
           }}
         >
-          {/* SHOP label — Inter 14/600, gray #888, ls 0.28px (measured #860) */}
+          {/* SHOP label — Inter 14/600, gray, ls 0.28px (measured #860) */}
           <span
             style={{
               display: "block",
@@ -383,14 +386,14 @@ function CollectionStrip({
             SHOP
           </span>
 
-          {/* Collection name — Inter 14/600, black uppercase (measured #860) */}
+          {/* Collection name — Inter 14/700, black uppercase (#901 weight 700) */}
           <span
             style={{
               display: "block",
               color: "var(--color-merch-ink-dark)",
               fontFamily: "var(--font-merch)",
               fontSize: 14,
-              fontWeight: 600,
+              fontWeight: 700,
               textTransform: "uppercase",
               letterSpacing: "0.28px",
               lineHeight: "18px",
@@ -407,22 +410,13 @@ function CollectionStrip({
       {/* marginTop so cards overlap the banner's lower ~80px at desktop.     */}
       {/* Left padding 176px = inset so first card x ≈ 216 from container.   */}
       {/* At ≤430px: marginTop 0, paddingLeft 22px, card cells 363px wide.   */}
-      {/* Carousel arrows (prev/next) positioned relative to this wrapper.   */}
       {/* ------------------------------------------------------------------ */}
       <div
         className="strip-card-row-wrap"
         style={{
-          position: "relative",
           marginTop: -80, /* overlap up into the banner's lower region */
         }}
       >
-        {/* Prev arrow — hidden at scrollLeft=0 per real site */}
-        <CarouselArrow
-          direction="prev"
-          onClick={() => scrollBy(-363)}
-          visible={canScrollPrev}
-        />
-
         <div
           ref={scrollRef}
           className="strip-card-row"
@@ -558,9 +552,33 @@ function CollectionStrip({
             )}
           </div>
         </div>
+      </div>
 
-        {/* Next arrow */}
-        <CarouselArrow direction="next" onClick={() => scrollBy(363)} />
+      {/* ------------------------------------------------------------------ */}
+      {/* Carousel controls — centered prev+next pair BELOW the card row.     */}
+      {/* Real site @1280: x≈540 (prev) x≈700 (next), y=893. 40×40,         */}
+      {/* transparent bg, BLACK chevrons. Prev disabled at scrollLeft=0.      */}
+      {/* Hidden on mobile (scroll-drag); RESPONSIVE_STYLES hides the row.   */}
+      {/* ------------------------------------------------------------------ */}
+      <div
+        className="strip-carousel-controls"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 120, /* ~160px between centers → x≈540 and x≈700 at 1280 */
+          marginTop: 16,
+        }}
+      >
+        <CarouselArrow
+          direction="prev"
+          onClick={() => scrollBy(-363)}
+          disabled={!canScrollPrev}
+        />
+        <CarouselArrow
+          direction="next"
+          onClick={() => scrollBy(363)}
+        />
       </div>
     </article>
   );
@@ -574,13 +592,14 @@ function CollectionStrip({
  * Inline <style> block for 390/mobile responsive overrides.
  * Scoped to .merch-collection-list to avoid global leakage.
  *
- * At ≤430px (#860):
+ * At ≤430px (#860, #901):
  *   - .strip-banner-wrap: portrait ~1:1 aspect (~112% padding-top) + overflow:hidden
  *   - .strip-name-tab: stays visible, shifts to left=40px (real site @390: x=40)
  *   - .strip-card-row-wrap: marginTop 0 (no negative overlap on mobile)
  *   - .strip-card-row: paddingLeft 22px (so first card x≈85, centered single-card feel)
  *   - .strip-product-card-cell: widened to 363px (measured #860 @390)
- *   - .strip-carousel-arrow: hidden (scroll-drag on mobile)
+ *   - .strip-carousel-controls: hidden (scroll-drag on mobile; #901)
+ *   - article paddingBottom reduced (~24px) to trim ~130px per-strip excess (#901)
  *   - .merch-load-more-btn: w=310px (measured @390)
  */
 const RESPONSIVE_STYLES = `
@@ -609,8 +628,17 @@ const RESPONSIVE_STYLES = `
       flex: 0 0 363px !important;
       width: 363px !important;
     }
-    .merch-collection-list .strip-carousel-arrow {
+    .merch-collection-list .strip-carousel-controls {
+      /* Hide centered arrow pair on mobile — scroll-drag gesture instead (#901) */
       display: none !important;
+    }
+    .merch-collection-list article {
+      /*
+       * Reduce per-strip paddingBottom at 390 to fix ~130px excess height (#901).
+       * Desktop: 106px. Mobile: 24px (banner portrait + card row + arrows hidden).
+       * Real docHeight ~4764–4876; ours was ~5385 (+520 → ~130px × 4 strips).
+       */
+      padding-bottom: 24px !important;
     }
     .merch-collection-list-h1 {
       font-size: 32px !important;
@@ -633,11 +661,15 @@ const RESPONSIVE_STYLES = `
 /**
  * MerchCollectionList — vertically stacked collection strips.
  *
- * Each strip: banner (4:1 aspect at desktop, ~1:1 portrait at mobile) with a
- * rotated name tab (60×185px, bottom=−24px, left=91px, WHITE bg) visible at both
+ * Each strip: banner (4:1 aspect at desktop, ~1:1 portrait at mobile), NO scrim,
+ * with a rotated name tab (60×185px, bottom=−24px, left=91px, WHITE bg) visible at both
  * viewports. SHOP label: Inter 14/600 gray (--color-merch-footer-heading), ls 0.28px.
- * Collection name: Inter 14/600 black uppercase, ls 0.28px. NO separator between them.
+ * Collection name: Inter 14/700 black uppercase, ls 0.28px (#901). NO separator.
  * Tab shifts left=40px at ≤430px to match real site @390.
+ *
+ * Carousel: prev+next 40×40 transparent/black arrows in a centered flex row BELOW the
+ * card row. Prev is disabled (not removed) at scrollLeft=0 (#901).
+ * Arrows hidden on mobile (scroll-drag).
  *
  * Below all strips: a solid RED "LOAD MORE" button (--color-merch-red fill,
  * --color-merch-on-dark text, 239×50 @1280, 310×50 @390, border-radius 0, NO border).
