@@ -15,12 +15,12 @@
  *   - Layout: 2-col grid — text left at x=137, two card visuals right
  *   - Eyebrow: "GIFT CARDS" Inter (--font-merch) 14px/600, lh18, ls0.28px,
  *              --color-merch-franchise-label (#666666)
- *   - Heading: riotSans 48px/600, lh52, text-transform uppercase, pure black
+ *   - Heading: riotSans 48px/600, lh52, text-transform none (source uppercase), pure black
  *              (--color-merch-ink-dark), left-aligned at all viewports, x=137 @1280
  *   - No subcopy paragraph
  *   - CTA: "Buy It Now", --color-merch-red background, --color-merch-on-dark,
  *           riotSans 16px/600 uppercase, lh18, ls0.32px, 239×50px at md+, w-full at <md,
- *           arrow-notch left edge (inward V) + slanted right edge
+ *           corner-notch clip-path: 20px diagonal cuts on top-left + bottom-right
  *   - Mobile container inset: x=17px
  *   - Card visuals: near-square low-radius cards, faint faded-character backdrop
  *   - Mobile element order: heading → cards image → full-width CTA below image
@@ -72,7 +72,7 @@ export interface MerchGiftCardBandProps {
  *  - Eyebrow: --font-merch (Inter) 14px/600, lh18, ls0.28px, --color-merch-franchise-label
  *  - Vertical gaps: eyebrow→heading 16px, heading→CTA 32px
  *  - Mobile inset: 17px (down from 24px/px-6)
- *  - CTA: ls0.32px, lh18, arrow-notch left (inward V) + slanted right edge; w-full at <md, 239×50 at md+
+ *  - CTA: ls0.32px, lh18, corner-notch clip (20px TL+BR diagonal cuts); w-full at <md, 239×50 at md+
  */
 export function MerchGiftCardBand({
   heading = "GIVE A GIFT CARD",
@@ -167,7 +167,8 @@ export function MerchGiftCardBand({
               fontWeight: 600,
               lineHeight: "52px",
               letterSpacing: "normal",
-              textTransform: "uppercase",
+              /* Real site: text-transform none; source text is uppercase */
+              textTransform: "none",
             }}
           >
             {heading}
@@ -195,8 +196,8 @@ export function MerchGiftCardBand({
               fontWeight: 600,
               lineHeight: "18px",
               letterSpacing: "0.32px",
-              /* Arrow-notch left (inward V) + slanted right edge */
-              clipPath: "polygon(12px 0%, calc(100% - 12px) 0%, 100% 100%, 12px 100%, 0% 50%)",
+              /* Corner-notch: 20px diagonal cuts on top-left + bottom-right */
+              clipPath: "polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px)",
             }}
           >
             {ctaLabel}
@@ -343,8 +344,8 @@ export function MerchGiftCardBand({
             fontWeight: 600,
             lineHeight: "18px",
             letterSpacing: "0.32px",
-            /* Arrow-notch left (inward V) + slanted right edge */
-            clipPath: "polygon(12px 0%, calc(100% - 12px) 0%, 100% 100%, 12px 100%, 0% 50%)",
+            /* Corner-notch: 20px diagonal cuts on top-left + bottom-right */
+            clipPath: "polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px)",
           }}
         >
           {ctaLabel}
