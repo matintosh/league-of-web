@@ -1200,8 +1200,18 @@ export function MerchHeader({
           <div
             role="status"
             aria-live="polite"
-            className="flex w-full items-stretch overflow-x-hidden"
-            style={{ minHeight: "50px" }}
+            className="flex w-full items-stretch"
+            style={{
+              minHeight: "50px",
+              /*
+               * overflow-x:clip (NOT hidden) — clips the marquee track so it
+               * cannot extend document.scrollWidth past the viewport at 390px.
+               * overflow:hidden would create an implicit scroll container which
+               * can interfere with layout; clip is paint-only and safe here
+               * (this element is not a sticky ancestor — the nav bar above is).
+               */
+              overflowX: "clip",
+            }}
           >
             {/*
              * Dismiss block — brighter red (EB0029 / --color-merch-announcement-dismiss-bg).
