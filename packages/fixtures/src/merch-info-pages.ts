@@ -104,15 +104,15 @@ export interface MerchSupportTab {
  * Fixture values only — supplied to components by the page route.
  */
 export const MERCH_SUPPORT_TABS: MerchSupportTab[] = [
-  { slug: "accessibility",        label: "Accessibility" },
-  { slug: "collectability-guide", label: "Collectability Guide" },
-  { slug: "faqs",                 label: "FAQs" },
-  { slug: "gift-card-balance",    label: "Gift Card Balance" },
-  { slug: "order-status",         label: "Order Status / Code Lookup" },
-  { slug: "returns",              label: "Return Policy" },
-  { slug: "riot-mart",            label: "Riot Mart | My Shop" },
-  { slug: "shipping",             label: "Shipping Methods & Estimated Arrival Times" },
-  { slug: "verify-your-product",  label: "Verify Your Product" },
+  { slug: "accessibility",        label: "accessibility" },
+  { slug: "collectability-guide", label: "collectability guide" },
+  { slug: "faqs",                 label: "faqs" },
+  { slug: "gift-card-balance",    label: "gift card balance" },
+  { slug: "order-status",         label: "order status / code lookup" },
+  { slug: "returns",              label: "return policy" },
+  { slug: "riot-mart",            label: "riot mart / my shop" },
+  { slug: "shipping",             label: "shipping methods & estimated arrival times" },
+  { slug: "verify-your-product",  label: "verify your product" },
 ];
 
 // ---------------------------------------------------------------------------
