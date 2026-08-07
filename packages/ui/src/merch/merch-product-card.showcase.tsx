@@ -12,11 +12,11 @@ export const merchProductCardShowcase: ShowcaseEntry = {
   name: "Merch Product Card",
   area: "merch",
   description:
-    "Real 640×375 listing card anatomy matching merch.riotgames.com shop-all (remeasured 2026-08-06). Header row (~57px) above the 225px contain image: franchise wordmark left (grey #666, 16px/400), badge chips in a HORIZONTAL ROW + heart right. Badge chips: 14px mixed-case, black text; New=#8CD50B, Limited Edition=#FFD700, Preorder=#666666, OOS=#666666 white-text. At 390px badges wrap to 2nd row; always-visible red cart button beside price. Image carousel: prev/next arrows revealed on hover. Price: 16px/400 pure black. Sale: struck original grey + current dark ink + green -NN% badge. Card bg: transparent (listing pages are white). 1px white border seam for flush tessellation.",
+    "Real 640×375 listing card anatomy matching merch.riotgames.com shop-all (remeasured 2026-08-06). Card surface: grey #f7f7f7 (--color-merch-surface-alt) — the entire card sits on the faint grey panel with 1px white border seams. Header row (~57px) above the 225px contain image: franchise wordmark left (grey #666, always visible), badge chips in a HORIZONTAL ROW (gap-2/8px) + heart right; at 390px the right cluster shrinks/wraps (no overflow). Hover overlay: #f7f7f7 surface panel, size chip row (S M L XL 2XL; selected=black bg, br 3, pad 8/16) + ADD TO CART button. Mobile @390: 50×50 red cart button; titles break-word; no horizontal overflow (scrollWidth===390). Image carousel: prev/next arrows on hover. Price: 16px/400 pure black.",
   variants: [
     {
       name: "Default — in-stock, franchise label, no badge",
-      notes: "Standard 2-col card with franchise label overlay but no badge. Transparent bg.",
+      notes: "Standard 2-col card with franchise label; grey #f7f7f7 card surface (--color-merch-surface-alt) with 1px white border seam.",
       backgrounds: ["light"],
       render: () => (
         <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
@@ -26,6 +26,25 @@ export const merchProductCardShowcase: ShowcaseEntry = {
             imageUrl={PLACEHOLDER_IMG}
             price="$24.99"
             franchiseLabel="Riftbound"
+          />
+        </div>
+      ),
+    },
+    {
+      name: "Hover size row — apparel with S/M/L/XL/2XL chips",
+      notes:
+        "Hover the card to reveal: #f7f7f7 surface panel, size chip row (selected chip black bg/white text, border-radius 3, padding 8/16px), then ADD TO CART button below. Matches real merch.riotgames.com hover anatomy (delta #6).",
+      backgrounds: ["light"],
+      render: () => (
+        <div style={{ maxWidth: 640, fontFamily: "system-ui, sans-serif" }}>
+          <MerchProductCard
+            slug="arcane-vi-hoodie-size"
+            title="Arcane Vi Graphic Pullover Hoodie"
+            imageUrl={PLACEHOLDER_RED}
+            price="$59.99"
+            badges={["New"]}
+            franchiseLabel="Arcane"
+            sizes={["S", "M", "L", "XL", "2XL"]}
           />
         </div>
       ),
@@ -285,7 +304,7 @@ export const merchProductCardShowcase: ShowcaseEntry = {
     {
       name: "2-col grid @390 — badge wrap + mobile cart button",
       notes:
-        "Simulate 390px viewport: 2-col grid, cards ~195px wide. Badges wrap to 2nd row. Always-visible red cart button (48×40) appears beside the price at mobile. No horizontal overflow.",
+        "Simulate 390px viewport: 2-col grid, cards ~195px wide. Grey #f7f7f7 surface with white seams. Right cluster (badges+heart) shrinks/wraps to fit — no horizontal overflow (scrollWidth===390). Always-visible red cart button (50×50) beside price. Franchise chip remains visible (not suppressed by badges).",
       backgrounds: ["light"],
       render: () => (
         <div
