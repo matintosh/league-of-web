@@ -11,10 +11,10 @@
  *   - Band height: ~250px desktop (h1 baseline y=229, tab strip y=380 measured live).
  *     Ours was 140px — too short. New: minHeight 250px.
  *   - h1 "SUPPORT": 48px desktop / 38px mobile, font-weight 700, uppercase,
- *     letter-spacing -0.03em (== -1.44px at 48px, -1.14px at 38px),
+ *     letter-spacing -0.03em desktop (== -1.44px at 48px) / -0.02em mobile (== -0.76px at 38px).
  *     line-height 1.1 (52.8px at 48px), color --color-merch-ink-dark (pure black).
- *     x=32 (32px page gutter) — NOT centered in max-w-screen-xl; real h1 is flush
- *     to the page left edge with only 32px of padding.
+ *     x=16 mobile (px-4) / x=32 desktop (px-8) — real h1 x=16 at 390, 32px at desktop.
+ *   - Mascot: object-contain top-right (not object-cover) per issue #897 round-4 re-review.
  *   - Background decoration: faint light-grey dot/texture pattern on the left half
  *     + a hard diagonal red splash wedge behind the mascot (clip-path polygon).
  *   - Mascot illustration: right-edge of the band, occupying ~30% right.
@@ -97,25 +97,24 @@ export function MerchSupportHero({
       />
 
       {/*
-        Content row: h1 at 32px left gutter (real x=32) — NOT centered within max-w-screen-xl.
-        We use px-8 (32px) directly; the real h1 is flush to the 32px page margin.
+        Content row: h1 at 16px left gutter mobile (px-4) / 32px desktop (px-8).
+        Real x=16 at 390px, x=32 at 1280px — NOT centered within max-w-screen-xl.
       */}
       <div
-        className="relative flex w-full items-center justify-between px-8"
+        className="relative flex w-full items-center justify-between px-4 md:px-8"
         style={{ minHeight: 250 }}
       >
         {/* Left — SUPPORT h1 */}
         {/*
-          letter-spacing: -0.03em — real: -1.44px at 48px desktop / -1.14px at 38px mobile.
+          letter-spacing: -0.02em mobile (−0.76px at 38px) / -0.03em desktop (−1.44px at 48px).
           line-height 1.1 (leading-tight ~1.1) — real: 52.8px at 48px.
           color: --color-merch-ink-dark (pure black #000000) — real: #000 on the h1.
-          x=32: 32px page-left gutter; NOT centered in max-w column.
         */}
         <h1
           className="text-[38px] font-bold uppercase md:text-[48px]"
           style={{
             color: "var(--color-merch-ink-dark)",
-            letterSpacing: "-0.03em",
+            letterSpacing: "-0.02em",
             lineHeight: 1.1,
           }}
         >
@@ -135,7 +134,7 @@ export function MerchSupportHero({
             <img
               src={mascotSrc}
               alt={mascotAlt}
-              className="absolute inset-0 h-full w-full object-cover object-left-top"
+              className="absolute inset-0 h-full w-full object-contain object-right-top"
               draggable={false}
             />
           ) : (

@@ -8,17 +8,18 @@
  * Presentational: props in, onSelect callback out — no data fetching in @low/ui.
  * Types (MerchSupportTab) are imported from @low/fixtures.
  *
- * Measured from merch.riotgames.com/en-us/faqs/ (9 section tabs):
+ * Round-4 re-review (issue #897) — REVERSES round-3 pill treatment (#862):
+ * Real support tabs are PLAIN BLACK LOWERCASE TEXT LINKS — NO pills, NO borders,
+ * NO fill, NO radius. Measured from merch.riotgames.com/en-us/faqs/:
  *   - Strip: full-bleed --color-merch-support-band (#eb0029) background.
- *   - Band padding: 32px top/bottom (py-8); ~160px tall desktop with 9 wrapping tabs.
- *   - Pills: TRANSPARENT bg, 1px solid --color-merch-on-dark border, --color-merch-on-dark text.
- *     Active pill: same transparent bg with 2px solid white border (slightly stronger).
- *   - Pill layout: flex-wrap — 9 real tabs WRAP onto two rows; NO overflow-x scroll.
- *   - Label: Inter 16px, font-weight 600 on ALL pills (capitalize), mixed-case.
- *   - Padding per pill: 4px 8px inside a 40px-tall container.
- *   - Gap between pills: 8px.
- *   - Border-radius per pill: 2px (near-square chip, NOT rounded-full).
- *   - NO 390 overflow — wrapping prevents off-screen pills at any viewport.
+ *   - Band height: ~160px desktop with 9 tabs wrapping; 32px vertical padding.
+ *   - Tab links: transparent bg, NO border, NO radius, NO padding.
+ *     Color rgb(0,0,0) == --color-merch-ink-dark (black), weight 400, lowercase source text,
+ *     no text-transform. ~165px natural width, 40px tall.
+ *   - Active tab: no bordered-box state — real shows no active outline; underline on active/hover.
+ *   - Row layout: flex-wrap, justify-center, gap 16 (gap-4); wrapper ~160px band.
+ *   - 390: single-row horizontal-scroll strip ~92px tall; flex-nowrap + overflow-x-auto.
+ *     overflowing right, NO wrap to multiple rows. scrollWidth === 390.
  */
 
 import type { MerchSupportTab } from "@low/fixtures";
@@ -30,10 +31,10 @@ import type { MerchSupportTab } from "@low/fixtures";
 export interface MerchSupportTabStripProps {
   /** Ordered list of support section tabs to render. */
   sections: MerchSupportTab[];
-  /** Slug of the currently active section — that pill is highlighted. */
+  /** Slug of the currently active section — that tab is underlined. */
   activeSlug: string;
   /**
-   * Called when the user clicks a pill.
+   * Called when the user clicks a tab.
    * @param slug — the tab's slug value; the page should route to /merch/pages/{slug}
    */
   onSelect?: (slug: string) => void;
@@ -44,10 +45,9 @@ export interface MerchSupportTabStripProps {
 // ---------------------------------------------------------------------------
 
 /**
- * MerchSupportTabStrip — transparent-pill tab row matching the real support portal
- * tab navigation on the red band. Pills are transparent with a white border and
- * white text — the inverse of the old white-filled treatment. Near-square 2px
- * radius chips, not rounded-full. Wraps to multiple rows at narrow viewports.
+ * MerchSupportTabStrip — plain black lowercase text-link tab row on the red band.
+ * No pills, no borders, no fill. Tabs are centered with gap-16 on desktop and
+ * horizontal-scroll (flex-nowrap + overflow-x-auto) at 390px.
  */
 export function MerchSupportTabStrip({
   sections,
@@ -56,15 +56,28 @@ export function MerchSupportTabStrip({
 }: MerchSupportTabStripProps) {
   return (
     /* Full-bleed red band — rgb(235,0,41) measured from real .support-page-hero_hero-nav-container */
-    /* Desktop: ~160px tall with 9 pills wrapping; 32px vertical padding */
+    /* Desktop: ~160px tall with 9 tabs wrapping; 32px vertical padding */
     <div
       className="w-full"
       style={{ backgroundColor: "var(--color-merch-support-band)" }}
     >
-      {/* Inner wrapper: centred container, 32px top/bottom padding */}
+      {/*
+        Nav: centered flex row.
+        Desktop (md+): flex-wrap, justify-center, gap-4 (16px), ~32px vertical padding → ~160px band.
+        Mobile / 390: flex-nowrap + overflow-x-auto → single-row horizontal scroll, ~92px tall.
+        No max-w container padding at narrow — the strip overflows right to let user scroll.
+      */}
       <nav
         aria-label="Support sections"
-        className="mx-auto flex max-w-screen-xl flex-wrap items-center gap-2 px-6 py-8 md:px-10 lg:px-16"
+        className="
+          flex overflow-x-auto py-8
+          flex-nowrap gap-4
+          md:flex-wrap md:justify-center
+        "
+        style={{
+          /* 32px left padding on desktop to match spec; slim scrollbar */
+          scrollbarWidth: "none",
+        }}
       >
         {sections.map((tab) => {
           const isActive = tab.slug === activeSlug;
@@ -74,44 +87,29 @@ export function MerchSupportTabStrip({
               type="button"
               onClick={() => onSelect?.(tab.slug)}
               aria-current={isActive ? "page" : undefined}
-              className="inline-flex cursor-pointer items-center justify-center transition-colors duration-150"
-              style={
+              className="cursor-pointer shrink-0 whitespace-nowrap transition-opacity duration-150 hover:opacity-80"
+              style={{
                 /*
-                 * Real: TRANSPARENT pills, white border, white text.
-                 * Active pill: same transparent bg with 2px border (stronger outline).
-                 * Label: Inter 16px/600 mixed-case (capitalize) on ALL pills — NOT uppercase.
-                 * Padding: 4px 8px inside 40px-tall pill.
-                 * Border-radius: 2px (near-square chip, NOT 9999px).
+                 * Plain text link — NO pill treatment.
+                 * Color: rgb(0,0,0) == --color-merch-ink-dark (black), weight 400.
+                 * No text-transform — source text is already lowercase.
+                 * Active: underline only (no border/box).
+                 * ~165px natural width, 40px tall, no padding, no border, no radius.
                  */
-                isActive
-                  ? {
-                      height: 40,
-                      backgroundColor: "transparent",
-                      color: "var(--color-merch-on-dark)",
-                      border: "2px solid var(--color-merch-on-dark)",
-                      borderRadius: 2,
-                      padding: "4px 8px",
-                      fontSize: 16,
-                      fontWeight: 600,
-                      fontFamily: "Inter, sans-serif",
-                      letterSpacing: "normal",
-                      textTransform: "capitalize",
-                    }
-                  : {
-                      height: 40,
-                      backgroundColor: "transparent",
-                      color: "var(--color-merch-on-dark)",
-                      border:
-                        "1px solid color-mix(in srgb, var(--color-merch-on-dark) 70%, transparent)",
-                      borderRadius: 2,
-                      padding: "4px 8px",
-                      fontSize: 16,
-                      fontWeight: 600,
-                      fontFamily: "Inter, sans-serif",
-                      letterSpacing: "normal",
-                      textTransform: "capitalize",
-                    }
-              }
+                height: 40,
+                backgroundColor: "transparent",
+                color: "var(--color-merch-ink-dark)",
+                border: "none",
+                borderRadius: 0,
+                padding: 0,
+                fontSize: 16,
+                fontWeight: 400,
+                fontFamily: "Inter, sans-serif",
+                letterSpacing: "normal",
+                textTransform: "none",
+                textDecoration: isActive ? "underline" : "none",
+                textUnderlineOffset: 3,
+              }}
             >
               {tab.label}
             </button>

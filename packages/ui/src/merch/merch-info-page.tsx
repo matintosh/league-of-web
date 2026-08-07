@@ -291,10 +291,10 @@ export function MerchInfoPage({ title, blocks }: MerchInfoPageProps) {
     >
       {/*
         Container: px-8 (32px) — real content x=172, w=936 at 1280px.
-        Top rhythm comes from the h2 title's own 32px top padding (py-8).
-        No pt-10/12 here — the h2 carries the top spacing.
+        mt-8 (32px) top margin — real: margin 32px 140px → ~64px gap from red band to FAQs title.
+        Top rhythm also includes the h2 title's own 32px top padding (py-8).
       */}
-      <div className="mx-auto max-w-[1000px] px-8 pb-16">
+      <div className="mx-auto mt-8 max-w-[1000px] px-8 pb-16">
         {/*
           Section title — h2 with 32px top + bottom padding (py-8), riotSans.
           1px bottom border: --color-merch-border-light (#d0d0d0).
