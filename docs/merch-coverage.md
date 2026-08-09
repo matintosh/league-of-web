@@ -93,3 +93,5 @@ Goal: 1:1 with the real site — every PAGE built, real brand assets, Playwright
 
 - Checkout flow, payment, real auth/account backend — no real commerce (presentational stubs only where a page is expected).
 - Individual product/collection *instances* — we clone page *templates* + representative dummy data (champion splashes via `championSplashUrl`), not Riot's full catalog.
+
+<!-- alias-refresh 2026-08-09: re-trigger prod build to publish round-4 tail (#864-#902,#918,#919) + #920-#930 -->
