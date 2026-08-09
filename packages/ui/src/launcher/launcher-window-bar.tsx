@@ -123,7 +123,7 @@ export function LauncherWindowBar({
               background: "none",
               border: "none",
               cursor: "pointer",
-              color: "var(--color-launcher-text-muted)",
+              color: "var(--color-launcher-ctrl-icon)",
               transition: "background-color 120ms ease, color 120ms ease",
             }}
           >
@@ -146,7 +146,7 @@ export function LauncherWindowBar({
               background: "none",
               border: "none",
               cursor: "pointer",
-              color: "var(--color-launcher-text-muted)",
+              color: "var(--color-launcher-ctrl-icon)",
               transition: "background-color 120ms ease, color 120ms ease",
             }}
           >
