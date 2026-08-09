@@ -98,5 +98,47 @@ export const launcherEsportsNewsCardShowcase: ShowcaseEntry = {
         </div>
       ),
     },
+    {
+      name: "Thumbnail badges — category + duration (issues #951)",
+      notes:
+        "Three sm cards with category pill (top-right) and duration badge (bottom-left) on each thumbnail, matching image-3.png reference. Cards use flex:1 so they fill the column height. Issue #950, #951.",
+      render: () => (
+        <div
+          style={{
+            width: CARD_WIDTH,
+            height: 570,
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+            backgroundColor: "var(--color-launcher-bg)",
+          }}
+        >
+          <LauncherEsportsNewsCard
+            id="go4lol-badge-demo"
+            thumbnailUrl="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lux_0.jpg"
+            title="Compete in League of Legends Classic with GO4LOL!"
+            description="Community tournaments are back. Sign up and compete in League of Legends Classic..."
+            category="ESPORTS"
+            duration="18:50"
+          />
+          <LauncherEsportsNewsCard
+            id="t1-skins-badge-demo"
+            thumbnailUrl="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg"
+            title="T1, The Accessible Worlds 2025 Skins Trailer"
+            description="T1 comp revealed again. T1 competed again. Most T1 Worlds Championship..."
+            category="ESPORTS"
+            duration="01:52"
+          />
+          <LauncherEsportsNewsCard
+            id="t1-behind-badge-demo"
+            thumbnailUrl="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg"
+            title="Behind-the-Scenes: T1 Worlds 2025"
+            description="Discover the stories behind the creation of the T1 2025 skins..."
+            category="ESPORTS"
+            duration="07:25"
+          />
+        </div>
+      ),
+    },
   ],
 };
