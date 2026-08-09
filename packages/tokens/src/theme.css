@@ -300,6 +300,8 @@
   --color-launcher-esports-card-border:    #2a2a2a;
   --color-launcher-esports-card-hover:     #111111; /* subtle hover highlight */
   --color-launcher-esports-scrim-bottom:   color-mix(in srgb, var(--color-launcher-bg) 90%, transparent); /* bottom gradient scrim for lg featured card */
+  --color-launcher-esports-badge-bg:      color-mix(in srgb, #000 70%, transparent); /* semi-transparent dark pill background for sm thumbnail badges */
+  --color-launcher-esports-badge-border:  color-mix(in srgb, #fff 25%, transparent); /* subtle light border for sm thumbnail badges */
 
   /* Game tile (issue #689) */
   --color-launcher-surface:              #1a1c22; /* game tile card background = panel-bg */
@@ -592,6 +594,8 @@
     --color-launcher-esports-card-border:    #2a2a2a;
     --color-launcher-esports-card-hover:     #111111; /* subtle hover highlight */
     --color-launcher-esports-scrim-bottom:   color-mix(in srgb, var(--color-launcher-bg) 90%, transparent); /* bottom gradient scrim for lg featured card */
+    --color-launcher-esports-badge-bg:      color-mix(in srgb, #000 70%, transparent);
+    --color-launcher-esports-badge-border:  color-mix(in srgb, #fff 25%, transparent);
 
     /* Game tile (issue #689) */
     --color-launcher-surface:              #1a1c22;

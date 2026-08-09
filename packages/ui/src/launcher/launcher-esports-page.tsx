@@ -9,7 +9,7 @@
  * "esports" tab is active inside the launcher client shell.
  *
  * Server-safe: no 'use client'. Props: none (data hardcoded from fixtures).
- * Issue #697.
+ * Issue #697, #950, #951.
  */
 
 import { championSplashUrl } from "@low/fixtures";
@@ -29,7 +29,9 @@ const FEATURED_ARTICLE = {
     "Relive the electrifying plays, crazy drafts, and iconic moments that led to HLE's victory at MSI 2026.",
 } as const;
 
-/** Secondary articles — rendered as smaller cards in the right column. */
+/** Secondary articles — rendered as smaller cards in the right column.
+ *  Each article includes `category` and `duration` for thumbnail badge overlays
+ *  matching the reference (issues #950, #951). */
 const SECONDARY_ARTICLES = [
   {
     id: "go4lol-league-classic",
@@ -37,6 +39,8 @@ const SECONDARY_ARTICLES = [
     title: "Compete in League of Legends Classic with GO4LOL!",
     description:
       "Community tournaments are back. Sign up and compete in League of Legends Classic...",
+    category: "ESPORTS",
+    duration: "18:50",
   },
   {
     id: "t1-worlds-skins",
@@ -44,6 +48,8 @@ const SECONDARY_ARTICLES = [
     title: "T1, The Accessible Worlds 2025 Skins Trailer",
     description:
       "T1 comp revealed again. T1 competed again. Most T1 Worlds Championship...",
+    category: "ESPORTS",
+    duration: "01:52",
   },
   {
     id: "t1-worlds-behind-scenes",
@@ -51,6 +57,8 @@ const SECONDARY_ARTICLES = [
     title: "Behind-the-Scenes: T1 Worlds 2025",
     description:
       "Discover the stories behind the creation of the T1 2025 skins...",
+    category: "ESPORTS",
+    duration: "07:25",
   },
 ] as const;
 
@@ -108,12 +116,14 @@ export function LauncherEsportsPage() {
         />
         </div>
 
-        {/* Right: column of smaller cards */}
+        {/* Right: column of smaller cards — height:100% + flex column so that
+            each card's flex:1 distributes the available height evenly. Issue #950. */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             gap: 12,
+            height: "100%",
             overflow: "hidden",
           }}
         >
@@ -125,6 +135,8 @@ export function LauncherEsportsPage() {
               title={article.title}
               description={article.description}
               size="sm"
+              category={article.category}
+              duration={article.duration}
             />
           ))}
         </div>
