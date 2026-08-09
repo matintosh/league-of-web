@@ -139,6 +139,9 @@ export const palette = {
   launcherTabActive: "#c8aa6e",
   /** Icon rail active indicator — same hex as gold-3 */
   launcherRailActive: "#c89b3c",
+  /** Window control icon fill — sampled mid-point of minimize #c7c7c7 / close #bcbcbc–#bfbfbf
+   *  from ref image.png top bar (issue #956). Used on both minimize and close icon SVGs at rest. */
+  launcherCtrlIcon: "#c0c0c0",
   /** Window close button hover — deep brick-red (distinct from warning #ed2c49;
    *  sampled from Riot launcher close-btn hover, issue #696). */
   launcherCloseHover: "#c0392b",

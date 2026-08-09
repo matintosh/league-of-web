@@ -232,6 +232,10 @@
   /* Neutral dark active bg for non-LoL nav items (ref: ~rgb(58,58,62) #3a3a3e) */
   --color-launcher-rail-active-neutral: #3a3a3e;
 
+  /* Window control icon fill — sampled from ref image.png top bar (issue #956):
+     minimize `—` ≈ #c7c7c7; close `×` ≈ #bcbcbc–#bfbfbf → mid-point #c0c0c0 */
+  --color-launcher-ctrl-icon:    #c0c0c0;
+
   /* Window close button hover — deep brick-red (distinct from --color-warning
      #ed2c49 bright crimson; sampled from Riot launcher close-btn hover). */
   --color-launcher-close-hover:  #c0392b;
@@ -539,6 +543,8 @@
     --color-launcher-tab-active:   #c8aa6e;
     --color-launcher-rail-active:         #c89b3c; /* gold ornate banner — LoL brand tile only */
     --color-launcher-rail-active-neutral: #3a3a3e; /* neutral dark active bg for non-LoL nav items */
+    /* Window control icon fill — sampled mid-point #c0c0c0 (issue #956) */
+    --color-launcher-ctrl-icon:    #c0c0c0;
     --color-launcher-close-hover:  #c0392b;
     --color-launcher-input-bg:     #0e1015;
     --color-launcher-input-border: #2a2c35;
