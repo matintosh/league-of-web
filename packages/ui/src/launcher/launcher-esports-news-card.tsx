@@ -241,7 +241,7 @@ export function LauncherEsportsNewsCard({
               fontSize: 11,
               fontWeight: 600,
               color: "var(--color-launcher-ink)",
-              background: "color-mix(in srgb, #000 70%, transparent)",
+              background: "var(--color-launcher-esports-badge-bg)",
               padding: "2px 5px",
               borderRadius: 2,
               lineHeight: 1.2,
