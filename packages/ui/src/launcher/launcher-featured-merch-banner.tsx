@@ -59,7 +59,7 @@ export function LauncherFeaturedMerchBanner({
       role="article"
       className="group flex w-full flex-row overflow-hidden"
       style={{
-        height: 200,
+        height: 261,
         backgroundColor: "var(--color-launcher-content-bg)",
         border: "1px solid var(--color-launcher-border)",
         borderRadius: 2,

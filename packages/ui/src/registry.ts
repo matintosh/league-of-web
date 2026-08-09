@@ -116,6 +116,7 @@ import { launcherFeaturedCardShowcase } from "./launcher/launcher-featured-card.
 import { launcherFeaturedMerchBannerShowcase } from "./launcher/launcher-featured-merch-banner.showcase";
 import { launcherGamesPageShowcase } from "./launcher/launcher-games-page.showcase";
 import { launcherMerchPageShowcase } from "./launcher/launcher-merch-page.showcase";
+import { launcherMerchProductTileShowcase } from "./launcher/launcher-merch-product-tile.showcase";
 import { launcherOverviewHeroShowcase } from "./launcher/launcher-overview-hero.showcase";
 import { launcherOverviewPageShowcase } from "./launcher/launcher-overview-page.showcase";
 import { launcherRiotHomePageShowcase } from "./launcher/launcher-riot-home-page.showcase";
@@ -278,7 +279,7 @@ export const registry: ShowcaseEntry[] = [
   storeSubNavBarShowcase,
   yourShopIconShowcase,
   yourShopScreenShowcase,
-  // launcher — alphabetical: FeaturedGamePromoHero < GameTile < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherRiotHomePage < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar < PatchNoteCard
+  // launcher — alphabetical: FeaturedGamePromoHero < GameTile < LauncherContentCarousel < LauncherEsportsNewsCard < LauncherEsportsPage < LauncherFeaturedCard < LauncherFeaturedMerchBanner < LauncherGamesPage < LauncherMerchPage < LauncherMerchProductTile < LauncherOverviewHero < LauncherOverviewPage < LauncherPatchHeroBanner < LauncherPatchNotesPage < LauncherPlayButton < LauncherRail < LauncherRiotHomePage < LauncherShell < LauncherSocialPanel < LauncherTabBar < LauncherWindowBar < PatchNoteCard
   featuredGamePromoHeroShowcase,
   gameTileShowcase,
   launcherContentCarouselShowcase,
@@ -288,6 +289,7 @@ export const registry: ShowcaseEntry[] = [
   launcherFeaturedMerchBannerShowcase,
   launcherGamesPageShowcase,
   launcherMerchPageShowcase,
+  launcherMerchProductTileShowcase,
   launcherOverviewHeroShowcase,
   launcherOverviewPageShowcase,
   launcherPatchHeroBannerShowcase,
