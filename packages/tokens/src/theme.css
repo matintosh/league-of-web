@@ -231,6 +231,10 @@
   --color-launcher-rail-active:         #c89b3c; /* gold ornate banner — LoL brand tile only */
   /* Neutral dark active bg for non-LoL nav items (ref: ~rgb(58,58,62) #3a3a3e) */
   --color-launcher-rail-active-neutral: #3a3a3e;
+  /* Dark warm-brown base for active banner mix (sampled from ref; #2a1f0a ≈ deep parchment shadow) */
+  --color-launcher-rail-active-dark:    #2a1f0a;
+  /* Active banner bg: gold-3 at 30% over dark base — computed ≈ #594419 */
+  --color-launcher-active-banner-bg:    color-mix(in srgb, var(--color-launcher-rail-active) 30%, var(--color-launcher-rail-active-dark) 70%);
 
   /* Window control icon fill — sampled from ref image.png top bar (issue #956):
      minimize `—` ≈ #c7c7c7; close `×` ≈ #bcbcbc–#bfbfbf → mid-point #c0c0c0 */
@@ -543,6 +547,8 @@
     --color-launcher-tab-active:   #c8aa6e;
     --color-launcher-rail-active:         #c89b3c; /* gold ornate banner — LoL brand tile only */
     --color-launcher-rail-active-neutral: #3a3a3e; /* neutral dark active bg for non-LoL nav items */
+    --color-launcher-rail-active-dark:    #2a1f0a; /* deep parchment-shadow base for active banner */
+    --color-launcher-active-banner-bg:    color-mix(in srgb, var(--color-launcher-rail-active) 30%, var(--color-launcher-rail-active-dark) 70%); /* active banner bg ≈ #594419 */
     /* Window control icon fill — sampled mid-point #c0c0c0 (issue #956) */
     --color-launcher-ctrl-icon:    #c0c0c0;
     --color-launcher-close-hover:  #c0392b;
