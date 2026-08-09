@@ -3,12 +3,11 @@
  *
  * Composes:
  *   - "Merch" heading (display font, white)
- *   - LauncherFeaturedMerchBanner — featured product (MERCH_PRODUCTS[5], lol-classic-yearbook-tee)
- *   - Horizontal product card row — 4 MerchProductCard tiles (MERCH_PRODUCTS[0..3])
+ *   - LauncherFeaturedMerchBanner — featured product (MERCH_PRODUCTS[2], lol-classic-yearbook-tee)
+ *   - Horizontal product tile row — 4 LauncherMerchProductTile (dark compact tiles)
  *
  * LAUNCHER COMPONENT — uses `--color-launcher-*` tokens for the page chrome.
- * MerchProductCard retains its `--color-merch-*` tokens (white cards on dark bg
- * is intentional per ref: image-4.png).
+ * LauncherMerchProductTile uses dark launcher tokens (no white card bg).
  *
  * Props: none — fixture data is hardcoded here (types from @low/fixtures,
  * values supplied inline at page level per the component contract).
@@ -19,24 +18,30 @@
 import { MERCH_PRODUCTS } from "@low/fixtures";
 
 import { LauncherFeaturedMerchBanner } from "./launcher-featured-merch-banner";
-import { MerchProductCard } from "../merch/merch-product-card";
+import { LauncherMerchProductTile } from "./launcher-merch-product-tile";
 
 // ---------------------------------------------------------------------------
 // Fixture data — values at page level, types from @low/fixtures
 // ---------------------------------------------------------------------------
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-/** lol-classic-yearbook-tee — MERCH_PRODUCTS[5], matching image-4.png. */
-const FEATURED_PRODUCT = MERCH_PRODUCTS[5]!;
+/** lol-classic-yearbook-tee — MERCH_PRODUCTS[2], matching image-4.png. */
+const FEATURED_PRODUCT = MERCH_PRODUCTS[2]!;
 
 /**
- * 4-product row — indices 0..3:
- *   0: League Classic Collectors Box
- *   1: RockLove Heart of Gold Ring
- *   2: Twitch Limited Statue
- *   3: Amumu Plush
+ * 4-product row — exclude index 2 (now featured); pick 4 non-featured products:
+ *   0: League Classic Collector's Box
+ *   1: Twitch 7" Limited Edition Statue
+ *   3: RockLove Heart of Gold Ring
+ *   5: Amumu Plush
  */
-const PRODUCT_ROW = MERCH_PRODUCTS.slice(0, 4);
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const PRODUCT_ROW = [
+  MERCH_PRODUCTS[0]!, // league-classic-collectors-box
+  MERCH_PRODUCTS[1]!, // twitch-7in-limited-edition-statue
+  MERCH_PRODUCTS[3]!, // rocklove-lol-heart-of-gold-ring
+  MERCH_PRODUCTS[5]!, // amumu-plush
+];
 
 /** Description for the featured banner, matching the ref copy. */
 const FEATURED_DESCRIPTION =
@@ -50,8 +55,9 @@ const FEATURED_DESCRIPTION =
  * LauncherMerchPage — full Merch tab content.
  *
  * - "Merch" heading in display font
- * - LauncherFeaturedMerchBanner (yearbook tee, matching ref)
- * - Horizontal row of 4 MerchProductCard tiles (Collectors Box, Ring, Twitch Statue, Amumu Plush)
+ * - LauncherFeaturedMerchBanner (yearbook tee — MERCH_PRODUCTS[2], matching ref)
+ * - Horizontal row of 4 LauncherMerchProductTile (compact dark tiles, no white card bg)
+ *   Tiles: Collectors Box, Twitch Statue, RockLove Ring, Amumu Plush
  */
 export function LauncherMerchPage() {
   return (
@@ -59,7 +65,7 @@ export function LauncherMerchPage() {
       className="flex h-full w-full flex-col overflow-y-auto"
       style={{
         backgroundColor: "var(--color-launcher-content-bg)",
-        padding: "24px 28px",
+        padding: "24px 82px",
       }}
     >
       {/* "Merch" heading */}
@@ -76,7 +82,7 @@ export function LauncherMerchPage() {
         Merch
       </h2>
 
-      {/* Featured banner — lol-classic-yearbook-tee */}
+      {/* Featured banner — lol-classic-yearbook-tee (MERCH_PRODUCTS[2]) */}
       <div style={{ marginBottom: 20 }}>
         <LauncherFeaturedMerchBanner
           product={FEATURED_PRODUCT}
@@ -84,11 +90,11 @@ export function LauncherMerchPage() {
         />
       </div>
 
-      {/* Product card row — 4 tiles, horizontal, overflow-x scroll */}
+      {/* Product tile row — 4 compact dark tiles, horizontal, overflow-x scroll */}
       <div
         className="flex flex-row"
         style={{
-          gap: 12,
+          gap: 16,
           overflowX: "auto",
           scrollbarWidth: "none",
         }}
@@ -96,18 +102,14 @@ export function LauncherMerchPage() {
         {PRODUCT_ROW.map((product) => (
           <div
             key={product.slug}
-            style={{ width: 200, flexShrink: 0 }}
+            style={{ flex: 1, minWidth: 0 }}
           >
-            <MerchProductCard
+            <LauncherMerchProductTile
               slug={product.slug}
               title={product.title}
               imageUrl={product.imageUrl}
               price={product.price}
               originalPrice={product.originalPrice}
-              badge={product.badge}
-              badges={product.badges}
-              franchiseLabel={product.franchiseLabel}
-              imageFit="cover"
             />
           </div>
         ))}

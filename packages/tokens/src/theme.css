@@ -316,6 +316,11 @@
   --color-launcher-installed-bar-wildrift: #dcb774; /* Wild Rift amber — ref rgb(220,183,116) */
   --color-launcher-installed-bar-default:  #2ea44f; /* fallback green for unknown games */
 
+  /* LauncherMerchProductTile — compact dark tile info strip (issues #953/#954) */
+  --color-launcher-tile-strip-bg:          #f0f0f0; /* near-white strip anchoring title + price on dark tile */
+  --color-launcher-tile-strip-ink:         #1a1a1a; /* dark title/price text on light strip */
+  --color-launcher-tile-strip-ink-muted:   #6b6b6b; /* struck-through original price */
+
   /* Launcher font stack */
   --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 
@@ -609,6 +614,11 @@
     --color-launcher-installed-bar-lol:      #cba046;
     --color-launcher-installed-bar-wildrift: #dcb774;
     --color-launcher-installed-bar-default:  #2ea44f;
+
+    /* LauncherMerchProductTile — compact dark tile info strip (issues #953/#954) */
+    --color-launcher-tile-strip-bg:          #f0f0f0;
+    --color-launcher-tile-strip-ink:         #1a1a1a;
+    --color-launcher-tile-strip-ink-muted:   #6b6b6b;
 
     /* Launcher font stack */
     --font-launcher: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
