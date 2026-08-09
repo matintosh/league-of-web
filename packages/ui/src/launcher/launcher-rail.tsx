@@ -77,8 +77,8 @@ function ActiveBannerSlot({
         alignItems: "center",
         justifyContent: "center",
         flexShrink: 0,
-        /* Ornate gold/parchment banner background — gold-3 with warm tint */
-        background: "var(--color-launcher-active-banner-bg, color-mix(in srgb, var(--color-launcher-rail-active) 30%, #2a1f0a 70%))",
+        /* Ornate gold/parchment banner background — gold-3 with warm tint; token ≈ #594419 */
+        background: "var(--color-launcher-active-banner-bg)",
         border: "none",
         padding: 0,
         cursor: "pointer",
