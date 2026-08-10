@@ -247,7 +247,7 @@ export { LauncherWindowBar } from "./launcher/launcher-window-bar";
 export type { LauncherWindowBarProps } from "./launcher/launcher-window-bar";
 export { PatchNoteCard } from "./launcher/patch-note-card";
 export type { PatchNoteCardProps } from "./launcher/patch-note-card";
-// login — alphabetical: CircleSubmitButton < LoginAuthTabs < LoginCheckbox < LoginLegalFooter < LoginNoticeBanner < LoginTextInput < LolClassicLogo < SocialLoginButtons
+// login — alphabetical: CircleSubmitButton < LoginAuthTabs < LoginCheckbox < LoginLegalFooter < LoginNoticeBanner < LoginTextInput < LolClassicLogo < RiotGamesWordmark < SocialLoginButtons
 export { CircleSubmitButton } from "./login/circle-submit-button";
 export type { CircleSubmitButtonProps } from "./login/circle-submit-button";
 export { LoginAuthTabs } from "./login/login-auth-tabs";
@@ -262,6 +262,8 @@ export { LoginTextInput } from "./login/login-text-input";
 export type { LoginTextInputProps } from "./login/login-text-input";
 export { LolClassicLogo } from "./login/lol-classic-logo";
 export type { LolClassicLogoProps } from "./login/lol-classic-logo";
+export { RiotGamesWordmark } from "./login/riot-games-wordmark";
+export type { RiotGamesWordmarkProps } from "./login/riot-games-wordmark";
 export { SocialLoginButtons } from "./login/social-login-buttons";
 export type { SocialLoginButtonsProps, Provider } from "./login/social-login-buttons";
 // lobby
