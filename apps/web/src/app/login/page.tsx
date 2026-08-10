@@ -12,6 +12,7 @@ import {
   LoginNoticeBanner,
   LoginLegalFooter,
   LolClassicLogo,
+  RiotGamesWordmark,
   WindowFrame,
   type LoginAuthTab,
 } from "@low/ui";
@@ -286,12 +287,10 @@ export default function LoginPage() {
                 className="relative z-10 flex shrink-0 flex-col items-center bg-login-bg"
                 style={{ width: 400 }}
               >
-                {/* fix(login): #781 — wordmark centered on panel axis (~9% from top).
-                    Riot Games logo stand-in; two-line stacked lockup centered. */}
+                {/* fix(login): #960 — Riot Games two-line stacked SVG wordmark,
+                    centered on panel axis. width=98px, height=26px (pixel-measured). */}
                 <div className="pt-10 pb-6 text-center">
-                  <span className="font-body text-sm font-bold uppercase tracking-widest text-riot-red">
-                    League of Web
-                  </span>
+                  <RiotGamesWordmark width={98} className="text-riot-red" />
                 </div>
 
                 {/* Form body — centered vertically in remaining space; axis-centered */}
@@ -320,7 +319,8 @@ export default function LoginPage() {
                       />
 
                       {/* Social sign-in buttons */}
-                      <div className="mt-1">
+                      {/* fix(login): #962 — mt-1(4px)+gap-4(16px)=20px → mt-[13px]+gap-4=29px (ref 29-31px) */}
+                      <div className="mt-[13px]">
                         <SocialLoginButtons
                           onProvider={(p) => console.log("social provider:", p)}
                         />
@@ -345,8 +345,8 @@ export default function LoginPage() {
                     />
                   </div>
 
-                  {/* fix(login): #781 — footer stacked vertically centered (two lines) */}
-                  <div className="mt-6 flex flex-col items-center gap-1.5">
+                  {/* fix(login): #961 — mt-6(24px)→mt-[52px], gap-1.5(6px)→gap-[11px] (ref: 53px gap, 11px row gap) */}
+                  <div className="mt-[52px] flex flex-col items-center gap-[11px]">
                     <a
                       href="#"
                       aria-disabled="true"
