@@ -1,0 +1,49 @@
+# Client Fidelity Scorecard — the 1:1 ratchet (final sequential surface)
+
+North star: **the Hextech LoL client (`/client` + all its showcase surfaces) is a 1:1 clone of the real League client** vs the reference screenshots in `docs/reference/client-*.png|jpg` (80 refs). The client is the BIGGEST surface — home/lobby/mode-select/champ-select/collection/profile/store/loot/battle-pass/clash/tft/match-found/honor.
+
+This scorecard is the worklist for the **client-fidelity** meta-loop (armed 2026-08-10 after LOGIN CONVERGED — the last step of the sequential-expansion plan: merch parked → launcher done → login done → **client now active**). Each idle tick it picks the next screen-group (⬜ never-diffed first, then oldest-audited), runs a holistic side-by-side visual diff vs the matching `client-*` reference(s), files measured `client,status:ready` delta issues, and updates the row. The build-loop (:11) then builds them.
+
+**Verdict:** ✅ pixel-match · ⚠️ deltas open (issue#s) · ⬜ never diffed
+
+**Convergence:** when ALL rows ✅ and two full rotations file zero issues → CONVERGED (the whole sequential-expansion program is then complete: merch strong-clone + launcher + login + client all done).
+
+**Method (proven on launcher + login — deliberately NOT the merch 12-agent deep-review, which oscillated):** single-screen-group REFERENCE-BASED diffs — one group vs its `client-*` ref(s), measured with getComputedStyle/boundingBox at 1280×720 (the client viewport). VERIFY seed assumptions against actual pixels before filing (launcher caught 2 false seed notes this way). Bias toward MATCH/DRY; do not manufacture deltas. NOTE: most client surfaces are showcase-only components (only `/client` = home is a live route); diff the showcase entry for the component, or the `/client` route where the group is composed.
+
+**Complement to selfcheck:** the build-loop's AUDIT-ON-EMPTY already runs reference-FREE selfcheck sweeps on client sections (home/lobby cy6, champ-select/collection cy4, store cy8 — all DRY). THIS loop adds the reference-BASED clone pass (does it match the real client, not just is-it-internally-clean).
+
+---
+
+## SCREEN-GROUPS
+
+| Screen-group | Reference(s) | Our route / components | Verdict | Last diff | Notes |
+|---|---|---|---|---|---|
+| Home | `client-current-home-2025-mf.png`, `client-current-home-activity-center.jpg`, `client-current-home-ambessa.jpg`, `client-home-news.jpg`, `client-home-subnav.jpg`, `client-main-menu.jpg` | `/client` (live route) + chrome: league-home-screen, home-content-rail, home-news-screen | ⬜ | — | The main client home: hero/activity center, news, sub-nav, product tabs. Live route — highest traffic. |
+| Navbar / product tabs | `client-current-navbar-product-tabs.png`, `client-home-subnav.jpg` | chrome: top-navbar, product tabs | ⬜ | — | Top navigation bar + product tab strip (Play/Collection/Store/etc.). |
+| Social sidebar | `client-social-sidebar.jpg` | chrome: social-dock, social-panel | ⬜ | — | Right-side friends list / social panel. |
+| Lobby | `client-lobby-solo.jpg`, `client-lobby-party.png`, `client-lobby-party-v11.png`, `client-lobby-subbar.jpg`, `client-queue-in-lobby.png` | lobby: lobby-header, lobby-player-card, player-banner + party-lobby route | ⬜ | — | Solo + party lobby, sub-bar, queue-in-lobby state. |
+| Mode select | `client-current-mode-select-2025.png`, `client-pvp-mode-select.jpg`, `client-mode-select-tab-chrome-detail.png` | mode-select-screen, game-mode-card | ⬜ | — | Game mode picker (PvP/Co-op/etc.) + tab chrome. |
+| Matchmaking | `client-find-match-button.png`, `client-find-match-shape-v14.png`, `client-finding-match-widget.png`, `client-match-found-modal.png`, `client-match-found-crest.png`, `client-ranked-queue-up-detail.png` | chrome: finding-match-panel, ranked-queue-panel, match-found-modal, find-match button | ⬜ | — | Find match button, finding-match widget, match-found modal + crest. |
+| Champ select | `client-champ-select-declare-intent.png`, `client-champ-select-fullscreen-declare.png`, `client-champ-select-header-ornament.png`, `client-champ-select-loadout.jpg`, `client-champ-select-loadout-action-bar.jpg`, `client-champ-select-pick.jpg`, `client-champ-select-spell-rail.jpg`, `client-declare-intent-*.png`, `client-role-picker.png`, `client-emote-wheel-frame-detail.png`, `client-runes-toolbar-detail.png` | champ-select: declare-intent-screen, champion-pick-tile, champ-select-action-bar, countdown-header, ban-status-strip, skin-carousel, team-player-row, lock-in-button, spell-rail | ⬜ | — | The full champ-select flow: declare intent, role picker, pick/ban, loadout, spell rail, emote wheel, runes toolbar. LARGE group — may split across ticks. |
+| Collection — champions | `client-champion-overview.jpg`, `client-champion-overview-statwheel.jpg`, `client-champion-abilities.jpg`, `client-champion-mastery-tab.png` | collection: champion-card, champion-detail, stat-medallion | ⬜ | — | Champion collection: overview, stat wheel, abilities, mastery tab. |
+| Collection — skins/loadout | `client-collection-skins.jpg`, `client-collection-chromas.jpg`, `client-skin-preview.jpg`, `client-loadout-skin-thumb-strip-detail.png` | collection: skin-card, skin-preview + champ-select skin-thumb-strip | ⬜ | — | Skins + chromas grid, skin preview, loadout thumb strip. |
+| Collection — emotes/runes/spells | `client-collection-emotes.jpg`, `client-collection-runes.jpg`, `client-collection-spells.jpg` | collection: emote-tile, emote-wheel, runes-screen, spells-tab | ⬜ | — | Emotes, runes, summoner spells collection tabs. |
+| Profile | `client-profile-overview.jpg`, `client-profile-stats.jpg`, `client-profile-challenges-tab.jpg`, `client-profile-champion-mastery.jpg`, `client-profile-ranked.jpg`, `client-profile-ranked-split.png`, `client-profile-ranked-tiles.png`, `client-profile-rank-cells.jpg`, `client-profile-clubs.jpg`, `client-profile-clubs-text-detail.jpg`, `client-profile-welcome-to-season.jpg` | collection: profile-ranked-screen, challenges-screen, stats-tab + profile route | ⬜ | — | Player profile: overview, stats, challenges, mastery, ranked (split/tiles/cells), clubs. LARGE group. |
+| Store | `client-store-featured.jpg`, `client-store-featured-tile-detail.jpg`, `client-store-purchase-modal.jpg`, `client-store-purchase-price-detail.png` | store: hero-carousel, store-item-tile, featured-tab, store-item-purchase-modal, store-sub-nav-bar | ⬜ | — | Store featured page, item tiles, purchase modal. (Selfcheck cy8 = internally DRY; this adds the ref-based pass.) |
+| Your Shop / Loot | `client-your-shop-revealed.png`, `client-your-shop-revealed-card-detail.png`, `client-your-shop-unrevealed.png`, `client-loot-crafting-tab.png`, `client-loot-inventory-tile-detail.png`, `client-loot-mythic-shop.png` | store: your-shop-screen, your-shop-icon, loot-tab, mythic-shop-panel | ⬜ | — | Your Shop (revealed/unrevealed cards), loot crafting, mythic shop. |
+| Battle pass | `client-battle-pass-chapters.png`, `client-battle-pass-levels.png`, `client-current-battlepass-chapter.jpg`, `client-current-battlepass-level.jpg` | battle-pass fixtures + any battle-pass component | ⬜ | — | Battle pass chapters + levels track. |
+| Clash | `client-clash-team-creation.png`, `client-clash-scouting.png` | (clash components — may not exist yet ⬜) | ⬜ | — | Clash team creation + scouting. Verify components exist; if missing, note as a build gap. |
+| TFT hub | `client-tft-hub.jpg`, `client-tft-orb-detail.jpg` | (TFT components — may not exist yet ⬜) | ⬜ | — | Teamfight Tactics hub + orb detail. Verify components exist; if missing, note as a build gap. |
+| Honor / celebrations | `client-honor-checkpoint-celebration.png`, `client-current-objectives-modal.jpg`, `client-home-journey-*.jpg`, `client-profile-welcome-to-season.jpg` | collection: honor-checkpoint-overlay, mastery-celebration-overlay, rank-promotion-overlay | ⬜ | — | Honor checkpoint, objectives modal, journey/celebration overlays. |
+
+---
+
+## STRUCTURAL GAPS (ranked by impact)
+
+_None catalogued yet — the first rotation of diffs will populate this with measured, ranked gaps. Groups flagged "components may not exist yet" (Clash, TFT) get verified first; a missing surface is a build gap, not a fidelity delta._
+
+---
+
+## ROTATION LOG (append one line per loop tick)
+
+- 2026-08-10 — Scorecard seeded. CLIENT-FIDELITY LOOP ARMED after LOGIN CONVERGED — the final surface of the sequential-expansion plan (merch parked → launcher ✅ → login ✅ → **client now active**). 80 `client-*` refs mapped into 17 screen-groups, all ⬜. Method = single-screen-group reference diffs (launcher/login model, NOT merch deep-review). Selfcheck already covers home/lobby/champ-select/collection/store DRY (internal consistency); this loop adds the ref-based clone pass. Next up: the Home group (live `/client` route, highest traffic/impact).
