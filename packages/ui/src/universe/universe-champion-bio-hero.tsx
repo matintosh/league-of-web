@@ -167,11 +167,12 @@ export function UniverseChampionBioHero({
       <div className="absolute inset-x-0 bottom-10 flex flex-col items-center text-center px-4">
         {showCrest && <ChampionCrest svgId={svgId} />}
 
-        {/* Champion name — huge Beaufort serif caps */}
+        {/* Champion name — huge Beaufort Heavy serif caps */}
         <h1
           className="font-display uppercase leading-none"
           style={{
             fontSize: "clamp(56px, 6vw, 88px)",
+            fontWeight: 900,
             letterSpacing: "0.12em",
             color: "var(--color-gold-1)",
             textShadow:

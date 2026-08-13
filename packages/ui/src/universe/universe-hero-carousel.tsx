@@ -229,22 +229,12 @@ export function UniverseHeroCarousel({
       {/* ── Prev/Next peek titles — far left / far right ── */}
       {showPeek && (
         <>
-          {/* Prev slide title peek — far left */}
+          {/* Prev slide title peek — far left (title only, no overline per ref) */}
           <div
             className="absolute left-4 top-1/2 flex -translate-y-1/2 flex-col items-start"
             style={{ opacity: 0.35 }}
             aria-hidden="true"
           >
-            <p
-              className="text-[10px] uppercase"
-              style={{
-                color: "var(--color-gold-2)",
-                fontFamily: "var(--font-body)",
-                letterSpacing: "0.1em",
-              }}
-            >
-              {prevSlide.overline}
-            </p>
             <p
               className="font-display text-xs uppercase"
               style={{
@@ -256,22 +246,12 @@ export function UniverseHeroCarousel({
             </p>
           </div>
 
-          {/* Next slide title peek — far right */}
+          {/* Next slide title peek — far right (title only, no overline per ref) */}
           <div
             className="absolute right-4 top-1/2 flex -translate-y-1/2 flex-col items-end"
             style={{ opacity: 0.35 }}
             aria-hidden="true"
           >
-            <p
-              className="text-[10px] uppercase"
-              style={{
-                color: "var(--color-gold-2)",
-                fontFamily: "var(--font-body)",
-                letterSpacing: "0.1em",
-              }}
-            >
-              {nextSlide.overline}
-            </p>
             <p
               className="font-display text-xs uppercase"
               style={{
@@ -288,7 +268,7 @@ export function UniverseHeroCarousel({
       {/* ── Arrow buttons — centered vertically, near left and right edges ── */}
       {showPeek && (
         <>
-          <div className="absolute left-16 top-1/2 -translate-y-1/2">
+          <div className="absolute left-[130px] top-1/2 -translate-y-1/2">
             <ArrowButton
               direction="prev"
               onClick={onPrev}
@@ -296,7 +276,7 @@ export function UniverseHeroCarousel({
               ringId={prevRingId}
             />
           </div>
-          <div className="absolute right-16 top-1/2 -translate-y-1/2">
+          <div className="absolute right-[130px] top-1/2 -translate-y-1/2">
             <ArrowButton
               direction="next"
               onClick={onNext}
