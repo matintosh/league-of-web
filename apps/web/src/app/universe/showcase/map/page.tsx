@@ -124,7 +124,7 @@ const PAGES: UniversePage[] = [
     name: "Explore",
     route: "/universe/explore",
     ref: "universe-explore.png",
-    status: "planned",
+    status: "live",
     note: "Filter/sort bar + 4-column story-card grid across all content types.",
     components: [
       "universe-top-nav",
@@ -136,7 +136,7 @@ const PAGES: UniversePage[] = [
     name: "Champions",
     route: "/universe/champions",
     ref: "universe-live-champions.png",
-    status: "planned",
+    status: "live",
     note: "Crest title + sort row + tall champion-card splash grid.",
     components: [
       "universe-top-nav",
@@ -148,7 +148,7 @@ const PAGES: UniversePage[] = [
     name: "Champion Bio",
     route: "/universe/champion/lux",
     ref: "universe-live-champion-bio.png",
-    status: "planned",
+    status: "live",
     note: "Full-bleed splash hero, serif name + subtitle, breadcrumb, story rail.",
     components: [
       "universe-top-nav",
