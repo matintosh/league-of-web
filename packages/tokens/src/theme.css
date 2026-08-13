@@ -342,6 +342,20 @@
   --color-launcher-caret-pill:      #44391C; /* dark muted olive-gold — caret pill fill */
   --color-launcher-selected-mode:   #BC5556; /* red — selected game mode row text */
   --color-launcher-dropdown-bg:     #1F1F1F; /* flat near-black — dropdown panel bg */
+
+  /* Universe — pixel-sampled from docs/reference/universe-landing.png + universe-explore.png (issues #966-#968).
+     universe-bg:          ~#0a0a0e near-black page background (top nav + page body)
+     universe-nav-border:  #1a1510 warm-dark hairline below the top nav
+     universe-card-bg:     #0f0f13 dark card body below art thumb
+     universe-story-ink:   #e8e0d0 near-white title text on cards
+     universe-badge-story: #1a3a2a dark green fill for "Read Story" badge
+     universe-badge-comic: #1a2a3a dark blue fill for comic page-count chip */
+  --color-universe-bg:           #0a0a0e;
+  --color-universe-nav-border:   #1a1510;
+  --color-universe-card-bg:      #0f0f13;
+  --color-universe-story-ink:    #e8e0d0;
+  --color-universe-badge-story:  #1a3a2a;
+  --color-universe-badge-comic:  #1a2a3a;
 }
 
 /*
@@ -641,6 +655,14 @@
     --color-launcher-caret-pill:      #44391C;
     --color-launcher-selected-mode:   #BC5556;
     --color-launcher-dropdown-bg:     #1F1F1F;
+
+    /* Universe — pixel-sampled from docs/reference/universe-landing.png + universe-explore.png (issues #966-#968) */
+    --color-universe-bg:           #0a0a0e;
+    --color-universe-nav-border:   #1a1510;
+    --color-universe-card-bg:      #0f0f13;
+    --color-universe-story-ink:    #e8e0d0;
+    --color-universe-badge-story:  #1a3a2a;
+    --color-universe-badge-comic:  #1a2a3a;
 
     /* Motion — Hextech preset timings + easings (issue #299). Duplicated here
        (not colors, but same three-way sync discipline) so the custom properties

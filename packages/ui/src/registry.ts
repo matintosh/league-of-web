@@ -130,6 +130,9 @@ import { launcherShellShowcase } from "./launcher/launcher-shell.showcase";
 import { launcherSocialPanelShowcase } from "./launcher/launcher-social-panel.showcase";
 import { launcherTabBarShowcase } from "./launcher/launcher-tab-bar.showcase";
 import { launcherWindowBarShowcase } from "./launcher/launcher-window-bar.showcase";
+import { universeCrestDividerShowcase } from "./universe/universe-crest-divider.showcase";
+import { universeStoryCardShowcase } from "./universe/universe-story-card.showcase";
+import { universeTopNavShowcase } from "./universe/universe-top-nav.showcase";
 import { merchBreadcrumbBarShowcase } from "./merch/merch-breadcrumb-bar.showcase";
 import { merchCollabCarouselShowcase } from "./merch/merch-collab-carousel.showcase";
 import { merchCartDrawerShowcase } from "./merch/merch-cart-drawer.showcase";
@@ -334,4 +337,8 @@ export const registry: ShowcaseEntry[] = [
   merchSupportFormShowcase,
   merchSupportHeroShowcase,
   merchSupportTabStripShowcase,
+  // universe — alphabetical: UniverseCrestDivider < UniverseStoryCard < UniverseTopNav
+  universeCrestDividerShowcase,
+  universeStoryCardShowcase,
+  universeTopNavShowcase,
 ];
