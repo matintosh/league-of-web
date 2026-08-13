@@ -7,13 +7,13 @@ export const universeStoryCardShowcase: ShowcaseEntry = {
   name: "Universe Story Card",
   area: "universe",
   description:
-    "Story/article card from the Universe Explore grid — 16:9 art thumbnail with hover zoom, overline (gold-2, caps), Beaufort title, and bottom-left badge (Read Story pill, comic page-count chip, etc.).",
+    "Story/article card from the Universe Explore grid — art thumbnail on top, dark body panel below with overline (gold-2, caps), Beaufort title, and a bottom row: badge pill (left) + optional date (right).",
   referenceImage: "universe-explore.png",
   referenceNote: "docs/reference/universe-explore.png — 4-col Explore grid",
   variants: [
     {
       name: "Story card — default",
-      notes: "kind=\"story\" — green Read Story pill badge. Art via championSplashUrl.",
+      notes: "kind=\"story\" — green Short Story pill badge with art on top, body below. Art via championSplashUrl.",
       backgrounds: ["dark"],
       render: () => (
         <div
@@ -25,6 +25,7 @@ export const universeStoryCardShowcase: ShowcaseEntry = {
             overline="Demacia"
             title="EVERYWHERE, AND EVERYONE"
             kind="story"
+            date="Mar 5, 2025"
           />
         </div>
       ),

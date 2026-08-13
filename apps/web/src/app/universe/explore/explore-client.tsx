@@ -196,7 +196,7 @@ export function ExploreClient() {
         className="sticky top-0 z-20"
         style={{ backgroundColor: "color-mix(in srgb, var(--color-universe-bg) 90%, transparent)" }}
       >
-        <div className="mx-auto max-w-6xl">
+        <div className="px-3">
           <UniverseFilterTabs
             filters={FILTERS}
             activeFilter={activeFilter}
@@ -207,8 +207,8 @@ export function ExploreClient() {
         </div>
       </div>
 
-      {/* Story card grid — 4 columns */}
-      <div className="mx-auto max-w-6xl px-6 py-8">
+      {/* Story card grid — full-bleed edge-to-edge, small gutter (#3a) */}
+      <div className="px-3 py-8">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {sorted.map((card) => (
             <UniverseStoryCard

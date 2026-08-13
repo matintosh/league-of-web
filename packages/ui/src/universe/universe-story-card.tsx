@@ -2,26 +2,28 @@
  * UniverseStoryCard — story/article card from the Universe Explore grid and
  * LATEST section on universe.leagueoflegends.com.
  *
- * Structure (after #973 fix — text overlaid on art, no separate body below):
+ * Structure (reverted from wrong #973 overlay to correct below-art body panel):
  *   ┌──────────────────────────────┐
- *   │  Art (16:9, full-bleed)      │  ← object-cover, zoom on hover via CSS group
- *   │                              │
- *   │  [gradient scrim overlay]    │
- *   │  TITLE BEAUFORT CAPS         │  ← overlaid bottom-left on art
- *   │  Overline (gold caps, small) │  ← below title, still in art
- *   │  [badge bottom-left]         │  ← lowest, inside art
+ *   │  Art (16:9 aspect ratio)     │  ← object-cover, zoom on hover via CSS group
+ *   ├──────────────────────────────┤
+ *   │  Overline (gold, small caps) │  ← dark body panel below the art
+ *   │  TITLE BEAUFORT CAPS         │
+ *   │  [badge] ·············[date] │  ← bottom row in body panel
  *   └──────────────────────────────┘
+ *
+ * When className includes "h-full" (tall grid cell / row-span-2), the card is
+ * flex-col and the art section grows to fill available height above the body.
  *
  * Whole card is a link. Hover: art zooms + card lifts (pure CSS, no state).
  *
  * Badge variants:
- *   "story"  → "Read Story" green pill (book icon + text)
+ *   "story"  → "Short Story" green pill (book icon + text)
  *   "comic"  → page-count chip (book icon + text, blue fill)
  *   "video"  → "Watch" pill (play icon)
  *   "music"  → "Listen" pill (music note icon)
  *
  * Server-safe — no 'use client'. Hover handled via CSS group-hover utilities.
- * Props-in / callbacks-out. Tokens-only. Issues #968, #973.
+ * Props-in / callbacks-out. Tokens-only. Issues #968, #973, #975.
  */
 
 // ---------------------------------------------------------------------------
@@ -44,9 +46,13 @@ export interface UniverseStoryCardProps {
   kind?: UniverseStoryKind;
   /**
    * Badge label text.
-   * Defaults: story → "Read Story", comic → "8 Pages", video → "Watch", music → "Listen".
+   * Defaults: story → "Short Story", comic → "8 Pages", video → "Watch", music → "Listen".
    */
   badgeText?: string;
+  /**
+   * Optional publish date string, e.g. "Mar 5, 2025". Displayed at bottom-right of body.
+   */
+  date?: string;
   /** Link href. @default "#" */
   href?: string;
   /**
@@ -95,7 +101,7 @@ function MusicIcon() {
 // ---------------------------------------------------------------------------
 
 const KIND_DEFAULTS: Record<UniverseStoryKind, string> = {
-  story: "Read Story",
+  story: "Short Story",
   comic: "8 Pages",
   video: "Watch",
   music: "Listen",
@@ -143,8 +149,8 @@ function StoryBadge({ kind, text }: BadgeProps) {
  * group-hover utilities on the anchor — no useState needed.
  * Tokens-only — no raw hex colors outside packages/tokens.
  *
- * Fix #973: overline + title now overlaid on art at bottom (no separate body
- * panel below the image). Card ends at the bottom edge of the art.
+ * Layout: art on top (16:9), dark body panel below with overline + title +
+ * badge/date row. When h-full, card is flex-col with art growing to fill.
  */
 export function UniverseStoryCard({
   art,
@@ -152,11 +158,13 @@ export function UniverseStoryCard({
   title,
   kind = "story",
   badgeText,
+  date,
   href = "#",
   className,
   onSelect,
 }: UniverseStoryCardProps) {
   const badge = badgeText ?? KIND_DEFAULTS[kind];
+  const isTall = className?.includes("h-full");
 
   return (
     <a
@@ -169,18 +177,14 @@ export function UniverseStoryCard({
             }
           : undefined
       }
-      className={`group block overflow-hidden rounded-sm transition-transform duration-300 hover:-translate-y-0.5${className ? ` ${className}` : ""}`}
-      style={{
-        textDecoration: "none",
-      }}
+      className={`group block overflow-hidden rounded-sm transition-transform duration-300 hover:-translate-y-0.5${isTall ? " flex flex-col" : ""}${className ? ` ${className}` : ""}`}
+      style={{ textDecoration: "none" }}
       aria-label={`${title} — ${overline}`}
     >
-      {/* Art — full-bleed, zoom on hover; text + badge overlaid inside.
-          Uses aspectRatio 16:9 by default; if className includes "h-full"
-          the card fills its grid cell and the art div fills the anchor. */}
+      {/* Art section — 16:9 or flex-grow when tall */}
       <div
-        className="relative overflow-hidden"
-        style={className?.includes("h-full") ? { height: "100%" } : { aspectRatio: "16 / 9" }}
+        className={`relative overflow-hidden${isTall ? " flex-1 min-h-0" : ""}`}
+        style={isTall ? undefined : { aspectRatio: "16 / 9" }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -188,41 +192,49 @@ export function UniverseStoryCard({
           alt={title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
+      </div>
 
-        {/* Gradient scrim — tall bottom fade covering text + badge (#973) */}
-        <div
-          className="absolute inset-x-0 bottom-0 h-3/4"
+      {/* Body panel — dark surface below the art */}
+      <div
+        className="px-3 pt-2 pb-3"
+        style={{
+          backgroundColor: "color-mix(in srgb, var(--color-hextech-black) 80%, var(--color-universe-bg) 20%)",
+        }}
+      >
+        {/* Overline — region/champion, gold-2, small caps, letter-spaced */}
+        <p
+          className="truncate text-[10px] uppercase tracking-[0.1em]"
           style={{
-            background:
-              "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 88%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 55%, transparent) 45%, transparent 100%)",
+            color: "var(--color-gold-2)",
+            fontFamily: "var(--font-body)",
           }}
-          aria-hidden="true"
-        />
+        >
+          {overline}
+        </p>
 
-        {/* Text overlay — title + overline stacked above badge (#973) */}
-        <div className="absolute inset-x-0 bottom-8 px-3">
-          {/* Title — Beaufort caps, near-white, above overline */}
-          <p
-            className="line-clamp-2 font-display text-sm uppercase leading-tight"
-            style={{ color: "var(--color-universe-story-ink)" }}
-          >
-            {title}
-          </p>
-          {/* Overline — region/champion, gold-2, caps, letter-spaced */}
-          <p
-            className="mt-0.5 truncate text-[10px] uppercase tracking-[0.1em]"
-            style={{
-              color: "var(--color-gold-2)",
-              fontFamily: "var(--font-body)",
-            }}
-          >
-            {overline}
-          </p>
-        </div>
+        {/* Title — Beaufort caps, near-white */}
+        <p
+          className="mt-1 line-clamp-2 font-display text-sm uppercase leading-tight"
+          style={{ color: "var(--color-universe-story-ink)" }}
+        >
+          {title}
+        </p>
 
-        {/* Badge — bottom-left over the art, lowest z element */}
-        <div className="absolute bottom-2 left-2">
+        {/* Bottom row: badge (left) + date (right) */}
+        <div className="mt-2 flex items-center justify-between gap-2">
           <StoryBadge kind={kind} text={badge} />
+          {date && (
+            <span
+              className="shrink-0 text-[10px] tabular-nums"
+              style={{
+                color: "var(--color-universe-story-ink)",
+                fontFamily: "var(--font-body)",
+                opacity: 0.55,
+              }}
+            >
+              {date}
+            </span>
+          )}
         </div>
       </div>
     </a>
