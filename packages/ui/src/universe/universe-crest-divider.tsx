@@ -50,28 +50,31 @@ function DiamondPip() {
   );
 }
 
-/** Full-width flourish row: gradient-line ── pip ── gradient-line */
+/** Full-width flourish row: gradient-line ── pip ── gradient-line
+ *  Ref shows clearly visible gold flanking lines — raised from opacity 0.7
+ *  to full opacity and using gold-3 (#c89b3c) for the gradient stop so the
+ *  lines read against the dark background without being garish. */
 function DiamondCrest() {
   return (
     <div className="flex w-full items-center">
-      {/* Left gradient line: transparent → gold toward pip */}
+      {/* Left gradient line: transparent → gold-3 toward pip */}
       <div
-        className="h-px flex-1"
+        className="flex-1"
         style={{
+          height: "1px",
           background:
-            "linear-gradient(to right, transparent, var(--color-gold-3))",
-          opacity: 0.7,
+            "linear-gradient(to right, transparent 0%, var(--color-gold-3) 100%)",
         }}
         aria-hidden="true"
       />
       <DiamondPip />
-      {/* Right gradient line: gold toward pip → transparent */}
+      {/* Right gradient line: gold-3 toward pip → transparent */}
       <div
-        className="h-px flex-1"
+        className="flex-1"
         style={{
+          height: "1px",
           background:
-            "linear-gradient(to left, transparent, var(--color-gold-3))",
-          opacity: 0.7,
+            "linear-gradient(to left, transparent 0%, var(--color-gold-3) 100%)",
         }}
         aria-hidden="true"
       />

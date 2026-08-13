@@ -7,8 +7,8 @@
  * hairline at the bottom.
  *
  * Layout (left → right):
- *   [Riot fist logo] [gold divider] [Universe wordmark + crest glyph]
- *   [nav links: CHAMPIONS · REGIONS · COMICS · ALT UNIVERSE · MAP▾ · EXPLORE · SEARCH]
+ *   [Riot fist logo] ["RIOT GAMES" wordmark ▾] [gold divider] [Universe wordmark + crest glyph]
+ *   [nav links: CHAMPIONS · REGIONS · COMICS · ALT UNIVERSE▾ · MAP↗ · EXPLORE · SEARCH]
  *   [globe locale icon] [SIGN IN] [PLAY NOW pill]
  *
  * Nav links are caps, letter-spaced, small — idle near-white (#976), hover gold-1.
@@ -51,12 +51,17 @@ export interface UniverseTopNavProps {
 // Nav link config
 // ---------------------------------------------------------------------------
 
-const NAV_LINKS: { key: UniverseNavKey; label: string; hasArrow?: boolean }[] = [
+const NAV_LINKS: {
+  key: UniverseNavKey;
+  label: string;
+  /** "caret" = dropdown ▾, "external" = diagonal arrow ↗ */
+  indicator?: "caret" | "external";
+}[] = [
   { key: "champions", label: "CHAMPIONS" },
   { key: "regions", label: "REGIONS" },
   { key: "comics", label: "COMICS" },
-  { key: "alt-universe", label: "ALT UNIVERSE" },
-  { key: "map", label: "MAP", hasArrow: true },
+  { key: "alt-universe", label: "ALT UNIVERSE", indicator: "caret" },
+  { key: "map", label: "MAP", indicator: "external" },
   { key: "explore", label: "EXPLORE" },
   { key: "search", label: "SEARCH" },
 ];
@@ -72,8 +77,7 @@ const NAV_LINKS: { key: UniverseNavKey; label: string; hasArrow?: boolean }[] = 
 function RiotFistLogo() {
   return (
     <svg
-      aria-label="Riot Games"
-      role="img"
+      aria-hidden="true"
       width="24"
       height="24"
       viewBox="0 0 24 24"
@@ -93,6 +97,49 @@ function RiotFistLogo() {
         strokeLinecap="round"
       />
     </svg>
+  );
+}
+
+/**
+ * Riot Games logo area: fist icon + "RIOT GAMES" wordmark + small caret.
+ * Ref (universe-landing__universe-top-nav.png): the fist icon is followed by
+ * "RIOT GAMES" text (small, caps, letter-spaced, near-white) with a tiny
+ * downward caret after it. This whole unit sits left of the gold divider.
+ */
+function RiotGamesWordmark() {
+  return (
+    <div className="flex items-center gap-1.5">
+      <RiotFistLogo />
+      <span
+        className="font-body uppercase"
+        style={{
+          fontSize: "10px",
+          letterSpacing: "0.1em",
+          color: "var(--color-universe-nav-text)",
+          lineHeight: 1,
+          whiteSpace: "nowrap",
+        }}
+      >
+        RIOT GAMES
+      </span>
+      {/* Small downward caret after "RIOT GAMES" — per reference */}
+      <svg
+        aria-hidden="true"
+        width="6"
+        height="5"
+        viewBox="0 0 6 5"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M1 1 L3 4 L5 1"
+          stroke="var(--color-universe-nav-text)"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
   );
 }
 
@@ -150,24 +197,7 @@ function GlobeIcon() {
   );
 }
 
-/** Search magnifier icon — used as the SEARCH link icon. */
-function SearchIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" strokeWidth="1.5" />
-      <line x1="9" y1="9" x2="13" y2="13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-/** Downward caret for MAP link. */
+/** Downward caret for dropdown nav items (e.g. ALT UNIVERSE). */
 function CaretDown() {
   return (
     <svg
@@ -179,6 +209,31 @@ function CaretDown() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path d="M1 1 L4 5 L7 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/**
+ * External/diagonal arrow for MAP link — ref shows ↗ (upper-right arrow),
+ * indicating MAP opens in a new context (external map experience).
+ */
+function ExternalArrow() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="8"
+      height="8"
+      viewBox="0 0 8 8"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M2 6 L6 2 M3.5 2 L6 2 L6 4.5"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -197,6 +252,8 @@ function CaretDown() {
  *   --color-universe-nav-text (near-white #f0f0ee) to match reference.
  * Fix #977: PLAY NOW pill changed from flat blue-3 to left→right cyan gradient
  *   using --color-universe-cta-from and --color-universe-cta-to tokens.
+ * Polish: added "RIOT GAMES" wordmark text beside fist icon; SEARCH shows text
+ *   (not just icon); MAP uses ↗ external arrow; ALT UNIVERSE gets ▾ caret.
  */
 export function UniverseTopNav({
   activeKey,
@@ -218,7 +275,7 @@ export function UniverseTopNav({
         borderBottom: "1px solid var(--color-universe-nav-border)",
       }}
     >
-      {/* ── Left: Riot logo + gold divider + Universe wordmark (→ home) ── */}
+      {/* ── Left: Riot logo + "RIOT GAMES" wordmark + gold divider + Universe wordmark (→ home) ── */}
       <button
         type="button"
         onClick={onHome}
@@ -226,7 +283,7 @@ export function UniverseTopNav({
         className="flex shrink-0 items-center gap-3 mr-6"
         style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
       >
-        <RiotFistLogo />
+        <RiotGamesWordmark />
         {/* Gold vertical divider */}
         <div
           className="h-5 w-px"
@@ -242,10 +299,9 @@ export function UniverseTopNav({
         className="flex flex-1 items-center gap-1 list-none"
         role="list"
       >
-        {NAV_LINKS.map(({ key, label, hasArrow }) => {
+        {NAV_LINKS.map(({ key, label, indicator }) => {
           const isActive = key === activeKey;
           const isHovered = key === hoveredKey;
-          const isSearch = key === "search";
 
           return (
             <li key={key}>
@@ -267,12 +323,9 @@ export function UniverseTopNav({
                   letterSpacing: "0.12em",
                 }}
               >
-                {isSearch ? (
-                  <SearchIcon />
-                ) : (
-                  label
-                )}
-                {hasArrow && <CaretDown />}
+                {label}
+                {indicator === "caret" && <CaretDown />}
+                {indicator === "external" && <ExternalArrow />}
               </button>
             </li>
           );
