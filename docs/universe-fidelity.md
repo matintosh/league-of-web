@@ -83,3 +83,14 @@ hairline gold). NO raw hex outside tokens.
 
 ## STATUS: CONVERGED (2026-08-13) — full from-scratch clone of universe.leagueoflegends.com complete.
 - 2026-08-13 (accuracy pass) — User caught the assembled /universe looking off despite component-level CONVERGED. Root causes (missed because diffs checked /showcase/*, NOT assembled pages): (1) landing used a STATIC hero, never wired the built+verified UniverseHeroCarousel → PR #996 wired it (LandingHeroClient wrapper, 5 slides); (2) broken splash images — championSplashUrl('Xin Zhao') space→404, 'KhaZix' casing→403 → fixed + curl-verified 200. Nav was also DEAD (wrapper set state, never routed) → fixed: real next/navigation routing (links/logo/sign-in/play-now) + active-from-pathname. Re-verified assembled landing: carousel hero + 0 broken images. LESSON: diff ASSEMBLED PAGES, not just component showcases. NEW TOOLING: scripts/annotate_refs.py → per-component crops + red-rectangle annotated refs (docs/reference/components/, workflow in its README) for in-context build+review.
+
+## STATUS CORRECTION (2026-08-13) — NOT fully converged
+Full-surface annotate+audit pass (7 refs, 5 assembled-page audits + component crops) showed the earlier component-level CONVERGED was PREMATURE — per-component /showcase diffs can't see assembled-page wiring or catch a few wrong calls. Real gaps found:
+- HIGH cookie-banner built but never wired into the layout (absent all pages) — fixing.
+- MED LATEST grid asymmetry (#975) reverted by the #996 hero rewire — fixing.
+- MED explore grid constrained vs ref full-bleed — fixing.
+- MED explore heading over-corrected by #993 (48px caps vs ref ~24px mixed-case) — reverting.
+- MED story-card: #973 overlay was BACKWARDS — ref (docs/reference/components/universe-explore__universe-story-card.png) has metadata in a BODY BELOW the art, not overlaid — reverting.
+Fix wave in flight (a14dfb7b, PR pending).
+Deferred minors: bio LUX title cream-vs-gold; nav RIOT GAMES wordmark text missing / SEARCH icon-vs-text / MAP arrow direction; champions crest-divider flourish faint; DATA universe-live-regions.png is mis-mapped (homepage, no true regions ref).
+NEW: every ref now has component crops + red-rectangle annotated images in docs/reference/components/ (via scripts/annotate_refs.py). LESSON reinforced: audit ASSEMBLED PAGES, and treat single-agent subjective calls with suspicion (two agents disagreed on heading + story-card — pixel crops resolved it).
