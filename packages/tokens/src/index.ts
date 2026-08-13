@@ -167,6 +167,19 @@ export const palette = {
   launcherInstalledBarWildrift: "#dcb774",
   /** Game tile per-brand Installed bar — fallback green for unknown games (issue #748) */
   launcherInstalledBarDefault: "#2ea44f",
+  // Universe — pixel-sampled from docs/reference/universe-landing.png + universe-explore.png (issues #966-#968)
+  /** Near-black page background for the Universe site (top nav + page body) */
+  universeBg: "#0a0a0e",
+  /** Warm-dark hairline border below the Universe top nav */
+  universeNavBorder: "#1a1510",
+  /** Dark card body below art thumbnail in story cards */
+  universeCardBg: "#0f0f13",
+  /** Near-white title text on Universe story cards */
+  universeStoryInk: "#e8e0d0",
+  /** Dark green badge fill for "Read Story" pill */
+  universeBadgeStory: "#1a3a2a",
+  /** Dark blue badge fill for comic page-count chip */
+  universeBadgeComic: "#1a2a3a",
 } as const;
 
 export type Palette = typeof palette;

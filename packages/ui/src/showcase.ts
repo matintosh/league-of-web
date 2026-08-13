@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export type Area = "chrome" | "champ-select" | "collection" | "login" | "store" | "lobby" | "merch" | "launcher";
+export type Area = "chrome" | "champ-select" | "collection" | "login" | "store" | "lobby" | "merch" | "launcher" | "universe";
 
 export interface ShowcaseVariant {
   name: string;

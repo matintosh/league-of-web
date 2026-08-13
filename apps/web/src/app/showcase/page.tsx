@@ -20,9 +20,11 @@ const AREA_META: Record<Area, { label: string; description: string }> = {
     { label: "Merch", description: "Riot merch store shell and components — modern e-commerce design using --color-merch-* tokens." },
   launcher:
     { label: "Launcher", description: "Riot/League launcher shell and components — dark near-black palette using --color-launcher-* tokens." },
+  universe:
+    { label: "Universe", description: "League Universe site components — top nav, crest dividers, and story cards from universe.leagueoflegends.com." },
 };
 
-const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store", "lobby", "merch", "launcher"];
+const AREA_ORDER: Area[] = ["chrome", "champ-select", "collection", "login", "store", "lobby", "merch", "launcher", "universe"];
 
 // Stats derived from the registry at build time
 const componentCount = registry.length;
