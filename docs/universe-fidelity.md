@@ -32,10 +32,10 @@ hairline gold). NO raw hex outside tokens.
 
 | Component | Ref(s) | Status | Date | Notes |
 |---|---|---|---|---|
-| universe-top-nav | landing, all | ◐ | built #966 | Riot-logo + "Universe" wordmark + CHAMPIONS/REGIONS/COMICS/ALT UNIVERSE/MAP▾/EXPLORE/SEARCH + SIGN IN + PLAY NOW (blue pill). ~48px tall, near-black bg, gold-on-hover links, caps, letter-spaced. |
+| universe-top-nav | landing, all | ◐ | built #966 | Riot-logo + "Universe" wordmark + CHAMPIONS/REGIONS/COMICS/ALT UNIVERSE/MAP▾/EXPLORE/SEARCH + SIGN IN + PLAY NOW (blue pill). ~48px tall, near-black bg, gold-on-hover links, caps, letter-spaced. | (reviewer in progress)
 | universe-hero-carousel | landing | 🔨 | #971 | Full-width champion splash slide + left/right circular gold arrows + centered crest-divider with "THE ASHEN EXORCIST / LOCKE" title; faded prev/next titles either side. |
-| universe-crest-divider | crest-divider, landing | ◐ | built #967 | Gold hextech crest ornament centered over a label ("LATEST"/"FEATURED"/"CHAMPIONS"), thin gold underline. Section header. |
-| universe-story-card | explore, landing LATEST | ◐ | built #968 | Art thumbnail (16:9-ish), region/champion overline (gold caps), TITLE (serif caps), badge (Read Story / comic-page count). Hover lift. |
+| universe-crest-divider | crest-divider, landing | ◐ | reviewed 2026-08-12 | Gold hextech crest ornament centered over a label ("LATEST"/"FEATURED"/"CHAMPIONS"), thin gold underline. Section header. | REVIEWED: 1 delta #974 (flourish hairlines 120px-fixed → must span full section width, pip centered). Else MATCH (pip gold-3 45°, label font-display text-xl tracking-6 gold-1, underline w-24, tokens clean).
+| universe-story-card | explore, landing LATEST | ◐ | reviewed 2026-08-12 | Art thumbnail (16:9-ish), region/champion overline (gold caps), TITLE (serif caps), badge (Read Story / comic-page count). Hover lift. | REVIEWED: 1 delta #973 (overline+title must OVERLAY art bottom over scrim, not sit in a body panel below). Else MATCH (16:9 art, badge, overline gold-2, title font-display, hover zoom, 4 badge variants).
 | universe-champion-card | live-champions | 🔨 | #969 | Tall champion splash portrait card, name (serif caps) + region overline at bottom, dark gradient. Grid item. |
 | universe-filter-tabs | filter-tabs, explore | 🔨 | #970 | FILTER BY + Everything/Short Stories/Comics/Videos/Music (active=white+gold underline, rest gold) + right SORT BY Newest + up/down arrows. |
 | universe-champion-bio-hero | live-champion-bio | ⬜ | — | Full-bleed splash, huge serif champion name, gold subtitle title, top breadcrumb (CHAMPIONS / LUX). |
@@ -47,7 +47,7 @@ hairline gold). NO raw hex outside tokens.
 
 | Page | Route | Ref | Status |
 |---|---|---|---|
-| Home / Landing | `/universe` | universe-landing.png | ⬜ 🔨 (scaffold merged, PR#972) |
+| Home / Landing | `/universe` | universe-landing.png | ⬜ 🔨 (scaffold merged, PR#972) | REVIEWED: composition deltas #975 (LATEST grid — col-3 card row-span-2 asymmetric, not uniform 3-col) + #971 (hero arrows+crest via hero-carousel). Else MATCH (nav, hero 440px+gradient, crest headers, story-card grid, FEATURED 3-col, bg, centering).
 | Explore | `/universe/explore` | universe-explore.png | ⬜ |
 | Champions index | `/universe/champions` | universe-live-champions.png | ⬜ |
 | Champion bio | `/universe/champion/[slug]` | universe-live-champion-bio.png | ⬜ |
@@ -58,3 +58,10 @@ hairline gold). NO raw hex outside tokens.
 - 2026-08-12 — Surface CREATED. Captured 3 live refs (champions, champion-bio, regions) + had 4 pre-existing (landing, explore, filter-tabs, crest-divider). Scorecard seeded: 10 components, 5 pages. Home/landing = first milestone (highest component density). Filing scaffolding issues for foundational components (top-nav, crest-divider/section-header, story-card) → build-loop builds. Universe-fidelity loop to be armed.
 - 2026-08-12 (loop t1) — Still scaffolding (0 built). Queued 3 more build issues: #969 champion-card, #970 filter-tabs, #971 hero-carousel. 6 universe issues now status:ready (966-971) for build-loop :11. Remaining unqueued: champion-bio-hero, breadcrumb, cookie-banner, footer (next batch). No diffs yet — nothing built.
 - 2026-08-12 (build) — PR #972 MERGED (reviewed: raw rgba()→color-mix fix wave, both gates re-verified green). 3 foundational components live: universe-top-nav, universe-crest-divider, universe-story-card + /universe route/layout/landing scaffold + 6 --color-universe-* tokens. Deployed prod. Next: universe-loop :14 diffs the 3 built components vs refs; build-loop continues #969/#970/#971 (champion-card, filter-tabs, hero-carousel).
+
+## Showcase surfacing (2026-08-12)
+- Landing hub card added (`/` → Universe, "Browse components →" /universe/showcase).
+- Independent `/universe/showcase` — auto-lists area==universe components.
+- Site map `/universe/showcase/map` — all 5 pages with real reference thumbnails + Live/Planned status.
+
+- 2026-08-12 (reviewer sweep) — 4 reviewers over built surface. Deltas filed: #973 story-card (text overlay), #974 crest-divider (flourish width), #975 landing (LATEST asymmetric grid). Hero gap already tracked #971. top-nav reviewer pending (retry via loop). Open universe issues: 969 champion-card, 970 filter-tabs, 971 hero-carousel, 973/974/975 review-fixes → build-loop :11 builds all.
