@@ -17,46 +17,65 @@ export interface UniverseCrestDividerProps {
 }
 
 // ---------------------------------------------------------------------------
-// DiamondCrest — the Universe site's minimal gold ornament: a small rotated
-// square pip centred between two horizontal hairline flourish lines.
+// DiamondCrest — full-width three-part layout (#974):
+//   [gradient-line flex-1] + [fixed pip SVG] + [gradient-line flex-1]
+// The gradient lines use CSS background so they naturally stretch to container
+// width. The pip is a fixed-size SVG — no stretching.
 // ---------------------------------------------------------------------------
 
-function DiamondCrest({ gradId }: { gradId: string }) {
+/** The small rotated square pip centred between the flourish lines. */
+function DiamondPip() {
   return (
     <svg
       aria-hidden="true"
-      width="120"
+      width="18"
       height="18"
-      viewBox="0 0 120 18"
+      viewBox="0 0 18 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      style={{ flexShrink: 0 }}
     >
-      <defs>
-        <linearGradient id={`${gradId}-l`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="var(--color-gold-4)" stopOpacity="0" />
-          <stop offset="100%" stopColor="var(--color-gold-3)" stopOpacity="0.7" />
-        </linearGradient>
-        <linearGradient id={`${gradId}-r`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="var(--color-gold-3)" stopOpacity="0.7" />
-          <stop offset="100%" stopColor="var(--color-gold-4)" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {/* Left flourish line — fades from transparent (left) to gold (centre) */}
-      <line x1="0" y1="9" x2="54" y2="9" stroke={`url(#${gradId}-l)`} strokeWidth="1" />
-      {/* Centre diamond pip */}
+      {/* Centre diamond pip — 6×6 rotated rect */}
       <rect
-        x="57"
+        x="6"
         y="6"
         width="6"
         height="6"
         rx="0"
-        transform="rotate(45 60 9)"
+        transform="rotate(45 9 9)"
         fill="var(--color-gold-3)"
         opacity="0.9"
       />
-      {/* Right flourish line — fades from gold (centre) to transparent (right) */}
-      <line x1="66" y1="9" x2="120" y2="9" stroke={`url(#${gradId}-r)`} strokeWidth="1" />
     </svg>
+  );
+}
+
+/** Full-width flourish row: gradient-line ── pip ── gradient-line */
+function DiamondCrest() {
+  return (
+    <div className="flex w-full items-center">
+      {/* Left gradient line: transparent → gold toward pip */}
+      <div
+        className="h-px flex-1"
+        style={{
+          background:
+            "linear-gradient(to right, transparent, var(--color-gold-3))",
+          opacity: 0.7,
+        }}
+        aria-hidden="true"
+      />
+      <DiamondPip />
+      {/* Right gradient line: gold toward pip → transparent */}
+      <div
+        className="h-px flex-1"
+        style={{
+          background:
+            "linear-gradient(to left, transparent, var(--color-gold-3))",
+          opacity: 0.7,
+        }}
+        aria-hidden="true"
+      />
+    </div>
   );
 }
 
@@ -98,9 +117,9 @@ function ShieldCrest({ gradId }: { gradId: string }) {
  * UniverseCrestDivider — the ornamented gold section header used across the
  * League Universe site (universe.leagueoflegends.com).
  *
- * Renders: centred gold crest ornament → caps serif label (font-display,
+ * Renders: full-width crest flourish (#974 — lines now span container edge to
+ * edge with diamond pip centered) → caps serif label (font-display,
  * tracking-widest, gold-1) → short thin gold underline.
- * Symmetric faint flourish lines extend horizontally from the crest.
  *
  * Pure presentational, server-safe (no 'use client').
  * SVG gradient/shape ids are generated via useId() so multiple instances
@@ -119,7 +138,7 @@ export function UniverseCrestDivider({
     <div className="flex w-full flex-col items-center gap-1 py-2">
       {/* Crest ornament — diamond (default) or shield variant */}
       {crestVariant === "diamond" ? (
-        <DiamondCrest gradId={uid} />
+        <DiamondCrest />
       ) : (
         <ShieldCrest gradId={uid} />
       )}

@@ -2,13 +2,14 @@
  * UniverseStoryCard — story/article card from the Universe Explore grid and
  * LATEST section on universe.leagueoflegends.com.
  *
- * Structure:
+ * Structure (after #973 fix — text overlaid on art, no separate body below):
  *   ┌──────────────────────────────┐
- *   │  Art thumbnail (16:9)        │  ← object-cover, zoom on hover via CSS group
- *   │  [badge bottom-left]         │
- *   ├──────────────────────────────┤
- *   │  Overline (gold-2, caps)     │  ← region / champion name
- *   │  Title (Beaufort caps)       │
+ *   │  Art (16:9, full-bleed)      │  ← object-cover, zoom on hover via CSS group
+ *   │                              │
+ *   │  [gradient scrim overlay]    │
+ *   │  TITLE BEAUFORT CAPS         │  ← overlaid bottom-left on art
+ *   │  Overline (gold caps, small) │  ← below title, still in art
+ *   │  [badge bottom-left]         │  ← lowest, inside art
  *   └──────────────────────────────┘
  *
  * Whole card is a link. Hover: art zooms + card lifts (pure CSS, no state).
@@ -20,7 +21,7 @@
  *   "music"  → "Listen" pill (music note icon)
  *
  * Server-safe — no 'use client'. Hover handled via CSS group-hover utilities.
- * Props-in / callbacks-out. Tokens-only. Issue #968.
+ * Props-in / callbacks-out. Tokens-only. Issues #968, #973.
  */
 
 // ---------------------------------------------------------------------------
@@ -48,6 +49,11 @@ export interface UniverseStoryCardProps {
   badgeText?: string;
   /** Link href. @default "#" */
   href?: string;
+  /**
+   * Additional CSS class names applied to the root anchor element.
+   * Use "h-full" to make the card fill a tall grid cell (e.g. row-span-2). #975
+   */
+  className?: string;
   /** Callback fired when the card is clicked. */
   onSelect?: () => void;
 }
@@ -136,6 +142,9 @@ function StoryBadge({ kind, text }: BadgeProps) {
  * Presentational, server-safe (no 'use client'). Hover handled via CSS
  * group-hover utilities on the anchor — no useState needed.
  * Tokens-only — no raw hex colors outside packages/tokens.
+ *
+ * Fix #973: overline + title now overlaid on art at bottom (no separate body
+ * panel below the image). Card ends at the bottom edge of the art.
  */
 export function UniverseStoryCard({
   art,
@@ -144,6 +153,7 @@ export function UniverseStoryCard({
   kind = "story",
   badgeText,
   href = "#",
+  className,
   onSelect,
 }: UniverseStoryCardProps) {
   const badge = badgeText ?? KIND_DEFAULTS[kind];
@@ -159,17 +169,18 @@ export function UniverseStoryCard({
             }
           : undefined
       }
-      className="group block overflow-hidden rounded-sm transition-transform duration-300 hover:-translate-y-0.5"
+      className={`group block overflow-hidden rounded-sm transition-transform duration-300 hover:-translate-y-0.5${className ? ` ${className}` : ""}`}
       style={{
-        backgroundColor: "var(--color-universe-card-bg)",
         textDecoration: "none",
       }}
       aria-label={`${title} — ${overline}`}
     >
-      {/* Art thumbnail — 16:9 aspect, zoom on hover via group-hover */}
+      {/* Art — full-bleed, zoom on hover; text + badge overlaid inside.
+          Uses aspectRatio 16:9 by default; if className includes "h-full"
+          the card fills its grid cell and the art div fills the anchor. */}
       <div
         className="relative overflow-hidden"
-        style={{ aspectRatio: "16 / 9" }}
+        style={className?.includes("h-full") ? { height: "100%" } : { aspectRatio: "16 / 9" }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -178,42 +189,41 @@ export function UniverseStoryCard({
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        {/* Gradient scrim — bottom fade for badge legibility */}
+        {/* Gradient scrim — tall bottom fade covering text + badge (#973) */}
         <div
-          className="absolute inset-x-0 bottom-0 h-1/2"
+          className="absolute inset-x-0 bottom-0 h-3/4"
           style={{
             background:
-              "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 65%, transparent), transparent)",
+              "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 88%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 55%, transparent) 45%, transparent 100%)",
           }}
           aria-hidden="true"
         />
 
-        {/* Badge — bottom-left over the art */}
+        {/* Text overlay — title + overline stacked above badge (#973) */}
+        <div className="absolute inset-x-0 bottom-8 px-3">
+          {/* Title — Beaufort caps, near-white, above overline */}
+          <p
+            className="line-clamp-2 font-display text-sm uppercase leading-tight"
+            style={{ color: "var(--color-universe-story-ink)" }}
+          >
+            {title}
+          </p>
+          {/* Overline — region/champion, gold-2, caps, letter-spaced */}
+          <p
+            className="mt-0.5 truncate text-[10px] uppercase tracking-[0.1em]"
+            style={{
+              color: "var(--color-gold-2)",
+              fontFamily: "var(--font-body)",
+            }}
+          >
+            {overline}
+          </p>
+        </div>
+
+        {/* Badge — bottom-left over the art, lowest z element */}
         <div className="absolute bottom-2 left-2">
           <StoryBadge kind={kind} text={badge} />
         </div>
-      </div>
-
-      {/* Card body — overline + title */}
-      <div className="px-3 pb-3 pt-2">
-        {/* Overline — region/champion, gold-2, caps, letter-spaced */}
-        <p
-          className="mb-0.5 truncate text-[10px] uppercase tracking-[0.1em]"
-          style={{
-            color: "var(--color-gold-2)",
-            fontFamily: "var(--font-body)",
-          }}
-        >
-          {overline}
-        </p>
-
-        {/* Title — Beaufort caps, near-white */}
-        <p
-          className="line-clamp-2 font-display text-sm uppercase leading-tight"
-          style={{ color: "var(--color-universe-story-ink)" }}
-        >
-          {title}
-        </p>
       </div>
     </a>
   );
