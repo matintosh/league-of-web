@@ -1,19 +1,58 @@
 /**
- * /universe — League Universe landing page scaffold.
+ * /universe — League Universe landing page.
  *
- * A 1:1 skeleton of universe.leagueoflegends.com/en_US/ showcasing the three
- * foundational Universe components:
- *   - UniverseTopNav (wired in the layout)
+ * A 1:1 recreation of universe.leagueoflegends.com/en_US/ showcasing:
+ *   - UniverseHeroCarousel (full-width sliding hero — wired via LandingHeroClient)
  *   - UniverseCrestDivider (LATEST / FEATURED section headers)
  *   - UniverseStoryCard (story card grid)
  *
  * Art thumbnails use championSplashUrl() from @low/fixtures (Riot CDN, public).
- * This page is a server component — no 'use client'.
+ * This page is a server component — no 'use client'. Client state lives in
+ * LandingHeroClient (apps/web/src/app/universe/landing-hero-client.tsx).
  */
 
 import { UniverseCrestDivider } from "@low/ui";
 import { UniverseStoryCard } from "@low/ui";
+import type { UniverseHeroSlide } from "@low/ui";
 import { championSplashUrl } from "@low/fixtures";
+import { LandingHeroClient } from "./landing-hero-client";
+
+// ---------------------------------------------------------------------------
+// Hero carousel slides — 5 slides, verified DDragon IDs (200 on 16.13.1 splash)
+// ---------------------------------------------------------------------------
+
+const HERO_SLIDES: UniverseHeroSlide[] = [
+  {
+    overline: "The Unforgiven",
+    title: "YASUO",
+    splashUrl: championSplashUrl("Yasuo"),
+    href: "/universe/champion/yasuo",
+  },
+  {
+    overline: "The Rebel",
+    title: "XAYAH",
+    splashUrl: championSplashUrl("Xayah"),
+    href: "/universe/champion/xayah",
+  },
+  {
+    overline: "The Unshackled",
+    title: "KAYN",
+    splashUrl: championSplashUrl("Kayn"),
+    href: "/universe/champion/kayn",
+  },
+  {
+    overline: "The Nine-Tailed Fox",
+    title: "AHRI",
+    splashUrl: championSplashUrl("Ahri"),
+    href: "/universe/champion/ahri",
+  },
+  {
+    overline: "The Loose Cannon",
+    title: "JINX",
+    splashUrl: championSplashUrl("Jinx"),
+    href: "/universe/champion/jinx",
+  },
+];
 
 // ---------------------------------------------------------------------------
 // Static fixture data — story cards
@@ -29,7 +68,7 @@ const LATEST_CARDS = [
   },
   {
     id: "2",
-    art: championSplashUrl("Xin Zhao"),
+    art: championSplashUrl("XinZhao"),
     overline: "The Seneschal of Demacia",
     title: "XIN ZHAO",
     kind: "story" as const,
@@ -50,17 +89,17 @@ const LATEST_CARDS = [
   },
   {
     id: "5",
-    art: championSplashUrl("Mel"),
-    overline: "The Medarda Heir",
-    title: "MEL",
+    art: championSplashUrl("Jhin"),
+    overline: "The Virtuoso",
+    title: "JHIN",
     kind: "comic" as const,
     badgeText: "8 Pages",
   },
   {
     id: "6",
-    art: championSplashUrl("Yunara"),
-    overline: "The Harbinger Faith",
-    title: "YUNARA",
+    art: championSplashUrl("Ekko"),
+    overline: "The Boy Who Shattered Time",
+    title: "EKKO",
     kind: "story" as const,
   },
 ];
@@ -100,44 +139,8 @@ export default function UniversePage() {
       className="min-h-screen"
       style={{ backgroundColor: "var(--color-universe-bg)" }}
     >
-      {/* Hero placeholder — full-width champion art banner */}
-      <section
-        className="relative flex w-full items-end justify-center overflow-hidden"
-        style={{ height: "440px" }}
-        aria-label="Featured champion hero"
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={championSplashUrl("Yone")}
-          alt="Featured champion"
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: "center 20%" }}
-        />
-        {/* Dark gradient scrim */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to bottom, color-mix(in srgb, var(--color-universe-bg) 15%, transparent) 0%, color-mix(in srgb, var(--color-universe-bg) 60%, transparent) 70%, var(--color-universe-bg) 100%)",
-          }}
-          aria-hidden="true"
-        />
-        {/* Champion name lockup */}
-        <div className="relative z-10 mb-10 flex flex-col items-center gap-1 text-center">
-          <p
-            className="text-xs uppercase tracking-[0.2em]"
-            style={{ color: "var(--color-gold-2)", fontFamily: "var(--font-body)" }}
-          >
-            The Azakana Exorcist
-          </p>
-          <h1
-            className="font-display text-5xl uppercase tracking-widest"
-            style={{ color: "var(--color-gold-1)" }}
-          >
-            LOCKE
-          </h1>
-        </div>
-      </section>
+      {/* Hero carousel — controlled by LandingHeroClient (client boundary) */}
+      <LandingHeroClient slides={HERO_SLIDES} />
 
       {/* LATEST section */}
       <section className="mx-auto max-w-6xl px-6 py-10" aria-labelledby="latest-heading">

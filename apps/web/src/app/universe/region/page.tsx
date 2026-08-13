@@ -84,7 +84,7 @@ const REGIONS = [
   {
     name: "THE VOID",
     slug: "void",
-    championId: "KhaZix",
+    championId: "Khazix",
   },
 ] as const;
 
