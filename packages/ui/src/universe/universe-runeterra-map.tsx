@@ -36,6 +36,7 @@ export function UniverseRuneterraMap({
   startExploring = false,
 }: UniverseRuneterraMapProps) {
   const oceanId = useId();
+  const landId = useId();
   const [exploring, setExploring] = useState(startExploring);
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -130,6 +131,44 @@ export function UniverseRuneterraMap({
             </radialGradient>
           </defs>
           <rect width="100%" height="100%" fill={`url(#${oceanId})`} />
+        </svg>
+
+        {/* ── Stylized landmasses — original abstract continent shapes (tokens),
+             positioned so region markers sit on land. Not Riot's painted map. ── */}
+        <svg
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id={landId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--color-gold-5)" />
+              <stop offset="55%" stopColor="color-mix(in srgb, var(--color-gold-5) 60%, var(--color-hextech-black))" />
+              <stop offset="100%" stopColor="var(--color-hextech-black)" />
+            </linearGradient>
+          </defs>
+          <g
+            fill={`url(#${landId})`}
+            stroke="color-mix(in srgb, var(--color-gold-3) 45%, transparent)"
+            strokeWidth="0.25"
+            strokeLinejoin="round"
+          >
+            {/* Northern continent (Valoran) — Freljord / Noxus / Demacia / Piltover&Zaun */}
+            <path d="M11,15 C22,10 42,11 51,19 C58,25 60,35 53,47 C45,54 28,52 20,45 C11,39 5,23 11,15 Z" />
+            {/* Southern continent (Shurima) — Shurima / Ixtal */}
+            <path d="M29,58 C40,53 55,57 57,68 C57,79 46,83 37,81 C28,79 24,66 29,58 Z" />
+            {/* Ionia — eastern island */}
+            <path d="M65,17 C74,14 83,21 81,30 C77,37 68,37 63,30 C60,24 60,20 65,17 Z" />
+            {/* Bandle City — small isle */}
+            <ellipse cx="58" cy="38" rx="4.5" ry="3.2" />
+            {/* Bilgewater — island cluster */}
+            <ellipse cx="65" cy="50" rx="6" ry="4" />
+            {/* Shadow Isles — cursed SE isle */}
+            <path d="M73,65 C80,63 87,70 84,77 C80,81 73,79 71,73 C70,70 70,67 73,65 Z" />
+            {/* Targon — western peak coast */}
+            <path d="M9,57 C16,54 21,61 19,71 C16,78 8,76 7,69 C6,63 5,59 9,57 Z" />
+          </g>
         </svg>
 
         {/* ── Region markers ── */}
