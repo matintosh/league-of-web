@@ -38,9 +38,9 @@ hairline gold). NO raw hex outside tokens.
 | universe-story-card | explore, landing LATEST | ◐ | reviewed 2026-08-12 | Art thumbnail (16:9-ish), region/champion overline (gold caps), TITLE (serif caps), badge (Read Story / comic-page count). Hover lift. | REVIEWED: 1 delta #973 (overline+title must OVERLAY art bottom over scrim, not sit in a body panel below). Else MATCH (16:9 art, badge, overline gold-2, title font-display, hover zoom, 4 badge variants).
 | universe-champion-card | live-champions | 🔨 | #969 | Tall champion splash portrait card, name (serif caps) + region overline at bottom, dark gradient. Grid item. |
 | universe-filter-tabs | filter-tabs, explore | 🔨 | #970 | FILTER BY + Everything/Short Stories/Comics/Videos/Music (active=white+gold underline, rest gold) + right SORT BY Newest + up/down arrows. |
-| universe-champion-bio-hero | live-champion-bio | ⬜ | — | Full-bleed splash, huge serif champion name, gold subtitle title, top breadcrumb (CHAMPIONS / LUX). |
-| universe-breadcrumb | live-champion-bio | ⬜ | — | Gold crest + caps trail (CHAMPIONS › LUX). |
-| universe-cookie-banner | landing (bottom) | ⬜ | — | Bottom full-width dark bar: cookie text + Privacy Notice link + Manage Preferences button. |
+| universe-champion-bio-hero | live-champion-bio | 🔨 | #978 | Full-bleed splash, huge serif champion name, gold subtitle title, top breadcrumb (CHAMPIONS / LUX). |
+| universe-breadcrumb | live-champion-bio | 🔨 | #979 | Gold crest + caps trail (CHAMPIONS › LUX). |
+| universe-cookie-banner | landing (bottom) | 🔨 | #980 | Bottom full-width dark bar: cookie text + Privacy Notice link + Manage Preferences button. |
 | universe-footer | (scroll) | ⬜ | — | Riot footer (logo, links, legal). Capture on scroll. |
 
 ## Pages (assembled routes)
@@ -66,3 +66,4 @@ hairline gold). NO raw hex outside tokens.
 
 - 2026-08-12 (reviewer sweep) — 4 reviewers over built surface. Deltas filed: #973 story-card (text overlay), #974 crest-divider (flourish width), #975 landing (LATEST asymmetric grid). Hero gap already tracked #971. top-nav reviewer pending (retry via loop). Open universe issues: 969 champion-card, 970 filter-tabs, 971 hero-carousel, 973/974/975 review-fixes → build-loop :11 builds all.
 - 2026-08-12 (sweep complete) — top-nav reviewer landed (slow window): deltas #976 (white nav text — corrects the gold-links assumption in build brief #966) + #977 (pill cyan gradient). ALL 4 built targets reviewed. 8 open universe issues: 969/970/971 (unbuilt components) + 973/974/975/976/977 (review-fixes). build-loop :11 builds+fixes; reviewers re-diff after merges.
+- 2026-08-12 (loop t2) — Filed remaining inventory components: #978 champion-bio-hero, #979 breadcrumb, #980 cookie-banner. Full 10-component set now has build issues. 11 open universe issues: components 969/970/971/978/979/980 + review-fixes 973/974/975/976/977 (footer=only unqueued, low priority). Board idle, 0 lanes — build-loop :11 to start building. No diffs this tick (3 built components already reviewed; awaiting build-loop merges to re-diff).
