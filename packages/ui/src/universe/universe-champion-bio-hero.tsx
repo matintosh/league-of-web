@@ -6,7 +6,7 @@
  * Full-bleed champion splash art (championSplashUrl, object-cover, ~460px tall).
  * Heavy dark vignette on bottom and sides. Centered lower third overlaid text:
  *   - optional small crest SVG glyph
- *   - huge champion name (font-display serif caps, ~72px, gold-1, letter-spaced)
+ *   - huge champion name (font-display serif caps, ~72px, gold-2 amber, letter-spaced)
  *   - gold subtitle beneath (e.g. "THE LADY OF LUMINOSITY", gold-2 caps, tracked)
  *
  * Props-in / callbacks-out. Server-safe (no 'use client').
@@ -167,14 +167,17 @@ export function UniverseChampionBioHero({
       <div className="absolute inset-x-0 bottom-10 flex flex-col items-center text-center px-4">
         {showCrest && <ChampionCrest svgId={svgId} />}
 
-        {/* Champion name — huge Beaufort Heavy serif caps */}
+        {/* Champion name — huge Beaufort Heavy serif caps.
+            Ref (universe-live-champion-bio__universe-champion-bio-hero.png):
+            "LUX" renders in warm amber gold, not pale cream — gold-2 (#c8aa6e)
+            matches the reference better than gold-1 (#f0e6d2 pale cream). */}
         <h1
           className="font-display uppercase leading-none"
           style={{
             fontSize: "clamp(56px, 6vw, 88px)",
             fontWeight: 900,
             letterSpacing: "0.12em",
-            color: "var(--color-gold-1)",
+            color: "var(--color-gold-2)",
             textShadow:
               "0 2px 24px color-mix(in srgb, var(--color-hextech-black) 70%, transparent)",
           }}
