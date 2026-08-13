@@ -139,6 +139,7 @@ import { universeFilterTabsShowcase } from "./universe/universe-filter-tabs.show
 import { universeFooterShowcase } from "./universe/universe-footer.showcase";
 import { universeHeroCarouselShowcase } from "./universe/universe-hero-carousel.showcase";
 import { universeRegionCardShowcase } from "./universe/universe-region-card.showcase";
+import { universeRuneterraMapShowcase } from "./universe/universe-runeterra-map.showcase";
 import { universeStoryCardShowcase } from "./universe/universe-story-card.showcase";
 import { universeTopNavShowcase } from "./universe/universe-top-nav.showcase";
 import { merchBreadcrumbBarShowcase } from "./merch/merch-breadcrumb-bar.showcase";
@@ -356,6 +357,7 @@ export const registry: ShowcaseEntry[] = [
   universeFooterShowcase,
   universeHeroCarouselShowcase,
   universeRegionCardShowcase,
+  universeRuneterraMapShowcase,
   universeStoryCardShowcase,
   universeTopNavShowcase,
 ];

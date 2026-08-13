@@ -22,10 +22,10 @@ const NAV_ROUTES: Record<UniverseNavKey, string> = {
   champions: "/universe/champions",
   regions: "/universe/region",
   explore: "/universe/explore",
+  map: "/universe/map",
   // No dedicated route yet — fall back to the closest existing surface.
   comics: "/universe/explore",
   "alt-universe": "/universe/explore",
-  map: "/universe/region",
   search: "/universe/explore",
 };
 

@@ -403,6 +403,7 @@ export type { UniverseFilterTabsProps, UniverseFilterOption } from "./universe/u
 export type { UniverseFooterProps, UniverseFooterLink, UniverseFooterLinkGroup } from "./universe/universe-footer";
 export type { UniverseHeroCarouselProps, UniverseHeroSlide } from "./universe/universe-hero-carousel";
 export type { UniverseRegionCardProps } from "./universe/universe-region-card";
+export type { UniverseRuneterraMapProps } from "./universe/universe-runeterra-map";
 export { UniverseBreadcrumb } from "./universe/universe-breadcrumb";
 export { UniverseChampionBioHero } from "./universe/universe-champion-bio-hero";
 export { UniverseChampionCard } from "./universe/universe-champion-card";
@@ -412,6 +413,7 @@ export { UniverseFilterTabs } from "./universe/universe-filter-tabs";
 export { UniverseFooter } from "./universe/universe-footer";
 export { UniverseHeroCarousel } from "./universe/universe-hero-carousel";
 export { UniverseRegionCard } from "./universe/universe-region-card";
+export { UniverseRuneterraMap } from "./universe/universe-runeterra-map";
 export { UniverseStoryCard } from "./universe/universe-story-card";
 export type { UniverseStoryCardProps, UniverseStoryKind } from "./universe/universe-story-card";
 export { UniverseTopNav } from "./universe/universe-top-nav";

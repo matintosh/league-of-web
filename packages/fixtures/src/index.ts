@@ -20,3 +20,4 @@ export * from "./merch-info-pages";
 export * from "./merch";
 export * from "./games";
 export * from "./launcher";
+export * from "./runeterra-map";
