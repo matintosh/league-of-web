@@ -32,12 +32,12 @@ hairline gold). NO raw hex outside tokens.
 
 | Component | Ref(s) | Status | Date | Notes |
 |---|---|---|---|---|
-| universe-top-nav | landing, all | ⬜ | — | Riot-logo + "Universe" wordmark + CHAMPIONS/REGIONS/COMICS/ALT UNIVERSE/MAP▾/EXPLORE/SEARCH + SIGN IN + PLAY NOW (blue pill). ~48px tall, near-black bg, gold-on-hover links, caps, letter-spaced. |
-| universe-hero-carousel | landing | ⬜ | — | Full-width champion splash slide + left/right circular gold arrows + centered crest-divider with "THE ASHEN EXORCIST / LOCKE" title; faded prev/next titles either side. |
-| universe-crest-divider | crest-divider, landing | ⬜ | — | Gold hextech crest ornament centered over a label ("LATEST"/"FEATURED"/"CHAMPIONS"), thin gold underline. Section header. |
-| universe-story-card | explore, landing LATEST | ⬜ | — | Art thumbnail (16:9-ish), region/champion overline (gold caps), TITLE (serif caps), badge (Read Story / comic-page count). Hover lift. |
-| universe-champion-card | live-champions | ⬜ | — | Tall champion splash portrait card, name (serif caps) + region overline at bottom, dark gradient. Grid item. |
-| universe-filter-tabs | filter-tabs, explore | ⬜ | — | FILTER BY + Everything/Short Stories/Comics/Videos/Music (active=white+gold underline, rest gold) + right SORT BY Newest + up/down arrows. |
+| universe-top-nav | landing, all | 🔨 | #966 | Riot-logo + "Universe" wordmark + CHAMPIONS/REGIONS/COMICS/ALT UNIVERSE/MAP▾/EXPLORE/SEARCH + SIGN IN + PLAY NOW (blue pill). ~48px tall, near-black bg, gold-on-hover links, caps, letter-spaced. |
+| universe-hero-carousel | landing | 🔨 | #971 | Full-width champion splash slide + left/right circular gold arrows + centered crest-divider with "THE ASHEN EXORCIST / LOCKE" title; faded prev/next titles either side. |
+| universe-crest-divider | crest-divider, landing | 🔨 | #967 | Gold hextech crest ornament centered over a label ("LATEST"/"FEATURED"/"CHAMPIONS"), thin gold underline. Section header. |
+| universe-story-card | explore, landing LATEST | 🔨 | #968 | Art thumbnail (16:9-ish), region/champion overline (gold caps), TITLE (serif caps), badge (Read Story / comic-page count). Hover lift. |
+| universe-champion-card | live-champions | 🔨 | #969 | Tall champion splash portrait card, name (serif caps) + region overline at bottom, dark gradient. Grid item. |
+| universe-filter-tabs | filter-tabs, explore | 🔨 | #970 | FILTER BY + Everything/Short Stories/Comics/Videos/Music (active=white+gold underline, rest gold) + right SORT BY Newest + up/down arrows. |
 | universe-champion-bio-hero | live-champion-bio | ⬜ | — | Full-bleed splash, huge serif champion name, gold subtitle title, top breadcrumb (CHAMPIONS / LUX). |
 | universe-breadcrumb | live-champion-bio | ⬜ | — | Gold crest + caps trail (CHAMPIONS › LUX). |
 | universe-cookie-banner | landing (bottom) | ⬜ | — | Bottom full-width dark bar: cookie text + Privacy Notice link + Manage Preferences button. |
@@ -56,3 +56,4 @@ hairline gold). NO raw hex outside tokens.
 ## Rotation log
 
 - 2026-08-12 — Surface CREATED. Captured 3 live refs (champions, champion-bio, regions) + had 4 pre-existing (landing, explore, filter-tabs, crest-divider). Scorecard seeded: 10 components, 5 pages. Home/landing = first milestone (highest component density). Filing scaffolding issues for foundational components (top-nav, crest-divider/section-header, story-card) → build-loop builds. Universe-fidelity loop to be armed.
+- 2026-08-12 (loop t1) — Still scaffolding (0 built). Queued 3 more build issues: #969 champion-card, #970 filter-tabs, #971 hero-carousel. 6 universe issues now status:ready (966-971) for build-loop :11. Remaining unqueued: champion-bio-hero, breadcrumb, cookie-banner, footer (next batch). No diffs yet — nothing built.
