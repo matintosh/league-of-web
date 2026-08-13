@@ -35,6 +35,15 @@ const HUB_CARDS: LandingHubCard[] = [
     badge: "Merch design system",
     showcaseLink: { label: "Browse components →", href: "/merch/showcase" },
   },
+  {
+    id: "universe",
+    label: "Universe",
+    description:
+      "1:1 clone of the League Universe lore hub (universe.leagueoflegends.com) — champion bios, regions, and stories in an editorial dark/gold design language.",
+    href: "/universe",
+    badge: "Universe design system",
+    showcaseLink: { label: "Browse components →", href: "/universe/showcase" },
+  },
 ];
 
 /**
@@ -51,7 +60,7 @@ export default function Home() {
   return (
     <LandingHub
       title="League of Web"
-      subtitle="A portfolio project: a 1:1 web recreation of the LoL client, the game launcher, a Riot merch store scaffold, and a component showcase."
+      subtitle="A portfolio project: a 1:1 web recreation of the LoL client, the game launcher, a Riot merch store scaffold, the League Universe lore hub, and a component showcase."
       cards={HUB_CARDS}
       utilityLink={{ label: "Component Showcase →", href: "/showcase" }}
     />
