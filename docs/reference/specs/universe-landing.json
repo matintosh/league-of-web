@@ -1,0 +1,11 @@
+{
+  "ref": "docs/reference/universe-landing.png",
+  "out": "docs/reference/components",
+  "boxes": [
+    { "name": "Top Nav",       "slug": "universe-top-nav",       "fx": 0.0,  "fy": 0.0,   "fw": 1.0,  "fh": 0.048 },
+    { "name": "Hero Carousel", "slug": "universe-hero-carousel", "fx": 0.0,  "fy": 0.05,  "fw": 1.0,  "fh": 0.30 },
+    { "name": "Crest Divider", "slug": "universe-crest-divider", "fx": 0.36, "fy": 0.33,  "fw": 0.28, "fh": 0.035 },
+    { "name": "Story Card",    "slug": "universe-story-card",    "fx": 0.10, "fy": 0.385, "fw": 0.235,"fh": 0.14 },
+    { "name": "Cookie Banner", "slug": "universe-cookie-banner", "fx": 0.0,  "fy": 0.95,  "fw": 1.0,  "fh": 0.05 }
+  ]
+}
