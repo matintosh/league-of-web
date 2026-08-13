@@ -120,6 +120,7 @@ export function UniverseRegionCard({
           className="font-display text-lg uppercase leading-tight tracking-[0.1em]"
           style={{
             color: "var(--color-gold-1)",
+            fontWeight: 700,
             textShadow:
               "0 2px 8px color-mix(in srgb, var(--color-hextech-black) 80%, transparent)",
           }}

@@ -51,7 +51,7 @@ hairline gold). NO raw hex outside tokens.
 | Explore | `/universe/explore` | universe-explore.png | ◐ | — page diff: 1 delta #993 (heading text-3xl→text-5xl), fixed inline; else MATCH
 | Champions index | `/universe/champions` | universe-live-champions.png | ⬜ |
 | Champion bio | `/universe/champion/[slug]` | universe-live-champion-bio.png | ⬜ |
-| Regions | `/universe/region` | universe-live-regions.png | 🔨 | built PR#994 (region-card + route), pending diff
+| Regions | `/universe/region` | ✅ | converged 2026-08-13 | PAGE diff MATCH (4-col grid 267px/12px gap, 13 cards, REGIONS crest header). region-card 1 delta #995 (name weight 400→700) FIXED inline. 
 
 ## Rotation log
 
@@ -78,3 +78,4 @@ hairline gold). NO raw hex outside tokens.
 - 2026-08-13 (pages) — PR #992 MERGED (reviewed: token-clean, route pages server-only + explore-client for state, gates green 244 pages). 3 routes live: /universe/explore, /universe/champions, /universe/champion/[slug]. 4/5 pages built (Regions remaining → needs region-card component). Map statuses flipped Live. Next: diff the 3 new pages vs refs; build region-card + /universe/region.
 - 2026-08-13 (page diff) — 3 new routes diffed: champions ✅ MATCH, champion-bio ✅ MATCH, explore 1 delta #993 (heading undersized) → FIXED inline (text-3xl→text-5xl), gate green. gh issue close 993. Regions building (a48e0665). After Regions lands+diffs → surface CONVERGES.
 - 2026-08-13 (regions) — PR #994 MERGED (reviewed clean: no raw-hex, server-safe showcase, registry alphabetical, gates green). universe-region-card (11th component) + /universe/region route (13 Runeterra regions). ALL 5 PAGES + 11 components built. Map → Regions Live. Deploying (explore-fix + map + region batched). Next: diff /universe/region → if MATCH, surface CONVERGES.
+- 2026-08-13 (regions diff) — /universe/region PAGE = MATCH (composition). region-card 1 delta #995 (name font-weight 400→700 heavy Beaufort) FIXED inline, gates green. ALL 5 PAGES MATCH, ALL 11 COMPONENTS 1:1. Deploying region-card fix + re-verify → CONVERGED.
