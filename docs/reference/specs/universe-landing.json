@@ -2,10 +2,10 @@
   "ref": "docs/reference/universe-landing.png",
   "out": "docs/reference/components",
   "boxes": [
-    { "name": "Top Nav",       "slug": "universe-top-nav",       "fx": 0.0,  "fy": 0.0,   "fw": 1.0,  "fh": 0.048 },
-    { "name": "Hero Carousel", "slug": "universe-hero-carousel", "fx": 0.0,  "fy": 0.05,  "fw": 1.0,  "fh": 0.30 },
-    { "name": "Crest Divider", "slug": "universe-crest-divider", "fx": 0.36, "fy": 0.33,  "fw": 0.28, "fh": 0.035 },
-    { "name": "Story Card",    "slug": "universe-story-card",    "fx": 0.10, "fy": 0.385, "fw": 0.235,"fh": 0.14 },
-    { "name": "Cookie Banner", "slug": "universe-cookie-banner", "fx": 0.0,  "fy": 0.95,  "fw": 1.0,  "fh": 0.05 }
+    { "name": "Top Nav",       "slug": "universe-top-nav",       "fx": 0.0,    "fy": 0.0,    "fw": 1.0,    "fh": 0.027  },
+    { "name": "Hero Carousel", "slug": "universe-hero-carousel", "fx": 0.0,    "fy": 0.0,    "fw": 1.0,    "fh": 0.411  },
+    { "name": "Crest Divider", "slug": "universe-crest-divider", "fx": 0.3993, "fy": 0.4525, "fw": 0.2014, "fh": 0.040  },
+    { "name": "Story Card",    "slug": "universe-story-card",    "fx": 0.0556, "fy": 0.5175, "fw": 0.2139, "fh": 0.1695 },
+    { "name": "Cookie Banner", "slug": "universe-cookie-banner", "fx": 0.0,    "fy": 0.9675, "fw": 1.0,    "fh": 0.0185 }
   ]
 }

@@ -1,0 +1,9 @@
+{
+  "ref": "docs/reference/universe-live-champion-bio.png",
+  "out": "docs/reference/components",
+  "boxes": [
+    { "name": "Top Nav",           "slug": "universe-top-nav",           "fx": 0.0,    "fy": 0.0,    "fw": 1.0,    "fh": 0.060  },
+    { "name": "Breadcrumb",        "slug": "universe-breadcrumb",        "fx": 0.011,  "fy": 0.061,  "fw": 0.139,  "fh": 0.026  },
+    { "name": "Champion Bio Hero", "slug": "universe-champion-bio-hero", "fx": 0.0,    "fy": 0.087,  "fw": 1.0,    "fh": 0.913  }
+  ]
+}

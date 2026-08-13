@@ -1,0 +1,30 @@
+{
+  "ref": "docs/reference/universe-live-regions.png",
+  "out": "docs/reference/components",
+  "boxes": [
+    {
+      "name": "Top Nav",
+      "slug": "universe-top-nav",
+      "fx": 0.0,
+      "fy": 0.0,
+      "fw": 1.0,
+      "fh": 0.060
+    },
+    {
+      "name": "Region Card",
+      "slug": "universe-region-card",
+      "fx": 0.3167,
+      "fy": 0.6022,
+      "fw": 0.3660,
+      "fh": 0.3456
+    },
+    {
+      "name": "Crest Divider",
+      "slug": "universe-crest-divider",
+      "fx": 0.4847,
+      "fy": 0.6178,
+      "fw": 0.0306,
+      "fh": 0.0400
+    }
+  ]
+}

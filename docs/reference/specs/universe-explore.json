@@ -1,0 +1,9 @@
+{
+  "ref": "docs/reference/universe-explore.png",
+  "out": "docs/reference/components",
+  "boxes": [
+    { "name": "Top Nav",     "slug": "universe-top-nav",     "fx": 0.0,    "fy": 0.0,    "fw": 1.0,    "fh": 0.030  },
+    { "name": "Filter Tabs", "slug": "universe-filter-tabs", "fx": 0.0,    "fy": 0.1075, "fw": 1.0,    "fh": 0.0270 },
+    { "name": "Story Card",  "slug": "universe-story-card",  "fx": 0.0,    "fy": 0.1540, "fw": 0.2660, "fh": 0.1830 }
+  ]
+}

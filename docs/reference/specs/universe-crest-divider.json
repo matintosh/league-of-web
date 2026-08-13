@@ -1,0 +1,2 @@
+{ "ref": "docs/reference/universe-crest-divider.png", "out": "docs/reference/components",
+  "boxes": [ { "name": "Crest Divider", "slug": "universe-crest-divider", "fx": 0.0, "fy": 0.0, "fw": 1.0, "fh": 1.0 } ] }

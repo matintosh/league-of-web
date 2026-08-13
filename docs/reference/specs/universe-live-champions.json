@@ -1,0 +1,7 @@
+{ "ref": "docs/reference/universe-live-champions.png", "out": "docs/reference/components",
+  "boxes": [
+    { "name": "Top Nav",              "slug": "universe-top-nav",       "fx": 0.0,  "fy": 0.0,  "fw": 1.0,  "fh": 0.05 },
+    { "name": "Crest Divider",        "slug": "universe-crest-divider", "fx": 0.28, "fy": 0.27, "fw": 0.44, "fh": 0.17 },
+    { "name": "Champion Card",        "slug": "universe-champion-card", "fx": 0.02, "fy": 0.52, "fw": 0.19, "fh": 0.38 }
+  ]
+}
