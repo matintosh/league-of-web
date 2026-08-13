@@ -38,10 +38,10 @@ hairline gold). NO raw hex outside tokens.
 | universe-story-card | explore, landing LATEST | ◐ | reviewed 2026-08-12 | Art thumbnail (16:9-ish), region/champion overline (gold caps), TITLE (serif caps), badge (Read Story / comic-page count). Hover lift. | REVIEWED: 1 delta #973 (overline+title must OVERLAY art bottom over scrim, not sit in a body panel below). Else MATCH (16:9 art, badge, overline gold-2, title font-display, hover zoom, 4 badge variants).
 | universe-champion-card | live-champions | 🔨 | #969 | Tall champion splash portrait card, name (serif caps) + region overline at bottom, dark gradient. Grid item. |
 | universe-filter-tabs | filter-tabs, explore | 🔨 | #970 | FILTER BY + Everything/Short Stories/Comics/Videos/Music (active=white+gold underline, rest gold) + right SORT BY Newest + up/down arrows. |
-| universe-champion-bio-hero | live-champion-bio | 🔨 | #978 | Full-bleed splash, huge serif champion name, gold subtitle title, top breadcrumb (CHAMPIONS / LUX). |
-| universe-breadcrumb | live-champion-bio | 🔨 | #979 | Gold crest + caps trail (CHAMPIONS › LUX). |
-| universe-cookie-banner | landing (bottom) | 🔨 | #980 | Bottom full-width dark bar: cookie text + Privacy Notice link + Manage Preferences button. |
-| universe-footer | (scroll) | 🔨 | filed | Riot footer (logo, links, legal). Capture on scroll. |
+| universe-champion-bio-hero | live-champion-bio | ◐ | built #978 | Full-bleed splash, huge serif champion name, gold subtitle title, top breadcrumb (CHAMPIONS / LUX). |
+| universe-breadcrumb | live-champion-bio | ◐ | built #979 | Gold crest + caps trail (CHAMPIONS › LUX). |
+| universe-cookie-banner | landing (bottom) | ◐ | built #980 | Bottom full-width dark bar: cookie text + Privacy Notice link + Manage Preferences button. |
+| universe-footer | (scroll) | ◐ | built #981 | Riot footer (logo, links, legal). Capture on scroll. |
 
 ## Pages (assembled routes)
 
@@ -69,3 +69,4 @@ hairline gold). NO raw hex outside tokens.
 - 2026-08-12 (loop t2) — Filed remaining inventory components: #978 champion-bio-hero, #979 breadcrumb, #980 cookie-banner. Full 10-component set now has build issues. 11 open universe issues: components 969/970/971/978/979/980 + review-fixes 973/974/975/976/977 (footer=only unqueued, low priority). Board idle, 0 lanes — build-loop :11 to start building. No diffs this tick (3 built components already reviewed; awaiting build-loop merges to re-diff).
 - 2026-08-13 (loop t3) — Board idle, 3/10 built, build-loop queue not yet started (awaits :11 tick). Filed universe-footer to COMPLETE the 10-component spec (all inventory now has issues). No diff this tick (3 built already reviewed; nothing new merged). Next: build-loop :11 builds the ~12 queued universe issues; universe-loop re-diffs on merges.
 - 2026-08-13 (build) — PR #982 MERGED (reviewed: token sync verified across all 3 blocks incl new --color-universe-nav-text/cta-from/cta-to; no raw-hex/default-palette/conflicts; gates green). Applied all 5 review-fixes: #973 story-card text overlay, #974 crest full-width flourish, #975 landing asymmetric LATEST grid, #976 top-nav white text, #977 pill cyan gradient. Deployed. NEXT: universe-loop re-diffs top-nav/crest-divider/story-card + landing composition → expect ✅ if fixes match. Remaining build queue: 969/970/971/978/979/980/981 (7 new components).
+- 2026-08-13 (build) — PR #983 MERGED (reviewed clean: no raw-hex/default-palette, showcases server-safe, registry+index alphabetical, gates green). 4 components live: champion-bio-hero, breadcrumb, cookie-banner, footer. 7/10 components built. Builder A (#969/970/971 champion-card/filter-tabs/hero-carousel) still running → its PR rebases for registry keep-both. Next: universe-loop diffs the 4 new + re-diffs the 3 fixed.
