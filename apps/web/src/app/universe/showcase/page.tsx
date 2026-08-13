@@ -65,9 +65,14 @@ export default function UniverseShowcasePage() {
         }}
       >
         <div style={{ maxWidth: "1120px", margin: "0 auto" }}>
-          <Link href="/showcase" className="usc-back-link">
-            ← All components
-          </Link>
+          <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+            <Link href="/showcase" className="usc-back-link">
+              ← All components
+            </Link>
+            <Link href="/universe/showcase/map" className="usc-back-link">
+              Site map →
+            </Link>
+          </div>
           <h1
             className="font-display"
             style={{
