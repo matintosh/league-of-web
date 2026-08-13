@@ -161,7 +161,7 @@ const PAGES: UniversePage[] = [
     name: "Regions",
     route: "/universe/region",
     ref: "universe-live-regions.png",
-    status: "planned",
+    status: "live",
     note: "Runeterra region index — region tiles into region detail pages.",
     components: [
       "universe-top-nav",
