@@ -14,6 +14,7 @@
  */
 
 import { UniverseTopNavWrapper } from "./universe-top-nav-wrapper";
+import { UniverseCookieBannerClient } from "./cookie-banner-client";
 
 export default function UniverseLayout({
   children,
@@ -28,6 +29,8 @@ export default function UniverseLayout({
     >
       <UniverseTopNavWrapper />
       <main>{children}</main>
+      {/* Fixed-bottom cookie consent banner — client wrapper owns dismiss state */}
+      <UniverseCookieBannerClient />
     </div>
   );
 }
