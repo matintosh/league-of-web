@@ -39,6 +39,8 @@ export interface UniverseTopNavProps {
   activeKey?: UniverseNavKey;
   /** Fired when a nav link is clicked. */
   onNavigate?: (key: UniverseNavKey) => void;
+  /** Fired when the Riot logo / Universe wordmark is clicked (→ home). */
+  onHome?: () => void;
   /** Fired when the SIGN IN button is clicked. */
   onSignIn?: () => void;
   /** Fired when the PLAY NOW button is clicked. */
@@ -199,6 +201,7 @@ function CaretDown() {
 export function UniverseTopNav({
   activeKey,
   onNavigate,
+  onHome,
   onSignIn,
   onPlayNow,
 }: UniverseTopNavProps) {
@@ -215,8 +218,14 @@ export function UniverseTopNav({
         borderBottom: "1px solid var(--color-universe-nav-border)",
       }}
     >
-      {/* ── Left: Riot logo + gold divider + Universe wordmark ── */}
-      <div className="flex shrink-0 items-center gap-3 mr-6">
+      {/* ── Left: Riot logo + gold divider + Universe wordmark (→ home) ── */}
+      <button
+        type="button"
+        onClick={onHome}
+        aria-label="Universe home"
+        className="flex shrink-0 items-center gap-3 mr-6"
+        style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+      >
         <RiotFistLogo />
         {/* Gold vertical divider */}
         <div
@@ -225,7 +234,7 @@ export function UniverseTopNav({
           aria-hidden="true"
         />
         <UniverseWordmark />
-      </div>
+      </button>
 
       {/* ── Centre: Nav links — idle near-white (#976), hover gold-1 ── */}
       <ul

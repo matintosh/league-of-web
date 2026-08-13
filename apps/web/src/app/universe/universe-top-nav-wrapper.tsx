@@ -1,34 +1,53 @@
 "use client";
 
 /**
- * UniverseTopNavWrapper — client component that wires up the UniverseTopNav
- * with routing state for the /universe layout.
+ * UniverseTopNavWrapper — client component that wires UniverseTopNav to real
+ * routing for the /universe layout.
  *
  * Kept separate from the layout so the layout itself stays a server component.
- * The wrapper holds activeKey state and maps nav clicks to window.location
- * pushes for the /universe sub-routes (all currently scaffolded as the same
- * landing page — routing stubs only at this stage).
+ * Maps each nav key to a /universe route via next/navigation, derives the active
+ * link from the current pathname, and wires the logo (→ home), SIGN IN (→ /login)
+ * and PLAY NOW (→ /client) actions across the portfolio surfaces.
+ *
+ * Routes without a dedicated page yet (comics, alt-universe, map, search) fall
+ * back to the closest existing surface so no nav item is a dead click.
  */
 
-import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { UniverseTopNav } from "@low/ui";
 import type { UniverseNavKey } from "@low/ui";
 
+/** Nav key → destination route. */
+const NAV_ROUTES: Record<UniverseNavKey, string> = {
+  champions: "/universe/champions",
+  regions: "/universe/region",
+  explore: "/universe/explore",
+  // No dedicated route yet — fall back to the closest existing surface.
+  comics: "/universe/explore",
+  "alt-universe": "/universe/explore",
+  map: "/universe/region",
+  search: "/universe/explore",
+};
+
+/** Derive the active nav key from the current pathname. */
+function activeKeyFor(pathname: string): UniverseNavKey | undefined {
+  if (pathname.startsWith("/universe/champion")) return "champions";
+  if (pathname.startsWith("/universe/region")) return "regions";
+  if (pathname.startsWith("/universe/explore")) return "explore";
+  return undefined; // home (or showcase) — no tab highlighted
+}
+
 export function UniverseTopNavWrapper() {
-  const [activeKey, setActiveKey] = useState<UniverseNavKey | undefined>(
-    undefined,
-  );
+  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <UniverseTopNav
-      activeKey={activeKey}
-      onNavigate={(key) => setActiveKey(key)}
-      onSignIn={() => {
-        /* no-op — presentational */
-      }}
-      onPlayNow={() => {
-        /* no-op — presentational */
-      }}
+      activeKey={activeKeyFor(pathname)}
+      onNavigate={(key) => router.push(NAV_ROUTES[key])}
+      onHome={() => router.push("/universe")}
+      onSignIn={() => router.push("/login")}
+      onPlayNow={() => router.push("/client")}
     />
   );
 }
