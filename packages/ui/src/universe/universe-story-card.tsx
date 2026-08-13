@@ -106,7 +106,7 @@ function StoryBadge({ kind, text }: BadgeProps) {
       ? "var(--color-universe-badge-comic)"
       : kind === "story"
         ? "var(--color-universe-badge-story)"
-        : "rgba(0,0,0,0.55)";
+        : "color-mix(in srgb, var(--color-hextech-black) 55%, transparent)";
 
   const Icon =
     kind === "video" ? PlayIcon : kind === "music" ? MusicIcon : BookIcon;
@@ -183,7 +183,7 @@ export function UniverseStoryCard({
           className="absolute inset-x-0 bottom-0 h-1/2"
           style={{
             background:
-              "linear-gradient(to top, rgba(0,0,0,0.65), transparent)",
+              "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 65%, transparent), transparent)",
           }}
           aria-hidden="true"
         />

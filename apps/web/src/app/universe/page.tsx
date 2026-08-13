@@ -118,7 +118,7 @@ export default function UniversePage() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(10,10,14,0.15) 0%, rgba(10,10,14,0.6) 70%, var(--color-universe-bg) 100%)",
+              "linear-gradient(to bottom, color-mix(in srgb, var(--color-universe-bg) 15%, transparent) 0%, color-mix(in srgb, var(--color-universe-bg) 60%, transparent) 70%, var(--color-universe-bg) 100%)",
           }}
           aria-hidden="true"
         />
