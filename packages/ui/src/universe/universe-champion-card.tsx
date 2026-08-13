@@ -9,10 +9,10 @@
  *   │                          │
  *   │  [dark bottom gradient]  │
  *   │  REGION                  │  ← gold-2, small caps, letter-spaced (overline)
- *   │  CHAMPION NAME           │  ← font-display serif caps, gold-1/near-white, larger
+ *   │  CHAMPION NAME           │  ← font-display serif caps, gold-3 dark gold, larger
  *   └──────────────────────────┘
  *
- * Thin dark frame border; hover → splash zooms + gold hairline brightens.
+ * Borderless card; hover → splash zooms + subtle brightness lift.
  * Whole card is a link/button. Tokens-only. Server-safe (no 'use client').
  * Issue #969.
  */
@@ -65,7 +65,7 @@ export function UniverseChampionCard({
             }
           : undefined
       }
-      className={`group relative block overflow-hidden border border-gold-5 hover:border-gold-3 transition-[border-color] duration-200${className ? ` ${className}` : ""}`}
+      className={`group relative block overflow-hidden transition-[filter] duration-200 hover:brightness-110${className ? ` ${className}` : ""}`}
       style={{
         aspectRatio: "3 / 4",
         textDecoration: "none",
@@ -103,11 +103,12 @@ export function UniverseChampionCard({
         >
           {region}
         </p>
-        {/* Champion name — font-display serif caps, near-white/gold-1 */}
+        {/* Champion name — font-display serif caps, gold-3 dark gold (#989) */}
         <p
           className="font-display text-base uppercase leading-tight"
           style={{
-            color: "var(--color-universe-story-ink)",
+            color: "var(--color-gold-3)",
+            fontWeight: 500,
             letterSpacing: "0.06em",
             textShadow: "0 1px 4px color-mix(in srgb, var(--color-hextech-black) 60%, transparent)",
           }}
