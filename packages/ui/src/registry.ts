@@ -130,11 +130,14 @@ import { launcherShellShowcase } from "./launcher/launcher-shell.showcase";
 import { launcherSocialPanelShowcase } from "./launcher/launcher-social-panel.showcase";
 import { launcherTabBarShowcase } from "./launcher/launcher-tab-bar.showcase";
 import { launcherWindowBarShowcase } from "./launcher/launcher-window-bar.showcase";
-import { universeChampionBioHeroShowcase } from "./universe/universe-champion-bio-hero.showcase";
 import { universeBreadcrumbShowcase } from "./universe/universe-breadcrumb.showcase";
+import { universeChampionBioHeroShowcase } from "./universe/universe-champion-bio-hero.showcase";
+import { universeChampionCardShowcase } from "./universe/universe-champion-card.showcase";
 import { universeCookieBannerShowcase } from "./universe/universe-cookie-banner.showcase";
 import { universeCrestDividerShowcase } from "./universe/universe-crest-divider.showcase";
+import { universeFilterTabsShowcase } from "./universe/universe-filter-tabs.showcase";
 import { universeFooterShowcase } from "./universe/universe-footer.showcase";
+import { universeHeroCarouselShowcase } from "./universe/universe-hero-carousel.showcase";
 import { universeStoryCardShowcase } from "./universe/universe-story-card.showcase";
 import { universeTopNavShowcase } from "./universe/universe-top-nav.showcase";
 import { merchBreadcrumbBarShowcase } from "./merch/merch-breadcrumb-bar.showcase";
@@ -342,11 +345,15 @@ export const registry: ShowcaseEntry[] = [
   merchSupportHeroShowcase,
   merchSupportTabStripShowcase,
   // universe — alphabetical: UniverseBreadcrumb < UniverseChampionBioHero < UniverseCookieBanner < UniverseCrestDivider < UniverseFooter < UniverseStoryCard < UniverseTopNav
+  // universe — alphabetical: UniverseChampionCard < UniverseCrestDivider < UniverseFilterTabs < UniverseHeroCarousel < UniverseStoryCard < UniverseTopNav
   universeBreadcrumbShowcase,
   universeChampionBioHeroShowcase,
+  universeChampionCardShowcase,
   universeCookieBannerShowcase,
   universeCrestDividerShowcase,
+  universeFilterTabsShowcase,
   universeFooterShowcase,
+  universeHeroCarouselShowcase,
   universeStoryCardShowcase,
   universeTopNavShowcase,
 ];
