@@ -188,14 +188,26 @@ export function UniverseHeroCarousel({
         backgroundColor: "var(--color-universe-bg)",
       }}
     >
-      {/* ── Splash art — full-bleed, object-cover ── */}
+      {/* ── Slide animations (CSS; run client-side, honor reduced-motion) ── */}
+      <style>{`
+        @keyframes uhcFadeIn { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes uhcKenBurns { from { transform: scale(1.02) } to { transform: scale(1.12) } }
+        @keyframes uhcRise { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
+        .uhc-splash { animation: uhcFadeIn 700ms ease-out, uhcKenBurns 9000ms ease-out forwards; transform-origin: 50% 40%; will-change: transform, opacity; }
+        .uhc-rise { animation: uhcRise 600ms ease-out both; }
+        @media (prefers-reduced-motion: reduce) {
+          .uhc-splash { animation: uhcFadeIn 200ms ease-out; transform: none; }
+          .uhc-rise { animation: none; }
+        }
+      `}</style>
+
+      {/* ── Splash art — full-bleed, object-cover (crossfade in + slow Ken Burns zoom) ── */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        key={current.splashUrl}
+        key={safeIndex}
         src={current.splashUrl}
         alt={current.title}
-        className="absolute inset-0 h-full w-full object-cover object-top"
-        style={{ transition: "opacity 400ms ease" }}
+        className="uhc-splash absolute inset-0 h-full w-full object-cover object-top"
       />
 
       {/* ── Dark vignette — left edge ── */}
@@ -289,6 +301,7 @@ export function UniverseHeroCarousel({
 
       {/* ── Centered text block — crest + overline + title + underline ── */}
       <a
+        key={safeIndex}
         href={current.href ?? "#"}
         onClick={
           onSelect
@@ -305,13 +318,14 @@ export function UniverseHeroCarousel({
         {/* Crest ornament */}
         <CrestOrnament gradientId={crestGradId} />
 
-        {/* Overline — gold caps, small, letter-spaced */}
+        {/* Overline — gold caps, small, letter-spaced (rises in on slide change) */}
         <p
-          className="text-[11px] uppercase"
+          className="uhc-rise text-[11px] uppercase"
           style={{
             color: "var(--color-gold-2)",
             fontFamily: "var(--font-body)",
             letterSpacing: "0.16em",
+            animationDelay: "120ms",
             textShadow:
               "0 1px 6px color-mix(in srgb, var(--color-hextech-black) 70%, transparent)",
           }}
@@ -319,12 +333,13 @@ export function UniverseHeroCarousel({
           {current.overline}
         </p>
 
-        {/* Big title — font-display serif caps */}
+        {/* Big title — font-display serif caps (rises in, staggered after overline) */}
         <p
-          className="font-display text-4xl uppercase leading-none"
+          className="uhc-rise font-display text-4xl uppercase leading-none"
           style={{
             color: "var(--color-universe-story-ink)",
             letterSpacing: "0.08em",
+            animationDelay: "220ms",
             textShadow:
               "0 2px 12px color-mix(in srgb, var(--color-hextech-black) 60%, transparent)",
           }}
