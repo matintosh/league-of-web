@@ -138,6 +138,7 @@ import { universeCrestDividerShowcase } from "./universe/universe-crest-divider.
 import { universeFilterTabsShowcase } from "./universe/universe-filter-tabs.showcase";
 import { universeFooterShowcase } from "./universe/universe-footer.showcase";
 import { universeHeroCarouselShowcase } from "./universe/universe-hero-carousel.showcase";
+import { universeRegionCardShowcase } from "./universe/universe-region-card.showcase";
 import { universeStoryCardShowcase } from "./universe/universe-story-card.showcase";
 import { universeTopNavShowcase } from "./universe/universe-top-nav.showcase";
 import { merchBreadcrumbBarShowcase } from "./merch/merch-breadcrumb-bar.showcase";
@@ -345,7 +346,7 @@ export const registry: ShowcaseEntry[] = [
   merchSupportHeroShowcase,
   merchSupportTabStripShowcase,
   // universe — alphabetical: UniverseBreadcrumb < UniverseChampionBioHero < UniverseCookieBanner < UniverseCrestDivider < UniverseFooter < UniverseStoryCard < UniverseTopNav
-  // universe — alphabetical: UniverseChampionCard < UniverseCrestDivider < UniverseFilterTabs < UniverseHeroCarousel < UniverseStoryCard < UniverseTopNav
+  // universe — alphabetical: UniverseBreadcrumb < UniverseChampionBioHero < UniverseChampionCard < UniverseCookieBanner < UniverseCrestDivider < UniverseFilterTabs < UniverseFooter < UniverseHeroCarousel < UniverseRegionCard < UniverseStoryCard < UniverseTopNav
   universeBreadcrumbShowcase,
   universeChampionBioHeroShowcase,
   universeChampionCardShowcase,
@@ -354,6 +355,7 @@ export const registry: ShowcaseEntry[] = [
   universeFilterTabsShowcase,
   universeFooterShowcase,
   universeHeroCarouselShowcase,
+  universeRegionCardShowcase,
   universeStoryCardShowcase,
   universeTopNavShowcase,
 ];
