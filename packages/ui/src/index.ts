@@ -394,16 +394,23 @@ export type { MerchSupportHeroProps } from "./merch/merch-support-hero";
 export { MerchSupportTabStrip } from "./merch/merch-support-tab-strip";
 export type { MerchSupportTabStripProps } from "./merch/merch-support-tab-strip";
 // universe — alphabetical: UniverseBreadcrumb < UniverseChampionBioHero < UniverseCookieBanner < UniverseCrestDivider < UniverseFooter < UniverseStoryCard < UniverseTopNav
-export { UniverseBreadcrumb } from "./universe/universe-breadcrumb";
+// universe — alphabetical: UniverseChampionCard < UniverseCrestDivider < UniverseFilterTabs < UniverseHeroCarousel < UniverseStoryCard < UniverseTopNav
 export type { UniverseBreadcrumbProps, UniverseBreadcrumbItem } from "./universe/universe-breadcrumb";
-export { UniverseChampionBioHero } from "./universe/universe-champion-bio-hero";
 export type { UniverseChampionBioHeroProps } from "./universe/universe-champion-bio-hero";
-export { UniverseCookieBanner } from "./universe/universe-cookie-banner";
+export type { UniverseChampionCardProps } from "./universe/universe-champion-card";
 export type { UniverseCookieBannerProps } from "./universe/universe-cookie-banner";
-export { UniverseCrestDivider } from "./universe/universe-crest-divider";
 export type { UniverseCrestDividerProps } from "./universe/universe-crest-divider";
-export { UniverseFooter } from "./universe/universe-footer";
+export type { UniverseFilterTabsProps, UniverseFilterOption } from "./universe/universe-filter-tabs";
 export type { UniverseFooterProps, UniverseFooterLink, UniverseFooterLinkGroup } from "./universe/universe-footer";
+export type { UniverseHeroCarouselProps, UniverseHeroSlide } from "./universe/universe-hero-carousel";
+export { UniverseBreadcrumb } from "./universe/universe-breadcrumb";
+export { UniverseChampionBioHero } from "./universe/universe-champion-bio-hero";
+export { UniverseChampionCard } from "./universe/universe-champion-card";
+export { UniverseCookieBanner } from "./universe/universe-cookie-banner";
+export { UniverseCrestDivider } from "./universe/universe-crest-divider";
+export { UniverseFilterTabs } from "./universe/universe-filter-tabs";
+export { UniverseFooter } from "./universe/universe-footer";
+export { UniverseHeroCarousel } from "./universe/universe-hero-carousel";
 export { UniverseStoryCard } from "./universe/universe-story-card";
 export type { UniverseStoryCardProps, UniverseStoryKind } from "./universe/universe-story-card";
 export { UniverseTopNav } from "./universe/universe-top-nav";
