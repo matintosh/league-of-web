@@ -180,6 +180,12 @@ export const palette = {
   universeBadgeStory: "#1a3a2a",
   /** Dark blue badge fill for comic page-count chip */
   universeBadgeComic: "#1a2a3a",
+  /** Near-white nav link + SIGN IN text color (#976) */
+  universeNavText: "#f0f0ee",
+  /** PLAY NOW pill gradient left stop — cooler cyan (#977) */
+  universeCtaFrom: "#2992c5",
+  /** PLAY NOW pill gradient right stop — brighter cyan (#977) */
+  universeCtaTo: "#14b6da",
 } as const;
 
 export type Palette = typeof palette;

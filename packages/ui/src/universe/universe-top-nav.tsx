@@ -11,11 +11,11 @@
  *   [nav links: CHAMPIONS · REGIONS · COMICS · ALT UNIVERSE · MAP▾ · EXPLORE · SEARCH]
  *   [globe locale icon] [SIGN IN] [PLAY NOW pill]
  *
- * Nav links are caps, letter-spaced, small — idle gold-2, hover gold-1.
- * PLAY NOW is a hextech-blue filled rounded pill.
+ * Nav links are caps, letter-spaced, small — idle near-white (#976), hover gold-1.
+ * PLAY NOW is a left→right cyan gradient pill (#977).
  *
  * Props-in / callbacks-out. No data fetching. Requires 'use client' for hover state.
- * Tokens-only — all colors via var(--color-*). Issues #966.
+ * Tokens-only — all colors via var(--color-*). Issues #966, #976, #977.
  */
 
 import { useState } from "react";
@@ -63,7 +63,10 @@ const NAV_LINKS: { key: UniverseNavKey; label: string; hasArrow?: boolean }[] = 
 // Sub-components
 // ---------------------------------------------------------------------------
 
-/** Riot Games fist / wordmark logo (simplified SVG representation). */
+/**
+ * Riot Games fist / wordmark logo — rendered white per reference (#976).
+ * The Universe nav uses white for all chrome except the Universe wordmark.
+ */
 function RiotFistLogo() {
   return (
     <svg
@@ -75,15 +78,15 @@ function RiotFistLogo() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Stylised fist / shield silhouette */}
+      {/* Stylised fist / shield silhouette — white fill per ref (#976) */}
       <path
         d="M12 2 L20 6 L20 15 Q20 20 12 23 Q4 20 4 15 L4 6 Z"
-        fill="var(--color-gold-3)"
+        fill="var(--color-universe-nav-text)"
         opacity="0.9"
       />
       <path
         d="M9 10 L9 16 M12 9 L12 16 M15 10 L15 16"
-        stroke="var(--color-gold-6)"
+        stroke="var(--color-universe-bg)"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
@@ -95,7 +98,7 @@ function RiotFistLogo() {
 function UniverseWordmark() {
   return (
     <div className="flex items-center gap-1.5">
-      {/* Small diamond crest glyph */}
+      {/* Small diamond crest glyph — stays gold per reference */}
       <svg
         aria-hidden="true"
         width="10"
@@ -114,6 +117,7 @@ function UniverseWordmark() {
           opacity="0.85"
         />
       </svg>
+      {/* Universe wordmark stays gold per reference — only nav links/SIGN IN go white */}
       <span
         className="font-display text-sm tracking-widest text-gold-1 uppercase"
         style={{ letterSpacing: "0.2em" }}
@@ -124,7 +128,7 @@ function UniverseWordmark() {
   );
 }
 
-/** Globe / locale icon. */
+/** Globe / locale icon — white tint matching nav text (#976). */
 function GlobeIcon() {
   return (
     <svg
@@ -136,10 +140,10 @@ function GlobeIcon() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <circle cx="9" cy="9" r="7.5" stroke="var(--color-gold-2)" strokeWidth="1" />
-      <ellipse cx="9" cy="9" rx="3.5" ry="7.5" stroke="var(--color-gold-2)" strokeWidth="1" />
-      <line x1="2" y1="7" x2="16" y2="7" stroke="var(--color-gold-2)" strokeWidth="1" />
-      <line x1="2" y1="11" x2="16" y2="11" stroke="var(--color-gold-2)" strokeWidth="1" />
+      <circle cx="9" cy="9" r="7.5" stroke="var(--color-universe-nav-text)" strokeWidth="1" />
+      <ellipse cx="9" cy="9" rx="3.5" ry="7.5" stroke="var(--color-universe-nav-text)" strokeWidth="1" />
+      <line x1="2" y1="7" x2="16" y2="7" stroke="var(--color-universe-nav-text)" strokeWidth="1" />
+      <line x1="2" y1="11" x2="16" y2="11" stroke="var(--color-universe-nav-text)" strokeWidth="1" />
     </svg>
   );
 }
@@ -186,6 +190,11 @@ function CaretDown() {
  *
  * Presentational: props in, callbacks out. Requires 'use client' for hover state.
  * All colors from Hextech/Universe design tokens — no raw hex.
+ *
+ * Fix #976: nav link text, SIGN IN, and Riot logo changed from gold-2 to
+ *   --color-universe-nav-text (near-white #f0f0ee) to match reference.
+ * Fix #977: PLAY NOW pill changed from flat blue-3 to left→right cyan gradient
+ *   using --color-universe-cta-from and --color-universe-cta-to tokens.
  */
 export function UniverseTopNav({
   activeKey,
@@ -218,7 +227,7 @@ export function UniverseTopNav({
         <UniverseWordmark />
       </div>
 
-      {/* ── Centre: Nav links ── */}
+      {/* ── Centre: Nav links — idle near-white (#976), hover gold-1 ── */}
       <ul
         id={navId}
         className="flex flex-1 items-center gap-1 list-none"
@@ -242,7 +251,7 @@ export function UniverseTopNav({
                   color:
                     isActive || isHovered
                       ? "var(--color-gold-1)"
-                      : "var(--color-gold-2)",
+                      : "var(--color-universe-nav-text)",
                   background: "none",
                   border: "none",
                   cursor: "pointer",
@@ -273,13 +282,13 @@ export function UniverseTopNav({
           <GlobeIcon />
         </button>
 
-        {/* SIGN IN */}
+        {/* SIGN IN — near-white text (#976) */}
         <button
           type="button"
           onClick={onSignIn}
           className="text-[11px] uppercase tracking-[0.12em] transition-colors duration-150"
           style={{
-            color: "var(--color-gold-2)",
+            color: "var(--color-universe-nav-text)",
             background: "none",
             border: "none",
             cursor: "pointer",
@@ -292,31 +301,31 @@ export function UniverseTopNav({
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLButtonElement).style.color =
-              "var(--color-gold-2)";
+              "var(--color-universe-nav-text)";
           }}
         >
           SIGN IN
         </button>
 
-        {/* PLAY NOW — hextech-blue filled pill */}
+        {/* PLAY NOW — cyan gradient pill (#977): cta-from → cta-to left→right */}
         <button
           type="button"
           onClick={onPlayNow}
-          className="rounded-full px-4 py-1 text-[11px] uppercase tracking-[0.1em] font-body font-semibold transition-colors duration-150"
+          className="rounded-full px-4 py-1 text-[11px] uppercase tracking-[0.1em] font-body font-semibold"
           style={{
-            backgroundColor: "var(--color-blue-3)",
+            background:
+              "linear-gradient(to right, var(--color-universe-cta-from), var(--color-universe-cta-to))",
             color: "var(--color-blue-1)",
             border: "none",
             cursor: "pointer",
             letterSpacing: "0.1em",
+            transition: "opacity 150ms",
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-              "var(--color-blue-2)";
+            (e.currentTarget as HTMLButtonElement).style.opacity = "0.85";
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-              "var(--color-blue-3)";
+            (e.currentTarget as HTMLButtonElement).style.opacity = "1";
           }}
         >
           PLAY NOW
