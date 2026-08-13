@@ -48,7 +48,7 @@ hairline gold). NO raw hex outside tokens.
 | Page | Route | Ref | Status |
 |---|---|---|---|
 | Home / Landing | `/universe` | universe-landing.png | ⬜ 🔨 (scaffold merged, PR#972) | REVIEWED: composition deltas #975 (LATEST grid — col-3 card row-span-2 asymmetric, not uniform 3-col) + #971 (hero arrows+crest via hero-carousel). Else MATCH (nav, hero 440px+gradient, crest headers, story-card grid, FEATURED 3-col, bg, centering).
-| Explore | `/universe/explore` | universe-explore.png | 🔨 |
+| Explore | `/universe/explore` | universe-explore.png | ◐ | — page diff: 1 delta #993 (heading text-3xl→text-5xl), fixed inline; else MATCH
 | Champions index | `/universe/champions` | universe-live-champions.png | ⬜ |
 | Champion bio | `/universe/champion/[slug]` | universe-live-champion-bio.png | ⬜ |
 | Regions | `/universe/region` | universe-live-regions.png | ⬜ |
@@ -76,3 +76,4 @@ hairline gold). NO raw hex outside tokens.
 - 2026-08-13 (fix) — PR #990 MERGED (reviewed: fixes verified in-place — bio-hero fontWeight:900, hero arrows left/right-[130px], peek overline removed; no raw hex/palette; gates green). bio-hero + hero-carousel fixed. Holding deploy to batch with champion-card fix PR (wave B, a75aee2d, #988/#989). After both merge → one deploy → re-diff bio-hero/hero-carousel/champion-card → all 10 components ✅.
 - 2026-08-13 (converged) — Re-diff of the 3 fixed components: ALL CONVERGED ✅ (bio-hero weight-900, hero-carousel arrows-130px+peek-title-only, champion-card gold-3+borderless). **ALL 10 UNIVERSE COMPONENTS NOW VERIFIED 1:1.** Component phase COMPLETE. Remaining: page routes — Home ✅ live+diffed; explore/champions/champion-bio ASSEMBLING (aa260a71); Regions deferred (needs region-card component). After pages assemble+diff → surface CONVERGES.
 - 2026-08-13 (pages) — PR #992 MERGED (reviewed: token-clean, route pages server-only + explore-client for state, gates green 244 pages). 3 routes live: /universe/explore, /universe/champions, /universe/champion/[slug]. 4/5 pages built (Regions remaining → needs region-card component). Map statuses flipped Live. Next: diff the 3 new pages vs refs; build region-card + /universe/region.
+- 2026-08-13 (page diff) — 3 new routes diffed: champions ✅ MATCH, champion-bio ✅ MATCH, explore 1 delta #993 (heading undersized) → FIXED inline (text-3xl→text-5xl), gate green. gh issue close 993. Regions building (a48e0665). After Regions lands+diffs → surface CONVERGES.

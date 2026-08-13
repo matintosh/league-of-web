@@ -19,7 +19,7 @@ export default function ExplorePage() {
       {/* Page heading */}
       <div className="mx-auto max-w-6xl px-6 pt-8 pb-2">
         <h1
-          className="font-display text-3xl uppercase tracking-wide"
+          className="font-display text-5xl uppercase tracking-wide"
           style={{
             color: "var(--color-universe-story-ink)",
             fontWeight: 700,
