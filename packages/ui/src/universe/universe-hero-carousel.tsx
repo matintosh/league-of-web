@@ -1,33 +1,26 @@
 import { useId } from "react";
 
 /**
- * UniverseHeroCarousel — the home page hero carousel on universe.leagueoflegends.com.
+ * UniverseHeroCarousel — home hero coverflow on universe.leagueoflegends.com.
  *
- * Structure (Ref: docs/reference/universe-landing.png):
- *   ┌────────────────────────────────────────────────────────────┐
- *   │  Full-width champion splash (object-cover, ~460px tall)    │
- *   │  [dark vignette — left + right edges fade to near-black]   │
- *   │  [prev slide title, faded, far left]  [< arrow] ... [> arrow] [next title, faded, right] │
- *   │                                                            │
- *   │            [crest ornament SVG]                            │
- *   │            OVERLINE (gold caps, small)                     │
- *   │            BIG TITLE (font-display serif caps)             │
- *   │            [thin gold underline bar]                       │
- *   └────────────────────────────────────────────────────────────┘
+ * Structure (values extracted from the live site via getComputedStyle):
+ *   - 3-up coverflow: prev + next splashes flank the center, DESATURATED via
+ *     filter grayscale(1) brightness(0.3); the center splash is full-colour with
+ *     a slow Ken Burns zoom.
+ *   - Circular gold-ring arrows sit on the center splash's left/right edges.
+ *   - An angular gold-outlined NAMEPLATE panel (~480x184, #0f0f0f) overlaps the
+ *     bottom center: notched top + crest medallion + overline (cream #c4b998,
+ *     4px tracking) + title (gold #937341, 30px Beaufort, 3px tracking) + underline.
+ *   - Faded prev/next titles peek at the far edges.
  *
- * Controlled: parent passes `index`, `onPrev`, `onNext`. Stateful demo in *.demo.tsx.
- * Server-safe (no 'use client') — no internal state. SVG ids via useId.
- * Tokens-only. Issue #971.
+ * Controlled: parent passes `index`, `onPrev`, `onNext` (auto-advance lives in
+ * the client wrapper). Server-safe (no state). Tokens-only. Issue #971.
  */
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
 export interface UniverseHeroSlide {
-  /** Overline text, e.g. "THE ASHEN EXORCIST". Shown in gold caps above title. */
+  /** Overline text, e.g. "THE ASHEN EXORCIST". */
   overline: string;
-  /** Big title text, e.g. "LOCKE". Shown in font-display serif caps. */
+  /** Big title text, e.g. "LOCKE". */
   title: string;
   /** Full splash art URL. Use championSplashUrl() from @low/fixtures. */
   splashUrl: string;
@@ -36,323 +29,160 @@ export interface UniverseHeroSlide {
 }
 
 export interface UniverseHeroCarouselProps {
-  /** Array of hero slides. */
   slides: UniverseHeroSlide[];
   /** Currently active slide index (0-based). Controlled by parent. */
   index: number;
-  /** Fired when the prev arrow is clicked. */
   onPrev?: () => void;
-  /** Fired when the next arrow is clicked. */
   onNext?: () => void;
-  /** Fired when the current slide's title/crest area is clicked. */
   onSelect?: (index: number) => void;
 }
 
-// ---------------------------------------------------------------------------
-// Sub-components
-// ---------------------------------------------------------------------------
-
-/** Crest ornament — decorative diamond/wing SVG above the overline. */
-function CrestOrnament({ gradientId }: { gradientId: string }) {
+/** Content-type crest medallion (champion emblem in a gold ring). */
+function CrestMedallion() {
   return (
-    <svg
+    <span
+      className="flex items-center justify-center rounded-full"
+      style={{
+        width: "38px",
+        height: "38px",
+        border: "1px solid var(--color-universe-title)",
+        backgroundColor: "var(--color-hextech-black)",
+      }}
       aria-hidden="true"
-      width="48"
-      height="32"
-      viewBox="0 0 48 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
     >
-      <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="48" y2="0" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="var(--color-gold-4)" />
-          <stop offset="50%" stopColor="var(--color-gold-2)" />
-          <stop offset="100%" stopColor="var(--color-gold-4)" />
-        </linearGradient>
-      </defs>
-      {/* Central diamond */}
-      <polygon
-        points="24,4 30,16 24,28 18,16"
-        fill={`url(#${gradientId})`}
-        opacity="0.9"
-      />
-      {/* Left wing lines */}
-      <line x1="0" y1="16" x2="16" y2="16" stroke="var(--color-gold-3)" strokeWidth="0.75" opacity="0.6" />
-      <line x1="4" y1="12" x2="16" y2="16" stroke="var(--color-gold-3)" strokeWidth="0.5" opacity="0.4" />
-      <line x1="4" y1="20" x2="16" y2="16" stroke="var(--color-gold-3)" strokeWidth="0.5" opacity="0.4" />
-      {/* Right wing lines */}
-      <line x1="32" y1="16" x2="48" y2="16" stroke="var(--color-gold-3)" strokeWidth="0.75" opacity="0.6" />
-      <line x1="32" y1="16" x2="44" y2="12" stroke="var(--color-gold-3)" strokeWidth="0.5" opacity="0.4" />
-      <line x1="32" y1="16" x2="44" y2="20" stroke="var(--color-gold-3)" strokeWidth="0.5" opacity="0.4" />
-    </svg>
+      <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+        <path d="M9 2 L12.5 5 L12.5 10 Q12.5 14 9 16 Q5.5 14 5.5 10 L5.5 5 Z" fill="var(--color-universe-title)" />
+        <path d="M9 5 L9 12 M7 7 L11 7" stroke="var(--color-hextech-black)" strokeWidth="1" strokeLinecap="round" />
+      </svg>
+    </span>
   );
 }
 
 /** Circular gold-ringed arrow button (prev/next). */
-function ArrowButton({
-  direction,
-  onClick,
-  label,
-  ringId,
-}: {
-  direction: "prev" | "next";
-  onClick?: () => void;
-  label: string;
-  ringId: string;
-}) {
+function ArrowButton({ direction, onClick, label, ringId }: { direction: "prev" | "next"; onClick?: () => void; label: string; ringId: string }) {
   return (
     <button
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="group relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold-4 hover:border-gold-2 transition-[border-color,opacity] duration-150 hover:opacity-90"
-      style={{
-        background: "color-mix(in srgb, var(--color-hextech-black) 50%, transparent)",
-        cursor: "pointer",
-        outline: "none",
-      }}
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gold-4 transition-[border-color,background-color] duration-150 hover:border-gold-2"
+      style={{ background: "color-mix(in srgb, var(--color-hextech-black) 45%, transparent)", cursor: "pointer" }}
     >
-      <svg
-        aria-hidden="true"
-        width="14"
-        height="14"
-        viewBox="0 0 14 14"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
         <defs>
           <linearGradient id={ringId} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="var(--color-gold-2)" />
             <stop offset="100%" stopColor="var(--color-gold-4)" />
           </linearGradient>
         </defs>
-        {direction === "prev" ? (
-          <path
-            d="M9 2 L4 7 L9 12"
-            stroke={`url(#${ringId})`}
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        ) : (
-          <path
-            d="M5 2 L10 7 L5 12"
-            stroke={`url(#${ringId})`}
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        )}
+        <path d={direction === "prev" ? "M9 2 L4 7 L9 12" : "M5 2 L10 7 L5 12"} stroke={`url(#${ringId})`} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </button>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Main component
-// ---------------------------------------------------------------------------
-
-/**
- * UniverseHeroCarousel — home page hero splash carousel.
- *
- * Controlled: caller owns `index`, `onPrev`, `onNext`. Server-safe (no state).
- * Tokens-only — all colors via var(--color-*) or color-mix.
- */
-export function UniverseHeroCarousel({
-  slides,
-  index,
-  onPrev,
-  onNext,
-  onSelect,
-}: UniverseHeroCarouselProps) {
-  const crestGradId = useId();
+export function UniverseHeroCarousel({ slides, index, onPrev, onNext, onSelect }: UniverseHeroCarouselProps) {
   const prevRingId = useId();
   const nextRingId = useId();
+  const plateId = useId();
 
   if (!slides.length) return null;
-
-  // Safe indexing — slides is non-empty after the guard above.
-  const safeIndex = ((index % slides.length) + slides.length) % slides.length;
+  const n = slides.length;
+  const safeIndex = ((index % n) + n) % n;
   const current = slides[safeIndex] as UniverseHeroSlide;
-  const prevIdx = ((safeIndex - 1) + slides.length) % slides.length;
-  const nextIdx = (safeIndex + 1) % slides.length;
-  const prevSlide = slides[prevIdx] as UniverseHeroSlide;
-  const nextSlide = slides[nextIdx] as UniverseHeroSlide;
-  const showPeek = slides.length > 1;
+  const prevSlide = slides[(safeIndex - 1 + n) % n] as UniverseHeroSlide;
+  const nextSlide = slides[(safeIndex + 1) % n] as UniverseHeroSlide;
+  const multi = n > 1;
 
   return (
-    <div
-      className="relative w-full overflow-hidden"
-      style={{
-        height: "460px",
-        backgroundColor: "var(--color-universe-bg)",
-      }}
-    >
-      {/* ── Slide animations (CSS; run client-side, honor reduced-motion) ── */}
+    <div className="relative w-full overflow-hidden" style={{ height: "560px", backgroundColor: "var(--color-universe-bg)" }}>
       <style>{`
-        @keyframes uhcFadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes uhcKenBurns { from { transform: scale(1.02) } to { transform: scale(1.12) } }
+        @keyframes uhcKenBurns { from { transform: scale(1.03) } to { transform: scale(1.12) } }
         @keyframes uhcRise { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
-        .uhc-splash { animation: uhcFadeIn 700ms ease-out, uhcKenBurns 9000ms ease-out forwards; transform-origin: 50% 40%; will-change: transform, opacity; }
-        .uhc-rise { animation: uhcRise 600ms ease-out both; }
-        @media (prefers-reduced-motion: reduce) {
-          .uhc-splash { animation: uhcFadeIn 200ms ease-out; transform: none; }
-          .uhc-rise { animation: none; }
-        }
+        .uhc-center { animation: uhcKenBurns 9000ms ease-out forwards; transform-origin: 50% 40%; }
+        .uhc-plate { animation: uhcRise 500ms ease-out both; }
+        @media (prefers-reduced-motion: reduce) { .uhc-center { animation: none } .uhc-plate { animation: none } }
       `}</style>
 
-      {/* ── Splash art — full-bleed, object-cover (crossfade in + slow Ken Burns zoom) ── */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        key={safeIndex}
-        src={current.splashUrl}
-        alt={current.title}
-        className="uhc-splash absolute inset-0 h-full w-full object-cover object-top"
-      />
-
-      {/* ── Dark vignette — left edge ── */}
-      <div
-        className="pointer-events-none absolute inset-y-0 left-0 w-1/3"
-        style={{
-          background:
-            "linear-gradient(to right, color-mix(in srgb, var(--color-hextech-black) 85%, transparent) 0%, transparent 100%)",
-        }}
-        aria-hidden="true"
-      />
-      {/* ── Dark vignette — right edge ── */}
-      <div
-        className="pointer-events-none absolute inset-y-0 right-0 w-1/3"
-        style={{
-          background:
-            "linear-gradient(to left, color-mix(in srgb, var(--color-hextech-black) 85%, transparent) 0%, transparent 100%)",
-        }}
-        aria-hidden="true"
-      />
-      {/* ── Dark vignette — bottom edge ── */}
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5"
-        style={{
-          background:
-            "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 90%, transparent) 0%, transparent 100%)",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* ── Prev/Next peek titles — far left / far right ── */}
-      {showPeek && (
+      {/* ── Desaturated neighbor splashes (3-up coverflow) ── */}
+      {multi && (
         <>
-          {/* Prev slide title peek — far left (title only, no overline per ref) */}
-          <div
-            className="absolute left-4 top-1/2 flex -translate-y-1/2 flex-col items-start"
-            style={{ opacity: 0.35 }}
-            aria-hidden="true"
-          >
-            <p
-              className="font-display text-xs uppercase"
-              style={{
-                color: "var(--color-universe-story-ink)",
-                letterSpacing: "0.06em",
-              }}
-            >
-              {prevSlide.title}
-            </p>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img key={`p${safeIndex}`} src={prevSlide.splashUrl} alt="" aria-hidden="true"
+            className="absolute inset-y-0 left-0 h-full object-cover"
+            style={{ width: "32%", filter: "grayscale(1) brightness(0.3)", objectPosition: "center top" }} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img key={`n${safeIndex}`} src={nextSlide.splashUrl} alt="" aria-hidden="true"
+            className="absolute inset-y-0 right-0 h-full object-cover"
+            style={{ width: "32%", filter: "grayscale(1) brightness(0.3)", objectPosition: "center top" }} />
+        </>
+      )}
 
-          {/* Next slide title peek — far right (title only, no overline per ref) */}
-          <div
-            className="absolute right-4 top-1/2 flex -translate-y-1/2 flex-col items-end"
-            style={{ opacity: 0.35 }}
-            aria-hidden="true"
-          >
-            <p
-              className="font-display text-xs uppercase"
-              style={{
-                color: "var(--color-universe-story-ink)",
-                letterSpacing: "0.06em",
-              }}
-            >
-              {nextSlide.title}
-            </p>
+      {/* ── Center splash — full colour, Ken Burns ── */}
+      <div className="absolute inset-y-0 overflow-hidden" style={{ left: "50%", transform: "translateX(-50%)", width: multi ? "42%" : "100%" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img key={`c${safeIndex}`} src={current.splashUrl} alt={current.title} className="uhc-center h-full w-full object-cover" style={{ objectPosition: "center top" }} />
+        {/* soft edge blend into the grayscale neighbors */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-10" style={{ background: "linear-gradient(to right, var(--color-universe-bg), transparent)" }} aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10" style={{ background: "linear-gradient(to left, var(--color-universe-bg), transparent)" }} aria-hidden="true" />
+      </div>
+
+      {/* bottom vignette so the nameplate reads */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2" style={{ background: "linear-gradient(to top, var(--color-universe-bg) 0%, transparent 100%)" }} aria-hidden="true" />
+
+      {/* ── Faded neighbor titles at far edges ── */}
+      {multi && (
+        <>
+          <p className="absolute left-8 top-[46%] font-display uppercase" style={{ color: "var(--color-universe-title)", opacity: 0.35, fontSize: "14px", letterSpacing: "3px" }} aria-hidden="true">{prevSlide.title}</p>
+          <p className="absolute right-8 top-[46%] font-display uppercase" style={{ color: "var(--color-universe-title)", opacity: 0.35, fontSize: "14px", letterSpacing: "3px" }} aria-hidden="true">{nextSlide.title}</p>
+        </>
+      )}
+
+      {/* ── Arrows on the center splash edges ── */}
+      {multi && (
+        <>
+          <div className="absolute top-[42%] -translate-y-1/2" style={{ left: "31%" }}>
+            <ArrowButton direction="prev" onClick={onPrev} label="Previous slide" ringId={prevRingId} />
+          </div>
+          <div className="absolute top-[42%] -translate-y-1/2" style={{ right: "31%" }}>
+            <ArrowButton direction="next" onClick={onNext} label="Next slide" ringId={nextRingId} />
           </div>
         </>
       )}
 
-      {/* ── Arrow buttons — centered vertically, near left and right edges ── */}
-      {showPeek && (
-        <>
-          <div className="absolute left-[130px] top-1/2 -translate-y-1/2">
-            <ArrowButton
-              direction="prev"
-              onClick={onPrev}
-              label="Previous slide"
-              ringId={prevRingId}
-            />
-          </div>
-          <div className="absolute right-[130px] top-1/2 -translate-y-1/2">
-            <ArrowButton
-              direction="next"
-              onClick={onNext}
-              label="Next slide"
-              ringId={nextRingId}
-            />
-          </div>
-        </>
-      )}
-
-      {/* ── Centered text block — crest + overline + title + underline ── */}
+      {/* ── Angular gold nameplate panel — overlaps bottom center ── */}
       <a
-        key={safeIndex}
         href={current.href ?? "#"}
-        onClick={
-          onSelect
-            ? (e) => {
-                e.preventDefault();
-                onSelect(index);
-              }
-            : undefined
-        }
-        className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-1.5"
-        style={{ textDecoration: "none" }}
+        onClick={onSelect ? (e) => { e.preventDefault(); onSelect(index); } : undefined}
+        className="uhc-plate absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center"
+        style={{ width: "480px", textDecoration: "none" }}
         aria-label={`${current.title} — ${current.overline}`}
       >
-        {/* Crest ornament */}
-        <CrestOrnament gradientId={crestGradId} />
+        {/* SVG frame: notched top + dark fill + gold outline */}
+        <svg viewBox="0 0 480 184" width="480" height="184" className="absolute inset-0" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id={plateId} x1="0" y1="0" x2="480" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="var(--color-gold-4)" />
+              <stop offset="50%" stopColor="var(--color-gold-2)" />
+              <stop offset="100%" stopColor="var(--color-gold-4)" />
+            </linearGradient>
+          </defs>
+          <path d="M2,20 L168,20 L200,3 L280,3 L312,20 L478,20 L478,182 L2,182 Z"
+            fill="var(--color-universe-bg)" fillOpacity="0.96"
+            stroke={`url(#${plateId})`} strokeWidth="1.5" />
+        </svg>
 
-        {/* Overline — gold caps, small, letter-spaced (rises in on slide change) */}
-        <p
-          className="uhc-rise text-[11px] uppercase"
-          style={{
-            color: "var(--color-gold-2)",
-            fontFamily: "var(--font-body)",
-            letterSpacing: "0.16em",
-            animationDelay: "120ms",
-            textShadow:
-              "0 1px 6px color-mix(in srgb, var(--color-hextech-black) 70%, transparent)",
-          }}
-        >
-          {current.overline}
-        </p>
-
-        {/* Big title — font-display serif caps (rises in, staggered after overline) */}
-        <p
-          className="uhc-rise font-display text-4xl uppercase leading-none"
-          style={{
-            color: "var(--color-universe-story-ink)",
-            letterSpacing: "0.08em",
-            animationDelay: "220ms",
-            textShadow:
-              "0 2px 12px color-mix(in srgb, var(--color-hextech-black) 60%, transparent)",
-          }}
-        >
-          {current.title}
-        </p>
-
-        {/* Thin gold underline bar */}
-        <div
-          className="mt-1 h-px w-24"
-          style={{ backgroundColor: "var(--color-gold-3)" }}
-          aria-hidden="true"
-        />
+        {/* Content over the frame */}
+        <div className="relative flex flex-col items-center px-6 pt-3 pb-6" style={{ minHeight: "184px", justifyContent: "center" }}>
+          <CrestMedallion />
+          <p className="mt-3 text-center uppercase" style={{ fontSize: "14px", fontWeight: 400, color: "var(--color-universe-title)", letterSpacing: "4px", fontFamily: "var(--font-body)" }}>
+            {current.overline}
+          </p>
+          <p className="mt-2 text-center font-display uppercase" style={{ fontSize: "30px", fontWeight: 400, color: "var(--color-universe-overline)", letterSpacing: "3px", lineHeight: 1 }}>
+            {current.title}
+          </p>
+          <div className="mt-3 h-px w-16" style={{ backgroundColor: "var(--color-universe-overline)" }} aria-hidden="true" />
+        </div>
       </a>
     </div>
   );
