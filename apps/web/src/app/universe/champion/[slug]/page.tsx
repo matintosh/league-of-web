@@ -256,6 +256,7 @@ export default async function ChampionBioPage({ params }: Props) {
         <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
           {champ.stories.map((story) => (
             <UniverseStoryCard
+              variant="badge"
               key={story.id}
               art={story.art}
               overline={story.overline}

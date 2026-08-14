@@ -212,6 +212,7 @@ export function ExploreClient() {
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {sorted.map((card) => (
             <UniverseStoryCard
+              variant="badge"
               key={card.id}
               art={card.art}
               overline={card.overline}

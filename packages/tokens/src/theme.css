@@ -359,6 +359,8 @@
   --color-universe-story-ink:    #e8e0d0;
   --color-universe-badge-story:  #1a3a2a;
   --color-universe-badge-comic:  #1a2a3a;
+  --color-universe-overline:     #937341; /* home story-card overline (rgb 147,115,65, from live site) */
+  --color-universe-title:        #c4b998; /* home story-card title (rgb 196,185,152, from live site) */
   --color-universe-nav-text:     #f0f0ee;
   --color-universe-cta-from:     #2992c5;
   --color-universe-cta-to:       #14b6da;
@@ -669,6 +671,8 @@
     --color-universe-story-ink:    #e8e0d0;
     --color-universe-badge-story:  #1a3a2a;
     --color-universe-badge-comic:  #1a2a3a;
+    --color-universe-overline:     #937341;
+    --color-universe-title:        #c4b998;
     --color-universe-nav-text:     #f0f0ee;
     --color-universe-cta-from:     #2992c5;
     --color-universe-cta-to:       #14b6da;

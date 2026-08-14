@@ -180,6 +180,8 @@ export const palette = {
   universeBadgeStory: "#1a3a2a",
   /** Dark blue badge fill for comic page-count chip */
   universeBadgeComic: "#1a2a3a",
+  universeOverline: "#937341",
+  universeTitle: "#c4b998",
   /** Near-white nav link + SIGN IN text color (#976) */
   universeNavText: "#f0f0ee",
   /** PLAY NOW pill gradient left stop — cooler cyan (#977) */

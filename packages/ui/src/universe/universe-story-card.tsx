@@ -1,29 +1,20 @@
 /**
- * UniverseStoryCard — story/article card from the Universe Explore grid and
- * LATEST section on universe.leagueoflegends.com.
+ * UniverseStoryCard — story/article card on universe.leagueoflegends.com.
  *
- * Structure (reverted from wrong #973 overlay to correct below-art body panel):
- *   ┌──────────────────────────────┐
- *   │  Art (16:9 aspect ratio)     │  ← object-cover, zoom on hover via CSS group
- *   ├──────────────────────────────┤
- *   │  Overline (gold, small caps) │  ← dark body panel below the art
- *   │  TITLE BEAUFORT CAPS         │
- *   │  [badge] ·············[date] │  ← bottom row in body panel
- *   └──────────────────────────────┘
+ * TWO real variants (values extracted from the live site via getComputedStyle):
  *
- * When className includes "h-full" (tall grid cell / row-span-2), the card is
- * flex-col and the art section grows to fill available height above the body.
+ *  variant="crest" — HOME "LATEST"/"FEATURED" card:
+ *    art (framed background-image) → centered gold CREST MEDALLION straddling the
+ *    art/body seam → dark body with CENTERED overline (12px/700/#937341/Spiegel)
+ *    + title (14px/500/#c4b998/Beaufort). On hover the body expands to reveal a
+ *    centered "EXPLORE →" row above a gold hairline, and a gold border appears.
  *
- * Whole card is a link. Hover: art zooms + card lifts (pure CSS, no state).
+ *  variant="badge" — EXPLORE page card:
+ *    art (object-cover) → dark body with left overline + title + a green
+ *    content-type badge ("Short Story" / "N Pages" / "Watch" / "Listen").
  *
- * Badge variants:
- *   "story"  → "Short Story" green pill (book icon + text)
- *   "comic"  → page-count chip (book icon + text, blue fill)
- *   "video"  → "Watch" pill (play icon)
- *   "music"  → "Listen" pill (music note icon)
- *
- * Server-safe — no 'use client'. Hover handled via CSS group-hover utilities.
- * Props-in / callbacks-out. Tokens-only. Issues #968, #973, #975.
+ * Whole card is a link. Server-safe (no 'use client'); all hover via CSS
+ * group-hover. Props-in / callbacks-out. Tokens-only. Issues #968, #973, #975.
  */
 
 // ---------------------------------------------------------------------------
@@ -31,42 +22,74 @@
 // ---------------------------------------------------------------------------
 
 export type UniverseStoryKind = "story" | "comic" | "video" | "music";
+export type UniverseStoryVariant = "crest" | "badge";
 
 export interface UniverseStoryCardProps {
   /** Art thumbnail URL — use championSplashUrl() from @low/fixtures for demos. */
   art: string;
-  /** Region/champion overline label, e.g. "LeBlanc" or "Piltover". */
+  /** Region/champion overline label, e.g. "The Unsundered". */
   overline: string;
-  /** Story/article title text. */
+  /** Story/article title text, e.g. "Zaahen". */
   title: string;
   /**
-   * Content kind — drives badge icon and color.
-   * @default "story"
+   * Card variant. "crest" = home LATEST/FEATURED (medallion, centered, hover→EXPLORE);
+   * "badge" = Explore page (green content-type badge, left-aligned). @default "crest"
    */
+  variant?: UniverseStoryVariant;
+  /** Content kind — drives the badge (badge variant only). @default "story" */
   kind?: UniverseStoryKind;
-  /**
-   * Badge label text.
-   * Defaults: story → "Short Story", comic → "8 Pages", video → "Watch", music → "Listen".
-   */
+  /** Badge label override (badge variant). */
   badgeText?: string;
-  /**
-   * Optional publish date string, e.g. "Mar 5, 2025". Displayed at bottom-right of body.
-   */
+  /** Publish date (badge variant), e.g. "Mar 5, 2025". */
   date?: string;
+  /** Background-position for the framed art (crest variant). @default "center 25%" */
+  artPosition?: string;
   /** Link href. @default "#" */
   href?: string;
-  /**
-   * Additional CSS class names applied to the root anchor element.
-   * Use "h-full" to make the card fill a tall grid cell (e.g. row-span-2). #975
-   */
+  /** Extra classes on the root anchor. Use "h-full" to fill a tall grid cell (#975). */
   className?: string;
   /** Callback fired when the card is clicked. */
   onSelect?: () => void;
 }
 
 // ---------------------------------------------------------------------------
-// Badge icons (inline SVG, no external deps)
+// Crest medallion — content-type emblem in a gold ring (home variant)
 // ---------------------------------------------------------------------------
+
+function CrestMedallion() {
+  return (
+    <span
+      className="flex items-center justify-center rounded-full"
+      style={{
+        width: "40px",
+        height: "40px",
+        border: "1px solid var(--color-universe-overline)",
+        backgroundColor: "var(--color-universe-card-bg)",
+      }}
+      aria-hidden="true"
+    >
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        {/* Stylised hextech crest glyph */}
+        <path
+          d="M9 2 L12.5 5 L12.5 10 Q12.5 14 9 16 Q5.5 14 5.5 10 L5.5 5 Z"
+          fill="var(--color-universe-overline)"
+        />
+        <path d="M9 5 L9 12 M7 7 L11 7" stroke="var(--color-universe-card-bg)" strokeWidth="1" strokeLinecap="round" />
+      </svg>
+    </span>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Badge (explore variant)
+// ---------------------------------------------------------------------------
+
+const KIND_DEFAULTS: Record<UniverseStoryKind, string> = {
+  story: "Short Story",
+  comic: "8 Pages",
+  video: "Watch",
+  music: "Listen",
+};
 
 function BookIcon() {
   return (
@@ -77,7 +100,6 @@ function BookIcon() {
     </svg>
   );
 }
-
 function PlayIcon() {
   return (
     <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -85,7 +107,6 @@ function PlayIcon() {
     </svg>
   );
 }
-
 function MusicIcon() {
   return (
     <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -96,41 +117,18 @@ function MusicIcon() {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Badge
-// ---------------------------------------------------------------------------
-
-const KIND_DEFAULTS: Record<UniverseStoryKind, string> = {
-  story: "Short Story",
-  comic: "8 Pages",
-  video: "Watch",
-  music: "Listen",
-};
-
-interface BadgeProps {
-  kind: UniverseStoryKind;
-  text: string;
-}
-
-function StoryBadge({ kind, text }: BadgeProps) {
+function StoryBadge({ kind, text }: { kind: UniverseStoryKind; text: string }) {
   const bgColor =
     kind === "comic"
       ? "var(--color-universe-badge-comic)"
       : kind === "story"
         ? "var(--color-universe-badge-story)"
         : "color-mix(in srgb, var(--color-hextech-black) 55%, transparent)";
-
-  const Icon =
-    kind === "video" ? PlayIcon : kind === "music" ? MusicIcon : BookIcon;
-
+  const Icon = kind === "video" ? PlayIcon : kind === "music" ? MusicIcon : BookIcon;
   return (
     <div
       className="flex items-center gap-1 rounded-sm px-2 py-0.5 text-[10px] uppercase tracking-[0.08em]"
-      style={{
-        backgroundColor: bgColor,
-        color: "var(--color-gold-1)",
-        fontFamily: "var(--font-body)",
-      }}
+      style={{ backgroundColor: bgColor, color: "var(--color-gold-1)", fontFamily: "var(--font-body)" }}
     >
       <Icon />
       <span>{text}</span>
@@ -142,101 +140,145 @@ function StoryBadge({ kind, text }: BadgeProps) {
 // Component
 // ---------------------------------------------------------------------------
 
-/**
- * UniverseStoryCard — story/article card for the Universe Explore grid.
- *
- * Presentational, server-safe (no 'use client'). Hover handled via CSS
- * group-hover utilities on the anchor — no useState needed.
- * Tokens-only — no raw hex colors outside packages/tokens.
- *
- * Layout: art on top (16:9), dark body panel below with overline + title +
- * badge/date row. When h-full, card is flex-col with art growing to fill.
- */
 export function UniverseStoryCard({
   art,
   overline,
   title,
+  variant = "crest",
   kind = "story",
   badgeText,
   date,
+  artPosition = "center 25%",
   href = "#",
   className,
   onSelect,
 }: UniverseStoryCardProps) {
-  const badge = badgeText ?? KIND_DEFAULTS[kind];
   const isTall = className?.includes("h-full");
+  const onClick = onSelect
+    ? (e: React.MouseEvent) => {
+        e.preventDefault();
+        onSelect();
+      }
+    : undefined;
 
+  // ── EXPLORE-PAGE VARIANT (green badge, left-aligned, object-cover art) ──
+  if (variant === "badge") {
+    const badge = badgeText ?? KIND_DEFAULTS[kind];
+    return (
+      <a
+        href={href}
+        onClick={onClick}
+        className={`group block overflow-hidden rounded-sm transition-transform duration-300 hover:-translate-y-0.5${isTall ? " flex flex-col" : ""}${className ? ` ${className}` : ""}`}
+        style={{ textDecoration: "none" }}
+        aria-label={`${title} — ${overline}`}
+      >
+        <div className={`relative overflow-hidden${isTall ? " flex-1 min-h-0" : ""}`} style={isTall ? undefined : { aspectRatio: "16 / 9" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={art} alt={title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        </div>
+        <div className="px-3 pt-2 pb-3" style={{ backgroundColor: "color-mix(in srgb, var(--color-hextech-black) 80%, var(--color-universe-bg) 20%)" }}>
+          <p className="truncate text-[10px] uppercase tracking-[0.1em]" style={{ color: "var(--color-gold-2)", fontFamily: "var(--font-body)" }}>{overline}</p>
+          <p className="mt-1 line-clamp-2 font-display text-sm uppercase leading-tight" style={{ color: "var(--color-universe-story-ink)" }}>{title}</p>
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <StoryBadge kind={kind} text={badge} />
+            {date && <span className="shrink-0 text-[10px] tabular-nums" style={{ color: "var(--color-universe-story-ink)", fontFamily: "var(--font-body)", opacity: 0.55 }}>{date}</span>}
+          </div>
+        </div>
+      </a>
+    );
+  }
+
+  // ── HOME "CREST" VARIANT (medallion, centered, hover→EXPLORE) ──
   return (
     <a
       href={href}
-      onClick={
-        onSelect
-          ? (e) => {
-              e.preventDefault();
-              onSelect();
-            }
-          : undefined
-      }
-      className={`group block overflow-hidden rounded-sm transition-transform duration-300 hover:-translate-y-0.5${isTall ? " flex flex-col" : ""}${className ? ` ${className}` : ""}`}
-      style={{ textDecoration: "none" }}
+      onClick={onClick}
+      className={`group flex flex-col overflow-hidden transition-colors duration-200${className ? ` ${className}` : ""}`}
+      style={{ textDecoration: "none", border: "1px solid transparent", ["--tw-hover-border" as string]: "" }}
       aria-label={`${title} — ${overline}`}
     >
-      {/* Art section — 16:9 or flex-grow when tall */}
-      <div
-        className={`relative overflow-hidden${isTall ? " flex-1 min-h-0" : ""}`}
-        style={isTall ? undefined : { aspectRatio: "16 / 9" }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={art}
-          alt={title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-      </div>
+      <style>{`
+        .group:hover .usc-crest-border { border-color: var(--color-universe-title) !important; }
+      `}</style>
 
-      {/* Body panel — dark surface below the art */}
+      {/* Framed art — background-image + position, like the live site */}
       <div
-        className="px-3 pt-2 pb-3"
+        className={`usc-crest-border relative${isTall ? " flex-1 min-h-0" : ""}`}
         style={{
-          backgroundColor: "color-mix(in srgb, var(--color-hextech-black) 80%, var(--color-universe-bg) 20%)",
+          ...(isTall ? {} : { aspectRatio: "5 / 4" }),
+          backgroundImage: `url(${art})`,
+          backgroundSize: "cover",
+          backgroundPosition: artPosition,
+          border: "1px solid transparent",
+          borderBottom: "none",
+        }}
+      />
+
+      {/* Body panel — centered crest medallion straddling seam, overline, title */}
+      <div
+        className="usc-crest-border relative flex flex-col items-center px-4 pb-4"
+        style={{
+          backgroundColor: "var(--color-universe-card-bg)",
+          border: "1px solid transparent",
+          borderTop: "none",
         }}
       >
-        {/* Overline — region/champion, gold-2, small caps, letter-spaced */}
+        {/* Crest medallion — pulled up to straddle the art/body seam */}
+        <div style={{ marginTop: "-20px" }}>
+          <CrestMedallion />
+        </div>
+
+        {/* Overline — dark gold, centered, 700, Spiegel */}
         <p
-          className="truncate text-[10px] uppercase tracking-[0.1em]"
+          className="mt-2 text-center uppercase"
           style={{
-            color: "var(--color-gold-2)",
+            fontSize: "12px",
+            fontWeight: 700,
+            color: "var(--color-universe-overline)",
+            letterSpacing: "2px",
             fontFamily: "var(--font-body)",
           }}
         >
           {overline}
         </p>
 
-        {/* Title — Beaufort caps, near-white */}
+        {/* Title — warm cream, centered, Beaufort */}
         <p
-          className="mt-1 line-clamp-2 font-display text-sm uppercase leading-tight"
-          style={{ color: "var(--color-universe-story-ink)" }}
+          className="mt-1 text-center font-display uppercase"
+          style={{
+            fontSize: "14px",
+            fontWeight: 500,
+            color: "var(--color-universe-title)",
+            letterSpacing: "2px",
+          }}
         >
           {title}
         </p>
 
-        {/* Bottom row: badge (left) + date (right) */}
-        <div className="mt-2 flex items-center justify-between gap-2">
-          <StoryBadge kind={kind} text={badge} />
-          {date && (
-            <span
-              className="shrink-0 text-[10px] tabular-nums"
-              style={{
-                color: "var(--color-universe-story-ink)",
-                fontFamily: "var(--font-body)",
-                opacity: 0.55,
-              }}
+        {/* EXPLORE row — collapsed, expands on hover (server-safe CSS) */}
+        <div
+          className="grid w-full overflow-hidden transition-all duration-300"
+          style={{ gridTemplateRows: "0fr" }}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div
+              className="mt-3 flex items-center justify-center gap-2 pt-3"
+              style={{ borderTop: "1px solid color-mix(in srgb, var(--color-universe-overline) 45%, transparent)" }}
             >
-              {date}
-            </span>
-          )}
+              <span
+                className="uppercase"
+                style={{ fontSize: "11px", fontWeight: 500, color: "var(--color-universe-overline)", letterSpacing: "3.3px", fontFamily: "var(--font-display)" }}
+              >
+                Explore
+              </span>
+              <span style={{ color: "var(--color-universe-overline)", fontSize: "11px" }}>→</span>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Hover: expand the EXPLORE row (grid-rows 0fr → 1fr) */}
+      <style>{`.group:hover > div > .grid { grid-template-rows: 1fr !important; }`}</style>
     </a>
   );
 }
