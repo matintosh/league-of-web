@@ -80,40 +80,51 @@ export function UniverseChampionCard({
         className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
       />
 
-      {/* Dark bottom gradient scrim — covers bottom ~50% for text legibility */}
+      {/* Soft gradient behind the panel so the seam reads over bright splashes */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3"
         style={{
           background:
-            "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 95%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 70%, transparent) 50%, transparent 100%)",
+            "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 70%, transparent) 0%, transparent 100%)",
         }}
         aria-hidden="true"
       />
 
-      {/* Text overlay — region overline + champion name */}
-      <div className="absolute inset-x-0 bottom-0 px-3 pb-4">
-        {/* Region overline — gold-2, small caps, letter-spaced */}
+      {/*
+        Name/faction panel — real values (extract_styles on live champions page,
+        `copy_xxN7`): translucent near-black bg rgba(10,10,12,0.9), border-top 1px
+        gold #937341 seam, name 14px/500/#937341/2px tracking (h1), faction below (h2).
+      */}
+      <div
+        className="absolute inset-x-0 bottom-0 px-4 pt-3 pb-4"
+        style={{
+          backgroundColor: "color-mix(in srgb, var(--color-hextech-black) 90%, transparent)",
+          borderTop: "1px solid var(--color-universe-overline)",
+        }}
+      >
+        {/* Champion name — Beaufort caps, dark gold #937341 */}
         <p
-          className="mb-1 truncate text-[10px] uppercase"
+          className="truncate font-display uppercase leading-tight"
           style={{
-            color: "var(--color-gold-2)",
-            fontFamily: "var(--font-body)",
-            letterSpacing: "0.14em",
-          }}
-        >
-          {region}
-        </p>
-        {/* Champion name — font-display serif caps, gold-3 dark gold (#989) */}
-        <p
-          className="font-display text-base uppercase leading-tight"
-          style={{
-            color: "var(--color-gold-3)",
+            color: "var(--color-universe-overline)",
+            fontSize: "14px",
             fontWeight: 500,
-            letterSpacing: "0.06em",
-            textShadow: "0 1px 4px color-mix(in srgb, var(--color-hextech-black) 60%, transparent)",
+            letterSpacing: "2px",
           }}
         >
           {name}
+        </p>
+        {/* Faction — muted, small caps, below the name */}
+        <p
+          className="mt-0.5 truncate uppercase"
+          style={{
+            color: "color-mix(in srgb, var(--color-universe-story-ink) 55%, transparent)",
+            fontFamily: "var(--font-body)",
+            fontSize: "10px",
+            letterSpacing: "0.12em",
+          }}
+        >
+          {region}
         </p>
       </div>
     </a>
