@@ -18,3 +18,40 @@ For each component box in a spec, two artifacts are produced:
 4. REVIEW diff agent measures the built component vs the crop.
 
 Regenerate any time: `python3 scripts/annotate_refs.py docs/reference/specs/*.json`
+
+---
+
+## HYBRID FIDELITY METHOD (all review / refine / fidelity agents)
+
+Do NOT eyeball screenshots alone. Every component fidelity pass combines three
+sources, in this order:
+
+**1. REAL STYLES / CODE — source of truth for exact VALUES.**
+Run the live-style extractor against the real site:
+```
+node scripts/extract_styles.mjs <live-url> --anchor "<unique text>" [--hover] [--selector ".cls"]
+```
+It prints the live element's exact computed styles (colors as rgb, border,
+border-radius, padding, gap, font-size/weight/letter-spacing, font-family,
+clip-path, filter), its DOM structure (outerHTML head + child text-node styles),
+and — with `--hover` — the hover-state deltas (e.g. card grows, reveals EXPLORE).
+Build to THESE exact values. Map each colour to the nearest `--color-*` token;
+if none is within tolerance, ADD a token (hex only in packages/tokens/src/theme.css,
+kept in sync across @theme / :root / index.ts).
+
+**2. VISUAL REF — source of truth for LAYOUT / COMPOSITION / VARIANT.**
+Compare against the reference screenshot + the annotated crop in
+docs/reference/components/. This confirms proportions, placement, and — critically
+— WHICH VARIANT applies. The live DOM class names reveal variants (e.g. the home
+"LATEST" card uses a crest medallion + centered text + hover→EXPLORE; the Explore
+page card uses a green content-type badge + left-aligned text — different components).
+
+**3. OUR COMPONENT — what to fix.**
+Measure our deployed `/showcase/<slug>` (or assembled page) with getComputedStyle
+and diff it against #1 and #2.
+
+**Reconcile:** real computed values win for exact styling; the ref screenshot wins
+for layout/variant selection. Only apply/file changes that materially close the
+gap to BOTH. This method caught (2026-08-14) wrong colours, wrong text alignment,
+a missing crest medallion, missing hover behaviour, and a wrong card variant that
+screenshot-only diffs had marked "converged".
