@@ -67,7 +67,7 @@ export function UniverseChampionCard({
       }
       className={`group relative block overflow-hidden transition-[filter] duration-200 hover:brightness-110${className ? ` ${className}` : ""}`}
       style={{
-        aspectRatio: "3 / 4",
+        aspectRatio: "243 / 425",
         textDecoration: "none",
       }}
       aria-label={`${name} — ${region}`}
