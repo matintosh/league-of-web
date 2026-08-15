@@ -53,8 +53,10 @@ const b = await chromium.launch();
 const p = await (await b.newContext({ viewport: { width, height: 900 } })).newPage();
 await p.goto(url, { waitUntil: "domcontentloaded", timeout: 45000 });
 await p.waitForTimeout(wait);
-for (const t of ["Accept", "Accept All", "I Accept"]) {
-  try { await p.click(`text=${t}`, { timeout: 1500 }); break; } catch {}
+if (!has("--no-accept")) {
+  for (const t of ["Accept", "Accept All", "I Accept"]) {
+    try { await p.click(`text=${t}`, { timeout: 1500 }); break; } catch {}
+  }
 }
 await p.waitForTimeout(1500);
 
