@@ -90,94 +90,97 @@ export function UniverseHeroCarousel({ slides, index, onPrev, onNext, onSelect }
   const nextSlide = slides[(safeIndex + 1) % n] as UniverseHeroSlide;
   const multi = n > 1;
 
+  // Real geometry (extract_styles on live site): center splash 900x468 (62.5% at
+  // 1440), neighbours ~270px (19%) each, nameplate 480x188 (#0f0f0f) tucked flush
+  // under the splash (notch overlaps the splash bottom — connected, not floating).
+  const SPLASH_H = 468;
+  const PLATE_TOP = 416; // nameplate top: notch overlaps the splash bottom
+
   return (
-    <div className="relative w-full overflow-hidden" style={{ height: "560px", backgroundColor: "var(--color-universe-bg)" }}>
+    <div className="relative w-full overflow-hidden" style={{ height: "600px", backgroundColor: "var(--color-universe-bg)" }}>
       <style>{`
-        @keyframes uhcKenBurns { from { transform: scale(1.03) } to { transform: scale(1.12) } }
+        @keyframes uhcKenBurns { from { transform: scale(1.03) } to { transform: scale(1.1) } }
         @keyframes uhcRise { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
         .uhc-center { animation: uhcKenBurns 9000ms ease-out forwards; transform-origin: 50% 40%; }
         .uhc-plate { animation: uhcRise 500ms ease-out both; }
         @media (prefers-reduced-motion: reduce) { .uhc-center { animation: none } .uhc-plate { animation: none } }
       `}</style>
 
-      {/* ── Desaturated neighbor splashes (3-up coverflow) ── */}
+      {/* ── Desaturated neighbour splashes (3-up coverflow), ~19% each, splash-height ── */}
       {multi && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img key={`p${safeIndex}`} src={prevSlide.splashUrl} alt="" aria-hidden="true"
-            className="absolute inset-y-0 left-0 h-full object-cover"
-            style={{ width: "32%", filter: "grayscale(1) brightness(0.3)", objectPosition: "center top" }} />
+            className="absolute left-0 top-0 object-cover"
+            style={{ width: "19%", height: `${SPLASH_H}px`, filter: "grayscale(1) brightness(0.28)", objectPosition: "center top" }} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img key={`n${safeIndex}`} src={nextSlide.splashUrl} alt="" aria-hidden="true"
-            className="absolute inset-y-0 right-0 h-full object-cover"
-            style={{ width: "32%", filter: "grayscale(1) brightness(0.3)", objectPosition: "center top" }} />
+            className="absolute right-0 top-0 object-cover"
+            style={{ width: "19%", height: `${SPLASH_H}px`, filter: "grayscale(1) brightness(0.28)", objectPosition: "center top" }} />
         </>
       )}
 
-      {/* ── Center splash — full colour, Ken Burns ── */}
-      <div className="absolute inset-y-0 overflow-hidden" style={{ left: "50%", transform: "translateX(-50%)", width: multi ? "42%" : "100%" }}>
+      {/* ── Center splash — 62.5% wide × 468 tall, full colour, Ken Burns ── */}
+      <div className="absolute top-0 overflow-hidden" style={{ left: "50%", transform: "translateX(-50%)", width: multi ? "62.5%" : "100%", height: `${SPLASH_H}px` }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img key={`c${safeIndex}`} src={current.splashUrl} alt={current.title} className="uhc-center h-full w-full object-cover" style={{ objectPosition: "center top" }} />
-        {/* soft edge blend into the grayscale neighbors */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-10" style={{ background: "linear-gradient(to right, var(--color-universe-bg), transparent)" }} aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-10" style={{ background: "linear-gradient(to left, var(--color-universe-bg), transparent)" }} aria-hidden="true" />
       </div>
 
-      {/* bottom vignette so the nameplate reads */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2" style={{ background: "linear-gradient(to top, var(--color-universe-bg) 0%, transparent 100%)" }} aria-hidden="true" />
+      {/* fade the dark area below the splash */}
+      <div className="pointer-events-none absolute inset-x-0 top-0" style={{ height: `${SPLASH_H}px`, background: `linear-gradient(to top, var(--color-universe-bg) 0%, transparent 22%)` }} aria-hidden="true" />
 
-      {/* ── Faded neighbor titles at far edges ── */}
+      {/* ── Faded neighbour titles — below each neighbour, in the dark ── */}
       {multi && (
         <>
-          <p className="absolute left-8 top-[46%] font-display uppercase" style={{ color: "var(--color-universe-title)", opacity: 0.35, fontSize: "14px", letterSpacing: "3px" }} aria-hidden="true">{prevSlide.title}</p>
-          <p className="absolute right-8 top-[46%] font-display uppercase" style={{ color: "var(--color-universe-title)", opacity: 0.35, fontSize: "14px", letterSpacing: "3px" }} aria-hidden="true">{nextSlide.title}</p>
+          <p className="absolute left-0 w-[19%] text-center font-display uppercase" style={{ top: `${SPLASH_H + 24}px`, color: "var(--color-universe-title)", opacity: 0.3, fontSize: "14px", letterSpacing: "3px" }} aria-hidden="true">{prevSlide.title}</p>
+          <p className="absolute right-0 w-[19%] text-center font-display uppercase" style={{ top: `${SPLASH_H + 24}px`, color: "var(--color-universe-title)", opacity: 0.3, fontSize: "14px", letterSpacing: "3px" }} aria-hidden="true">{nextSlide.title}</p>
         </>
       )}
 
-      {/* ── Arrows on the center splash edges ── */}
+      {/* ── Arrows on the center splash left/right edges ── */}
       {multi && (
         <>
-          <div className="absolute top-[42%] -translate-y-1/2" style={{ left: "31%" }}>
+          <div className="absolute" style={{ top: "196px", left: "20.5%" }}>
             <ArrowButton direction="prev" onClick={onPrev} label="Previous slide" ringId={prevRingId} />
           </div>
-          <div className="absolute top-[42%] -translate-y-1/2" style={{ right: "31%" }}>
+          <div className="absolute" style={{ top: "196px", right: "20.5%" }}>
             <ArrowButton direction="next" onClick={onNext} label="Next slide" ringId={nextRingId} />
           </div>
         </>
       )}
 
-      {/* ── Angular gold nameplate panel — overlaps bottom center ── */}
+      {/* ── Nameplate — 480×188 #0f0f0f, notched top tucked under the splash ── */}
       <a
         href={current.href ?? "#"}
         onClick={onSelect ? (e) => { e.preventDefault(); onSelect(index); } : undefined}
-        className="uhc-plate absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center"
-        style={{ width: "480px", textDecoration: "none" }}
+        className="uhc-plate absolute left-1/2 block -translate-x-1/2"
+        style={{ top: `${PLATE_TOP}px`, width: "480px", height: "188px", textDecoration: "none" }}
         aria-label={`${current.title} — ${current.overline}`}
       >
-        {/* SVG frame: notched top + dark fill + gold outline */}
-        <svg viewBox="0 0 480 184" width="480" height="184" className="absolute inset-0" preserveAspectRatio="none" aria-hidden="true">
+        {/* SVG frame: shallow notched top + near-black fill + subtle gold hairline */}
+        <svg viewBox="0 0 480 188" width="480" height="188" className="absolute inset-0" preserveAspectRatio="none" aria-hidden="true">
           <defs>
             <linearGradient id={plateId} x1="0" y1="0" x2="480" y2="0" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="var(--color-gold-4)" />
-              <stop offset="50%" stopColor="var(--color-gold-2)" />
-              <stop offset="100%" stopColor="var(--color-gold-4)" />
+              <stop offset="0%" stopColor="color-mix(in srgb, var(--color-gold-4) 70%, transparent)" />
+              <stop offset="50%" stopColor="var(--color-gold-3)" />
+              <stop offset="100%" stopColor="color-mix(in srgb, var(--color-gold-4) 70%, transparent)" />
             </linearGradient>
           </defs>
-          <path d="M2,20 L168,20 L200,3 L280,3 L312,20 L478,20 L478,182 L2,182 Z"
-            fill="var(--color-universe-bg)" fillOpacity="0.96"
-            stroke={`url(#${plateId})`} strokeWidth="1.5" />
+          <path d="M1,26 L200,26 L220,8 L260,8 L280,26 L479,26 L479,186 L1,186 Z"
+            fill="var(--color-universe-card-bg)"
+            stroke={`url(#${plateId})`} strokeWidth="1" />
         </svg>
 
-        {/* Content over the frame */}
-        <div className="relative flex flex-col items-center px-6 pt-3 pb-6" style={{ minHeight: "184px", justifyContent: "center" }}>
+        {/* Content — crest at the notch (over the splash seam), then overline/title/underline */}
+        <div className="relative flex h-full flex-col items-center" style={{ paddingTop: "6px" }}>
           <CrestMedallion />
-          <p className="mt-3 text-center uppercase" style={{ fontSize: "14px", fontWeight: 400, color: "var(--color-universe-title)", letterSpacing: "4px", fontFamily: "var(--font-body)" }}>
+          <p className="mt-4 text-center uppercase" style={{ fontSize: "14px", fontWeight: 400, color: "var(--color-universe-title)", letterSpacing: "4px", fontFamily: "var(--font-body)" }}>
             {current.overline}
           </p>
           <p className="mt-2 text-center font-display uppercase" style={{ fontSize: "30px", fontWeight: 400, color: "var(--color-universe-overline)", letterSpacing: "3px", lineHeight: 1 }}>
             {current.title}
           </p>
-          <div className="mt-3 h-px w-16" style={{ backgroundColor: "var(--color-universe-overline)" }} aria-hidden="true" />
+          <div className="mt-4 h-px w-16" style={{ backgroundColor: "var(--color-universe-overline)" }} aria-hidden="true" />
         </div>
       </a>
     </div>
