@@ -146,8 +146,17 @@ export function UniverseCrestDivider({
         <ShieldCrest gradId={uid} />
       )}
 
-      {/* Label — Beaufort caps, wide tracking, gold-1 */}
-      <span className="font-display text-xl uppercase tracking-[6px] text-gold-1 pl-[6px]">
+      {/* Label — real live-site values (extract_styles): 24px / 400 /
+          rgb(196,185,152)=#c4b998 (--color-universe-title) / 7px letter-spacing / Beaufort. */}
+      <span
+        className="font-display uppercase pl-[7px]"
+        style={{
+          fontSize: "24px",
+          fontWeight: 400,
+          color: "var(--color-universe-title)",
+          letterSpacing: "7px",
+        }}
+      >
         {label}
       </span>
 
