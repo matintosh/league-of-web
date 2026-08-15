@@ -111,11 +111,11 @@ export function UniverseFilterTabs({
       <div className="flex items-center gap-1">
         {/* "FILTER BY" label */}
         <span
-          className="mr-4 shrink-0 text-[13px] font-bold uppercase"
+          className="mr-4 shrink-0 text-[15px] font-bold uppercase"
           style={{
-            color: "var(--color-universe-nav-text)",
+            color: "var(--color-gold-1)",
             fontFamily: "var(--font-display)",
-            letterSpacing: "0.1em",
+            letterSpacing: "0.2px",
           }}
         >
           FILTER BY
@@ -129,17 +129,15 @@ export function UniverseFilterTabs({
               key={key}
               type="button"
               onClick={onFilter ? () => onFilter(key) : undefined}
-              className="group relative shrink-0 px-3 py-1.5 text-[13px] uppercase transition-colors duration-150"
+              className="group relative shrink-0 px-3 py-1.5 text-[15px] uppercase transition-colors duration-150"
               style={{
-                color: isActive
-                  ? "var(--color-universe-story-ink)"
-                  : "var(--color-gold-2)",
+                color: isActive ? "var(--color-gold-1)" : "var(--color-universe-title)",
                 background: "none",
                 border: "none",
                 cursor: "pointer",
                 fontFamily: "var(--font-display)",
-                letterSpacing: "0.1em",
-                fontWeight: isActive ? "600" : "400",
+                letterSpacing: "0.2px",
+                fontWeight: 700,
               }}
             >
               {label}
@@ -161,11 +159,11 @@ export function UniverseFilterTabs({
       {/* ── Right: SORT BY label + value + caret ── */}
       <div className="ml-auto flex items-center gap-3">
         <span
-          className="shrink-0 text-[13px] font-bold uppercase"
+          className="shrink-0 text-[15px] font-bold uppercase"
           style={{
-            color: "var(--color-universe-nav-text)",
+            color: "var(--color-gold-1)",
             fontFamily: "var(--font-display)",
-            letterSpacing: "0.1em",
+            letterSpacing: "0.2px",
           }}
         >
           SORT BY
@@ -174,14 +172,14 @@ export function UniverseFilterTabs({
         <button
           type="button"
           onClick={onSortToggle}
-          className="flex items-center gap-1.5 text-[13px] uppercase transition-opacity duration-150 hover:opacity-80"
+          className="flex items-center gap-1.5 text-[15px] uppercase transition-opacity duration-150 hover:opacity-80"
           style={{
-            color: "var(--color-gold-2)",
+            color: "var(--color-universe-title)",
             background: "none",
             border: "none",
             cursor: "pointer",
             fontFamily: "var(--font-display)",
-            letterSpacing: "0.1em",
+            letterSpacing: "0.2px",
           }}
         >
           <span>{sort}</span>
