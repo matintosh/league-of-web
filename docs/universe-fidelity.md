@@ -1,6 +1,6 @@
 # Universe fidelity scorecard
 
-> See docs/fidelity-method.md (hybrid real-styles + real-assets method — applies to all surfaces).
+> See docs/fidelity-method.md (hybrid real-styles + real-assets + geometry/assembled-composition method — applies to all surfaces).
 
 1:1 clone of **universe.leagueoflegends.com/en_us** — the League Universe lore hub.
 Editorial dark/gold site: champion bios, regions, stories, comics. New surface added
