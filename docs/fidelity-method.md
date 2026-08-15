@@ -50,3 +50,13 @@ deploy → verify. Live sources: client/login/launcher = the real League client
 universe = universe.leagueoflegends.com. Where no live web source exists (native
 client screens), the reference screenshots remain the source of truth, but still
 prefer real CDN assets (Data Dragon, CommunityDragon) over hand-drawn icons.
+
+## Assembled composition + geometry (not just component styles)
+
+A component can be pixel-correct in isolation yet wrong in context: floating vs
+flush, wrong width, wrong overlap/connection, wrong spacing. Component-level
+"converged" is NOT sufficient. Always:
+- Extract the REAL geometry (element boxes/positions via getBoundingClientRect,
+  overlaps, container widths) with extract_styles.mjs — do NOT approximate layout.
+- Re-diff the ASSEMBLED page/section on prod against the real composition, not just
+  /showcase/<slug>. Wiring, positioning, and connection deltas only show there.
