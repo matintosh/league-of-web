@@ -167,17 +167,16 @@ export function UniverseChampionBioHero({
       <div className="absolute inset-x-0 bottom-10 flex flex-col items-center text-center px-4">
         {showCrest && <ChampionCrest svgId={svgId} />}
 
-        {/* Champion name — huge Beaufort Heavy serif caps.
-            Ref (universe-live-champion-bio__universe-champion-bio-hero.png):
-            "LUX" renders in warm amber gold, not pale cream — gold-2 (#c8aa6e)
-            matches the reference better than gold-1 (#f0e6d2 pale cream). */}
+        {/* Champion name — real live-site values (extract_styles, h1.title_2YYZ):
+            42px / 500 / rgb(196,185,152)=#c4b998 (--color-universe-title) / 1px tracking.
+            (Corrects earlier guesses of gold-2 amber + weight 900.) */}
         <h1
           className="font-display uppercase leading-none"
           style={{
-            fontSize: "clamp(56px, 6vw, 88px)",
-            fontWeight: 900,
-            letterSpacing: "0.12em",
-            color: "var(--color-gold-2)",
+            fontSize: "clamp(32px, 3vw, 44px)",
+            fontWeight: 500,
+            letterSpacing: "1px",
+            color: "var(--color-universe-title)",
             textShadow:
               "0 2px 24px color-mix(in srgb, var(--color-hextech-black) 70%, transparent)",
           }}
