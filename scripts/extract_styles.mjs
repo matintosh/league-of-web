@@ -61,12 +61,24 @@ await p.waitForTimeout(1500);
 const report = await p.evaluate(
   ({ anchor, selector, STYLE_KEYS, TEXT_KEYS }) => {
     const pick = (el, keys) => { const s = getComputedStyle(el); const o = {}; keys.forEach((k) => (o[k] = s[k])); return o; };
+    // Only consider VISIBLE, rendered elements (skip head/script/style/meta + hidden).
+    const visible = (e) => {
+      const t = e.tagName;
+      if (["SCRIPT", "STYLE", "META", "LINK", "HEAD", "TITLE", "NOSCRIPT"].includes(t)) return false;
+      if (!e.offsetParent && e.tagName !== "BODY") {
+        const s = getComputedStyle(e);
+        if (s.position !== "fixed") return false;
+      }
+      const b = e.getBoundingClientRect();
+      return b.width > 0 && b.height > 0;
+    };
     let el = null;
     if (selector) el = document.querySelector(selector);
     else if (anchor) {
-      const hit = [...document.querySelectorAll("*")].find(
+      const all = [...document.querySelectorAll("*")].filter(visible);
+      const hit = all.find(
         (e) => e.children.length === 0 && e.textContent.trim().toUpperCase() === anchor.toUpperCase(),
-      ) || [...document.querySelectorAll("*")].find((e) => new RegExp(anchor, "i").test(e.textContent) && e.querySelector("img,[style*='background-image']"));
+      ) || all.find((e) => new RegExp(anchor, "i").test(e.textContent) && e.querySelector("img,[style*='background-image']"));
       // climb to the nearest visually-boxed ancestor (border / bg / clip-path)
       el = hit;
       for (let i = 0; i < 5 && el?.parentElement; i++) {
