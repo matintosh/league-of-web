@@ -166,10 +166,16 @@ function UniverseWordmark() {
           opacity="0.85"
         />
       </svg>
-      {/* Universe wordmark stays gold per reference — only nav links/SIGN IN go white */}
+      {/* Universe wordmark — real live-site value (extract_styles): 18px / 700 /
+          rgb(249,249,249) near-white (NOT gold; the earlier polish guessed gold). */}
       <span
-        className="font-display text-sm tracking-widest text-gold-1 uppercase"
-        style={{ letterSpacing: "0.2em" }}
+        className="font-display uppercase"
+        style={{
+          fontSize: "18px",
+          fontWeight: 700,
+          color: "var(--color-universe-nav-text)",
+          letterSpacing: "0.06em",
+        }}
       >
         Universe
       </span>
@@ -311,7 +317,7 @@ export function UniverseTopNav({
                 onMouseEnter={() => setHoveredKey(key)}
                 onMouseLeave={() => setHoveredKey(null)}
                 aria-current={isActive ? "page" : undefined}
-                className="flex items-center gap-1 px-2 py-1 text-[11px] font-body uppercase tracking-[0.12em] transition-colors duration-150"
+                className="flex items-center gap-1 px-2 py-1 text-[13px] font-body uppercase tracking-[0.08em] transition-colors duration-150"
                 style={{
                   color:
                     isActive || isHovered
@@ -320,7 +326,8 @@ export function UniverseTopNav({
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  letterSpacing: "0.12em",
+                  letterSpacing: "0.08em",
+                  fontWeight: 600,
                 }}
               >
                 {label}
