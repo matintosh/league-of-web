@@ -112,7 +112,7 @@ export function UniverseBreadcrumb({ items, onNavigate }: UniverseBreadcrumbProp
     <>
       {/* CSS-only hover for gold-2 → gold-1 on anchor segments */}
       <style>{`
-        .univ-bc-link { color: var(--color-gold-2); }
+        .univ-bc-link { color: var(--color-universe-overline); }
         .univ-bc-link:hover { color: var(--color-gold-1); }
       `}</style>
 
@@ -135,12 +135,12 @@ export function UniverseBreadcrumb({ items, onNavigate }: UniverseBreadcrumbProp
                   <a
                     href={item.href}
                     data-navigate-index={onNavigate ? String(index) : undefined}
-                    className="univ-bc-link uppercase tracking-[0.12em] transition-colors duration-150"
+                    className="univ-bc-link uppercase tracking-[2px] transition-colors duration-150"
                     style={{
-                      fontSize: "11px",
-                      fontFamily: "var(--font-body)",
+                      fontSize: "14px",
+                      fontFamily: "var(--font-display)", fontWeight: 500,
                       textDecoration: "none",
-                      letterSpacing: "0.12em",
+                      letterSpacing: "2px",
                     }}
                   >
                     {item.label.toUpperCase()}
@@ -148,12 +148,12 @@ export function UniverseBreadcrumb({ items, onNavigate }: UniverseBreadcrumbProp
                 ) : isLast ? (
                   <span
                     aria-current="page"
-                    className="uppercase tracking-[0.12em]"
+                    className="uppercase tracking-[2px]"
                     style={{
-                      fontSize: "11px",
+                      fontSize: "14px",
                       color: "var(--color-gold-1)",
-                      fontFamily: "var(--font-body)",
-                      letterSpacing: "0.12em",
+                      fontFamily: "var(--font-display)", fontWeight: 500,
+                      letterSpacing: "2px",
                     }}
                   >
                     {item.label.toUpperCase()}
@@ -161,12 +161,12 @@ export function UniverseBreadcrumb({ items, onNavigate }: UniverseBreadcrumbProp
                 ) : (
                   /* Non-link, non-last segment — muted gold-2 */
                   <span
-                    className="uppercase tracking-[0.12em]"
+                    className="uppercase tracking-[2px]"
                     style={{
-                      fontSize: "11px",
-                      color: "var(--color-gold-2)",
-                      fontFamily: "var(--font-body)",
-                      letterSpacing: "0.12em",
+                      fontSize: "14px",
+                      color: "var(--color-universe-overline)",
+                      fontFamily: "var(--font-display)", fontWeight: 500,
+                      letterSpacing: "2px",
                     }}
                   >
                     {item.label.toUpperCase()}
