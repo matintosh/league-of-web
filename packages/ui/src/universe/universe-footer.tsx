@@ -14,6 +14,8 @@
  * Issues #981.
  */
 
+import { riotFistLogoUrl } from "@low/fixtures";
+
 import { useId } from "react";
 
 // ---------------------------------------------------------------------------
@@ -48,29 +50,18 @@ export interface UniverseFooterProps {
 // ---------------------------------------------------------------------------
 
 function RiotFistLogo({ svgId }: { svgId: string }) {
+  // Real Riot Games fist logo (RiotBar CDN), matching the live footer/nav.
   return (
-    <svg
-      aria-label="Riot Games"
-      role="img"
-      width="28"
-      height="28"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       id={svgId}
-    >
-      {/* Stylised shield/fist silhouette — muted gold */}
-      <path
-        d="M12 2 L20 6 L20 15 Q20 20 12 23 Q4 20 4 15 L4 6 Z"
-        fill="color-mix(in srgb, var(--color-gold-4) 60%, var(--color-universe-bg))"
-      />
-      <path
-        d="M9 10 L9 16 M12 9 L12 16 M15 10 L15 16"
-        stroke="var(--color-universe-bg)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
+      src={riotFistLogoUrl()}
+      alt="Riot Games"
+      width={26}
+      height={28}
+      className="block"
+      style={{ objectFit: "contain" }}
+    />
   );
 }
 
