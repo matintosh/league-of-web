@@ -21,6 +21,8 @@
 // Types
 // ---------------------------------------------------------------------------
 
+import { universeContentIcon } from "@low/fixtures";
+
 export type UniverseStoryKind = "story" | "comic" | "video" | "music";
 export type UniverseStoryVariant = "crest" | "badge";
 
@@ -57,26 +59,18 @@ export interface UniverseStoryCardProps {
 // ---------------------------------------------------------------------------
 
 function CrestMedallion() {
+  // Real content-type crest emblem from the live site (gold ring + champion glyph).
   return (
-    <span
-      className="flex items-center justify-center rounded-full"
-      style={{
-        width: "40px",
-        height: "40px",
-        border: "1px solid var(--color-universe-overline)",
-        backgroundColor: "var(--color-universe-card-bg)",
-      }}
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={universeContentIcon("champion")}
+      alt=""
       aria-hidden="true"
-    >
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        {/* Stylised hextech crest glyph */}
-        <path
-          d="M9 2 L12.5 5 L12.5 10 Q12.5 14 9 16 Q5.5 14 5.5 10 L5.5 5 Z"
-          fill="var(--color-universe-overline)"
-        />
-        <path d="M9 5 L9 12 M7 7 L11 7" stroke="var(--color-universe-card-bg)" strokeWidth="1" strokeLinecap="round" />
-      </svg>
-    </span>
+      width={40}
+      height={40}
+      className="block"
+      style={{ backgroundColor: "var(--color-universe-card-bg)", borderRadius: "50%" }}
+    />
   );
 }
 

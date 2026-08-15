@@ -21,3 +21,4 @@ export * from "./merch";
 export * from "./games";
 export * from "./launcher";
 export * from "./runeterra-map";
+export * from "./universe-assets";

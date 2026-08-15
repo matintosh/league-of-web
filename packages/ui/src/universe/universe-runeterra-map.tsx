@@ -15,7 +15,7 @@
  */
 
 import { useId, useRef, useState, useCallback } from "react";
-import { runeterraPinUrl } from "@low/fixtures";
+import { runeterraPinUrl, regionCrestUrl } from "@low/fixtures";
 import type { RuneterraRegion } from "@low/fixtures";
 
 export interface UniverseRuneterraMapProps {
@@ -195,7 +195,7 @@ export function UniverseRuneterraMap({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={runeterraPinUrl(pin, isHover)}
+                src={regionCrestUrl(r.name) ?? runeterraPinUrl(pin, isHover)}
                 alt=""
                 aria-hidden="true"
                 width={isHover ? 34 : 28}

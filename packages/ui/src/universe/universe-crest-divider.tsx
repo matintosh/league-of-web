@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { universeContentIcon } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -23,30 +24,19 @@ export interface UniverseCrestDividerProps {
 // width. The pip is a fixed-size SVG — no stretching.
 // ---------------------------------------------------------------------------
 
-/** The small rotated square pip centred between the flourish lines. */
+/** The centre crest emblem between the flourish lines — real content-type icon. */
 function DiamondPip() {
   return (
-    <svg
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={universeContentIcon("latest")}
+      alt=""
       aria-hidden="true"
-      width="18"
-      height="18"
-      viewBox="0 0 18 18"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ flexShrink: 0 }}
-    >
-      {/* Centre diamond pip — 6×6 rotated rect */}
-      <rect
-        x="6"
-        y="6"
-        width="6"
-        height="6"
-        rx="0"
-        transform="rotate(45 9 9)"
-        fill="var(--color-gold-3)"
-        opacity="0.9"
-      />
-    </svg>
+      width={26}
+      height={26}
+      className="block shrink-0"
+      style={{ margin: "0 12px" }}
+    />
   );
 }
 

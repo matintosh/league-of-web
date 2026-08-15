@@ -20,6 +20,7 @@
 
 import { useState } from "react";
 import { useId } from "react";
+import { riotFistLogoUrl } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -75,28 +76,17 @@ const NAV_LINKS: {
  * The Universe nav uses white for all chrome except the Universe wordmark.
  */
 function RiotFistLogo() {
+  // Real Riot Games fist logo (RiotBar CDN).
   return (
-    <svg
-      aria-hidden="true"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* Stylised fist / shield silhouette — white fill per ref (#976) */}
-      <path
-        d="M12 2 L20 6 L20 15 Q20 20 12 23 Q4 20 4 15 L4 6 Z"
-        fill="var(--color-universe-nav-text)"
-        opacity="0.9"
-      />
-      <path
-        d="M9 10 L9 16 M12 9 L12 16 M15 10 L15 16"
-        stroke="var(--color-universe-bg)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={riotFistLogoUrl()}
+      alt="Riot Games"
+      width={22}
+      height={24}
+      className="block"
+      style={{ objectFit: "contain" }}
+    />
   );
 }
 

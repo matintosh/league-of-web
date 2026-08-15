@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { universeContentIcon } from "@low/fixtures";
 
 /**
  * UniverseHeroCarousel — home hero coverflow on universe.leagueoflegends.com.
@@ -37,24 +38,19 @@ export interface UniverseHeroCarouselProps {
   onSelect?: (index: number) => void;
 }
 
-/** Content-type crest medallion (champion emblem in a gold ring). */
+/** Content-type crest medallion — real emblem image from the live site. */
 function CrestMedallion() {
   return (
-    <span
-      className="flex items-center justify-center rounded-full"
-      style={{
-        width: "38px",
-        height: "38px",
-        border: "1px solid var(--color-universe-title)",
-        backgroundColor: "var(--color-hextech-black)",
-      }}
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={universeContentIcon("champion")}
+      alt=""
       aria-hidden="true"
-    >
-      <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-        <path d="M9 2 L12.5 5 L12.5 10 Q12.5 14 9 16 Q5.5 14 5.5 10 L5.5 5 Z" fill="var(--color-universe-title)" />
-        <path d="M9 5 L9 12 M7 7 L11 7" stroke="var(--color-hextech-black)" strokeWidth="1" strokeLinecap="round" />
-      </svg>
-    </span>
+      width={38}
+      height={38}
+      className="block"
+      style={{ backgroundColor: "var(--color-hextech-black)", borderRadius: "50%" }}
+    />
   );
 }
 
