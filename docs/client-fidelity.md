@@ -1,3 +1,5 @@
+> **FIDELITY METHOD (applies here too):** follow docs/fidelity-method.md — (1) HYBRID: extract REAL computed styles from the live source via `node scripts/extract_styles.mjs` and build to exact values (not screenshot-only), confirm layout/variant vs the ref, diff assembled pages too; (2) REAL ASSETS: use real CDN logos/icons/crests/art via @low/fixtures helpers, not hand-drawn SVGs. Adopted 2026-08-15 after it corrected many wrong-by-guess values on /universe.
+
 # Client Fidelity Scorecard — the 1:1 ratchet (final sequential surface)
 
 North star: **the Hextech LoL client (`/client` + all its showcase surfaces) is a 1:1 clone of the real League client** vs the reference screenshots in `docs/reference/client-*.png|jpg` (80 refs). The client is the BIGGEST surface — home/lobby/mode-select/champ-select/collection/profile/store/loot/battle-pass/clash/tft/match-found/honor.

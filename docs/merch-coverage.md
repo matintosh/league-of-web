@@ -1,3 +1,5 @@
+> **FIDELITY METHOD (applies here too):** follow docs/fidelity-method.md — (1) HYBRID: extract REAL computed styles from the live source via `node scripts/extract_styles.mjs` and build to exact values (not screenshot-only), confirm layout/variant vs the ref, diff assembled pages too; (2) REAL ASSETS: use real CDN logos/icons/crests/art via @low/fixtures helpers, not hand-drawn SVGs. Adopted 2026-08-15 after it corrected many wrong-by-guess values on /universe.
+
 # Merch Store — Site Map & Coverage
 
 A living **site map** of our **/merch** clone vs the real store at <https://merch.riotgames.com/>.
