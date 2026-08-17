@@ -98,6 +98,8 @@ export const palette = {
   brandFacebook: "#1877f2",
   /** Login page text/icon black */
   loginBlack: "#000000",
+  /** Classic notice banner showcase bg gradient from-stop — darkest gold-brown (#1002) */
+  loginClassicBgFrom: "#2a1f0e",
   /** Arcade event deep purple-navy — root gradient dark stop (issue #187) */
   arcadeBgDark: "#0d0520",
   /** Arcade event deep navy-black — root gradient deep stop (issue #187) */

@@ -17,7 +17,7 @@ export const loginNoticeBannerShowcase: ShowcaseEntry = {
         <div
           data-shot="login-notice-banner"
           className="w-full max-w-sm overflow-hidden"
-          style={{ background: "linear-gradient(135deg, #2a1f0e 0%, #1a1208 100%)" }}
+          style={{ background: "linear-gradient(135deg, var(--color-login-classic-bg-from) 0%, var(--color-login-black) 100%)" }}
         >
           <LoginNoticeBanner text="Split End Transfers Disabled" />
         </div>
@@ -30,7 +30,7 @@ export const loginNoticeBannerShowcase: ShowcaseEntry = {
       render: () => (
         <div
           className="w-full max-w-sm overflow-hidden"
-          style={{ background: "linear-gradient(135deg, #2a1f0e 0%, #1a1208 100%)" }}
+          style={{ background: "linear-gradient(135deg, var(--color-login-classic-bg-from) 0%, var(--color-login-black) 100%)" }}
         >
           <LoginNoticeBanner text="Maintenance window scheduled for 04:00 UTC" />
         </div>
@@ -43,7 +43,7 @@ export const loginNoticeBannerShowcase: ShowcaseEntry = {
       render: () => (
         <div
           className="w-full max-w-sm overflow-hidden"
-          style={{ background: "linear-gradient(135deg, #2a1f0e 0%, #1a1208 100%)" }}
+          style={{ background: "linear-gradient(135deg, var(--color-login-classic-bg-from) 0%, var(--color-login-black) 100%)" }}
         >
           <LoginNoticeBanner text="Service disruption in progress" role="alert" />
         </div>
