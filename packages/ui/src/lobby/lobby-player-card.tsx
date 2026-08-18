@@ -38,10 +38,9 @@ export interface LobbyPlayerCardProps {
 /**
  * LobbyPlayerCard — vertical player card in the pre-game lobby.
  *
- * Filled: shows a 96×96 profile icon with a level pill, gameName#tagLine, and
- * an optional role-picker slot.
- * Empty: dashed border with a + glyph and "INVITE" label; the whole card is
- * a button that calls `onInvite`.
+ * Filled: name at top, circular ~120px profile icon with gold ring + level pill,
+ * and an optional role-picker slot at the bottom.
+ * Empty: circular ~120px button with a + glyph only; calls `onInvite`.
  *
  * Presentational only — props in, callbacks out. No data fetching.
  */
@@ -53,7 +52,7 @@ export function LobbyPlayerCard({
   onInvite,
 }: LobbyPlayerCardProps) {
   // ------------------------------------------------------------------
-  // Empty slot
+  // Empty slot — #1006: circular ~120px button, + glyph only, no "INVITE" text
   // ------------------------------------------------------------------
   if (!summoner) {
     return (
@@ -62,8 +61,8 @@ export function LobbyPlayerCard({
         aria-label="Invite player"
         onClick={onInvite}
         className={[
-          // Size
-          "flex w-[180px] h-[260px] flex-col items-center justify-center gap-3",
+          // Size — circular
+          "flex h-[120px] w-[120px] rounded-full items-center justify-center",
           // Border — dashed, muted
           "border border-dashed border-grey-3",
           // Background
@@ -77,10 +76,6 @@ export function LobbyPlayerCard({
         {/* + glyph */}
         <span className="text-3xl leading-none text-grey-2 select-none" aria-hidden="true">
           +
-        </span>
-        {/* INVITE label */}
-        <span className="font-display text-xs uppercase tracking-widest text-grey-1">
-          INVITE
         </span>
       </button>
     );
@@ -100,17 +95,29 @@ export function LobbyPlayerCard({
         "bg-blue-7 border",
         borderClass,
         // Padding
-        "pt-5 pb-4 px-3 gap-2",
+        "pt-4 pb-4 px-3 gap-2",
       ].join(" ")}
     >
-      {/* Profile icon + level pill */}
-      <div className="relative shrink-0">
+      {/* #1005: Name area at the TOP, above the icon */}
+      <div className="flex w-full min-w-0 flex-col items-center gap-0.5 shrink-0">
+        {/* gameName */}
+        <span className="w-full truncate text-center font-display text-sm uppercase tracking-wide text-gold-1">
+          {summoner.gameName}
+        </span>
+        {/* #tagLine */}
+        <span className="font-body text-xs text-grey-1">
+          #{summoner.tagLine}
+        </span>
+      </div>
+
+      {/* #1004: Profile icon — circular ~120px with gold ring + level pill */}
+      <div className="relative shrink-0 mt-1">
         <img
           src={profileIconSrc}
           alt={summoner.gameName}
-          width={96}
-          height={96}
-          className="h-24 w-24 border border-gold-5 object-cover"
+          width={120}
+          height={120}
+          className="h-[120px] w-[120px] rounded-full border-2 border-gold-4 object-cover"
         />
         {/* Level pill — overlaps the bottom edge of the icon */}
         <span
@@ -122,18 +129,6 @@ export function LobbyPlayerCard({
           ].join(" ")}
         >
           {summoner.level}
-        </span>
-      </div>
-
-      {/* Name area — needs top margin to clear the level pill overflow */}
-      <div className="mt-4 flex w-full min-w-0 flex-col items-center gap-0.5">
-        {/* gameName */}
-        <span className="w-full truncate text-center font-display text-sm uppercase tracking-wide text-gold-1">
-          {summoner.gameName}
-        </span>
-        {/* #tagLine */}
-        <span className="font-body text-xs text-grey-1">
-          #{summoner.tagLine}
         </span>
       </div>
 
