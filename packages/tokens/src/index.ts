@@ -107,6 +107,10 @@ export const palette = {
   /** Arcade CTA bright aqua — LEARN MORE button fill (issue #240, pixel-sampled from
    *  docs/reference/client-home-arcade2019.jpg y=978–990 x=1300–1430: mean #63eee6) */
   arcadeAqua: "#63eee6",
+  /** Arcade scanline overlay base — pure cyan-teal for 4% scanline gradient (issue #1026, rgb(0,255,220)) */
+  arcadeScantlineTeal: "#00ffdc",
+  /** Arcade grid lines base — deeper teal for 40% grid overlay (issue #1026, rgb(10,200,185)) */
+  arcadeGridTeal: "#0ac8b9",
   /** Ban phase bright border/accent red — BAN button border and BanStatusStrip X stroke (issue #275).
    *  Brick-red family; distinct from riotRed (#eb022b login CTA) and warning (#ed2c49 queue alert). */
   banRed1: "#d94444",
