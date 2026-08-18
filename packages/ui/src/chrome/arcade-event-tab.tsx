@@ -109,7 +109,7 @@ function SkinCard({
         style={{
           height: 70,
           background:
-            "linear-gradient(to top, rgba(1,10,19,0.95) 0%, rgba(1,10,19,0.6) 60%, transparent 100%)",
+            "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 95%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 60%, transparent) 60%, transparent 100%)",
         }}
       />
 
@@ -316,7 +316,7 @@ export function ArcadeEventTab({
               className="relative flex flex-col gap-0.5 p-3"
               style={{
                 background:
-                  "linear-gradient(to top, rgba(1,10,19,0.95) 0%, transparent 100%)",
+                  "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 95%, transparent) 0%, transparent 100%)",
               }}
             >
               <span className="font-display text-xs uppercase tracking-widest text-grey-1">
@@ -352,7 +352,7 @@ export function ArcadeEventTab({
               className="absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(to top, rgba(1,10,19,0.9) 0%, rgba(1,10,19,0.4) 55%, transparent 100%)",
+                  "linear-gradient(to top, color-mix(in srgb, var(--color-hextech-black) 90%, transparent) 0%, color-mix(in srgb, var(--color-hextech-black) 40%, transparent) 55%, transparent 100%)",
               }}
             />
             {/* Label */}

@@ -228,7 +228,7 @@ export const hextechButtonShowcase: ShowcaseEntry = {
           <div
             style={{
               display: "inline-block",
-              boxShadow: "0 0 28px var(--color-hextech-black), 0 0 28px rgba(1,10,19,0.6)",
+              boxShadow: "0 0 28px var(--color-hextech-black), 0 0 28px color-mix(in srgb, var(--color-hextech-black) 60%, transparent)",
             }}
           >
             <div

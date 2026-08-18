@@ -353,7 +353,7 @@ function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps
   // Soft centered glow (default: 0 0 13px 2px; disabled: none)
   const glowShadow = disabled
     ? "none"
-    : "0 0 13px 2px rgba(1, 10, 19, 0.6)";
+    : "0 0 13px 2px color-mix(in srgb, var(--color-hextech-black) 60%, transparent)";
 
   return (
     // Outermost wrapper: glow + group + focus ring host
@@ -363,7 +363,7 @@ function SecondaryButton({ cfg, icon, disabled, children, className, buttonProps
         "transition-all duration-150",
         !disabled && [
           // Hover: doubled glow
-          "hover:shadow-[0_0_28px_var(--color-hextech-black),_0_0_28px_rgba(1,10,19,0.6)]",
+          "hover:shadow-[0_0_28px_var(--color-hextech-black),_0_0_28px_color-mix(in_srgb,var(--color-hextech-black)_60%,transparent)]",
           "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-gold-2 has-[:focus-visible]:ring-offset-1",
         ].join(" "),
         className,
