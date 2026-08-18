@@ -168,6 +168,10 @@
   /* Arcade CTA — bright aqua fill for the LEARN MORE button (issue #240, pixel-sampled from
      docs/reference/client-home-arcade2019.jpg y=978–990 x=1300–1430: mean #63eee6, std ≤ 25) */
   --color-arcade-aqua: #63eee6;
+  /* Arcade scanline overlay — pure cyan-teal base for 4% scanline gradient (issue #1026, rgb(0,255,220)) */
+  --color-arcade-scanline-teal: #00ffdc;
+  /* Arcade grid lines — deeper teal base for 40% grid overlay (issue #1026, rgb(10,200,185)=0ac8b9) */
+  --color-arcade-grid-teal: #0ac8b9;
 
   /* Ban phase red — brick-red palette for the BAN button in the champ-select ban phase (issue #275).
      Sampled from the Riot-red design language (distinct from riot-red #eb022b login accent and
@@ -547,6 +551,10 @@
     --color-arcade-bg-deep: #050e20;
     /* Arcade CTA — bright aqua fill for the LEARN MORE button (issue #240) */
     --color-arcade-aqua: #63eee6;
+    /* Arcade scanline overlay — pure cyan-teal base for 4% scanline gradient (issue #1026) */
+    --color-arcade-scanline-teal: #00ffdc;
+    /* Arcade grid lines — deeper teal base for 40% grid overlay (issue #1026) */
+    --color-arcade-grid-teal: #0ac8b9;
 
     /* Ban phase red — brick-red palette for the BAN button (issue #275) */
     --color-ban-red-1: #d94444;

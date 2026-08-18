@@ -204,7 +204,7 @@ export function ArcadeEventTab({
         className="pointer-events-none absolute inset-0 z-0 opacity-10"
         style={{
           backgroundImage:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,220,0.04) 2px, rgba(0,255,220,0.04) 4px)",
+            "repeating-linear-gradient(0deg, transparent, transparent 2px, color-mix(in srgb, var(--color-arcade-scanline-teal) 4%, transparent) 2px, color-mix(in srgb, var(--color-arcade-scanline-teal) 4%, transparent) 4px)",
         }}
       />
 
@@ -288,7 +288,7 @@ export function ArcadeEventTab({
               className="absolute inset-0 opacity-20"
               style={{
                 backgroundImage:
-                  "linear-gradient(rgba(10,200,185,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(10,200,185,0.4) 1px, transparent 1px)",
+                  "linear-gradient(color-mix(in srgb, var(--color-arcade-grid-teal) 40%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--color-arcade-grid-teal) 40%, transparent) 1px, transparent 1px)",
                 backgroundSize: "40px 40px",
               }}
             />
