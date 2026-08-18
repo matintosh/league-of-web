@@ -198,7 +198,7 @@ function SkinThumb({
 function ChevronLeft() {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="none">
-      <path d="M13 4 L7 10 L13 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13 4 L7 10 L13 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -207,7 +207,7 @@ function ChevronLeft() {
 function ChevronRight() {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="none">
-      <path d="M7 4 L13 10 L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7 4 L13 10 L7 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -222,7 +222,7 @@ function ChevronRight() {
  * Selected skin is displayed in an ornate circular frame — the authentic
  * champ-select champion-ring art (dashed tick-ring + mirrored inner/outer gold
  * filigree arcs) layered behind a circular-clipped splash. Skin name appears in
- * font-display italic gold-1. Pagination dots (6px, active=blue-2,
+ * font-display italic gold-1. Pagination dots (8px, active=blue-2,
  * inactive=grey-3) sit below the name. A horizontal thumb strip lets the user
  * browse; the selected thumb is enlarged with a heavy double-gold frame; locked
  * thumbs are dimmed (art stays readable) with a gold padlock badge.
@@ -451,8 +451,8 @@ export function SkinCarousel({
             aria-disabled={skin.locked}
             className="rounded-full transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3"
             style={{
-              width: 6,
-              height: 6,
+              width: 8,
+              height: 8,
               backgroundColor:
                 i === selectedIndex
                   ? "var(--color-blue-2)"
@@ -464,7 +464,10 @@ export function SkinCarousel({
 
       {/* ── Thumb strip with chevrons — hidden when showThumbStrip=false ── */}
       {showThumbStrip && (
-        <div className="flex items-center gap-3">
+        <div
+          className="flex items-center gap-3 rounded-md px-3 py-2"
+          style={{ background: "color-mix(in srgb, var(--color-hextech-black) 65%, transparent)" }}
+        >
           {/* Left chevron */}
           <button
             type="button"
@@ -543,7 +546,10 @@ export function SkinThumbStrip({ skins, selectedIndex, onSelect }: SkinThumbStri
   const nextIndex = nextUnlocked(1);
 
   return (
-    <div className="flex items-center gap-3">
+    <div
+      className="flex items-center gap-3 rounded-md px-3 py-2"
+      style={{ background: "color-mix(in srgb, var(--color-hextech-black) 65%, transparent)" }}
+    >
       <button
         type="button"
         onClick={() => { if (prevIndex !== undefined) onSelect(prevIndex); }}
