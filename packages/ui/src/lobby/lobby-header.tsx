@@ -262,32 +262,28 @@ function DiamondSep() {
 }
 
 /**
- * Summoner's Rift wings badge — flat double-chevron wings shape, ~22×18px.
- * Two stacked outward-sweeping chevron tiers, aria-hidden decoration.
- * Matches the ranked wings insignia shown after the queue-count chip in the
- * reference client (docs/reference/client-lobby-subbar.jpg).
+ * Summoner's Rift ranked feathermark badge — real CommunityDragon asset.
+ * Uses the silver ranked mini-crest PNG (two feathered wing tiers + center gem),
+ * the exact insignia shown after the queue-count chip in the reference client
+ * (docs/reference/client-lobby-subbar.jpg).
+ *
+ * Real asset: CommunityDragon rcp-fe-lol-static-assets · ranked-mini-crests/silver.png
+ * Confirmed HTTP 200 (2026-08). Same CDragon base already used by player-banner.tsx.
+ * License: Riot fan-content policy (non-commercial fan use).
  */
+const CDRAGON_MINI_CRESTS =
+  "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/ranked-mini-crests";
+
 function SRWingsGlyph() {
   return (
-    <svg
+    <img
       aria-hidden="true"
-      width="22"
-      height="18"
-      viewBox="0 0 22 18"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* Upper wing tier — two chevrons sweeping outward and upward */}
-      <path
-        d="M11 4 L3 1 L1 3 L11 7 L21 3 L19 1 Z"
-        fill="currentColor"
-      />
-      {/* Lower wing tier — slightly wider, angled more outward */}
-      <path
-        d="M11 10 L2 6.5 L0.5 8.5 L11 13 L21.5 8.5 L20 6.5 Z"
-        fill="currentColor"
-      />
-    </svg>
+      src={`${CDRAGON_MINI_CRESTS}/silver.png`}
+      alt=""
+      width={22}
+      height={15}
+      className="shrink-0 object-contain"
+    />
   );
 }
 
@@ -342,7 +338,7 @@ export function LobbyHeader({
     return (
       <div
         data-shot="lobby-header"
-        className="flex w-full items-center gap-3 border-b border-gold-5 bg-blue-7 px-3 py-2"
+        className="flex w-full items-center gap-3 border-b border-gold-5 bg-blue-7 px-3 py-1.5"
       >
         {/* ---------------------------------------------------------------- */}
         {/* Left cluster: back « · mode gem · middot breadcrumb · info       */}
