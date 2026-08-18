@@ -305,7 +305,7 @@ export function LobbyProgressionPanel({
 
                 {/* Center: two-line title / objective */}
                 <div className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate font-display text-[13px] tracking-wide text-grey-1">
+                  <span className="truncate font-display text-[13px] tracking-wide text-gold-2">
                     {m.title}
                   </span>
                   <span className="truncate font-body text-[11px] text-grey-2">
