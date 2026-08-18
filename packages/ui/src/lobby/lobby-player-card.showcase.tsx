@@ -51,7 +51,7 @@ export const lobbyPlayerCardShowcase: ShowcaseEntry = {
     },
     {
       name: "Empty slot",
-      notes: "summoner=undefined → dashed border, + glyph, INVITE label. Full card is the invite button.",
+      notes: "summoner=undefined → circular ~120px button, dashed border, + glyph only. Calls onInvite.",
       render: () => <LobbyPlayerCardEmptyDemo />,
     },
     {
