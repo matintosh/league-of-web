@@ -499,11 +499,13 @@ export function MatchFoundModal({
               stroke="color-mix(in srgb, var(--color-blue-6) 70%, var(--color-hextech-black) 30%)"
               strokeWidth="10"
             />
-            {/* Thin complete solid GOLD ring — sits just inside the cyan arc */}
+            {/* Thin complete solid GOLD ring — sits just inside the cyan arc.
+                r=218: outer edge 218.75 < arc inner edge 223.5, so the ring
+                is visually distinct from the teal arc (gap ≈ 4.75 px). */}
             <circle
               cx="240"
               cy="240"
-              r="225"
+              r="218"
               fill="none"
               stroke="var(--color-gold-3)"
               strokeWidth="1.5"
