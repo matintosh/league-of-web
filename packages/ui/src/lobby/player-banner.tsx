@@ -1583,8 +1583,8 @@ export function PlayerBanner({
               {/* Level badge — overlaps bottom of medallion ring.
                    minWidth grows to accommodate 3-digit levels. */}
               <div
-                className="relative -mt-2 z-20 rounded-full border border-grey-2 bg-grey-4 px-1.5 py-px"
-                style={{ minWidth: 20, textAlign: "center" }}
+                className="relative -mt-2 z-20 flex items-center justify-center rounded-full border border-grey-2 bg-grey-4 px-1.5 py-px"
+                style={{ minWidth: 20 }}
               >
                 <span className="font-body text-[8px] leading-none text-grey-1 font-semibold">
                   {level ?? 15}
