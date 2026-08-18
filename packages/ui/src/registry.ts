@@ -80,6 +80,7 @@ import { spellsTabShowcase } from "./collection/spells-tab.showcase";
 import { statMedallionShowcase } from "./collection/stat-medallion.showcase";
 import { statsTabShowcase } from "./collection/stats-tab.showcase";
 import { gameModeCardShowcase } from "./lobby/game-mode-card.showcase";
+import { gameModeCardRowShowcase } from "./lobby/game-mode-card-row.showcase";
 import { lobbyHeaderShowcase } from "./lobby/lobby-header.showcase";
 import { lobbyPlayerCardShowcase } from "./lobby/lobby-player-card.showcase";
 import { lobbyProgressionPanelShowcase } from "./lobby/lobby-progression-panel.showcase";
@@ -271,8 +272,9 @@ export const registry: ShowcaseEntry[] = [
   spellsTabShowcase,
   statMedallionShowcase,
   statsTabShowcase,
-  // lobby — alphabetical: GameModeCard < LobbyHeader < LobbyPlayerCard < LobbyProgressionPanel < MatchFoundModal < PlayerBanner < QueueStatus < QueueTypeList < RolePickerPopover < RoleSelector < RoleSlotRow
+  // lobby — alphabetical: GameModeCard < GameModeCardRow < LobbyHeader < LobbyPlayerCard < LobbyProgressionPanel < MatchFoundModal < PlayerBanner < QueueStatus < QueueTypeList < RolePickerPopover < RoleSelector < RoleSlotRow
   gameModeCardShowcase,
+  gameModeCardRowShowcase,
   lobbyHeaderShowcase,
   lobbyPlayerCardShowcase,
   lobbyProgressionPanelShowcase,

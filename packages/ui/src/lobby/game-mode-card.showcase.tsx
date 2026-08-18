@@ -59,7 +59,7 @@ export const gameModeCardShowcase: ShowcaseEntry = {
       render: () => (
         <div className="flex justify-center bg-hextech-black p-10">
           <GameModeCard
-            icon={<MapCrestImg src={gameModeMapUrl("sr")} frame="active" size={128} />}
+            icon={<MapCrestImg src={gameModeMapUrl("sr")} frame="active" size={160} />}
             countLabel="5v5"
             name="Summoner's Rift"
             selected
