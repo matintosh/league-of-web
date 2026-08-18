@@ -94,9 +94,10 @@ export function QueueStatus({
             aria-label="Cancel queue"
             onClick={onCancel}
             className={[
-              "font-body text-sm leading-none text-grey-1 shrink-0",
+              "h-6 w-6 rounded-full border border-gold-5 flex items-center justify-center shrink-0",
+              "font-body text-xs leading-none text-grey-1",
               "transition-colors duration-150",
-              "hover:text-gold-1",
+              "hover:border-gold-3 hover:text-gold-1",
               "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
             ].join(" ")}
           >
@@ -144,7 +145,7 @@ export function QueueStatus({
         <span className="font-display text-xs uppercase tracking-widest text-gold-2 leading-none">
           In Queue
         </span>
-        <span className={`font-body text-lg leading-none ${elapsedClass}`}>
+        <span className={`font-body text-2xl leading-none ${elapsedClass}`}>
           {formatQueueTime(elapsedSeconds)}
         </span>
       </div>
@@ -161,9 +162,10 @@ export function QueueStatus({
           aria-label="Cancel queue"
           onClick={onCancel}
           className={[
-            "font-body text-sm leading-none text-grey-1",
+            "h-6 w-6 rounded-full border border-gold-5 flex items-center justify-center",
+            "font-body text-xs leading-none text-grey-1",
             "transition-colors duration-150",
-            "hover:text-gold-1",
+            "hover:border-gold-3 hover:text-gold-1",
             "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-3",
           ].join(" ")}
         >
