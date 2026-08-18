@@ -2,7 +2,8 @@
 
 import { useId, useState } from "react";
 import type { ReactNode } from "react";
-import { GameModeCard } from "./game-mode-card";
+import { GameModeCard, GameModeCardRow } from "./game-mode-card";
+import type { QueueType } from "./game-mode-card";
 import { MapCrestImg } from "../chrome/map-crest-img";
 import { gameModeMapUrl } from "@low/fixtures";
 
@@ -18,8 +19,8 @@ export function SummonersRiftCrest() {
   return (
     <svg
       aria-hidden="true"
-      width="130"
-      height="130"
+      width="160"
+      height="160"
       viewBox="0 0 130 130"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -73,8 +74,8 @@ export function TwistedTreelineCrest() {
   return (
     <svg
       aria-hidden="true"
-      width="130"
-      height="130"
+      width="160"
+      height="160"
       viewBox="0 0 130 130"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -133,8 +134,8 @@ export function AramCrest() {
   return (
     <svg
       aria-hidden="true"
-      width="130"
-      height="130"
+      width="160"
+      height="160"
       viewBox="0 0 130 130"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -175,8 +176,8 @@ export function TftCrest() {
   return (
     <svg
       aria-hidden="true"
-      width="130"
-      height="130"
+      width="160"
+      height="160"
       viewBox="0 0 130 130"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -211,39 +212,89 @@ export function TftCrest() {
 
 type ModeKey = "sr" | "tt" | "aram" | "tft";
 
-const MODES: Array<{
+interface ModeData {
   key: ModeKey;
   countLabel: string;
   name: string;
   icon: ReactNode;
-}> = [
-  { key: "sr", countLabel: "5v5", name: "Summoner's Rift", icon: <SummonersRiftCrest /> },
-  { key: "tt", countLabel: "3v3", name: "Twisted Treeline", icon: <TwistedTreelineCrest /> },
-  { key: "aram", countLabel: "5v5", name: "ARAM", icon: <AramCrest /> },
-  { key: "tft", countLabel: "FFA", name: "Teamfight Tactics", icon: <TftCrest /> },
+  description: string;
+  queueTypes: QueueType[];
+}
+
+const MODES: ModeData[] = [
+  {
+    key: "sr",
+    countLabel: "5v5",
+    name: "Summoner's Rift",
+    icon: <SummonersRiftCrest />,
+    description:
+      "Battle on the classic 5v5 map — destroy the enemy Nexus to win. Lanes, jungle, objectives, and teamfights await.",
+    queueTypes: [
+      { label: "Blind Pick" },
+      { label: "Draft Pick" },
+      { label: "Ranked Solo/Duo" },
+      { label: "Ranked Flex", warning: true },
+    ],
+  },
+  {
+    key: "tt",
+    countLabel: "3v3",
+    name: "Twisted Treeline",
+    icon: <TwistedTreelineCrest />,
+    description:
+      "Battle as a team of three to capture altars and siege the enemy nexus in this fast-paced game mode.",
+    queueTypes: [
+      { label: "Blind Pick" },
+      { label: "Ranked Flex", warning: true },
+    ],
+  },
+  {
+    key: "aram",
+    countLabel: "5v5",
+    name: "ARAM",
+    icon: <AramCrest />,
+    description:
+      "All Random All Mid — fight in an all-out brawl on the Howling Abyss with a randomly assigned champion.",
+    queueTypes: [{ label: "Blind Pick" }],
+  },
+  {
+    key: "tft",
+    countLabel: "FFA",
+    name: "Teamfight Tactics",
+    icon: <TftCrest />,
+    description:
+      "Draft, position, and battle your way to victory in this round-based strategy auto-battler.",
+    queueTypes: [
+      { label: "Normal" },
+      { label: "Ranked", warning: false },
+    ],
+  },
 ];
 
-/** Clickable 4-card game mode row — mirrors the PvP mode-select screen (glyph fallback). */
+/** Clickable 4-card game mode row with info panel — mirrors the PvP mode-select screen (glyph fallback). */
 export function GameModeCardRowDemo() {
   const [selected, setSelected] = useState<ModeKey>("tt");
+  const selectedMode = MODES.find((m) => m.key === selected)!;
 
   return (
     <div
-      role="radiogroup"
-      aria-label="Game mode"
       data-shot="mode-card-row"
-      className="flex items-start justify-center gap-12 px-8 py-10 bg-hextech-black"
+      className="px-8 py-10 bg-hextech-black w-full max-w-5xl mx-auto"
     >
-      {MODES.map((mode) => (
-        <GameModeCard
-          key={mode.key}
-          icon={mode.icon}
-          countLabel={mode.countLabel}
-          name={mode.name}
-          selected={selected === mode.key}
-          onSelect={() => setSelected(mode.key)}
-        />
-      ))}
+      <GameModeCardRow
+        cards={MODES.map((mode) => (
+          <GameModeCard
+            key={mode.key}
+            icon={mode.icon}
+            countLabel={mode.countLabel}
+            name={mode.name}
+            selected={selected === mode.key}
+            onSelect={() => setSelected(mode.key)}
+          />
+        ))}
+        description={selectedMode.description}
+        queueTypes={selectedMode.queueTypes}
+      />
     </div>
   );
 }
@@ -254,16 +305,63 @@ export function GameModeCardRowDemo() {
 
 type RealModeKey = "sr" | "tt" | "ha" | "tft";
 
-const REAL_MODES: Array<{
+interface RealModeData {
   key: RealModeKey;
   countLabel: string;
   name: string;
   cdMap: "sr" | "ha" | "tft" | "tt" | "rgm";
-}> = [
-  { key: "sr", countLabel: "5v5", name: "Summoner's Rift", cdMap: "sr" },
-  { key: "tt", countLabel: "3v3", name: "Twisted Treeline", cdMap: "tt" },
-  { key: "ha", countLabel: "5v5", name: "ARAM", cdMap: "ha" },
-  { key: "tft", countLabel: "FFA", name: "Teamfight Tactics", cdMap: "tft" },
+  description: string;
+  queueTypes: QueueType[];
+}
+
+const REAL_MODES: RealModeData[] = [
+  {
+    key: "sr",
+    countLabel: "5v5",
+    name: "Summoner's Rift",
+    cdMap: "sr",
+    description:
+      "Battle on the classic 5v5 map — destroy the enemy Nexus to win. Lanes, jungle, objectives, and teamfights await.",
+    queueTypes: [
+      { label: "Blind Pick" },
+      { label: "Draft Pick" },
+      { label: "Ranked Solo/Duo" },
+      { label: "Ranked Flex", warning: true },
+    ],
+  },
+  {
+    key: "tt",
+    countLabel: "3v3",
+    name: "Twisted Treeline",
+    cdMap: "tt",
+    description:
+      "Battle as a team of three to capture altars and siege the enemy nexus in this fast-paced game mode.",
+    queueTypes: [
+      { label: "Blind Pick" },
+      { label: "Ranked Flex", warning: true },
+    ],
+  },
+  {
+    key: "ha",
+    countLabel: "5v5",
+    name: "ARAM",
+    cdMap: "ha",
+    description:
+      "All Random All Mid — fight in an all-out brawl on the Howling Abyss with a randomly assigned champion.",
+    queueTypes: [{ label: "Blind Pick" }],
+  },
+  {
+    key: "tft",
+    countLabel: "FFA",
+    name: "Teamfight Tactics",
+    cdMap: "tft",
+    description:
+      "Draft, position, and battle your way to victory in this round-based strategy auto-battler.",
+    queueTypes: [
+      { label: "Normal" },
+      { label: "Ranked", warning: false },
+    ],
+  },
 ];
 
 /** Real map crest for use in GameModeCard icon slot — cropped to one atlas frame. */
@@ -272,31 +370,32 @@ function RealMapCrest({ map, active }: { map: "sr" | "ha" | "tft" | "tt" | "rgm"
     <MapCrestImg
       src={gameModeMapUrl(map)}
       frame={active ? "active" : "inactive"}
-      size={128}
+      size={160}
     />
   );
 }
 
-/** Clickable 4-card row with real CommunityDragon map crests. */
+/** Clickable 4-card row with real CommunityDragon map crests and info panel. */
 export function GameModeCardRowRealCrests() {
   const [selected, setSelected] = useState<RealModeKey>("sr");
+  const selectedMode = REAL_MODES.find((m) => m.key === selected)!;
 
   return (
-    <div
-      role="radiogroup"
-      aria-label="Game mode"
-      className="flex items-start justify-center gap-12 px-8 py-10 bg-hextech-black"
-    >
-      {REAL_MODES.map((mode) => (
-        <GameModeCard
-          key={mode.key}
-          icon={<RealMapCrest map={mode.cdMap} active={selected === mode.key} />}
-          countLabel={mode.countLabel}
-          name={mode.name}
-          selected={selected === mode.key}
-          onSelect={() => setSelected(mode.key)}
-        />
-      ))}
+    <div className="px-8 py-10 bg-hextech-black w-full max-w-5xl mx-auto">
+      <GameModeCardRow
+        cards={REAL_MODES.map((mode) => (
+          <GameModeCard
+            key={mode.key}
+            icon={<RealMapCrest map={mode.cdMap} active={selected === mode.key} />}
+            countLabel={mode.countLabel}
+            name={mode.name}
+            selected={selected === mode.key}
+            onSelect={() => setSelected(mode.key)}
+          />
+        ))}
+        description={selectedMode.description}
+        queueTypes={selectedMode.queueTypes}
+      />
     </div>
   );
 }

@@ -267,8 +267,8 @@ export type { RiotGamesWordmarkProps } from "./login/riot-games-wordmark";
 export { SocialLoginButtons } from "./login/social-login-buttons";
 export type { SocialLoginButtonsProps, Provider } from "./login/social-login-buttons";
 // lobby
-export { GameModeCard } from "./lobby/game-mode-card";
-export type { GameModeCardProps } from "./lobby/game-mode-card";
+export { GameModeCard, GameModeCardRow } from "./lobby/game-mode-card";
+export type { GameModeCardProps, GameModeCardRowProps, QueueType } from "./lobby/game-mode-card";
 export { LobbyHeader } from "./lobby/lobby-header";
 export type { LobbyHeaderProps } from "./lobby/lobby-header";
 export { LobbyPlayerCard } from "./lobby/lobby-player-card";

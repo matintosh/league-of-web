@@ -20,6 +20,20 @@ export interface GameModeCardProps {
 }
 
 // ---------------------------------------------------------------------------
+// GameModeCardInfoPanel types (used by GameModeCardRow)
+// ---------------------------------------------------------------------------
+
+export interface QueueType {
+  /** Display label, e.g. "BLIND PICK", "RANKED FLEX". */
+  label: string;
+  /**
+   * When true, a warning triangle icon is shown next to the label.
+   * Use for restricted or unavailable queue types (e.g. "RANKED FLEX" when unranked).
+   */
+  warning?: boolean;
+}
+
+// ---------------------------------------------------------------------------
 // GameModeCard
 // ---------------------------------------------------------------------------
 
@@ -65,7 +79,7 @@ export function GameModeCard({
       <div
         className={[
           "flex items-center justify-center",
-          "h-32 w-32",
+          "h-40 w-40",
           "transition-colors duration-150",
           // Selected: bright gold; unselected: dimmed gold; hover: brighten
           selected
@@ -96,7 +110,7 @@ export function GameModeCard({
       {/* Mode name — e.g. "Summoner's Rift" */}
       <span
         className={[
-          "font-display text-2xl uppercase tracking-widest text-center leading-tight",
+          "font-display text-4xl uppercase tracking-widest text-center leading-tight",
           "transition-colors duration-150",
           selected
             ? "text-gold-1"
@@ -108,5 +122,131 @@ export function GameModeCard({
         {name}
       </span>
     </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// GameModeCardRow
+// ---------------------------------------------------------------------------
+
+export interface GameModeCardRowProps {
+  /**
+   * The individual mode cards to render in the row.
+   * Pass an array of <GameModeCard> elements.
+   */
+  cards: ReactNode;
+  /**
+   * Description paragraph for the selected mode.
+   * Rendered below the gold separator when provided.
+   */
+  description?: string;
+  /**
+   * Queue type bullet list for the selected mode.
+   * Each entry renders a ◈ diamond glyph + label.
+   * Items with `warning: true` additionally show a warning triangle icon.
+   */
+  queueTypes?: QueueType[];
+}
+
+/**
+ * GameModeCardRow wraps a row of GameModeCards with the selected-state info panel.
+ *
+ * Layout (matches the PvP mode-select ref):
+ *   1. Full-width row of mode cards (cards slot).
+ *   2. Full-width gold-4 horizontal separator.
+ *   3. Selected mode description paragraph (left-aligned, grey-1).
+ *   4. Queue-type bullet list — ◈ diamond + label per entry; warning items add a triangle icon.
+ *
+ * Presentational: description/queueTypes are passed by the parent;
+ * card selection state lives in the parent via GameModeCard's `selected`/`onSelect`.
+ */
+export function GameModeCardRow({
+  cards,
+  description,
+  queueTypes,
+}: GameModeCardRowProps) {
+  const hasPanel = description !== undefined || (queueTypes && queueTypes.length > 0);
+
+  return (
+    <div className="flex flex-col w-full">
+      {/* Card row */}
+      <div
+        role="radiogroup"
+        aria-label="Game mode"
+        className="flex items-start justify-around w-full"
+      >
+        {cards}
+      </div>
+
+      {/* Gold separator — always visible to mirror ref */}
+      <div className="w-full border-t border-gold-4 mt-4" />
+
+      {/* Selected-state info panel */}
+      {hasPanel && (
+        <div className="flex flex-col gap-4 pt-5 px-2">
+          {/* Description paragraph */}
+          {description && (
+            <p className="font-body text-sm text-grey-1 leading-relaxed max-w-xs">
+              {description}
+            </p>
+          )}
+
+          {/* Queue type bullets */}
+          {queueTypes && queueTypes.length > 0 && (
+            <ul className="flex flex-col gap-2">
+              {queueTypes.map((qt, i) => (
+                <li
+                  key={i}
+                  className="flex items-center gap-2 font-display text-xs uppercase tracking-widest"
+                >
+                  {/* ◈ diamond glyph — gold-3 for available, grey-2 for warned */}
+                  <span
+                    className={qt.warning ? "text-grey-2" : "text-gold-3"}
+                    aria-hidden="true"
+                  >
+                    ◈
+                  </span>
+
+                  {/* Warning triangle icon — only shown when warning=true */}
+                  {qt.warning && (
+                    <svg
+                      aria-hidden="true"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="text-ban-red-1 shrink-0"
+                    >
+                      <path
+                        d="M7 1.5L12.5 11.5H1.5L7 1.5Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinejoin="round"
+                        fill="none"
+                      />
+                      <line
+                        x1="7"
+                        y1="5.5"
+                        x2="7"
+                        y2="8.5"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                      <circle cx="7" cy="10" r="0.75" fill="currentColor" />
+                    </svg>
+                  )}
+
+                  <span className={qt.warning ? "text-grey-2" : "text-grey-1"}>
+                    {qt.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
