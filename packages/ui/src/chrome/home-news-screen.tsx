@@ -96,7 +96,7 @@ function HeroTile({
         style={{
           height: "55%",
           background:
-            "linear-gradient(to top, var(--color-hextech-black) 0%, rgba(1,10,19,0.85) 40%, transparent 100%)",
+            "linear-gradient(to top, var(--color-hextech-black) 0%, color-mix(in srgb, var(--color-hextech-black) 85%, transparent) 40%, transparent 100%)",
         }}
       />
 
@@ -157,7 +157,7 @@ function PromoTile({
         style={{
           height: "60%",
           background:
-            "linear-gradient(to top, var(--color-hextech-black) 0%, rgba(1,10,19,0.7) 55%, transparent 100%)",
+            "linear-gradient(to top, var(--color-hextech-black) 0%, color-mix(in srgb, var(--color-hextech-black) 70%, transparent) 55%, transparent 100%)",
         }}
       />
 
