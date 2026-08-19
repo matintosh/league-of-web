@@ -58,10 +58,12 @@ export interface ChallengeItem {
 // Sample challenges — names sourced from the 2022 reference screenshot.
 //
 // tokenIconSrc wired to real CommunityDragon challenge token PNGs (issue #1048).
-// CDragon config IDs confirmed HTTP 200 (2026-08):
-//   102000 → 200, 303600 → 200, 600006 → 200, 2022000 → 200,
-//   101000 → 200 (master tier), 202200 → 200, 303200 → 200,
-//   302400 → 200, 201100 → 200, 500000 → 200.
+// Each id+TIER combo curl-verified HTTP 200 (2026-08-19 — the tier matters:
+// a config id can 200 at one tier and 404 at another, so verify the exact pair):
+//   101100/master, 101200/master, 600006/silver, 2022000/silver, 303200/silver,
+//   101000/master, 202200/gold, 302400/bronze, 103000/master, 500000/gold.
+//   (Corrected 102000/gold, 303600/diamond, 201100/silver — all 404 at those
+//    tiers with no valid tier — replaced with the master-tier combos above.)
 // ---------------------------------------------------------------------------
 
 export const SAMPLE_CHALLENGES: ChallengeItem[] = [
@@ -72,7 +74,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 15,
     tier: "gold",
     category: "imagination",
-    tokenIconSrc: challengeTokenUrl(102000, "gold"),
+    tokenIconSrc: challengeTokenUrl(101100, "master"),
     nextRewardLabel: "30 Achievement Points",
     playerPercentage: 12.4,
     progress: { current: 3, total: 5 },
@@ -84,7 +86,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 100,
     tier: "diamond",
     category: "imagination",
-    tokenIconSrc: challengeTokenUrl(303600, "diamond"),
+    tokenIconSrc: challengeTokenUrl(101200, "master"),
     nextRewardLabel: "Slayer Title",
     playerPercentage: 3.5,
     progress: { current: 200, total: 300 },
@@ -168,7 +170,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 40,
     tier: "silver",
     category: "collection",
-    tokenIconSrc: challengeTokenUrl(201100, "silver"),
+    tokenIconSrc: challengeTokenUrl(103000, "master"),
     nextRewardLabel: "Collector's Edge Icon",
     playerPercentage: 9.7,
     progress: { current: 12, total: 50 },
