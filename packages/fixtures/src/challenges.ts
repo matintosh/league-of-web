@@ -4,6 +4,8 @@
  * ChallengeItem values are page/fixture-level; components import only the type.
  */
 
+import { challengeTokenUrl } from "./cdragon";
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -54,9 +56,12 @@ export interface ChallengeItem {
 
 // ---------------------------------------------------------------------------
 // Sample challenges — names sourced from the 2022 reference screenshot.
-// tokenIconSrc omitted throughout: no verified CDragon challenge-token
-// URLs exist in the current plugin set, so all cards show the inline
-// SVG placeholder instead of making 10 dead network requests.
+//
+// tokenIconSrc wired to real CommunityDragon challenge token PNGs (issue #1048).
+// CDragon config IDs confirmed HTTP 200 (2026-08):
+//   102000 → 200, 303600 → 200, 600006 → 200, 2022000 → 200,
+//   101000 → 200 (master tier), 202200 → 200, 303200 → 200,
+//   302400 → 200, 201100 → 200, 500000 → 200.
 // ---------------------------------------------------------------------------
 
 export const SAMPLE_CHALLENGES: ChallengeItem[] = [
@@ -67,6 +72,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 15,
     tier: "gold",
     category: "imagination",
+    tokenIconSrc: challengeTokenUrl(102000, "gold"),
     nextRewardLabel: "30 Achievement Points",
     playerPercentage: 12.4,
     progress: { current: 3, total: 5 },
@@ -78,6 +84,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 100,
     tier: "diamond",
     category: "imagination",
+    tokenIconSrc: challengeTokenUrl(303600, "diamond"),
     nextRewardLabel: "Slayer Title",
     playerPercentage: 3.5,
     progress: { current: 200, total: 300 },
@@ -89,6 +96,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 30,
     tier: "silver",
     category: "teamwork-strategy",
+    tokenIconSrc: challengeTokenUrl(600006, "silver"),
     nextRewardLabel: "40 Achievement Points",
     playerPercentage: 18.2,
     progress: { current: 1, total: 3 },
@@ -100,6 +108,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 30,
     tier: "silver",
     category: "teamwork-strategy",
+    tokenIconSrc: challengeTokenUrl(2022000, "silver"),
     nextRewardLabel: "50 Achievement Points",
     playerPercentage: 7.8,
     progress: { current: 0, total: 4 },
@@ -111,6 +120,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 30,
     tier: "silver",
     category: "veterancy",
+    tokenIconSrc: challengeTokenUrl(303200, "silver"),
     nextRewardLabel: "Dragon Hunter Icon",
     playerPercentage: 22.1,
     progress: { current: 2, total: 3 },
@@ -122,6 +132,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 30,
     tier: "master",
     category: "veterancy",
+    tokenIconSrc: challengeTokenUrl(101000, "master"),
     nextRewardLabel: "Elder Dragon Badge",
     playerPercentage: 1.1,
     progress: { current: 0, total: 2 },
@@ -133,6 +144,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 15,
     tier: "gold",
     category: "expertise",
+    tokenIconSrc: challengeTokenUrl(202200, "gold"),
     nextRewardLabel: "Smite-A-Lot Emote",
     playerPercentage: 34.6,
     progress: { current: 7, total: 10 },
@@ -144,6 +156,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 15,
     tier: "bronze",
     category: "expertise",
+    tokenIconSrc: challengeTokenUrl(302400, "bronze"),
     nextRewardLabel: "20 Achievement Points",
     playerPercentage: 41.3,
     progress: { current: 0, total: 1 },
@@ -155,6 +168,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 40,
     tier: "silver",
     category: "collection",
+    tokenIconSrc: challengeTokenUrl(201100, "silver"),
     nextRewardLabel: "Collector's Edge Icon",
     playerPercentage: 9.7,
     progress: { current: 12, total: 50 },
@@ -169,6 +183,7 @@ export const SAMPLE_CHALLENGES: ChallengeItem[] = [
     scoreContribution: 20,
     tier: "gold",
     category: "legacy",
+    tokenIconSrc: challengeTokenUrl(500000, "gold"),
     nextRewardLabel: "Veteran Icon",
     playerPercentage: 15.3,
     progress: { current: 200, total: 200 },
