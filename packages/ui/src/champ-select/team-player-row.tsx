@@ -14,7 +14,12 @@ export interface TeamPlayerRowProps {
   summonerName: string;
   /** Champion display name; absent while picking. */
   championName?: string;
-  /** Champion square icon URL (from `championSquareUrl` in @low/fixtures); shown when locked. */
+  /**
+   * Loading-art URL (308×560 face-centered tall portrait) for the champion;
+   * shown when locked. Supply via `loadingArtUrl(id)` from @low/fixtures —
+   * NOT `championSquareUrl` (square icon). The component crops to a 56px
+   * circle via `object-cover`, so the face-centered art gives the best crop.
+   */
   portraitSrc?: string;
   /**
    * Tuple of two summoner-spell image URLs, top to bottom.
@@ -93,8 +98,12 @@ export function TeamPlayerRow({
   const champColor = CHAMP_LABEL_COLOR[state](isSelf);
   const summonerColor = isSelf ? "text-gold-cream" : "text-grey-2";
 
+  // isSelf: 3px gold left accent bar; reduce left padding by 3px so content
+  // stays aligned with non-self rows (border sits inside the layout box).
+  const selfAccent = isSelf ? "border-l-[3px] border-gold-3 pl-[1px]" : "";
+
   return (
-    <div className="relative flex items-center gap-2 px-1 py-1.5">
+    <div className={["relative flex items-center gap-2 px-1 py-1.5", selfAccent].filter(Boolean).join(" ")}>
       {/* Summoner-object "magic" idle loop behind the active slot — additive,
           hidden under reduced-motion. Renders nothing when src is absent. */}
       <AmbientVideoLayer src={ambientVideoSrc} opacity={0.45} objectFit="cover" />
