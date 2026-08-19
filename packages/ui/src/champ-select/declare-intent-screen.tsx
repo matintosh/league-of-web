@@ -176,7 +176,8 @@ function RosterRow({
   return (
     <div
       // ~61px pitch (h-[61px]) so rows read tall/spaced like the reference.
-      className="relative flex h-[61px] items-center gap-3 pl-4 pr-1"
+      // pr-0: let the chip's own px-1 (4px) be the sole right margin (≈4px from aside edge).
+      className="relative flex h-[61px] items-center gap-3 pl-4 pr-0"
       aria-current={isActive ? "true" : undefined}
     >
       {/* Self-row active bar — ~8px bright gold vertical bar flush at the far-
@@ -223,8 +224,8 @@ function RosterRow({
         >
           {ROLE_LABEL[entry.role]}
         </span>
-        {/* Empty champion slot — the black bar in the reference */}
-        <div className="mt-1 h-1.5 w-full bg-hextech-black/80 border border-gold-5/40" />
+        {/* Empty champion slot — the black bar in the reference (~14px tall chip) */}
+        <div className="mt-1 h-[14px] w-full bg-hextech-black/80 border border-gold-5/40" />
       </div>
 
       {/* Self-row countdown chip — teal "◀ N" */}
@@ -511,10 +512,10 @@ export function DeclareIntentScreen({
       {/* Body — left roster column + center map stage                        */}
       {/* ------------------------------------------------------------------ */}
       <div className="relative flex flex-1 min-h-0 overflow-hidden">
-        {/* Left roster — ~220px, aligned with the ban/pick rails */}
+        {/* Left roster — ~270px (~21% of 1280), aligned with the ban/pick rails */}
         <aside
           className="relative z-10 flex flex-col justify-center px-3 shrink-0"
-          style={{ width: 220 }}
+          style={{ width: 270 }}
           aria-label="Team roles"
         >
           <span className="mb-1 pl-4 font-display text-[10px] uppercase tracking-widest text-grey-1">
