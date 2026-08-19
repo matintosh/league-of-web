@@ -23,12 +23,13 @@ export const honorCheckpointOverlayShowcase: ShowcaseEntry = {
     {
       name: "Checkpoint reached — crest video",
       notes:
-        "Persistent static preview of the reference surface (the 3-3 checkpoint crest, intro → loop → outro from honorCheckpointVideoUrl, transition_green backdrop). Matches docs/reference/client-honor-checkpoint-celebration.png.",
+        "Persistent static preview of the reference surface (the 3-3 checkpoint crest, intro → loop → outro from honorCheckpointVideoUrl, transition_green backdrop). Matches docs/reference/client-honor-checkpoint-celebration.png. The CTA shows 'OK +3' with a small honor-green orb icon — matching the reward count in the reference screenshot (#1067).",
       render: () => (
         <HonorCheckpointOverlayStaticPreview
           title="CHECKPOINT REACHED"
           subtitle="You've reached the last checkpoint before Honor level 3"
           crestVideo={checkpointCrestVideo}
+          reward={3}
         />
       ),
     },

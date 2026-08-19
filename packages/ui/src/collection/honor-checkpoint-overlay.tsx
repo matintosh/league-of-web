@@ -34,14 +34,21 @@ export interface HonorCheckpointCrestVideo {
 /**
  * Static Honor crest glyph — the always-visible fallback under the crest video
  * layer, so the overlay reads correctly when videos are absent, still loading,
- * blocked, or suppressed under reduced motion. Mirrors the reference emblem
- * (docs/reference/client-honor-checkpoint-celebration.png): a bronze wreath —
- * a fan of gold petals cradling a green gem up top, a central gold cartouche,
- * and a base bar set with three green honor gems.
+ * blocked, or suppressed under reduced motion.
+ *
+ * Best-effort hand-drawn approximation (no CDragon asset reachable — 9 candidate
+ * paths all 404'd). Mirrors the reference emblem
+ * (docs/reference/client-honor-checkpoint-celebration.png): a unified arch-wreath
+ * medallion — a rounded shield/medallion outline with a continuous wreath arch
+ * framing the silhouette + a center gem, forming one connected shape (NOT 3
+ * detached stroke blades). The wreath reads as a series of leaf pairs arching
+ * from base to crown, enclosing a center sigil gem, with a bottom base bar set
+ * with three honor gems.
  */
 function HonorCrestGlyph({ uid }: { uid: string }) {
   const goldGrad = `${uid}-gold`;
   const gemGrad = `${uid}-gem`;
+  const shieldClip = `${uid}-shield-clip`;
   return (
     <svg
       viewBox="0 0 120 130"
@@ -62,27 +69,75 @@ function HonorCrestGlyph({ uid }: { uid: string }) {
           <stop offset="0%" stopColor="var(--color-honor-green-bright)" />
           <stop offset="100%" stopColor="var(--color-honor-green)" />
         </radialGradient>
+        {/* Clip path for the unified medallion silhouette — rounded shield outline
+            that narrows to a pointed base. All wreath detail is clipped to this shape
+            so the glyph reads as one connected medallion, not separate pieces. */}
+        <clipPath id={shieldClip}>
+          <path d="M60 8 C34 8 20 22 20 44 C20 72 36 92 60 112 C84 92 100 72 100 44 C100 22 86 8 60 8 Z" />
+        </clipPath>
       </defs>
 
-      {/* Top petal fan — three gold blades sweeping up around the crown gem. */}
-      <g fill="none" stroke={`url(#${goldGrad})`} strokeWidth="4" strokeLinecap="round">
-        <path d="M60 44 C60 26 60 18 60 12" />
-        <path d="M60 44 C44 34 36 28 30 20" />
-        <path d="M60 44 C76 34 84 28 90 20" />
-      </g>
-      {/* Crown gem cradled by the fan. */}
-      <circle cx="60" cy="40" r="6.5" fill={`url(#${gemGrad})`} stroke={`url(#${goldGrad})`} strokeWidth="2" />
-
-      {/* Central cartouche — the stylised honor sigil under the crown. */}
+      {/* ── Medallion outline (the continuous arch-wreath cartouche) ──────────── */}
+      {/* Outer shield border — the single connected wreath-medallion silhouette. */}
       <path
-        d="M46 52 C46 66 50 78 60 88 C70 78 74 66 74 52 C68 58 62 60 60 60 C58 60 52 58 46 52 Z"
+        d="M60 8 C34 8 20 22 20 44 C20 72 36 92 60 112 C84 92 100 72 100 44 C100 22 86 8 60 8 Z"
         fill="none"
         stroke={`url(#${goldGrad})`}
-        strokeWidth="4"
+        strokeWidth="3.5"
         strokeLinejoin="round"
       />
+      {/* Inner outline — tighter offset gives a wreath-frame double-line feel. */}
+      <path
+        d="M60 14 C38 14 26 26 26 44 C26 70 40 89 60 107 C80 89 94 70 94 44 C94 26 82 14 60 14 Z"
+        fill="none"
+        stroke={`url(#${goldGrad})`}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        opacity="0.55"
+      />
 
-      {/* Base bar with three honor gems. */}
+      {/* ── Wreath leaf pairs arching up the sides ──────────────────────────── */}
+      {/* Each leaf pair is a mirrored bezier lobe — left and right — climbing the
+          flanks of the medallion, giving the impression of a continuous wreath
+          encircling the center sigil. Tokens-only stroke (gold gradient). */}
+      <g fill="none" stroke={`url(#${goldGrad})`} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        {/* Bottom pair — widest, near the base */}
+        <path d="M34 82 C28 74 26 64 30 56 C36 62 38 72 34 82 Z" fill={`url(#${goldGrad})`} opacity="0.7" />
+        <path d="M86 82 C92 74 94 64 90 56 C84 62 82 72 86 82 Z" fill={`url(#${goldGrad})`} opacity="0.7" />
+        {/* Middle pair */}
+        <path d="M30 56 C24 46 25 36 30 28 C36 34 37 46 30 56 Z" fill={`url(#${goldGrad})`} opacity="0.65" />
+        <path d="M90 56 C96 46 95 36 90 28 C84 34 83 46 90 56 Z" fill={`url(#${goldGrad})`} opacity="0.65" />
+        {/* Upper pair — narrower, near the crown */}
+        <path d="M30 28 C28 20 34 14 42 12 C44 20 40 28 30 28 Z" fill={`url(#${goldGrad})`} opacity="0.6" />
+        <path d="M90 28 C92 20 86 14 78 12 C76 20 80 28 90 28 Z" fill={`url(#${goldGrad})`} opacity="0.6" />
+      </g>
+
+      {/* ── Center sigil fill ────────────────────────────────────────────────── */}
+      {/* Dark interior behind the center gem so it reads against the wreath. */}
+      <path
+        d="M60 20 C44 20 36 30 36 44 C36 60 46 74 60 86 C74 74 84 60 84 44 C84 30 76 20 60 20 Z"
+        fill="var(--color-hextech-black)"
+        opacity="0.75"
+      />
+      {/* Inner cartouche outline — echoes the shield shape inside the wreath. */}
+      <path
+        d="M60 20 C44 20 36 30 36 44 C36 60 46 74 60 86 C74 74 84 60 84 44 C84 30 76 20 60 20 Z"
+        fill="none"
+        stroke={`url(#${goldGrad})`}
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+        opacity="0.6"
+      />
+
+      {/* ── Crown gem — top of the center sigil ─────────────────────────────── */}
+      <circle cx="60" cy="30" r="7" fill={`url(#${gemGrad})`} stroke={`url(#${goldGrad})`} strokeWidth="2" />
+      {/* Crown gem highlight glint */}
+      <circle cx="57.5" cy="27.5" r="2" fill="var(--color-honor-green-bright)" opacity="0.7" />
+
+      {/* Center accent — a smaller gem midpoint of the cartouche. */}
+      <circle cx="60" cy="56" r="4.5" fill={`url(#${gemGrad})`} stroke={`url(#${goldGrad})`} strokeWidth="1.5" opacity="0.85" />
+
+      {/* ── Base bar with three honor gems ──────────────────────────────────── */}
       <path
         d="M30 100 C30 96 34 94 40 94 H80 C86 94 90 96 90 100 C90 108 82 114 60 116 C38 114 30 108 30 100 Z"
         fill="var(--color-hextech-black)"
@@ -93,6 +148,28 @@ function HonorCrestGlyph({ uid }: { uid: string }) {
       <circle cx="44" cy="103" r="5" fill={`url(#${gemGrad})`} />
       <circle cx="60" cy="104" r="6" fill={`url(#${gemGrad})`} />
       <circle cx="76" cy="103" r="5" fill={`url(#${gemGrad})`} />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Honor orb — small inline icon for the reward count in the dismiss button
+// ---------------------------------------------------------------------------
+
+/**
+ * Tiny honor-orb icon rendered inline inside the OK button when a `reward` is
+ * supplied. A filled circle + inner highlight glint in `--color-honor-green`,
+ * matching the honor gems in the crest. Sized to the surrounding text baseline.
+ */
+function HonorOrbIcon() {
+  return (
+    <svg
+      viewBox="0 0 14 14"
+      aria-hidden="true"
+      className="inline-block h-[0.9em] w-[0.9em] align-middle"
+    >
+      <circle cx="7" cy="7" r="6.5" fill="var(--color-honor-green)" />
+      <circle cx="5.5" cy="5" r="2" fill="var(--color-honor-green-bright)" opacity="0.6" />
     </svg>
   );
 }
@@ -217,6 +294,14 @@ export interface HonorCheckpointOverlayProps {
    * @default "Honor celebration"
    */
   ariaLabel?: string;
+  /**
+   * Optional honor reward count to display in the dismiss button alongside the
+   * label. When provided (>0), the button renders: the label text, then a small
+   * green honor-orb icon and `+{reward}` count in `--color-honor-green`. This
+   * matches the "OK +3" CTA shown in the reference (docs/reference/client-honor-
+   * checkpoint-celebration.png). Omit (or pass 0) to show the label alone.
+   */
+  reward?: number;
 }
 
 /** Fade-out duration (ms) before onFinished is called on dismiss. */
@@ -239,6 +324,10 @@ const FADE_MS = 300;
  * over the gradient backdrop, so any missing/broken clip leaves the static crest
  * glyph + gradient intact.
  *
+ * The `reward` prop (optional) appends a small honor-orb icon + `+{reward}` count
+ * in honor-green inside the dismiss button, e.g. "OK ● +3" — matching the
+ * reference CTA in docs/reference/client-honor-checkpoint-celebration.png.
+ *
  * Dismiss is a single idempotent path: OK button, backdrop click, or Escape all
  * start the fade-out IMMEDIATELY (the crest advances to its outro and plays
  * underneath during the ~300ms fade, but never delays the handoff), then fire
@@ -260,6 +349,7 @@ export function HonorCheckpointOverlay({
   onFinished,
   dismissLabel = "OK",
   ariaLabel = "Honor celebration",
+  reward,
 }: HonorCheckpointOverlayProps) {
   const uid = useId();
   // dismissing flips on the first dismiss request; it advances the crest machine
@@ -347,16 +437,27 @@ export function HonorCheckpointOverlay({
         </div>
 
         {/* OK button — gold-2 border + gold text pill. Stops the backdrop click so
-            it is the same idempotent dismiss path, not a double-trigger. */}
+            it is the same idempotent dismiss path, not a double-trigger.
+            When `reward` > 0, appends a small honor-orb icon + "+{reward}" count
+            in honor-green, matching the "OK +3" CTA in the reference screenshot. */}
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             requestDismiss();
           }}
-          className="rounded-sm border border-gold-2 bg-hextech-black/60 px-8 py-1.5 font-display text-sm uppercase tracking-[0.15em] text-gold-cream transition-colors hover:bg-gold-2/15 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-2"
+          className="flex items-center gap-1.5 rounded-sm border border-gold-2 bg-hextech-black/60 px-8 py-1.5 font-display text-sm uppercase tracking-[0.15em] text-gold-cream transition-colors hover:bg-gold-2/15 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-2"
         >
           {dismissLabel}
+          {reward != null && reward > 0 && (
+            <span
+              className="flex items-center gap-1 normal-case tracking-normal"
+              style={{ color: "var(--color-honor-green)" }}
+            >
+              <HonorOrbIcon />
+              +{reward}
+            </span>
+          )}
         </button>
 
         {/* Bottom hairline rule. */}
