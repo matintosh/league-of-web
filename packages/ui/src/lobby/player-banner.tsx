@@ -620,6 +620,9 @@ function RankMedallion({
         className="pointer-events-none absolute select-none"
         style={{
           width: size * 1.7,
+          // Override Tailwind base `img { max-width: 100% }`, which would clamp
+          // the wings to the 96px parent and cancel the flanking spread.
+          maxWidth: "none",
           height: "auto",
           top: "50%",
           left: "50%",
