@@ -648,7 +648,7 @@ export function RunesScreen({
           onClick={onCreatePage}
           aria-label="Create new rune page"
           className={[
-            "group relative p-[3px]",
+            "group relative p-[2px]",
             "border border-gold-4 bg-hextech-black",
             "transition-colors duration-150",
             "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gold-3",
@@ -657,7 +657,7 @@ export function RunesScreen({
           {/* Inner frame + label */}
           <span
             className={[
-              "flex items-center justify-center px-5 py-1.5",
+              "flex items-center justify-center px-5 py-1",
               "border border-gold-4 font-display text-xs uppercase tracking-widest text-gold-cream",
               "transition-colors duration-150 group-hover:bg-gold-5 group-hover:text-gold-1",
             ].join(" ")}
