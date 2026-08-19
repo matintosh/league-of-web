@@ -9,6 +9,12 @@ export interface SkinThumbnail {
   name: string;
   imageSrc: string;
   owned: boolean;
+  /**
+   * Number of chromas available for this skin. When provided, a small count
+   * badge is rendered at the bottom of the thumbnail (matching the client ref
+   * which shows "0" for skins with no chromas). Omit when unknown.
+   */
+  chromaCount?: number;
 }
 
 export interface SkinPreviewProps {
@@ -136,6 +142,28 @@ function ThumbLockBadge() {
   );
 }
 
+/**
+ * Small count badge rendered at the bottom-center of each thumbnail — mirrors
+ * the client ref which shows a digit (e.g. "0") on every skin in the strip.
+ */
+function ChromaCountBadge({ count }: { count: number }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={[
+        "absolute bottom-0.5 right-0.5 pointer-events-none",
+        "min-w-[14px] h-[14px] px-0.5",
+        "rounded-full",
+        "flex items-center justify-center",
+        "font-body text-[9px] font-semibold leading-none",
+        "bg-hextech-black/80 text-grey-1 border border-grey-3",
+      ].join(" ")}
+    >
+      {count}
+    </div>
+  );
+}
+
 /** Mask/inspect icon — stylized mask outline, gold-cream tint */
 function MaskIcon() {
   return (
@@ -234,7 +262,7 @@ export function SkinPreview({
       {/* Top-left — skin name + description                               */}
       {/* ---------------------------------------------------------------- */}
       <div className="absolute top-0 left-0 p-8 max-w-xs">
-        <h2 className="font-display text-3xl uppercase tracking-wider text-gold-1 leading-tight drop-shadow-md">
+        <h2 className="font-display font-bold text-3xl uppercase tracking-wider text-gold-1 leading-tight drop-shadow-md">
           {skinName}
         </h2>
         {description && (
@@ -316,6 +344,9 @@ export function SkinPreview({
                     .join(" ")}
                 />
                 {!thumb.owned && <ThumbLockBadge />}
+                {thumb.chromaCount !== undefined && (
+                  <ChromaCountBadge count={thumb.chromaCount} />
+                )}
               </button>
             );
           })}
