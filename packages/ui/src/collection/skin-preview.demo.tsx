@@ -4,19 +4,20 @@ import { useState } from "react";
 import { SkinPreview } from "./skin-preview";
 import { championSplashUrl, loadingArtUrl } from "@low/fixtures";
 
-// Kayle skins for the demo
+// Kayle skins for the demo — chromaCount mirrors the client ref ("0" badge visible on each thumb)
 const KAYLE_SKINS = [
-  { name: "Kayle", skinIndex: 0, owned: true },
-  { name: "Judgment Kayle", skinIndex: 1, owned: true },
-  { name: "Viridian Kayle", skinIndex: 2, owned: false },
-  { name: "Transcended Kayle", skinIndex: 3, owned: false },
-  { name: "Silver Kayle", skinIndex: 8, owned: false },
+  { name: "Kayle", skinIndex: 0, owned: true, chromaCount: 0 },
+  { name: "Judgment Kayle", skinIndex: 1, owned: true, chromaCount: 3 },
+  { name: "Viridian Kayle", skinIndex: 2, owned: false, chromaCount: 0 },
+  { name: "Transcended Kayle", skinIndex: 3, owned: false, chromaCount: 0 },
+  { name: "Silver Kayle", skinIndex: 8, owned: false, chromaCount: 2 },
 ];
 
 const thumbnails = KAYLE_SKINS.map((s) => ({
   name: s.name,
   imageSrc: loadingArtUrl("Kayle", s.skinIndex),
   owned: s.owned,
+  chromaCount: s.chromaCount,
 }));
 
 /** Stateful demo — navigable skin preview, owned Silver Kayle state */
