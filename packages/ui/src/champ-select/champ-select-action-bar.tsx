@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -46,6 +48,73 @@ export interface ChampSelectActionBarProps {
 // Emote button border: border-gold-5 (matches divider family).
 
 // ---------------------------------------------------------------------------
+// Inline SVG sub-components
+// ---------------------------------------------------------------------------
+
+/**
+ * RuneNibIcon — stylised pen/nib SVG matching the circular rune-book icon in
+ * the reference. Inherits currentColor so it picks up text-gold-cream / hover
+ * text-gold-1 from the parent container without any extra classes.
+ */
+function RuneNibIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width="12"
+      height="12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {/* Nib body — diamond-like tip pointing down-right */}
+      <path d="M3 13 L8 2 L14 8 Z" />
+      {/* Centre split line */}
+      <line x1="8" y1="2" x2="8.5" y2="10.5" />
+      {/* Small serif base */}
+      <line x1="3" y1="13" x2="1.5" y2="14.5" />
+    </svg>
+  );
+}
+
+/**
+ * SmileIcon — flat circle-outline smiley matching the emote button glyph in
+ * the reference. Inherits currentColor for stroke.
+ */
+function SmileIcon({ uid }: { uid: string }) {
+  // clip path id must be unique per instance to avoid SVG id collisions
+  const clipId = `smile-clip-${uid}`;
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <defs>
+        <clipPath id={clipId}>
+          <rect x="0" y="0" width="20" height="20" />
+        </clipPath>
+      </defs>
+      {/* Face outline */}
+      <circle cx="10" cy="10" r="8" clipPath={`url(#${clipId})`} />
+      {/* Eyes */}
+      <circle cx="7.5" cy="8" r="0.8" fill="currentColor" stroke="none" />
+      <circle cx="12.5" cy="8" r="0.8" fill="currentColor" stroke="none" />
+      {/* Smile arc */}
+      <path d="M6.5 12.5 Q10 15.5 13.5 12.5" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -55,7 +124,7 @@ export interface ChampSelectActionBarProps {
  * (pick phase and loadout phase).
  *
  * Layout (left → right):
- *   horizontal gold-5 accent line · spellbook glyph circle · rune-page dropdown
+ *   horizontal gold-5 accent line · spellbook nib circle · rune-page dropdown
  *   · spell slot 0 · spell slot 1 · vertical gold-5 divider · emote button
  *   · horizontal gold-5 accent line
  *
@@ -69,6 +138,8 @@ export function ChampSelectActionBar({
   onSpellClick,
   onEmoteClick,
 }: ChampSelectActionBarProps) {
+  const uid = useId();
+
   return (
     <div
       className="flex h-full w-full items-center gap-2 px-3"
@@ -77,14 +148,12 @@ export function ChampSelectActionBar({
       {/* Left accent line — ~40px horizontal gold-5 rule */}
       <div className="h-px w-10 shrink-0 bg-gold-5" aria-hidden="true" />
 
-      {/* Spellbook glyph circle — rune-book icon placeholder */}
+      {/* Spellbook nib circle — inline SVG pen/nib icon matching the reference */}
       <div
         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-gold-5 text-gold-cream"
         aria-hidden="true"
-        style={{ fontSize: "0.85rem" }}
       >
-        {/* Stylised pen/rune glyph — matches the circular icon in the reference */}
-        ✎
+        <RuneNibIcon />
       </div>
 
       {/* Rune-page dropdown button */}
@@ -126,13 +195,13 @@ export function ChampSelectActionBar({
         </div>
       </button>
 
-      {/* Summoner spell slot 0 */}
+      {/* Summoner spell slot 0 — h-11 w-11 (44px) matches ~44px reference slots */}
       <button
         type="button"
         onClick={onSpellClick ? () => onSpellClick(0) : undefined}
         aria-label="Summoner spell slot 1. Click to change."
         className={[
-          "group relative h-10 w-10 shrink-0 overflow-hidden",
+          "group relative h-11 w-11 shrink-0 overflow-hidden",
           "border border-gold-5",
           onSpellClick ? "cursor-pointer" : "cursor-default",
         ].join(" ")}
@@ -149,13 +218,13 @@ export function ChampSelectActionBar({
         )}
       </button>
 
-      {/* Summoner spell slot 1 */}
+      {/* Summoner spell slot 1 — h-11 w-11 (44px) matches ~44px reference slots */}
       <button
         type="button"
         onClick={onSpellClick ? () => onSpellClick(1) : undefined}
         aria-label="Summoner spell slot 2. Click to change."
         className={[
-          "group relative h-10 w-10 shrink-0 overflow-hidden",
+          "group relative h-11 w-11 shrink-0 overflow-hidden",
           "border border-gold-5",
           onSpellClick ? "cursor-pointer" : "cursor-default",
         ].join(" ")}
@@ -187,13 +256,12 @@ export function ChampSelectActionBar({
           onEmoteClick ? "hover:bg-grey-3 cursor-pointer" : "cursor-default",
         ].join(" ")}
       >
-        {/* Smiley face — matches the emote icon glyph in the reference */}
+        {/* Flat SVG smiley — matches the emote icon in the reference */}
         <span
           className="text-gold-cream transition-colors duration-150 group-hover:text-gold-1"
-          style={{ fontSize: "1.1rem", lineHeight: 1 }}
           aria-hidden="true"
         >
-          🙂
+          <SmileIcon uid={uid} />
         </span>
       </button>
 
