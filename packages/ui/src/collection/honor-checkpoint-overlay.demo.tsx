@@ -130,11 +130,14 @@ export function HonorCheckpointOverlayStaticPreview({
   subtitle,
   crestVideo,
   backdropVideo,
+  reward,
 }: {
   title: string;
   subtitle: string;
   crestVideo?: HonorCheckpointCrestVideo;
   backdropVideo?: string;
+  /** Forward to HonorCheckpointOverlay `reward` — shows "OK +{reward}" CTA when > 0. */
+  reward?: number;
 }) {
   return (
     <div className="relative aspect-video w-[560px] overflow-hidden rounded-sm border border-gold-4 bg-hextech-black [transform:translateZ(0)]">
@@ -144,6 +147,7 @@ export function HonorCheckpointOverlayStaticPreview({
         crestVideo={crestVideo}
         backdropVideo={backdropVideo}
         ariaLabel={title}
+        reward={reward}
         onFinished={() => {}}
       />
     </div>
