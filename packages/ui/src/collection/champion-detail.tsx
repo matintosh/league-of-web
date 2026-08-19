@@ -1,8 +1,8 @@
 "use client";
 
-import { useId, useState } from "react";
+import { Fragment, useId, useState } from "react";
 import type { ChampionDetail, AbilityEntry, ChampionMastery } from "@low/fixtures";
-import { championSplashUrl, loadingArtUrl } from "@low/fixtures";
+import { championSplashUrl, loadingArtUrl, championSquareUrl } from "@low/fixtures";
 import { SkinCard } from "./skin-card";
 
 /**
@@ -516,7 +516,8 @@ function AbilitiesTab({ abilities, champId }: AbilitiesTabProps) {
           {abilities.map((ability) => {
             const isActive = ability.key === selectedKey;
             return (
-              <div key={ability.key} className="flex flex-col items-center gap-1.5">
+              <Fragment key={ability.key}>
+              <div className="flex flex-col items-center gap-1.5">
                 <button
                   type="button"
                   role="tab"
@@ -544,6 +545,11 @@ function AbilitiesTab({ abilities, champId }: AbilitiesTabProps) {
                   {ability.key}
                 </span>
               </div>
+              {/* Passive→spell separator (#1031): 1px grey divider after the P slot */}
+              {ability.key === "P" && (
+                <div aria-hidden="true" className="self-stretch w-px bg-grey-3" />
+              )}
+              </Fragment>
             );
           })}
         </div>
@@ -951,7 +957,16 @@ export function ChampionDetail({ champion, onClose, initialTab = "overview", mas
 
         {/* Champion identity */}
         <div className="flex items-center gap-4 mb-4">
-          <CrestGlyph />
+          {/* Real Data Dragon champion square portrait (#1030) */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={championSquareUrl(champion.id)}
+            alt=""
+            aria-hidden="true"
+            width={56}
+            height={56}
+            className="shrink-0 border border-gold-4 object-cover"
+          />
           <div>
             <h2
               id={headingId}
