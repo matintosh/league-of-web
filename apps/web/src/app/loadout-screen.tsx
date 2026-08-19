@@ -17,7 +17,6 @@ import {
   pickTeam,
   championSplashUrl,
   loadingArtUrl,
-  championSquareUrl,
   DEFAULT_PICK_CHAMPION_ID,
   summonerSpellIconUrl,
   championRingUrl,
@@ -310,7 +309,7 @@ export function LoadoutScreen({ onComplete, chosenChampionId }: LoadoutScreenPro
               summonerName={member.summonerName}
               championName={member.championName}
               portraitSrc={
-                member.championId ? championSquareUrl(member.championId) : undefined
+                member.championId ? loadingArtUrl(member.championId) : undefined
               }
               spellSrcs={member.spellSrcs}
               isSelf={member.isSelf}
