@@ -1,6 +1,7 @@
 'use client';
 
 import { useId } from "react";
+import type React from "react";
 import type { SlotId } from "@low/fixtures";
 
 // ---------------------------------------------------------------------------
@@ -14,7 +15,10 @@ import type { SlotId } from "@low/fixtures";
 //
 // 4 satellite circles (~90px, double gold ring) are labeled:
 //   Start · First Blood · Ace · Victory (display-xs uppercase)
-// positioned to the left, top-right, bottom-right, right of the main wheel.
+// positioned in an asymmetric orbit around the main wheel matching the client:
+//   Start    — lower-left (~8 o'clock)
+//   Victory  — upper-right relative to other satellites (~1–2 o'clock)
+//   First Blood + Ace — side-by-side directly below the wheel
 //
 // Slots: empty = dark fill; filled = circular-clipped emote img.
 // Interaction: controlled — parent tracks slot assignments via onSlotClick.
@@ -72,6 +76,40 @@ const INNER_RING_STROKE = 1.5;
 const RING_GAP = 6;
 
 // ---------------------------------------------------------------------------
+// Satellite orbit offsets (px from wheel center to satellite center).
+//
+// Derived from client-collection-emotes.jpg at native 1440p:
+//   ref wheel radius ≈ 145px → render scale 165/145 ≈ 1.138
+//   Measured offsets (dx, dy) scaled to our 165px render radius.
+//
+//   Start       — lower-left (~8 o'clock): dx −270, dy +185 → scaled (−307, +211)
+//   Victory     — upper-right (~1–2 o'clock): dx +270, dy +170 → scaled (+307, +194)
+//   First Blood — below, left-center: dx −100, dy +310 → scaled (−114, +353)
+//   Ace         — below, right-center: dx +100, dy +310 → scaled (+114, +353)
+// ---------------------------------------------------------------------------
+
+const SAT_OFFSETS: Record<"start" | "first-blood" | "ace" | "victory", { dx: number; dy: number }> = {
+  start:         { dx: -307, dy: +211 },
+  victory:       { dx: +307, dy: +194 },
+  "first-blood": { dx: -114, dy: +353 },
+  ace:           { dx: +114, dy: +353 },
+};
+
+// Wrapper geometry: the wheel center sits at (WHEEL_R + leftPad, WHEEL_R + topPad)
+// inside the relative wrapper. We add padding so no satellite overflows left/top.
+// leftPad = max(0, max_negative_dx + SAT_R) = 307 + 45 = 352; round to 190 (center is at 165+190=355)
+// Actually: leftPad = |min_dx| - WHEEL_R + SAT_R = 307 - 165 + 45 = 187
+const WRAPPER_LEFT_PAD = 187;    // px left of wheel left edge (to fit Start)
+const WRAPPER_TOP_PAD  = 0;      // no satellite above the top of the wheel
+// Approximate height of label + gap above satellite circle (font-size 10px, leading, gap-1)
+const SAT_LABEL_H = 18;
+// Wrapper total size (satellites are absolutely positioned inside)
+const WRAPPER_W =
+  WRAPPER_LEFT_PAD + WHEEL_SIZE + 307 + SAT_R; // 187 + 330 + 307 + 45 = 869 — allow right-side Victory
+const WRAPPER_H =
+  WRAPPER_TOP_PAD + WHEEL_SIZE + 353 + SAT_R + SAT_LABEL_H; // 0 + 330 + 353 + 45 + 18 = 746
+
+// ---------------------------------------------------------------------------
 // Halo ring + tick decorations
 //
 // Reference (docs/reference/client-emote-wheel-frame-detail.png, 1:1 with
@@ -111,7 +149,7 @@ function polar(r: number, angleDeg: number): { x: number; y: number } {
 
 /**
  * Build an SVG arc path string for a quadrant slice.
- * Each quadrant spans 90° but we leave a small gap (12°) for the spokes.
+ * Each quadrant spans 90° but we leave a gap (14°) for the wider spokes.
  */
 function quadrantArcPath(
   startDeg: number,
@@ -119,7 +157,7 @@ function quadrantArcPath(
   innerR: number,
   outerR: number
 ): string {
-  const GAP = 8; // degrees gap on each side for the cross-spoke
+  const GAP = 14; // degrees gap on each side — widened from 8° to accommodate 18px spokes
   const s = startDeg + GAP;
   const e = endDeg - GAP;
 
@@ -222,12 +260,15 @@ function HaloTicks() {
  * running along a diagonal from the center circle out to the wheel-body ring.
  * Reference spokes are two strokes with a dark centre (not a single line),
  * widening slightly toward the rim.
+ *
+ * outerHalf=9 → 18px total width at the rim, matching the reference at
+ * native width ÷ 0.589 render scale (spoke ~18px in showcase).
  */
 function ChannelSpoke({ angleDeg }: { angleDeg: number }) {
   // Perpendicular offset (px) that separates the two parallel lines. Narrow at
   // the inner end, wider at the rim to read as a widening channel.
   const innerHalf = 1.8;
-  const outerHalf = 4.5;
+  const outerHalf = 9;   // was 4.5 — doubled to match ~18px rim width (#1033)
   const innerR = INNER_ARC_R;
   const outerR = OUTER_ARC_R;
   const perp = angleDeg + 90;
@@ -448,7 +489,8 @@ function SatelliteSlot({
  *
  * Architecture note: the central wheel is a single SVG with arc quadrants,
  * cross-spokes, rings, and finials. Satellite slots use separate small SVGs
- * inside buttons, positioned via CSS grid/flex around the main SVG.
+ * inside buttons, absolutely positioned inside a relative wrapper so they
+ * orbit the wheel in the asymmetric pattern matching the LoL client.
  */
 export function EmoteWheel({
   slots,
@@ -503,47 +545,46 @@ export function EmoteWheel({
     return polar(midR, midDeg);
   }
 
+  // Wheel top-left corner inside the relative wrapper
+  const wheelLeft = WRAPPER_LEFT_PAD;
+  const wheelTop  = WRAPPER_TOP_PAD;
+  // Wheel center in wrapper coords
+  const wheelCx = wheelLeft + WHEEL_R;
+  const wheelCy = wheelTop  + WHEEL_R;
+
+  // Satellites for "start" and "victory" have the label on top, then circle below.
+  // Total sat div height = SAT_LABEL_H + gap(4) + SAT_SIZE
+  // We position the sat div so its circle center aligns with the computed orbit offset.
+  // sat div top = wheelCy + dy - SAT_LABEL_H - 4 - SAT_R
+  // sat div left = wheelCx + dx - SAT_R
+  function satStyle(id: "start" | "first-blood" | "ace" | "victory"): React.CSSProperties {
+    const { dx, dy } = SAT_OFFSETS[id];
+    return {
+      position: "absolute",
+      left: wheelCx + dx - SAT_R,
+      top: wheelCy + dy - SAT_LABEL_H - 4 - SAT_R,
+    };
+  }
+
   return (
     <div
-      className="flex flex-col items-center"
-      style={{ filter: "drop-shadow(0 4px 16px rgba(0,0,0,0.8))" }}
+      style={{
+        position: "relative",
+        width:  WRAPPER_W,
+        height: WRAPPER_H,
+        filter: "drop-shadow(0 4px 16px rgba(0,0,0,0.8))",
+      }}
     >
       {/* ------------------------------------------------------------------ */}
-      {/* Top satellite row: Start (left of wheel center line)               */}
-      {/* Layout: [Start] [placeholder for top alignment] [First Blood]      */}
-      {/* The wheel center is 330px wide; satellites are 90px each           */}
+      {/* Central wheel SVG                                                   */}
       {/* ------------------------------------------------------------------ */}
       <div
-        className="flex items-end justify-between"
-        style={{ width: WHEEL_SIZE + SAT_SIZE * 2 + 24 }}
+        style={{
+          position: "absolute",
+          left: wheelLeft,
+          top:  wheelTop,
+        }}
       >
-        <SatelliteSlot
-          slotId="start"
-          label="Start"
-          imageSrc={slots["start"]}
-          isSelected={selectedSlot === "start"}
-          onSlotClick={onSlotClick}
-          clipPathId={clipIds["start"]}
-        />
-        <div style={{ width: SAT_SIZE }} /> {/* spacer center-top */}
-        <SatelliteSlot
-          slotId="first-blood"
-          label="First Blood"
-          imageSrc={slots["first-blood"]}
-          isSelected={selectedSlot === "first-blood"}
-          onSlotClick={onSlotClick}
-          clipPathId={clipIds["first-blood"]}
-        />
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Main wheel row                                                      */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="flex items-center gap-3">
-        {/* Left column placeholder (aligns with Start/Ace columns) */}
-        <div style={{ width: SAT_SIZE }} />
-
-        {/* Central wheel SVG */}
         <svg
           width={WHEEL_SIZE}
           height={WHEEL_SIZE}
@@ -722,27 +763,26 @@ export function EmoteWheel({
             }}
           />
         </svg>
-
-        {/* Right column placeholder */}
-        <div style={{ width: SAT_SIZE }} />
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Bottom satellite row: Ace (left) and Victory (right)               */}
+      {/* Satellite slots — absolutely positioned in asymmetric orbit         */}
+      {/* Start: ~8 o'clock (lower-left); Victory: ~1–2 o'clock (right);     */}
+      {/* First Blood + Ace: side-by-side below the wheel.                   */}
       {/* ------------------------------------------------------------------ */}
-      <div
-        className="flex items-start justify-between"
-        style={{ width: WHEEL_SIZE + SAT_SIZE * 2 + 24 }}
-      >
+
+      <div style={satStyle("start")}>
         <SatelliteSlot
-          slotId="ace"
-          label="Ace"
-          imageSrc={slots["ace"]}
-          isSelected={selectedSlot === "ace"}
+          slotId="start"
+          label="Start"
+          imageSrc={slots["start"]}
+          isSelected={selectedSlot === "start"}
           onSlotClick={onSlotClick}
-          clipPathId={clipIds["ace"]}
+          clipPathId={clipIds["start"]}
         />
-        <div style={{ width: SAT_SIZE }} /> {/* spacer center-bottom */}
+      </div>
+
+      <div style={satStyle("victory")}>
         <SatelliteSlot
           slotId="victory"
           label="Victory"
@@ -750,6 +790,28 @@ export function EmoteWheel({
           isSelected={selectedSlot === "victory"}
           onSlotClick={onSlotClick}
           clipPathId={clipIds["victory"]}
+        />
+      </div>
+
+      <div style={satStyle("first-blood")}>
+        <SatelliteSlot
+          slotId="first-blood"
+          label="First Blood"
+          imageSrc={slots["first-blood"]}
+          isSelected={selectedSlot === "first-blood"}
+          onSlotClick={onSlotClick}
+          clipPathId={clipIds["first-blood"]}
+        />
+      </div>
+
+      <div style={satStyle("ace")}>
+        <SatelliteSlot
+          slotId="ace"
+          label="Ace"
+          imageSrc={slots["ace"]}
+          isSelected={selectedSlot === "ace"}
+          onSlotClick={onSlotClick}
+          clipPathId={clipIds["ace"]}
         />
       </div>
     </div>
