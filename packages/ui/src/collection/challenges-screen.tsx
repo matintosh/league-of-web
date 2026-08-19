@@ -9,6 +9,16 @@ import type { ChallengeCategory, ChallengeItem, ChallengeTier } from "@low/fixtu
 
 export type { ChallengeCategory, ChallengeItem, ChallengeTier };
 
+/** Per-category score data for the sidebar progress bars (issue #1046). */
+export interface CategoryScore {
+  /** Category id — matches one of the non-"all" ChallengeCategory values. */
+  category: Exclude<ChallengeCategory, "all">;
+  /** Player's current score in this category. */
+  current: number;
+  /** Maximum possible score for this category. */
+  max: number;
+}
+
 export interface ChallengesScreenProps {
   /** Player's total challenge score, e.g. 4725. */
   totalScore: number;
@@ -30,12 +40,34 @@ export interface ChallengesScreenProps {
   /** Called when the player clicks a category filter. */
   onCategoryChange?: (cat: ChallengeCategory) => void;
   /**
+   * Per-category score progress for the sidebar fill bars (issue #1046).
+   * One entry per non-"all" category. When a category is absent the bar
+   * renders empty (width 0%). The page owns score data — this component
+   * just renders the 3px track + fill.
+   */
+  categoryScores?: CategoryScore[];
+  /**
    * Challenges to display. The page pre-filters by activeCategory
    * (pass all when activeCategory === "all").
    */
   challenges: ChallengeItem[];
   /** Called when a challenge card is clicked. */
   onChallengeClick?: (id: string) => void;
+  /**
+   * Current search query string (issue #1047). Controlled by the page.
+   * The filter row renders a search input; the page owns filter logic.
+   */
+  searchQuery?: string;
+  /** Called when the search input value changes (issue #1047). */
+  onSearchChange?: (query: string) => void;
+  /**
+   * Active category filter in the content header dropdown (issue #1047).
+   * Controlled by the page. Distinct from `activeCategory` (sidebar) —
+   * this drives the in-panel Category dropdown.
+   */
+  filterCategory?: string;
+  /** Called when the Category dropdown selection changes (issue #1047). */
+  onFilterChange?: (category: string) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -54,6 +86,9 @@ const CATEGORIES: { id: ChallengeCategory; label: string }[] = [
   { id: "collection",        label: "COLLECTION" },
   { id: "legacy",            label: "LEGACY" },
 ];
+
+/** Category dropdown options — mirrors non-"all" entries in CATEGORIES. */
+const FILTER_CATEGORIES = CATEGORIES.filter((c) => c.id !== "all");
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -390,7 +425,7 @@ function ChallengeCard({
         )}
       </div>
 
-      {/* Token icon — inline SVG when no src provided */}
+      {/* Token icon — real CDragon art when tokenIconSrc is provided (issue #1048) */}
       <TokenIcon src={tokenIconSrc} name={name} tier={tier} />
 
       {/* Tier badge */}
@@ -454,7 +489,13 @@ function ChallengeCard({
  * ChallengesScreen — Profile → CHALLENGES tab content (era: 2022+).
  *
  * Left sidebar: hexagonal crystal icon, total score, tier label, 6 category
- * filter buttons. Right: 5-column ChallengeCard grid with hover tooltips.
+ * filter buttons each with a ~3px fill bar showing per-category score progress
+ * (issue #1046 — pass `categoryScores` to render the bars).
+ *
+ * Right panel: ~36px filter row with Search input + Category dropdown (issue
+ * #1047 — controlled via `searchQuery`/`onSearchChange` + `filterCategory`/
+ * `onFilterChange`), then a 5-column ChallengeCard grid with hover tooltips.
+ * Cards render real CDragon challenge token art from `tokenIconSrc` (issue #1048).
  *
  * When `crystalVideoSrc` is supplied the real-client crystal-level celebration
  * webm (issue #319) layers over the static sidebar crystal — additive
@@ -472,9 +513,22 @@ export function ChallengesScreen({
   crystalVideoSrc,
   activeCategory,
   onCategoryChange,
+  categoryScores,
   challenges,
   onChallengeClick,
+  searchQuery = "",
+  onSearchChange,
+  filterCategory = "",
+  onFilterChange,
 }: ChallengesScreenProps) {
+  // Build a quick lookup: category id → fill fraction (0–1).
+  const scoreMap = new Map<string, number>(
+    (categoryScores ?? []).map(({ category, current, max }) => [
+      category,
+      max > 0 ? Math.min(1, current / max) : 0,
+    ])
+  );
+
   return (
     <div className="flex h-full min-h-0 w-full">
       {/* ------------------------------------------------------------------ */}
@@ -500,6 +554,8 @@ export function ChallengesScreen({
           <ul className="flex flex-col gap-1" role="list">
             {CATEGORIES.map(({ id, label }) => {
               const isActive = id === activeCategory;
+              // Fill fraction for non-"all" categories; "all" has no bar.
+              const fillFraction = id !== "all" ? (scoreMap.get(id) ?? 0) : null;
               return (
                 <li key={id}>
                   <button
@@ -507,7 +563,7 @@ export function ChallengesScreen({
                     onClick={() => onCategoryChange?.(id)}
                     aria-pressed={isActive}
                     className={[
-                      "flex w-full items-center gap-2 px-2 py-1.5",
+                      "flex w-full flex-col gap-1 px-2 py-1.5",
                       "font-display text-[10px] uppercase tracking-widest leading-none",
                       "transition-colors duration-150 text-left",
                       isActive
@@ -515,13 +571,31 @@ export function ChallengesScreen({
                         : "text-grey-1 hover:text-gold-cream cursor-pointer",
                     ].join(" ")}
                   >
-                    <span
-                      className={[
-                        "inline-block h-1.5 w-1.5 rounded-full shrink-0",
-                        isActive ? "bg-blue-2" : "bg-grey-2",
-                      ].join(" ")}
-                    />
-                    {label}
+                    {/* Label row: dot + text */}
+                    <span className="flex items-center gap-2">
+                      <span
+                        className={[
+                          "inline-block h-1.5 w-1.5 rounded-full shrink-0",
+                          isActive ? "bg-blue-2" : "bg-grey-2",
+                        ].join(" ")}
+                      />
+                      {label}
+                    </span>
+                    {/* Per-category score fill bar (issue #1046) — only for
+                        non-"all" categories; omitted when no categoryScores
+                        prop is supplied (fillFraction remains null). */}
+                    {fillFraction !== null && categoryScores !== undefined && (
+                      <div
+                        className="h-[3px] w-full overflow-hidden rounded-sm"
+                        style={{ background: "color-mix(in srgb, var(--color-blue-6) 60%, transparent)" }}
+                        aria-hidden="true"
+                      >
+                        <div
+                          className="h-full rounded-sm bg-blue-2 transition-[width] duration-300"
+                          style={{ width: `${fillFraction * 100}%` }}
+                        />
+                      </div>
+                    )}
                   </button>
                 </li>
               );
@@ -531,12 +605,74 @@ export function ChallengesScreen({
       </aside>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Right content — 5-column card grid                                  */}
+      {/* Right content — filter row + 5-column card grid                      */}
       {/* ------------------------------------------------------------------ */}
       <main
         className="flex flex-1 min-w-0 flex-col overflow-y-auto bg-blue-8 p-4"
         aria-label="Challenges grid"
       >
+        {/* Filter row (issue #1047): Search input + Category dropdown (~36px) */}
+        <div className="mb-3 flex h-9 shrink-0 items-center gap-2">
+          {/* Search input */}
+          <div className="relative flex items-center">
+            {/* Search icon */}
+            <svg
+              aria-hidden="true"
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              fill="none"
+              className="pointer-events-none absolute left-2.5 text-grey-2"
+            >
+              <circle cx="5" cy="5" r="3.5" stroke="currentColor" strokeWidth="1.2" />
+              <line x1="8" y1="8" x2="11" y2="11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+            </svg>
+            <input
+              type="search"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+              aria-label="Search challenges"
+              className={[
+                "h-9 w-44 pl-8 pr-3",
+                "bg-blue-7 border border-gold-5/60",
+                "font-body text-[11px] text-gold-cream placeholder:text-grey-2",
+                "focus:outline-none focus:border-gold-4",
+                "transition-colors duration-150",
+              ].join(" ")}
+            />
+          </div>
+
+          {/* Category dropdown */}
+          <select
+            value={filterCategory}
+            onChange={(e) => onFilterChange?.(e.target.value)}
+            aria-label="Filter by category"
+            className={[
+              "h-9 px-3",
+              "bg-blue-7 border border-gold-5/60",
+              "font-body text-[11px] text-gold-cream",
+              "focus:outline-none focus:border-gold-4",
+              "transition-colors duration-150 cursor-pointer",
+              "appearance-none pr-7",
+            ].join(" ")}
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a09b8c' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\")",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 10px center",
+            }}
+          >
+            <option value="">Category</option>
+            {FILTER_CATEGORIES.map(({ id, label }) => (
+              <option key={id} value={id}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Card grid */}
         {challenges.length === 0 ? (
           <div className="flex flex-1 items-center justify-center">
             <p className="font-display text-sm uppercase tracking-widest text-grey-2">
