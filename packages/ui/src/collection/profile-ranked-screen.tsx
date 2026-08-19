@@ -92,25 +92,33 @@ export interface ProfileRankedScreenProps {
 // Inline icon glyphs (aria-hidden, presentational)
 // ---------------------------------------------------------------------------
 
-/** Small pencil/edit glyph shown beside the queue selector. */
-function EditIcon() {
+/** Vertical sort/toggle arrows glyph (↕) shown beside the queue selector. */
+function SortArrowsIcon() {
   return (
     <svg
       aria-hidden="true"
       width="12"
-      height="12"
-      viewBox="0 0 12 12"
+      height="16"
+      viewBox="0 0 18 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="shrink-0"
     >
+      {/* Chevron pointing up */}
       <path
-        d="M8.5 1.5 L10.5 3.5 L4 10 L1.5 10.5 L2 8 L8.5 1.5Z"
+        d="M5 10 L9 6 L13 10"
         stroke="currentColor"
-        strokeWidth="1.1"
+        strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
-        fill="none"
+      />
+      {/* Chevron pointing down */}
+      <path
+        d="M5 14 L9 18 L13 14"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -444,7 +452,7 @@ function MilestoneNode({ milestone, isCurrent }: MilestoneNodeProps) {
       <span
         className={[
           "font-display text-[10px] uppercase tracking-wider",
-          isCurrent ? "text-gold-cream" : "text-grey-2",
+          isCurrent ? "text-blue-2" : "text-grey-2",
         ].join(" ")}
       >
         {milestone.label}
@@ -573,7 +581,7 @@ export function ProfileRankedScreen({
               <span className="font-display text-sm uppercase tracking-widest">
                 {queueType}
               </span>
-              <EditIcon />
+              <SortArrowsIcon />
             </button>
           </div>
 
@@ -616,7 +624,7 @@ export function ProfileRankedScreen({
                   The wing clip (208×270 alpha, cradles the crest in its central
                   void) is centred over the emblem art and sized ~1.55× the tile
                   height so the wings frame the crest like the real client. */}
-              <div className="relative h-[150px] w-full shrink-0 overflow-hidden bg-blue-6">
+              <div className="relative h-[217px] w-full shrink-0 overflow-hidden bg-blue-6">
                 <img
                   src={col.imageUrl}
                   alt=""
