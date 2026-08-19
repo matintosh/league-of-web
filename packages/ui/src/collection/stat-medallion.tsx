@@ -115,7 +115,7 @@ export function StatMedallion({ value, caption, tierBreakdown }: StatMedallionPr
           <span className="font-display text-4xl text-gold-2 leading-none">
             {value}
           </span>
-          <span className="mt-1 text-xs uppercase tracking-widest text-grey-1 leading-tight">
+          <span className="mt-1 text-xs uppercase tracking-widest text-gold-cream leading-tight">
             {caption}
           </span>
         </div>
