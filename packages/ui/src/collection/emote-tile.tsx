@@ -49,8 +49,10 @@ export function EmoteTile({
     : "border border-grey-3";
 
   const content = (
-    <div className="flex flex-col items-center gap-1.5 p-1.5">
-      {/* Circular art — clipped to circle, full size of the 56px circle */}
+    <div className="flex h-full w-full items-center justify-center p-1.5">
+      {/* Circular art — clipped to circle. No per-tile name label: the real
+          client emote grid shows art only; names appear in the detail panel
+          on selection (#1061). name is preserved via img alt + aria-label. */}
       <div className="relative w-14 h-14 shrink-0 overflow-hidden rounded-full">
         <img
           src={imageSrc}
@@ -65,21 +67,12 @@ export function EmoteTile({
             .trim()}
         />
       </div>
-      {/* Name label — small, truncated */}
-      <span
-        className={[
-          "font-body text-[10px] leading-tight text-center w-full truncate px-0.5",
-          owned ? "text-grey-1" : "text-grey-2",
-        ].join(" ")}
-      >
-        {name}
-      </span>
     </div>
   );
 
   // Shared styles — the root is 80×80px with a border
   const rootClass = [
-    "relative flex flex-col items-center bg-hextech-black transition-colors duration-150",
+    "relative flex flex-col items-center bg-hextech-black transition-colors duration-150 overflow-hidden",
     borderClass,
     "w-20 h-20",
   ].join(" ");
