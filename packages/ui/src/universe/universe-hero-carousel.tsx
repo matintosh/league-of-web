@@ -49,7 +49,7 @@ function CrestMedallion() {
       width={38}
       height={38}
       className="block"
-      style={{ backgroundColor: "var(--color-hextech-black)", borderRadius: "50%" }}
+      style={{ backgroundColor: "var(--color-hextech-black)", borderRadius: "50%", width: "38px", height: "38px", objectFit: "contain" }}
     />
   );
 }
