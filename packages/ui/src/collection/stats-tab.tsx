@@ -7,10 +7,12 @@
 //
 // Layout:
 //   Left sidebar (~280px):
-//     - "PLAY STYLE" label
+//     - "PLAY" / "STYLE" two-line heading flanked by SwordIcon (left) + GlobeIcon (right)
 //     - SVG pentagon radar chart (5 axes: Fighter, Mage, Assassin, Support, Tank)
 //     - "Season 2019" label
-//     - Three stat values side-by-side with dividers (Games Played, Time Played, KDA Ratio)
+//     - Stat rows with gold-diamond dividers:
+//         Row 1: "Games Played" centered alone (full sidebar width)
+//         Row 2: "Time Played" + "KDA Ratio" side-by-side
 //     - "Filter champions" search input
 //     - Queues dropdown
 //     - Current Season dropdown
@@ -379,6 +381,32 @@ function RadarChart({ playstyle, size = 68 }: RadarChartProps) {
 }
 
 // ---------------------------------------------------------------------------
+// GoldDiamondDivider — horizontal line with a centered gold diamond ornament.
+// Matches the Hextech divider style seen around stats in client-profile-stats.jpg.
+// ---------------------------------------------------------------------------
+
+interface GoldDiamondDividerProps {
+  className?: string;
+}
+
+function GoldDiamondDivider({ className }: GoldDiamondDividerProps) {
+  // Diamond: a small rotated square centered on the horizontal rule
+  return (
+    <div className={["relative flex w-full items-center", className].filter(Boolean).join(" ")}>
+      {/* Left line */}
+      <div className="h-px flex-1 bg-gold-5" />
+      {/* Center diamond ornament */}
+      <span
+        aria-hidden="true"
+        className="mx-1 block h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-4"
+      />
+      {/* Right line */}
+      <div className="h-px flex-1 bg-gold-5" />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // FilterDropdown — a thin select-styled dropdown button
 // ---------------------------------------------------------------------------
 
@@ -461,10 +489,19 @@ export function StatsTab({
       <div
         className="flex w-[280px] shrink-0 flex-col items-center border-r border-gold-5 bg-hextech-black px-4 pb-4 pt-4"
       >
-        {/* "PLAY STYLE" heading */}
-        <p className="mb-3 font-display text-sm uppercase tracking-widest text-grey-1 text-center">
-          Play Style
-        </p>
+        {/* "PLAY STYLE" two-line heading flanked by sword (left) + globe (right) */}
+        <div className="mb-3 flex items-center justify-center gap-2">
+          <SwordIcon className="text-grey-1 shrink-0" />
+          <div className="flex flex-col items-center leading-none">
+            <span className="font-display text-sm uppercase tracking-widest text-grey-1">
+              Play
+            </span>
+            <span className="font-display text-sm uppercase tracking-widest text-grey-1">
+              Style
+            </span>
+          </div>
+          <GlobeIcon className="text-grey-1 shrink-0" />
+        </div>
 
         {/* Radar chart */}
         <div className="flex items-center justify-center">
@@ -476,24 +513,24 @@ export function StatsTab({
           {seasonLabel}
         </p>
 
-        {/* Decorative divider */}
-        <div className="my-2 h-px w-full bg-gold-5 opacity-50" />
+        {/* Gold diamond divider — above stats rows */}
+        <GoldDiamondDivider />
 
-        {/* Stats row: Games Played / Time Played / KDA Ratio */}
-        <div className="flex w-full items-start justify-center">
-          {/* Games Played */}
-          <div className="flex flex-1 flex-col items-center gap-0.5">
-            <span className="font-display text-xl text-gold-1">
-              {gamesPlayed !== null ? gamesPlayed : "-"}
-            </span>
-            <span className="font-body text-[10px] text-grey-2 text-center leading-tight">
-              Games Played
-            </span>
-          </div>
+        {/* Stats row 1: Games Played — full width, centered */}
+        <div className="flex w-full flex-col items-center gap-0.5 py-2">
+          <span className="font-display text-xl text-gold-1">
+            {gamesPlayed !== null ? gamesPlayed : "-"}
+          </span>
+          <span className="font-body text-[10px] text-grey-2 text-center leading-tight">
+            Games Played
+          </span>
+        </div>
 
-          {/* Divider */}
-          <div className="mx-1 mt-1 h-8 w-px shrink-0 bg-gold-5" />
+        {/* Gold diamond divider — between rows */}
+        <GoldDiamondDivider />
 
+        {/* Stats row 2: Time Played + KDA Ratio side-by-side */}
+        <div className="flex w-full items-start justify-center py-2">
           {/* Time Played */}
           <div className="flex flex-1 flex-col items-center gap-0.5">
             <span className="font-display text-xl text-gold-1">
@@ -504,7 +541,7 @@ export function StatsTab({
             </span>
           </div>
 
-          {/* Divider */}
+          {/* Vertical divider between Time Played and KDA Ratio */}
           <div className="mx-1 mt-1 h-8 w-px shrink-0 bg-gold-5" />
 
           {/* KDA Ratio */}
@@ -518,8 +555,8 @@ export function StatsTab({
           </div>
         </div>
 
-        {/* Decorative divider */}
-        <div className="my-3 h-px w-full bg-gold-5 opacity-50" />
+        {/* Gold diamond divider — below stats rows */}
+        <GoldDiamondDivider className="mt-1 mb-3" />
 
         {/* Filter champions search input */}
         <div className="relative flex w-full items-center">
