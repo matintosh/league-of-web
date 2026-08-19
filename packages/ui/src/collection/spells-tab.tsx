@@ -47,7 +47,7 @@ function SpellCell({ spell, selected, onSelect, labelId }: SpellCellProps) {
         alt={spell.name}
         width={64}
         height={64}
-        className="block shrink-0"
+        className="block shrink-0 w-16 h-16"
         style={{ imageRendering: "auto" }}
       />
       <span
@@ -117,12 +117,12 @@ export function SpellsTab({ spells, selectedSpellId, onSelectSpell }: SpellsTabP
             </h2>
 
             {/* Unlock level */}
-            <p className="font-body text-xs text-grey-2 uppercase tracking-wide">
+            <p className="font-body text-xs text-grey-1 uppercase tracking-wide">
               {selected.unlockLabel}
             </p>
 
             {/* Available modes */}
-            <p className="font-body text-xs text-grey-2">
+            <p className="font-body text-xs text-grey-1">
               {selected.modes}
             </p>
 
