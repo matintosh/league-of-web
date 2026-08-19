@@ -1,5 +1,5 @@
 import {
-  championSquareUrl,
+  loadingArtUrl,
   summonerSpellIconUrl,
   summonerObjectMagicUrl,
 } from "@low/fixtures";
@@ -8,10 +8,12 @@ import { TeamPlayerRow } from "./team-player-row";
 
 // Verified DDragon IDs (spot-curled against 16.13.1):
 // Ashe, Warwick, Kindred, Lux, Vi — all HTTP 200
-const ASHE_SRC = championSquareUrl("Ashe");
-const WARWICK_SRC = championSquareUrl("Warwick");
-const KINDRED_SRC = championSquareUrl("Kindred");
-const LUX_SRC = championSquareUrl("Lux");
+// Loading art: 308×560 face-centered tall portrait (the real client's loading
+// screen art), NOT the 120² champion square icon.
+const ASHE_SRC = loadingArtUrl("Ashe");
+const WARWICK_SRC = loadingArtUrl("Warwick");
+const KINDRED_SRC = loadingArtUrl("Kindred");
+const LUX_SRC = loadingArtUrl("Lux");
 
 // Real CDragon summoner-spell icon URLs — Flash + Ignite (self row) and Flash + Ghost.
 const FLASH_SRC = summonerSpellIconUrl("summoner_flash");
