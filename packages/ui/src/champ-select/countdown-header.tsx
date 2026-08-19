@@ -101,49 +101,32 @@ function HeaderOrnament({ side }: { side: "left" | "right" }) {
 }
 
 // ---------------------------------------------------------------------------
-// Split countdown bars
+// Single full-width countdown bar
 // ---------------------------------------------------------------------------
 
 /**
- * CountdownBar — one half of the split progress pair. A dark track with a hairline
- * gold baseline carries a bright teal fill anchored at the INNER (number) end that
- * drains OUTWARD — the fill recedes toward the number as `fraction` falls, so at
- * low time only a sliver of teal survives hugging the number.
+ * CountdownBar — a single full-width progress track that spans the header.
  *
- * Verified against docs/reference/client-champ-select-fullscreen-declare.png @9s:
- * the teal occupies the inner portion of the track (left run x573→741) with the
- * OUTER portion empty (dark track x449→569); the bright cap (rgb 115,204,213)
- * rides the fill's outer LEADING edge and dims toward the number (rgb 0,90,130).
+ * Placed ABOVE the seconds number (stacked layout: title → bar → number).
+ * Verified against docs/reference/client-champ-select-pick.jpg @73s (bar
+ * nearly full) and client-champ-select-fullscreen-declare.png @9s (bar nearly
+ * empty). The fill is anchored at the LEFT edge and drains from the RIGHT as
+ * `fraction` falls, so a full bar occupies the whole track and only a sliver
+ * survives at low time. Bright cap (blue-4) at the fill's advancing right edge
+ * dims toward the left anchor (blue-1).
  *
- * So the fill is pinned at the inner end and its bright leading edge advances/
- * recedes outward. `side="left"` anchors on the right (number is to its right)
- * with the bright cap at the fill's left edge; `side="right"` mirrors.
+ * Track height is ~5px to match the reference (previously 3px, #1040 fix).
  */
-function CountdownBar({
-  fraction,
-  side,
-}: {
-  fraction: number;
-  side: "left" | "right";
-}) {
+function CountdownBar({ fraction }: { fraction: number }) {
   const fillPct = `${(fraction * 100).toFixed(2)}%`;
-  // Anchor at the INNER (number) end so the fill drains outward, hugging the
-  // number. Left bar's inner end is its right edge; right bar's is its left edge.
-  const anchorInner = side === "left" ? "right-0" : "left-0";
-  // Bright cap rides the OUTER leading edge of the fill, dimming toward the
-  // number. Left bar: bright at its left; right bar: bright at its right.
-  const gradient =
-    side === "left"
-      ? "bg-linear-to-l from-blue-4 to-blue-1"
-      : "bg-linear-to-r from-blue-4 to-blue-1";
 
   return (
-    <div className="relative flex-1 h-[3px] bg-blue-6/60 overflow-hidden">
+    <div className="relative w-full h-[5px] bg-blue-6/60 overflow-hidden">
       {/* gold hairline baseline under the track (full width) */}
       <div className="absolute inset-x-0 bottom-0 h-px bg-gold-4/70" />
-      {/* teal fill — anchored at the inner end, width = fraction, drains outward */}
+      {/* teal fill — anchored at left, drains rightward as fraction falls */}
       <div
-        className={`absolute inset-y-0 ${anchorInner} ${gradient} transition-[width] duration-1000 ease-linear`}
+        className="absolute inset-y-0 left-0 bg-linear-to-r from-blue-1 to-blue-4 transition-[width] duration-1000 ease-linear"
         style={{ width: fillPct }}
       />
     </div>
@@ -157,18 +140,19 @@ function CountdownBar({
 /**
  * CountdownHeader — centered phase header for champion select.
  *
- * Renders a display-font title (uppercase, gold-1) flanked by filigree scroll
- * brackets, and below it a row with the large seconds counter centered between
- * two symmetric teal progress bars. Both bars share one `fraction` and drain
- * OUTWARD from the number as seconds tick down — the fill is anchored at the
- * inner (number) end, so at low time only a sliver survives hugging the number.
+ * Stacked vertical layout matching the real client:
+ *   1. Title row — display-font label (uppercase, gold-1) flanked by filigree
+ *      scroll brackets.
+ *   2. Full-width progress bar — single teal track spanning the header width,
+ *      placed ABOVE the number (not split around it). Track is ~5px tall (#1040).
+ *   3. Seconds number — large centered display-font counter below the bar.
  *
  * Pure presentational — no intervals. Parent supplies `secondsRemaining` and
  * calls setState each second. The fraction is clamped to [0, 1] to defend
  * against negative or overshot values. `totalSeconds <= 0` yields an empty bar.
  *
  * @param title            Phase label, e.g. "Choose Your Loadout!"
- * @param secondsRemaining Current seconds left — drives the number and both bars.
+ * @param secondsRemaining Current seconds left — drives the number and the bar.
  * @param totalSeconds     Full phase duration — denominator for the bar fraction.
  */
 export function CountdownHeader({
@@ -183,7 +167,7 @@ export function CountdownHeader({
       : 0;
 
   return (
-    <div className="flex flex-col items-center gap-2 w-full select-none">
+    <div className="flex flex-col items-center gap-1 w-full select-none">
       {/* Title row: flanking filigree brackets + phase label */}
       <div className="flex w-full items-center gap-3">
         <HeaderOrnament side="left" />
@@ -195,22 +179,21 @@ export function CountdownHeader({
         <HeaderOrnament side="right" />
       </div>
 
-      {/* Countdown row: split bars flanking the centered seconds number */}
+      {/* Single full-width progress bar — spans the full header width, above the number */}
       <div
         role="progressbar"
         aria-valuenow={secondsRemaining}
         aria-valuemin={0}
         aria-valuemax={totalSeconds}
-        className="flex w-full items-center gap-4"
+        className="w-full"
       >
-        <CountdownBar fraction={fraction} side="left" />
-
-        <span className="font-display text-4xl text-gold-1 leading-none shrink-0 min-w-[1.5ch] text-center">
-          {secondsRemaining}
-        </span>
-
-        <CountdownBar fraction={fraction} side="right" />
+        <CountdownBar fraction={fraction} />
       </div>
+
+      {/* Centered seconds number — below the bar */}
+      <span className="font-display text-4xl text-gold-1 leading-none min-w-[1.5ch] text-center">
+        {secondsRemaining}
+      </span>
     </div>
   );
 }
