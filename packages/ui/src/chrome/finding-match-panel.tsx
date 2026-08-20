@@ -135,7 +135,7 @@ export function FindingMatchPanel({
           type="button"
           aria-label="Cancel queue"
           onClick={onCancel}
-          className="flex items-center justify-center text-blue-2 transition-opacity duration-150 hover:opacity-70"
+          className="flex items-center justify-center text-grey-1 transition-opacity duration-150 hover:opacity-70"
         >
           <CancelIcon />
         </button>
