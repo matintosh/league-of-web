@@ -35,14 +35,16 @@ export function RiotGamesWordmark({ width = 98, className = "" }: RiotGamesWordm
   // useId for any future clip/mask ids — kept here for constraint compliance
   const _uid = useId();
 
-  // Aspect ratio from pixel measurement: 100 SVG units wide × 26 SVG units tall
-  const aspectRatio = 26 / 100;
+  // Aspect ratio from pixel measurement: 100 SVG units wide × 27 SVG units tall.
+  // The viewBox spans y=[0,27] so the detached crest foot tip (path y=[26,27])
+  // is not clipped.
+  const aspectRatio = 27 / 100;
   const height = Math.round(width * aspectRatio);
 
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 100 26"
+      viewBox="0 0 100 27"
       width={width}
       height={height}
       role="img"
