@@ -1,4 +1,4 @@
-import { championSplashUrl } from "@low/fixtures";
+import { championSplashUrl, rpIconUrl } from "@low/fixtures";
 import type { ShowcaseEntry } from "../showcase";
 import { YourShopScreen, type YourShopCard } from "./your-shop-screen";
 import {
@@ -61,6 +61,7 @@ export const yourShopScreenShowcase: ShowcaseEntry = {
             cards={STATIC_CARDS}
             expiryLabel="Offers expire October 30 at 18:00 EET"
             includesChampionNote
+            rpIconSrc={rpIconUrl()}
           />
         </div>
       ),

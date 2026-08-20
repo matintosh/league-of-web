@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { championSplashUrl, yourShopIconVideoUrl } from "@low/fixtures";
+import { championSplashUrl, yourShopIconVideoUrl, rpIconUrl } from "@low/fixtures";
 import { YourShopScreen } from "./your-shop-screen";
 import type { YourShopCard } from "./your-shop-screen";
 
@@ -92,6 +92,7 @@ export function YourShopUnrevealedDemo() {
       <YourShopScreen
         cards={cards}
         expiryLabel={EXPIRY}
+        rpIconSrc={rpIconUrl()}
         includesChampionNote
         onClose={() => alert("close")}
         onRevealAll={() =>
@@ -128,6 +129,7 @@ export function YourShopPartialDemo() {
       <YourShopScreen
         cards={cards}
         expiryLabel={EXPIRY}
+        rpIconSrc={rpIconUrl()}
         includesChampionNote
         onClose={() => alert("close")}
         onRevealAll={() =>
@@ -156,6 +158,7 @@ export function YourShopRevealedDemo() {
       <YourShopScreen
         cards={cards}
         expiryLabel={EXPIRY}
+        rpIconSrc={rpIconUrl()}
         includesChampionNote
         onClose={() => alert("close")}
         iconVideoSources={ICON_VIDEO_SOURCES}
