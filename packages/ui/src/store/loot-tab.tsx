@@ -533,7 +533,7 @@ function CraftingForge({
   const canCraft = forgeSlots.some((s) => s !== null && s.count > 0);
 
   return (
-    <div className="relative flex flex-1 flex-col items-center justify-between bg-blue-7 pb-4 pt-6 overflow-hidden">
+    <div className="relative flex flex-1 flex-col items-center justify-between bg-blue-8 pb-4 pt-6 overflow-hidden">
       {/* Forge wheel — centered in upper portion */}
       <div className="relative h-[280px] w-[280px] flex-shrink-0">
         <ForgeWheel gradId={wheelGradId} outerRingId={wheelOuterId} />
