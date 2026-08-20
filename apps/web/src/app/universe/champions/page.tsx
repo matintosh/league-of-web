@@ -1,12 +1,19 @@
 /**
  * /universe/champions — Universe Champions index page.
  *
- * Ref: docs/reference/universe-live-champions.png
+ * Ref: docs/reference/universe-live-champions.png (1440×2000)
  *
  * Composition:
  *   - UniverseCrestDivider label="Champions"
  *   - Sort row (decorative label + A–Z indicator)
  *   - Grid of UniverseChampionCard (tall 3:4 splash cards)
+ *
+ * Header spacing (#1072): ref measures nav-bottom→grid-top = 349px at 1440px
+ * wide (~39% of 900px viewport). At 1280×720 the target is ~281px. Deployed
+ * with pt-10/pb-4/mt-4 was only ~179px (25% vh). Page-scoped fix: pt-28/pb-10
+ * on the header container + mt-6 on the sort row adds ~104px to reach ~283px.
+ * The shared UniverseCrestDivider component is NOT modified — its py-2/gap-1
+ * compact spacing is correct for Home (LATEST/FEATURED) and Regions usages.
  *
  * Server component — no 'use client'. All fixture data supplied here.
  */
@@ -48,12 +55,15 @@ const CHAMPIONS = [
 export default function ChampionsPage() {
   return (
     <div style={{ backgroundColor: "var(--color-universe-bg)" }}>
-      {/* Section header */}
-      <div className="mx-auto max-w-6xl px-6 pt-10 pb-4">
+      {/* Section header — pt-28/pb-10 gives the ref's ~39% vh breathing room
+          above the crest divider and between the sort row and card grid.
+          (pt-10/pb-4/mt-4 produced ~179px at 1280×720; pt-28/pb-10/mt-6
+          reaches ~283px, matching ref's 349px at 1440 at equivalent proportion.) */}
+      <div className="mx-auto max-w-6xl px-6 pt-28 pb-10">
         <UniverseCrestDivider label="Champions" />
 
         {/* Sort row — decorative, matches ref (A–Z indicator right-aligned) */}
-        <div className="mt-4 flex items-center justify-end gap-2">
+        <div className="mt-6 flex items-center justify-end gap-2">
           <span
             className="text-[11px] uppercase tracking-[0.14em]"
             style={{
