@@ -379,15 +379,94 @@ function LootInventoryPanel({
 // Crafting forge wheel (SVG — approximated from reference)
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// ForgeWheel geometry helpers
+// ---------------------------------------------------------------------------
+
+/** Convert polar coords to cartesian, with center at (cx,cy). */
+function polar(cx: number, cy: number, r: number, angleDeg: number): [number, number] {
+  const rad = (angleDeg - 90) * (Math.PI / 180);
+  return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+}
+
+/**
+ * Build a single outer-ring arc segment as an SVG path string.
+ *
+ * The segment sweeps from `startDeg` to `endDeg` (SVG convention: 0° = top,
+ * clockwise) at radius `r` around center (cx,cy).
+ */
+function arcSegment(
+  cx: number, cy: number, r: number,
+  startDeg: number, endDeg: number,
+): string {
+  const [x1, y1] = polar(cx, cy, r, startDeg);
+  const [x2, y2] = polar(cx, cy, r, endDeg);
+  // large-arc-flag: 0 for arcs < 180°, 1 for arcs >= 180°
+  const span = ((endDeg - startDeg) + 360) % 360;
+  const large = span >= 180 ? 1 : 0;
+  return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`;
+}
+
+/**
+ * Build the angular bracket (notch) shape at a spoke termination point.
+ *
+ * Each notch is a Hextech "angular bracket" — two short diagonal arms that
+ * angle inward from the outer ring at ±halfSpan from the spoke angle, meeting
+ * at a pointed tip ~notchDepth px inside the outer ring.  The tip aligns with
+ * the spoke direction so the bracket visually "caps" the spoke end.
+ *
+ * Returns an SVG path string for the full bracket (both arms as one polyline).
+ */
+function bracketPath(
+  cx: number, cy: number,
+  outerR: number, notchDepth: number,
+  spokeDeg: number, halfSpan: number,
+): string {
+  // Arm start points — on the outer ring at ±halfSpan from spoke
+  const [x1, y1] = polar(cx, cy, outerR, spokeDeg - halfSpan);
+  const [x2, y2] = polar(cx, cy, outerR, spokeDeg + halfSpan);
+  // Tip — on the inner notch radius, pointing along the spoke
+  const [xt, yt] = polar(cx, cy, outerR - notchDepth, spokeDeg);
+  // Draw: left arm end → tip → right arm end (open V-shape)
+  return `M ${x1} ${y1} L ${xt} ${yt} L ${x2} ${y2}`;
+}
+
 /**
  * Three-spoke Hextech forge wheel.
  *
  * The reference shows a large circular forge with gold concentric rings,
  * three gold spokes at 120° intervals, and a blue energy glow in the center.
- * This SVG approximates the geometry using token CSS vars only — no inline hex.
- * The blue glow uses radial-gradient stops referencing @low/tokens variables.
+ * The outer decorative ring is rendered as 3 arc segments (~100° each) with
+ * angular bracket notches at the three spoke termination points (0°/120°/240°),
+ * giving the wheel a gear-like Hextech mechanical look.
+ *
+ * SVG gradient/clip ids are passed in from the parent (useId-derived) to
+ * guarantee uniqueness across multiple mounted instances.
  */
 function ForgeWheel({ gradId, outerRingId }: { gradId: string; outerRingId: string }) {
+  const cx = 140;
+  const cy = 140;
+
+  // Outer decorative ring geometry
+  const outerR = 134;      // outer ring radius
+  const notchHalf = 10;    // half-width of each notch in degrees (20° total)
+  const notchDepth = 9;    // how far inward the bracket tip extends (px)
+
+  // Spoke angles in "top-origin, clockwise" convention (matching polar())
+  // spoke at deg=0 → top (12 o'clock), 120 → lower-right, 240 → lower-left
+  const spokeDegs = [0, 120, 240] as const;
+
+  // Each arc sweeps from (spoke+notchHalf) to (nextSpoke-notchHalf).
+  // Arc pairs are enumerated explicitly to satisfy TS strict tuple typing.
+  const arcPairs: [number, number][] = [
+    [spokeDegs[0] + notchHalf, spokeDegs[1] - notchHalf],
+    [spokeDegs[1] + notchHalf, spokeDegs[2] - notchHalf],
+    [spokeDegs[2] + notchHalf, spokeDegs[0] + 360 - notchHalf],
+  ];
+  const arcSegments = arcPairs.map(([startDeg, endDeg]) =>
+    arcSegment(cx, cy, outerR, startDeg, endDeg),
+  );
+
   return (
     <svg
       viewBox="0 0 280 280"
@@ -410,26 +489,66 @@ function ForgeWheel({ gradId, outerRingId }: { gradId: string; outerRingId: stri
         </radialGradient>
       </defs>
 
-      {/* Outer decorative ring */}
-      <circle cx="140" cy="140" r="134" fill="none" stroke="var(--color-gold-5)" strokeWidth="1" />
-      {/* Main gold ring */}
-      <circle cx="140" cy="140" r="126" fill="none" stroke={`url(#${outerRingId})`} strokeWidth="5" />
+      {/*
+        Outer decorative ring — 3 arc segments separated by angular bracket
+        notches at each spoke terminus (0°/120°/240°).  Replaces the old plain
+        continuous <circle r="134"> with a mechanical, gear-like appearance
+        matching the reference (client-loot-crafting-tab.png).
+      */}
+      {arcSegments.map((d, i) => (
+        <path
+          key={i}
+          d={d}
+          fill="none"
+          stroke="var(--color-gold-5)"
+          strokeWidth="1.5"
+          strokeLinecap="butt"
+        />
+      ))}
+
+      {/* Angular bracket notches — one per spoke terminus */}
+      {spokeDegs.map((spk) => (
+        <path
+          key={spk}
+          d={bracketPath(cx, cy, outerR, notchDepth, spk, notchHalf)}
+          fill="none"
+          stroke="var(--color-gold-5)"
+          strokeWidth="1.5"
+          strokeLinecap="square"
+          strokeLinejoin="miter"
+        />
+      ))}
+
+      {/* Bracket end-cap dots — highlight the arm endpoints at the outer ring */}
+      {spokeDegs.map((spk) => {
+        const [lx, ly] = polar(cx, cy, outerR, spk - notchHalf);
+        const [rx, ry] = polar(cx, cy, outerR, spk + notchHalf);
+        return (
+          <g key={spk}>
+            <circle cx={lx} cy={ly} r="2" fill="var(--color-gold-3)" />
+            <circle cx={rx} cy={ry} r="2" fill="var(--color-gold-3)" />
+          </g>
+        );
+      })}
+
+      {/* Main gold ring — unchanged */}
+      <circle cx={cx} cy={cy} r="126" fill="none" stroke={`url(#${outerRingId})`} strokeWidth="5" />
       {/* Inner ring */}
-      <circle cx="140" cy="140" r="115" fill="var(--color-blue-7)" stroke="var(--color-gold-4)" strokeWidth="2" />
+      <circle cx={cx} cy={cy} r="115" fill="var(--color-blue-7)" stroke="var(--color-gold-4)" strokeWidth="2" />
       {/* Middle ring */}
-      <circle cx="140" cy="140" r="90" fill="none" stroke="var(--color-gold-5)" strokeWidth="1" />
+      <circle cx={cx} cy={cy} r="90" fill="none" stroke="var(--color-gold-5)" strokeWidth="1" />
       {/* Blue glow fill */}
-      <circle cx="140" cy="140" r="88" fill={`url(#${gradId})`} />
+      <circle cx={cx} cy={cy} r="88" fill={`url(#${gradId})`} />
 
       {/* Three spokes at 0°, 120°, 240° (pointing out from center) */}
-      {[0, 120, 240].map((deg) => {
+      {spokeDegs.map((deg) => {
         const rad = (deg - 90) * (Math.PI / 180);
         const innerR = 30;
-        const outerR = 110;
-        const x1 = 140 + innerR * Math.cos(rad);
-        const y1 = 140 + innerR * Math.sin(rad);
-        const x2 = 140 + outerR * Math.cos(rad);
-        const y2 = 140 + outerR * Math.sin(rad);
+        const outerSpk = 110;
+        const x1 = cx + innerR * Math.cos(rad);
+        const y1 = cy + innerR * Math.sin(rad);
+        const x2 = cx + outerSpk * Math.cos(rad);
+        const y2 = cy + outerSpk * Math.sin(rad);
         return (
           <line
             key={deg}
@@ -445,9 +564,9 @@ function ForgeWheel({ gradId, outerRingId }: { gradId: string; outerRingId: stri
       })}
 
       {/* Center cap */}
-      <circle cx="140" cy="140" r="28" fill="var(--color-blue-6)" stroke="var(--color-gold-3)" strokeWidth="3" />
-      <circle cx="140" cy="140" r="18" fill="var(--color-gold-4)" stroke="var(--color-gold-2)" strokeWidth="1.5" />
-      <circle cx="140" cy="140" r="10" fill="var(--color-gold-coin)" />
+      <circle cx={cx} cy={cy} r="28" fill="var(--color-blue-6)" stroke="var(--color-gold-3)" strokeWidth="3" />
+      <circle cx={cx} cy={cy} r="18" fill="var(--color-gold-4)" stroke="var(--color-gold-2)" strokeWidth="1.5" />
+      <circle cx={cx} cy={cy} r="10" fill="var(--color-gold-coin)" />
     </svg>
   );
 }
