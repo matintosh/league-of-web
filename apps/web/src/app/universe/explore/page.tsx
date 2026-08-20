@@ -19,7 +19,7 @@ export default function ExplorePage() {
       {/* Page heading — ref shows ~24px mixed-case Beaufort, not all-caps (#3b) */}
       <div className="px-6 pt-8 pb-2">
         <h1
-          className="font-display text-2xl tracking-wide"
+          className="font-display text-4xl tracking-wide"
           style={{
             color: "var(--color-universe-story-ink)",
             fontWeight: 700,
