@@ -231,7 +231,7 @@ function MythicShopCard({
         }}
       >
         {/* Skin name */}
-        <p className="font-display text-[11px] leading-tight text-gold-cream">
+        <p className="truncate font-display text-[11px] leading-tight text-gold-cream">
           {skin.skinName}
         </p>
 
