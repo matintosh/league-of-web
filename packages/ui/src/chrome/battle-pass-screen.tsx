@@ -338,8 +338,8 @@ function XpBar({ playerLevel, currentXp, totalXp, uid }: XpBarProps) {
     <div className="flex items-center gap-3">
       {/* Level chip */}
       <div
-        className="flex shrink-0 items-center justify-center border border-gold-3 bg-hextech-black font-display text-sm text-gold-2"
-        style={{ width: 32, height: 32 }}
+        className="flex shrink-0 items-center justify-center rounded-full border-2 border-blue-2 bg-hextech-black font-display text-sm text-blue-2"
+        style={{ width: 40, height: 40 }}
         aria-label={`Level ${playerLevel}`}
       >
         {playerLevel}
