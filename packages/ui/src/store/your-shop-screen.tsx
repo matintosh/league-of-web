@@ -151,15 +151,24 @@ function RpCoinIcon() {
 // ---------------------------------------------------------------------------
 
 /**
- * Dark hexagonal locked tile shown before a card is revealed.
- * Clicking fires onReveal.
+ * Rectangular locked panel matching the real client's unrevealed mystery state.
+ *
+ * Measured from docs/reference/client-your-shop-unrevealed.png (issue #1074):
+ *   - Two flanking vertical tech-line pairs at ~18% / ~82% from left (double-bar,
+ *     ~10% card width wide each), running from ~12% to ~88% card height.
+ *   - A single central glowing bar (~8% card width) with a teal/blue radial glow.
+ *   - Gold L-bracket corner ornaments at all four corners (~10% wide × ~6% tall arms).
+ *   - Background: very dark navy panel (hextech-black with a subtle blue-6 tint).
+ *
+ * Clicking fires onReveal. Same footprint as RevealedCard (CARD_ASPECT 206/513).
  */
 function MysteryCard({
   card,
-  patternId,
+  glowId,
 }: {
   card: YourShopCard;
-  patternId: string;
+  /** Stable SVG gradient id — supply from useId to avoid duplicate ids. */
+  glowId: string;
 }) {
   const isClickable = !!card.onReveal;
 
@@ -171,7 +180,7 @@ function MysteryCard({
       disabled={!isClickable}
       className={[
         "relative flex flex-col overflow-hidden",
-        "border-2 border-gold-5",
+        "border border-gold-5",
         "transition-all duration-200",
         isClickable
           ? "cursor-pointer hover:border-gold-3 hover:shadow-lg"
@@ -180,99 +189,138 @@ function MysteryCard({
       ].join(" ")}
       style={{ width: "100%", aspectRatio: CARD_ASPECT, minWidth: 90 }}
     >
-      {/* Dark teal-navy background */}
+      {/* Dark navy background — hextech-black with a subtle blue-6 inner tint */}
       <div
         className="absolute inset-0"
-        style={{ backgroundColor: "var(--color-blue-5)" }}
+        style={{
+          background:
+            "linear-gradient(180deg, var(--color-blue-7) 0%, var(--color-hextech-black) 40%, var(--color-hextech-black) 60%, var(--color-blue-7) 100%)",
+        }}
         aria-hidden="true"
       />
 
-      {/* Hexagonal tile pattern overlay */}
+      {/* SVG layer: tech-lines + central glow bar */}
       <svg
         aria-hidden="true"
-        className="absolute inset-0 h-full w-full opacity-30"
+        className="absolute inset-0 h-full w-full"
+        viewBox="0 0 100 249"
+        preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <pattern
-            id={patternId}
-            x="0"
-            y="0"
-            width="34"
-            height="40"
-            patternUnits="userSpaceOnUse"
-          >
-            {/* Two-row hex tile pattern: offset hex grid */}
-            <polygon
-              points="17,2 30,9.5 30,24.5 17,32 4,24.5 4,9.5"
-              fill="none"
-              stroke="var(--color-blue-3)"
-              strokeWidth="1"
-            />
-            <polygon
-              points="34,22 47,29.5 47,44.5 34,52 21,44.5 21,29.5"
-              fill="none"
-              stroke="var(--color-blue-3)"
-              strokeWidth="1"
-            />
-          </pattern>
+          {/* Radial glow for the central bar */}
+          <radialGradient id={glowId} cx="50%" cy="50%" r="50%" gradientUnits="userSpaceOnUse"
+            gradientTransform="translate(50,124.5) scale(8,100) translate(-50,-124.5)">
+            <stop offset="0%" stopColor="var(--color-blue-2)" stopOpacity="0.9" />
+            <stop offset="60%" stopColor="var(--color-blue-3)" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="var(--color-blue-3)" stopOpacity="0" />
+          </radialGradient>
         </defs>
-        <rect width="100%" height="100%" fill={`url(#${patternId})`} />
+
+        {/* ── Left flanking tech-line pair: two close parallel bars ── */}
+        {/* Outer left line */}
+        <rect x="15" y="30" width="1.5" height="189" fill="var(--color-gold-5)" opacity="0.7" />
+        {/* Inner left line (closer to center) */}
+        <rect x="20" y="30" width="1" height="189" fill="var(--color-gold-5)" opacity="0.5" />
+
+        {/* ── Right flanking tech-line pair (mirror) ── */}
+        {/* Inner right line */}
+        <rect x="79" y="30" width="1" height="189" fill="var(--color-gold-5)" opacity="0.5" />
+        {/* Outer right line */}
+        <rect x="83.5" y="30" width="1.5" height="189" fill="var(--color-gold-5)" opacity="0.7" />
+
+        {/* ── Central glowing bar ── */}
+        {/* Glow halo behind the bar */}
+        <rect x="44" y="50" width="12" height="149"
+          fill={`url(#${glowId})`} />
+        {/* Bar body */}
+        <rect x="47.5" y="50" width="5" height="149" rx="1"
+          fill="var(--color-blue-2)" opacity="0.85" />
+        {/* Bright core line */}
+        <rect x="49" y="50" width="2" height="149" rx="0.5"
+          fill="var(--color-blue-1)" opacity="0.6" />
+
+        {/* Small horizontal cross-connectors on the tech-lines (midpoint accent) */}
+        <rect x="15" y="120" width="6.5" height="1" fill="var(--color-gold-5)" opacity="0.5" />
+        <rect x="78.5" y="120" width="6.5" height="1" fill="var(--color-gold-5)" opacity="0.5" />
       </svg>
 
-      {/* Center glowing hexagon accent */}
-      <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-        <svg
-          width="80"
-          height="92"
-          viewBox="0 0 80 92"
+      {/* ── Gold L-bracket corner ornaments ── */}
+      {/* Each bracket = two thin gold lines meeting at a right-angle corner.
+          Arms: ~10px wide / tall at card scale (proportional to 90px minWidth).
+          Rendered as a small SVG per corner for crisp rendering at any size. */}
+
+      {/* Top-left */}
+      <svg
+        aria-hidden="true"
+        className="absolute top-0 left-0 pointer-events-none"
+        style={{ width: "22%", height: "11%" }}
+        viewBox="0 0 22 14"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <polyline
+          points="22,2 2,2 2,14"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Outer glow hex */}
-          <polygon
-            points="40,4 76,23 76,69 40,88 4,69 4,23"
-            fill="none"
-            stroke="var(--color-blue-3)"
-            strokeWidth="1.5"
-            opacity="0.6"
-          />
-          {/* Inner filled hex — teal shimmer */}
-          <polygon
-            points="40,16 68,30.5 68,61.5 40,76 12,61.5 12,30.5"
-            fill="var(--color-blue-4)"
-            opacity="0.9"
-          />
-          {/* Center vertical accent bar — blue glow */}
-          <rect
-            x="36"
-            y="26"
-            width="8"
-            height="40"
-            rx="2"
-            fill="var(--color-blue-2)"
-            opacity="0.75"
-          />
-        </svg>
-      </div>
+          stroke="var(--color-gold-4)"
+          strokeWidth="2"
+          strokeLinecap="square"
+        />
+      </svg>
 
-      {/* Top and bottom border decoration lines (Hextech frame) */}
-      <div
-        className="absolute top-0 inset-x-0 h-[2px]"
-        style={{ backgroundColor: "var(--color-gold-4)" }}
+      {/* Top-right */}
+      <svg
         aria-hidden="true"
-      />
-      <div
-        className="absolute bottom-0 inset-x-0 h-[2px]"
-        style={{ backgroundColor: "var(--color-gold-4)" }}
-        aria-hidden="true"
-      />
+        className="absolute top-0 right-0 pointer-events-none"
+        style={{ width: "22%", height: "11%" }}
+        viewBox="0 0 22 14"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <polyline
+          points="0,2 20,2 20,14"
+          fill="none"
+          stroke="var(--color-gold-4)"
+          strokeWidth="2"
+          strokeLinecap="square"
+        />
+      </svg>
 
-      {/* Corner accent dots */}
-      <div className="absolute top-1.5 left-1.5 h-1.5 w-1.5 rounded-full bg-gold-4" aria-hidden="true" />
-      <div className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-gold-4" aria-hidden="true" />
-      <div className="absolute bottom-1.5 left-1.5 h-1.5 w-1.5 rounded-full bg-gold-4" aria-hidden="true" />
-      <div className="absolute bottom-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-gold-4" aria-hidden="true" />
+      {/* Bottom-left */}
+      <svg
+        aria-hidden="true"
+        className="absolute bottom-0 left-0 pointer-events-none"
+        style={{ width: "22%", height: "11%" }}
+        viewBox="0 0 22 14"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <polyline
+          points="22,12 2,12 2,0"
+          fill="none"
+          stroke="var(--color-gold-4)"
+          strokeWidth="2"
+          strokeLinecap="square"
+        />
+      </svg>
+
+      {/* Bottom-right */}
+      <svg
+        aria-hidden="true"
+        className="absolute bottom-0 right-0 pointer-events-none"
+        style={{ width: "22%", height: "11%" }}
+        viewBox="0 0 22 14"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <polyline
+          points="0,12 20,12 20,0"
+          fill="none"
+          stroke="var(--color-gold-4)"
+          strokeWidth="2"
+          strokeLinecap="square"
+        />
+      </svg>
     </button>
   );
 }
@@ -412,7 +460,7 @@ export function YourShopScreen({
 }: YourShopScreenProps) {
   const uid = useId();
 
-  const patternIds = [0, 1, 2, 3, 4, 5].map((i) => `${uid}-hex-${i}`);
+  const glowIds = [0, 1, 2, 3, 4, 5].map((i) => `${uid}-glow-${i}`);
 
   const allRevealed = cards.every((c) => c.revealed);
   const hasAnyUnrevealed = cards.some((c) => !c.revealed);
@@ -497,7 +545,7 @@ export function YourShopScreen({
               {card.revealed ? (
                 <RevealedCard card={card} rpIconSrc={rpIconSrc} />
               ) : (
-                <MysteryCard card={card} patternId={patternIds[i]!} />
+                <MysteryCard card={card} glowId={glowIds[i]!} />
               )}
             </div>
           ))}
