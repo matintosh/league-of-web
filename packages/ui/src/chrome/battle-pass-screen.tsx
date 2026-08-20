@@ -164,8 +164,12 @@ function RewardCard({ card, chapterLabel, onSelect }: RewardCardProps) {
         .filter(Boolean)
         .join(" ")}
       style={{
-        width: 175,
-        height: 300,
+        // Measured from client-current-battlepass-chapter.jpg (1280×720):
+        // 5 cards visible across ~909px with gap-4 (16px) between them →
+        // card width ≈ (909 − 4×16) / 5 ≈ 169px; card height ≈ 197px → ratio ~5:7.
+        // Using 160×224 (ratio 0.714, 5:7) to match measured proportion.
+        width: 160,
+        height: 224,
         borderColor: isCyanHighlight ? "var(--color-blue-2)" : undefined,
         boxShadow: isCyanHighlight
           ? "0 0 16px color-mix(in srgb, var(--color-blue-2) 55%, transparent), inset 0 0 12px color-mix(in srgb, var(--color-blue-2) 20%, transparent)"
@@ -505,78 +509,126 @@ function ChapterView({
 }
 
 // ---------------------------------------------------------------------------
-// RewardStripItem — one cell in the level detail reward strip
+// RewardStripNode — one node in the level-detail node-and-line track.
+//
+// Measured from client-current-battlepass-level.jpg (1280×720):
+//   - Regular node diameter: ~34px (teal-outlined circle with level number).
+//   - Current node diameter: ~46px (enlarged, border-blue-2, teal glow).
+//   - Connecting line thickness: ~3px, filled with blue-2 tint up to current.
+//   - Reward thumbnail above node: ~64px wide × 64px tall.
+//   - Track inter-node spacing: ~200px at image-native scale; laid out via flex.
+//   - FREE label in white-grey; locked nodes show padlock icon instead of art.
 // ---------------------------------------------------------------------------
 
-interface RewardStripItemProps {
+interface RewardStripNodeProps {
   reward: BattlePassLevelReward;
+  /** True when this node is the currently active/in-progress level. */
+  isCurrent: boolean;
+  /** True when the XP line has fully reached (and passed) this node. */
+  isPast: boolean;
   isSelected: boolean;
   onSelect: () => void;
 }
 
-function RewardStripItem({ reward, isSelected, onSelect }: RewardStripItemProps) {
+function RewardStripNode({
+  reward,
+  isCurrent,
+  isPast,
+  isSelected,
+  onSelect,
+}: RewardStripNodeProps) {
+  // Regular node: 34px diameter. Current node: 46px with teal ring + glow.
+  const nodeDiameter = isCurrent ? 46 : 34;
+
   return (
     <button
       type="button"
       aria-pressed={isSelected}
       aria-label={`Level ${reward.level}: ${reward.label} (${reward.lane})`}
       onClick={onSelect}
-      className={[
-        "relative flex shrink-0 flex-col items-center gap-1 cursor-pointer",
-        "border transition-colors duration-150",
-        isSelected
-          ? "border-gold-2"
-          : reward.isUnlocked
-          ? "border-gold-5 hover:border-gold-3"
-          : "border-grey-3 opacity-60",
-      ].join(" ")}
+      className="relative flex shrink-0 flex-col items-center gap-0 cursor-pointer select-none"
       style={{
-        width: 64,
-        boxShadow: isSelected
-          ? "0 0 10px color-mix(in srgb, var(--color-gold-2) 50%, transparent)"
-          : undefined,
+        // Each node column is 80px wide; thumbnail + node stack vertically.
+        width: 80,
       }}
     >
-      {/* Thumbnail */}
-      <div className="relative overflow-hidden" style={{ width: 64, height: 64 }}>
-        <img
-          src={reward.artSrc}
-          alt=""
-          aria-hidden="true"
-          className="h-full w-full object-cover object-top"
-        />
-        {!reward.isUnlocked && (
+      {/* Reward thumbnail — above the node */}
+      <div
+        className="relative mb-2 overflow-hidden rounded-sm"
+        style={{ width: 64, height: 64 }}
+      >
+        {reward.isUnlocked ? (
+          <img
+            src={reward.artSrc}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-cover object-top"
+          />
+        ) : (
+          /* Locked: dark panel with padlock icon */
           <div
-            className="absolute inset-0 flex items-center justify-center"
+            className="flex h-full w-full items-center justify-center"
             style={{
-              background: "color-mix(in srgb, var(--color-hextech-black) 50%, transparent)",
+              background: "color-mix(in srgb, var(--color-hextech-black) 75%, var(--color-grey-5) 25%)",
             }}
           >
-            <LockIcon />
+            <LockIcon size={20} />
           </div>
         )}
-        {/* Level number badge */}
-        <div className="absolute bottom-0 inset-x-0 flex justify-center">
-          <span
-            className="font-display text-[10px] text-gold-cream px-1"
-            style={{
-              background: "color-mix(in srgb, var(--color-hextech-black) 80%, transparent)",
-            }}
-          >
-            {reward.level}
-          </span>
-        </div>
+
+        {/* FREE / PREMIUM lane badge */}
+        {reward.isUnlocked && (
+          <div className="absolute inset-x-0 bottom-0 flex justify-center pb-0.5">
+            <span
+              className={[
+                "font-display text-[9px] uppercase tracking-widest",
+                reward.lane === "premium" ? "text-gold-3" : "text-grey-1",
+              ].join(" ")}
+            >
+              {reward.lane === "free" ? "FREE" : null}
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* FREE / PREMIUM label */}
-      <span
-        className={[
-          "font-display text-[10px] uppercase tracking-widest pb-1",
-          reward.lane === "premium" ? "text-gold-3" : "text-grey-1",
-        ].join(" ")}
+
+      {/* Circular level-number node */}
+      <div
+        className="flex items-center justify-center rounded-full font-display font-bold transition-all duration-150"
+        style={{
+          width: nodeDiameter,
+          height: nodeDiameter,
+          fontSize: isCurrent ? 13 : 11,
+          // Current node: prominent teal border + glow; past nodes: filled accent;
+          // future nodes: dark border only.
+          border: isCurrent
+            ? "2px solid var(--color-blue-2)"
+            : isPast
+            ? "1.5px solid color-mix(in srgb, var(--color-blue-3) 70%, transparent)"
+            : "1.5px solid var(--color-grey-3)",
+          background: isCurrent
+            ? "color-mix(in srgb, var(--color-blue-5) 60%, var(--color-hextech-black) 40%)"
+            : isPast
+            ? "color-mix(in srgb, var(--color-blue-6) 50%, var(--color-hextech-black) 50%)"
+            : "var(--color-hextech-black)",
+          color: isCurrent
+            ? "var(--color-blue-2)"
+            : isPast
+            ? "var(--color-grey-1)"
+            : "var(--color-grey-2)",
+          boxShadow: isCurrent
+            ? "0 0 10px color-mix(in srgb, var(--color-blue-2) 55%, transparent), 0 0 4px color-mix(in srgb, var(--color-blue-2) 30%, transparent)"
+            : isSelected && !isCurrent
+            ? "0 0 8px color-mix(in srgb, var(--color-gold-3) 40%, transparent)"
+            : undefined,
+          // Selected (non-current): gold tint ring
+          outline: isSelected && !isCurrent ? "1px solid var(--color-gold-4)" : undefined,
+          outlineOffset: 2,
+        }}
+        aria-hidden="true"
       >
-        {reward.lane}
-      </span>
+        {reward.level}
+      </div>
     </button>
   );
 }
@@ -743,57 +795,110 @@ function LevelView({
         </div>
       </div>
 
-      {/* Zone 3 — Reward strip */}
+      {/* Zone 3 — Node-and-line reward track
+          Measured from client-current-battlepass-level.jpg (1280×720):
+            - Track band height: ~130px (thumbnail + line + node stacked vertically)
+            - Regular node diameter: ~34px; current node: ~46px with teal glow
+            - Connecting XP line: ~3px thick, fills from left up to current node
+            - Thumbnail: ~64×64px above each node, with FREE / padlock label
+            - Inter-node spacing handled by evenly-distributed flex layout    */}
       <div
-        className="flex shrink-0 items-center gap-2 px-4 py-3"
+        className="shrink-0 px-4 py-3"
         style={{
           background: "color-mix(in srgb, var(--color-hextech-black) 80%, var(--color-riot-red) 12%)",
           borderTop: "1px solid color-mix(in srgb, var(--color-gold-5) 30%, transparent)",
         }}
         aria-label="Level rewards"
       >
-        {/* Left scroll chevron */}
-        <button
-          type="button"
-          aria-label="Scroll reward strip left"
-          onClick={() => scrollStrip("left")}
-          className="flex shrink-0 h-8 w-8 items-center justify-center border border-grey-3 text-grey-2 hover:border-gold-4 hover:text-gold-1 transition-colors duration-150 cursor-pointer"
-        >
-          <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none">
-            <path d="M7 1L3 5l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Left scroll chevron */}
+          <button
+            type="button"
+            aria-label="Scroll reward strip left"
+            onClick={() => scrollStrip("left")}
+            className="flex shrink-0 h-8 w-8 items-center justify-center border border-grey-3 text-grey-2 hover:border-gold-4 hover:text-gold-1 transition-colors duration-150 cursor-pointer"
+          >
+            <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M7 1L3 5l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
 
-        {/* Scrollable strip */}
-        <div
-          ref={stripRef}
-          className="flex flex-1 gap-1.5 overflow-x-auto"
-          role="list"
-          aria-label="Reward levels"
-          style={{ scrollbarWidth: "none" }}
-        >
-          {levelRewards.map((reward, idx) => (
-            <div key={reward.level} role="listitem">
-              <RewardStripItem
-                reward={reward}
-                isSelected={idx === selectedLevelIndex}
-                onSelect={() => onSelectLevel?.(idx)}
-              />
+          {/* Node-track scroll container */}
+          <div
+            ref={stripRef}
+            className="relative flex flex-1 overflow-x-auto"
+            role="list"
+            aria-label="Reward levels"
+            style={{ scrollbarWidth: "none" }}
+          >
+            {/* Horizontal connecting XP line — sits behind nodes at node-center height.
+                Node center is at thumbnail(64) + gap(8) + node/2(17) = ~89px from top of track.
+                Line is a full-width band; filled vs unfilled segments are absolute divs. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute left-0 right-0"
+              style={{
+                // Position the line at the vertical center of the nodes:
+                // thumbnails are 64px tall, 8px gap below, then node center at half of 34px = 17px
+                top: 64 + 8 + 17 - 1, // center the 3px line
+                height: 3,
+                background: "var(--color-grey-4)",
+              }}
+            >
+              {/* Filled (progress) segment — up to the current level node */}
+              {(() => {
+                const currentIdx = levelRewards.findIndex((r) => r.level === playerLevel);
+                const pct =
+                  currentIdx >= 0
+                    ? ((currentIdx + 1) / levelRewards.length) * 100
+                    : 0;
+                return (
+                  <div
+                    className="absolute inset-y-0 left-0"
+                    style={{
+                      width: `${pct}%`,
+                      background: "var(--color-blue-2)",
+                      boxShadow: "0 0 6px color-mix(in srgb, var(--color-blue-2) 60%, transparent)",
+                    }}
+                  />
+                );
+              })()}
             </div>
-          ))}
-        </div>
 
-        {/* Right scroll chevron */}
-        <button
-          type="button"
-          aria-label="Scroll reward strip right"
-          onClick={() => scrollStrip("right")}
-          className="flex shrink-0 h-8 w-8 items-center justify-center border border-grey-3 text-grey-2 hover:border-gold-4 hover:text-gold-1 transition-colors duration-150 cursor-pointer"
-        >
-          <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none">
-            <path d="M3 1l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+            {/* Node columns — evenly spaced via flex justify-around */}
+            <div className="flex w-full min-w-max justify-around">
+              {levelRewards.map((reward, idx) => {
+                const isCurrent = reward.level === playerLevel;
+                // A node is "past" if it's before the current level node
+                const currentIdx = levelRewards.findIndex((r) => r.level === playerLevel);
+                const isPast = currentIdx >= 0 && idx < currentIdx;
+                return (
+                  <div key={reward.level} role="listitem">
+                    <RewardStripNode
+                      reward={reward}
+                      isCurrent={isCurrent}
+                      isPast={isPast}
+                      isSelected={idx === selectedLevelIndex}
+                      onSelect={() => onSelectLevel?.(idx)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right scroll chevron */}
+          <button
+            type="button"
+            aria-label="Scroll reward strip right"
+            onClick={() => scrollStrip("right")}
+            className="flex shrink-0 h-8 w-8 items-center justify-center border border-grey-3 text-grey-2 hover:border-gold-4 hover:text-gold-1 transition-colors duration-150 cursor-pointer"
+          >
+            <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M3 1l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Zone 4 — Bottom action bar */}
