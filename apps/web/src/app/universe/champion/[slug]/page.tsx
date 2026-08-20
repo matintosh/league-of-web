@@ -239,7 +239,7 @@ export default async function ChampionBioPage({ params }: Props) {
           name={champ.name}
           title={champ.title}
           splashUrl={championSplashUrl(champ.ddId)}
-          height={480}
+          height={620}
         />
       </div>
 
