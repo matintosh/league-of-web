@@ -39,7 +39,7 @@ type TileState = "default" | "hover" | "selected" | "disabled";
 const BORDER_CLASS: Record<TileState, string> = {
   default: "border-gold-5",
   hover: "border-gold-3",
-  selected: "border-gold-2",
+  selected: "border-blue-2",
   disabled: "border-gold-5",
 };
 
@@ -62,7 +62,7 @@ const NAME_COLOR: Record<TileState, string> = {
  * Visual states:
  * - default: muted gold-5 border
  * - hover: gold-3 border (CSS hover — cannot be a Record value, applied via group-hover)
- * - selected: gold-2 border + subtle teal drop-shadow glow
+ * - selected: blue-2 (teal) border + subtle teal drop-shadow glow
  * - disabled-taken: grayscale + dimmed, aria-disabled, click no-op
  *
  * The optional `badge` prop renders a small blue-2 hex chip (the "6" badges
@@ -141,7 +141,7 @@ export function ChampionPickTile({
         {/* ---------------------------------------------------------------- */}
         <div
           className={[
-            "relative h-16 w-16 overflow-hidden border",
+            "relative h-[72px] w-[72px] overflow-hidden border",
             BORDER_CLASS[staticState],
             // Hover border upgrade via group-hover (self → no group self-descendant trap)
             !disabled && !selected && "group-hover:border-gold-3",
