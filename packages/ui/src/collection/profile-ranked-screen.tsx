@@ -396,7 +396,7 @@ function QueueUpButton({ onClick }: { onClick: () => void }) {
       aria-label="Queue Up"
       onClick={onClick}
       className={[
-        "group relative flex h-10 w-[180px] cursor-pointer items-center justify-center",
+        "group relative flex h-10 w-[240px] cursor-pointer items-center justify-center",
         "[filter:drop-shadow(0_0_6px_color-mix(in_srgb,var(--color-teal-fm-glow)_45%,transparent))]",
         "hover:[filter:drop-shadow(0_0_12px_color-mix(in_srgb,var(--color-blue-2)_60%,transparent))]",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-2 focus-visible:outline-offset-2",
